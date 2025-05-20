@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 
 export interface ButtonProps extends MuiButtonProps {
   className?: string;
+  children?: React.ReactNode;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(

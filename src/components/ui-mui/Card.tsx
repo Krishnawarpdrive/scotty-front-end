@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 
 export interface CardProps extends MuiCardProps {
   className?: string;
+  children?: React.ReactNode;
 }
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(

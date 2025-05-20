@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 
 export interface TextFieldProps extends MuiTextFieldProps {
   className?: string;
+  InputProps?: MuiTextFieldProps['InputProps'];
 }
 
 export const TextField = React.forwardRef<HTMLDivElement, TextFieldProps>(
