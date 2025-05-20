@@ -1,6 +1,10 @@
 
-import { ShapeOptions } from '@mui/material/styles';
+import { Theme } from '@mui/material/styles';
 
-export const shape: ShapeOptions = {
+// Define the shape interface properly
+export const shape = {
   borderRadius: 8,
 };
+
+// Export the type for better type safety
+export type ShapeOptions = typeof shape;

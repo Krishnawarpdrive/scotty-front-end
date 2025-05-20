@@ -1,7 +1,8 @@
 
-import { TypographyOptions } from '@mui/material/styles';
+import { Theme } from '@mui/material/styles';
 
-export const typography: TypographyOptions = {
+// Properly define typography options
+export const typography = {
   fontFamily: 'Rubik, sans-serif',
   fontSize: 13,
   h1: {
@@ -39,3 +40,6 @@ export const typography: TypographyOptions = {
     color: '#808080',
   },
 };
+
+// Export the type for better type safety
+export type TypographyOptions = typeof typography;
