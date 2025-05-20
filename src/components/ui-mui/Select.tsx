@@ -14,7 +14,7 @@ export interface SelectOption {
   label: string;
 }
 
-export interface SelectProps extends Omit<MuiSelectProps, 'onChange'> {
+export interface SelectProps extends Omit<MuiSelectProps<string>, 'onChange'> {
   className?: string;
   label?: string;
   options: SelectOption[];
@@ -23,9 +23,9 @@ export interface SelectProps extends Omit<MuiSelectProps, 'onChange'> {
 
 export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
   ({ className, label, options, onChange, ...props }, ref) => {
-    const handleChange = (event: any) => {
+    const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
       if (onChange) {
-        onChange(event.target.value);
+        onChange(event.target.value as string);
       }
     };
 
@@ -37,10 +37,11 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
       >
         {label && <InputLabel id={`${props.id || 'select'}-label`}>{label}</InputLabel>}
         <MuiSelect
-          ref={ref}
+          ref={ref as any}
           labelId={`${props.id || 'select'}-label`}
-          onChange={handleChange}
+          onChange={handleChange as any}
           className="h-input-height"
+          variant="outlined"
           {...props}
         >
           {options.map((option) => (
