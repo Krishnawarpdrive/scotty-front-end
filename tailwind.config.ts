@@ -18,16 +18,48 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: ['Rubik', 'sans-serif'],
+				rubik: ['Rubik', 'sans-serif'],
+			},
+			fontSize: {
+				'body': '13px',
+				'label': '10px',
+				'section': '16px',
+				'table': '12px',
+			},
 			colors: {
+				// Scotty ATS Brand Colors
+				primary: {
+					DEFAULT: '#009933',
+					foreground: '#FFFFFF',
+					light: '#33AD5E',
+					dark: '#007728',
+				},
+				accent: {
+					DEFAULT: '#00724e',
+					foreground: '#FFFFFF',
+					light: '#33906F',
+					dark: '#005B3E',
+				},
+				surface: {
+					DEFAULT: '#f9fafb',
+					foreground: '#333333',
+				},
+				error: {
+					DEFAULT: '#e53935',
+					foreground: '#FFFFFF',
+				},
+				success: {
+					DEFAULT: '#43a047',
+					foreground: '#FFFFFF',
+				},
+				// Keep original shadcn colors
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
-				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
-				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))'
@@ -39,10 +71,6 @@ export default {
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',
 					foreground: 'hsl(var(--muted-foreground))'
-				},
-				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -66,7 +94,8 @@ export default {
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				sm: 'calc(var(--radius) - 4px)',
+				DEFAULT: '8px',
 			},
 			keyframes: {
 				'accordion-down': {
@@ -89,7 +118,17 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
-			}
+			},
+			spacing: {
+				'input-height': '32px',
+				'button-height': '36px',
+				'card-padding': '16px',
+				'section-gap': '20px',
+			},
+			boxShadow: {
+				'card': '0 2px 8px rgba(0, 0, 0, 0.08)',
+				'drawer': '0 4px 12px rgba(0, 0, 0, 0.1)',
+			},
 		}
 	},
 	plugins: [require("tailwindcss-animate")],
