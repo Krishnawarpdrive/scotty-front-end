@@ -13,9 +13,9 @@ import {
   SheetFooter,
 } from "@/components/ui/sheet";
 
+import { Progress } from "@/components/ui/progress";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import FormProgressIndicator from '../../clients/components/FormProgressIndicator';
 
 // Import schema
 import { formSchema, FormValues, CustomField } from './roleFormSchema';
@@ -25,6 +25,7 @@ import BasicInfoStep from './steps/BasicInfoStep';
 import DetailsStep from './steps/DetailsStep';
 import SkillsTagsStep from './steps/SkillsTagsStep';
 import CustomFieldsStep from './steps/CustomFieldsStep';
+import SkillsSelectionStep from './steps/SkillsSelectionStep';
 
 interface RoleCreationDrawerProps {
   open: boolean;
@@ -38,11 +39,12 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
   const [currentStep, setCurrentStep] = useState(0);
   const [formProgress, setFormProgress] = useState(0);
   const [skills, setSkills] = useState<string[]>([]);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
   const { toast } = useToast();
   
-  const formSections = ["Basic Info", "Details", "Skills & Tags", "Custom Fields"];
+  const formSections = ["Basic Info", "Details", "Skills", "Tags", "Custom Fields"];
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -60,21 +62,38 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
     mode: "onChange"
   });
 
-  // Update progress based on form completion
+  // Calculate form progress based on filled fields
   useEffect(() => {
     const values = form.getValues();
-    const fields = Object.keys(values);
+    const requiredFields = [
+      'roleName',
+      'roleCategory',
+      'workMode',
+      'employmentType',
+      'minExperience',
+      'maxExperience'
+    ];
     
-    // Calculate how many fields are filled
-    const filledFields = fields.filter(field => {
+    // Count filled required fields
+    const filledRequired = requiredFields.filter(field => {
       const value = values[field as keyof FormValues];
       return typeof value === 'boolean' ? true : !!value;
     }).length;
     
-    // Calculate percentage
-    const percentage = Math.floor((filledFields / fields.length) * 100);
-    setFormProgress(percentage);
-  }, [form.watch()]);
+    // Add bonus for optional fields
+    let bonus = 0;
+    if (values.externalName) bonus += 5;
+    if (values.jobDescription) bonus += 10;
+    if (selectedSkills.length > 0) bonus += 15;
+    if (tags.length > 0) bonus += 10;
+    if (customFields.length > 0) bonus += 10;
+    
+    // Calculate percentage (required fields are 60% of total, bonus fields are 40%)
+    const requiredPercentage = (filledRequired / requiredFields.length) * 60;
+    const totalProgress = Math.min(100, Math.floor(requiredPercentage + bonus));
+    
+    setFormProgress(totalProgress);
+  }, [form.watch(), selectedSkills.length, tags.length, customFields.length]);
 
   const nextStep = () => {
     if (currentStep < formSections.length - 1) {
@@ -98,7 +117,7 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
     // Add skills and tags to the form data
     const completeData = {
       ...values,
-      skills,
+      skills: selectedSkills,
       tags,
       customFields
     };
@@ -122,18 +141,11 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
       case 1:
         return <DetailsStep form={form} />;
       case 2:
-        return <SkillsTagsStep 
-                 skills={skills} 
-                 setSkills={setSkills} 
-                 tags={tags} 
-                 setTags={setTags} 
-               />;
+        return <SkillsSelectionStep selectedSkills={selectedSkills} onSkillsChange={setSelectedSkills} />;
       case 3:
-        return <CustomFieldsStep 
-                 form={form} 
-                 customFields={customFields} 
-                 setCustomFields={setCustomFields} 
-               />;
+        return <SkillsTagsStep skills={skills} setSkills={setSkills} tags={tags} setTags={setTags} />;
+      case 4:
+        return <CustomFieldsStep form={form} customFields={customFields} setCustomFields={setCustomFields} />;
       default:
         return null;
     }
@@ -141,7 +153,7 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[90vw] max-w-[800px] sm:max-w-[600px] h-full overflow-y-auto">
+      <SheetContent className="w-[70vw] max-w-[800px] h-full overflow-y-auto">
         <SheetHeader className="border-b pb-4">
           <SheetTitle className="text-xl">Create New Role</SheetTitle>
           <SheetDescription>
@@ -149,12 +161,29 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
           </SheetDescription>
         </SheetHeader>
 
-        <FormProgressIndicator
-          steps={formSections}
-          currentStep={currentStep}
-          onStepClick={goToStep}
-          progress={formProgress}
-        />
+        <div className="my-4">
+          <div className="flex justify-between mb-2">
+            <span className="text-sm font-medium">Form Completion: {formProgress}%</span>
+            {formProgress === 100 && (
+              <span className="text-sm text-green-600 font-medium animate-pulse">Ready to submit! ✨</span>
+            )}
+          </div>
+          <Progress value={formProgress} className="h-2" />
+          
+          <div className="flex justify-between mt-4">
+            {formSections.map((section, index) => (
+              <Button 
+                key={index}
+                variant={currentStep === index ? "default" : "ghost"}
+                size="sm"
+                className={`text-xs px-2 ${currentStep === index ? 'bg-primary text-primary-foreground' : ''}`}
+                onClick={() => goToStep(index)}
+              >
+                {section}
+              </Button>
+            ))}
+          </div>
+        </div>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
@@ -192,8 +221,12 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
                       Next
                     </Button>
                   ) : (
-                    <Button type="submit">
-                      Save
+                    <Button 
+                      type="submit"
+                      disabled={formProgress < 60} // Require at least basic information to be filled
+                      className={formProgress === 100 ? "bg-green-600 hover:bg-green-700" : ""}
+                    >
+                      {formProgress === 100 ? "Create Role ✨" : "Create Role"}
                     </Button>
                   )}
                 </div>
