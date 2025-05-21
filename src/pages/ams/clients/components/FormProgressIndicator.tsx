@@ -1,20 +1,23 @@
 
 import React from 'react';
 import { cn } from "@/lib/utils";
+import { Progress } from "@/components/ui/progress";
 
 interface FormProgressIndicatorProps {
   steps: string[];
   currentStep: number;
   onStepClick?: (step: number) => void;
+  progress?: number; // Add progress percentage
 }
 
 const FormProgressIndicator: React.FC<FormProgressIndicatorProps> = ({ 
   steps, 
   currentStep,
-  onStepClick
+  onStepClick,
+  progress = 0
 }) => {
   return (
-    <div className="w-full mb-6 px-6">
+    <div className="w-full mb-6 px-6 space-y-3">
       <div className="flex items-center">
         {steps.map((step, index) => (
           <React.Fragment key={step}>
@@ -47,6 +50,9 @@ const FormProgressIndicator: React.FC<FormProgressIndicatorProps> = ({
           </React.Fragment>
         ))}
       </div>
+      
+      {/* Add progress bar */}
+      <Progress value={progress} className="h-2" />
     </div>
   );
 };
