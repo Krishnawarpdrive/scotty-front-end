@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { UseFormReturn } from "react-hook-form";
-import { FormValues, CustomField } from './clientFormSchema';
+import { FormValues } from './clientFormSchema';
 import DynamicFieldGroup from '@/components/DynamicFieldGroup';
 import {
   FormControl,
@@ -21,17 +21,19 @@ import {
 } from "@/components/ui/select";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
-interface AccountInfoStepProps {
-  form: UseFormReturn<FormValues>;
-  customAccountFields: CustomField[];
-  setCustomAccountFields: React.Dispatch<React.SetStateAction<CustomField[]>>;
+interface CustomField {
+  id: string;
+  label: string;
+  value: string;
 }
 
-const AccountInfoStep: React.FC<AccountInfoStepProps> = ({
-  form,
-  customAccountFields,
-  setCustomAccountFields
-}) => {
+interface AccountInfoStepProps {
+  form: UseFormReturn<FormValues>;
+}
+
+const AccountInfoStep: React.FC<AccountInfoStepProps> = ({ form }) => {
+  const [customAccountFields, setCustomAccountFields] = useState<CustomField[]>([]);
+
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold border-b pb-2">Account Information</h2>

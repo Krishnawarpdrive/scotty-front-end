@@ -6,14 +6,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerClose,
-} from "@/components/ui/drawer";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetFooter,
+} from "@/components/ui/sheet";
 import {
   Form
 } from "@/components/ui/form";
@@ -159,105 +158,103 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
   }, [sameAsBilling]);
   
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[85vh]">
-        <div className="max-w-4xl mx-auto w-full">
-          <DrawerHeader>
-            <DrawerTitle>Add Client Account</DrawerTitle>
-            <DrawerDescription>
-              Let's onboard your client — enter their profile, sourcing setup, and contact info to get started.
-            </DrawerDescription>
-          </DrawerHeader>
-          
-          <FormProgressIndicator
-            steps={formSections}
-            currentStep={currentStep}
-            onStepClick={goToStep}
-            progress={formProgress}
-          />
-          
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
-              <div className="px-4 py-2 overflow-y-auto max-h-[calc(85vh-180px)]">
-                {/* Account Information - Step 0 */}
-                {currentStep === 0 && (
-                  <AccountInfoStep 
-                    form={form} 
-                    customAccountFields={customAccountFields}
-                    setCustomAccountFields={setCustomAccountFields}
-                  />
-                )}
-                
-                {/* Company Profile - Step 1 */}
-                {currentStep === 1 && (
-                  <CompanyProfileStep 
-                    form={form} 
-                    customProfileFields={customProfileFields}
-                    setCustomProfileFields={setCustomProfileFields}
-                  />
-                )}
-                
-                {/* Sourcing Details - Step 2 */}
-                {currentStep === 2 && (
-                  <SourcingDetailsStep 
-                    form={form} 
-                    customSourcingFields={customSourcingFields}
-                    setCustomSourcingFields={setCustomSourcingFields}
-                  />
-                )}
-                
-                {/* Address Details - Step 3 */}
-                {currentStep === 3 && (
-                  <AddressDetailsStep 
-                    form={form} 
-                    sameAsBilling={sameAsBilling} 
-                    setSameAsBilling={setSameAsBilling} 
-                  />
-                )}
-              </div>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="sm:max-w-[70vw] p-0 overflow-y-hidden flex flex-col">
+        <SheetHeader className="p-6 border-b">
+          <SheetTitle>Add Client Account</SheetTitle>
+          <SheetDescription>
+            Let's onboard your client — enter their profile, sourcing setup, and contact info to get started.
+          </SheetDescription>
+        </SheetHeader>
+        
+        <FormProgressIndicator
+          steps={formSections}
+          currentStep={currentStep}
+          onStepClick={goToStep}
+          progress={formProgress}
+        />
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
+            <div className="flex-1 px-6 overflow-y-auto">
+              {/* Account Information - Step 0 */}
+              {currentStep === 0 && (
+                <AccountInfoStep 
+                  form={form} 
+                  customAccountFields={customAccountFields}
+                  setCustomAccountFields={setCustomAccountFields}
+                />
+              )}
               
-              {/* Sticky footer with navigation buttons */}
-              <DrawerFooter className="pt-2">
-                <div className="flex justify-between w-full">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => onOpenChange(false)}
-                  >
-                    Cancel
-                  </Button>
+              {/* Company Profile - Step 1 */}
+              {currentStep === 1 && (
+                <CompanyProfileStep 
+                  form={form} 
+                  customProfileFields={customProfileFields}
+                  setCustomProfileFields={setCustomProfileFields}
+                />
+              )}
+              
+              {/* Sourcing Details - Step 2 */}
+              {currentStep === 2 && (
+                <SourcingDetailsStep 
+                  form={form} 
+                  customSourcingFields={customSourcingFields}
+                  setCustomSourcingFields={setCustomSourcingFields}
+                />
+              )}
+              
+              {/* Address Details - Step 3 */}
+              {currentStep === 3 && (
+                <AddressDetailsStep 
+                  form={form} 
+                  sameAsBilling={sameAsBilling} 
+                  setSameAsBilling={setSameAsBilling} 
+                />
+              )}
+            </div>
+            
+            {/* Sticky footer with navigation buttons */}
+            <SheetFooter className="p-4 border-t mt-auto">
+              <div className="flex justify-between w-full">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => onOpenChange(false)}
+                >
+                  Cancel
+                </Button>
+                
+                <div className="flex space-x-2">
+                  {currentStep > 0 && (
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={prevStep}
+                    >
+                      Previous
+                    </Button>
+                  )}
                   
-                  <div className="flex space-x-2">
-                    {currentStep > 0 && (
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={prevStep}
-                      >
-                        Previous
-                      </Button>
-                    )}
-                    
-                    {currentStep < formSections.length - 1 ? (
-                      <Button 
-                        type="button" 
-                        onClick={nextStep}
-                      >
-                        Next
-                      </Button>
-                    ) : (
-                      <Button type="submit">
-                        Save
-                      </Button>
-                    )}
-                  </div>
+                  {currentStep < formSections.length - 1 ? (
+                    <Button 
+                      type="button" 
+                      onClick={nextStep}
+                    >
+                      Next
+                    </Button>
+                  ) : (
+                    <Button type="submit">
+                      Save
+                    </Button>
+                  )}
                 </div>
-              </DrawerFooter>
-            </form>
-          </Form>
-        </div>
-      </DrawerContent>
-    </Drawer>
+              </div>
+            </SheetFooter>
+          </form>
+        </Form>
+      </SheetContent>
+    </Sheet>
   );
 };
 
