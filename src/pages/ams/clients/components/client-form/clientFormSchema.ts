@@ -45,3 +45,9 @@ export const formSchema = z.object({
 });
 
 export type FormValues = z.infer<typeof formSchema>;
+
+export interface CustomField {
+  id: string;
+  label: string;
+  value: string;
+}

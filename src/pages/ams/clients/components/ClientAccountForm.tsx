@@ -3,7 +3,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,7 @@ import SourcingDetailsStep from './client-form/SourcingDetailsStep';
 import AddressDetailsStep from './client-form/AddressDetailsStep';
 
 // Import the client form schema
-import { formSchema, FormValues } from './client-form/clientFormSchema';
+import { formSchema, FormValues, CustomField } from './client-form/clientFormSchema';
 
 interface ClientAccountFormProps {
   isDrawer?: boolean;
@@ -28,6 +27,11 @@ const ClientAccountForm: React.FC<ClientAccountFormProps> = ({ isDrawer = false 
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [sameAsBilling, setSameAsBilling] = useState(true);
   const [formProgress, setFormProgress] = useState(0);
+  
+  // Custom fields state
+  const [customAccountFields, setCustomAccountFields] = useState<CustomField[]>([]);
+  const [customProfileFields, setCustomProfileFields] = useState<CustomField[]>([]);
+  const [customSourcingFields, setCustomSourcingFields] = useState<CustomField[]>([]);
   
   const formSections = ["Account Information", "Company Profile", "Sourcing Details", "Address Details"];
   const formRef = useRef<HTMLDivElement>(null);
@@ -250,17 +254,29 @@ const ClientAccountForm: React.FC<ClientAccountFormProps> = ({ isDrawer = false 
             <div ref={formRef} className={`p-6 ${isDrawer ? "max-h-[calc(100vh-220px)]" : "max-h-[calc(100vh-320px)]"} overflow-y-auto`}>
               {/* Account Information - Step 0 */}
               {currentStep === 0 && (
-                <AccountInfoStep form={form} />
+                <AccountInfoStep 
+                  form={form} 
+                  customAccountFields={customAccountFields}
+                  setCustomAccountFields={setCustomAccountFields}
+                />
               )}
               
               {/* Company Profile - Step 1 */}
               {currentStep === 1 && (
-                <CompanyProfileStep form={form} />
+                <CompanyProfileStep 
+                  form={form} 
+                  customProfileFields={customProfileFields}
+                  setCustomProfileFields={setCustomProfileFields}
+                />
               )}
               
               {/* Sourcing Details - Step 2 */}
               {currentStep === 2 && (
-                <SourcingDetailsStep form={form} />
+                <SourcingDetailsStep 
+                  form={form} 
+                  customSourcingFields={customSourcingFields}
+                  setCustomSourcingFields={setCustomSourcingFields}
+                />
               )}
               
               {/* Address Details - Step 3 */}

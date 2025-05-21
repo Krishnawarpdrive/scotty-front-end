@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { UseFormReturn } from "react-hook-form";
-import { FormValues } from './clientFormSchema';
+import { FormValues, CustomField } from './clientFormSchema';
 import DynamicFieldGroup from '@/components/DynamicFieldGroup';
 import {
   FormControl,
@@ -19,19 +19,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface CustomField {
-  id: string;
-  label: string;
-  value: string;
-}
-
 interface SourcingDetailsStepProps {
   form: UseFormReturn<FormValues>;
+  customSourcingFields: CustomField[];
+  setCustomSourcingFields: React.Dispatch<React.SetStateAction<CustomField[]>>;
 }
 
-const SourcingDetailsStep: React.FC<SourcingDetailsStepProps> = ({ form }) => {
-  const [customSourcingFields, setCustomSourcingFields] = useState<CustomField[]>([]);
-
+const SourcingDetailsStep: React.FC<SourcingDetailsStepProps> = ({
+  form,
+  customSourcingFields,
+  setCustomSourcingFields
+}) => {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold border-b pb-2">Sourcing Details</h2>

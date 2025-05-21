@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { UseFormReturn } from "react-hook-form";
-import { FormValues } from './clientFormSchema';
+import { FormValues, CustomField } from './clientFormSchema';
 import DynamicFieldGroup from '@/components/DynamicFieldGroup';
 import {
   FormControl,
@@ -19,19 +19,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface CustomField {
-  id: string;
-  label: string;
-  value: string;
-}
-
 interface CompanyProfileStepProps {
   form: UseFormReturn<FormValues>;
+  customProfileFields: CustomField[];
+  setCustomProfileFields: React.Dispatch<React.SetStateAction<CustomField[]>>;
 }
 
-const CompanyProfileStep: React.FC<CompanyProfileStepProps> = ({ form }) => {
-  const [customProfileFields, setCustomProfileFields] = useState<CustomField[]>([]);
-
+const CompanyProfileStep: React.FC<CompanyProfileStepProps> = ({
+  form,
+  customProfileFields,
+  setCustomProfileFields
+}) => {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold border-b pb-2">Company Profile</h2>
