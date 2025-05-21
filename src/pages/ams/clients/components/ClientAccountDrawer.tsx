@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
@@ -50,7 +49,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import FormProgressIndicator from './FormProgressIndicator';
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Define form schema using zod
 const formSchema = z.object({
@@ -115,7 +114,7 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({ open, onOpenC
   const formRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
   
   // Initialize form
   const form = useForm<FormValues>({
