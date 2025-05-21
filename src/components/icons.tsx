@@ -7,7 +7,14 @@ import {
   Mail,
   Phone,
   Star,
-  X
+  X,
+  Briefcase,
+  FileText,
+  Filter,
+  Search,
+  Building,
+  GraduationCap,
+  Award
 } from "lucide-react";
 
 export type IconProps = React.HTMLAttributes<SVGElement>;
@@ -20,4 +27,11 @@ export const Icons = {
   phone: Phone,
   close: X,
   star: Star,
+  briefcase: Briefcase,
+  fileText: FileText,
+  filter: Filter,
+  search: Search,
+  building: Building,
+  graduationCap: GraduationCap,
+  award: Award
 };

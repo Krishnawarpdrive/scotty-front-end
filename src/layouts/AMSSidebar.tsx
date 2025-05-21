@@ -36,7 +36,7 @@ interface NavigationItem {
 const navigationItems: NavigationItem[] = [
   { title: 'Dashboard', path: '/ams/dashboard', icon: LayoutDashboard },
   { title: 'Clients', path: '/ams/clients', icon: Users },
-  { title: 'Roles Library', path: '/ams/roles', icon: Briefcase },
+  { title: 'Global Role Library', path: '/ams/roles', icon: Briefcase },
   { title: 'Requirements', path: '/ams/requirements', icon: FileText },
   { title: 'Skill Master', path: '/ams/skills', icon: ListChecks },
   { title: 'Checklist Master', path: '/ams/checklists', icon: ClipboardList },
