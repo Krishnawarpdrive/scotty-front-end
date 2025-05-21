@@ -7,17 +7,20 @@ import ClientsTable from './clients/components/ClientsTable';
 import SearchFiltersBar from './clients/components/SearchFiltersBar';
 import EmptyState from './clients/components/EmptyState';
 import { clientsData } from './clients/data/clientsData';
+import { useToast } from "@/hooks/use-toast";
 
 const ClientsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentSort, setCurrentSort] = useState({ field: "", direction: "asc" });
   const [selectedClients, setSelectedClients] = useState<number[]>([]);
   const [hasData, setHasData] = useState<boolean>(false);
+  const { toast } = useToast();
   
   useEffect(() => {
     // Check if data exists after the component mounts
-    setHasData(clientsData && clientsData.length > 0);
-    console.log("Clients data:", clientsData);
+    const dataExists = clientsData && clientsData.length > 0;
+    setHasData(dataExists);
+    console.log("Clients data:", clientsData, "Has data:", dataExists);
   }, []);
   
   // Handle sort click
@@ -33,6 +36,11 @@ const ClientsPage = () => {
         direction: "asc",
       });
     }
+    
+    toast({
+      title: "Sorting changed",
+      description: `Sorted by ${field} ${currentSort.field === field && currentSort.direction === "asc" ? "descending" : "ascending"}`,
+    });
   };
   
   // Handle client selection
@@ -58,8 +66,8 @@ const ClientsPage = () => {
   return (
     <div className="space-y-4 w-full">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Clients</h1>
-        <Button className="bg-primary hover:bg-primary/90">
+        <h1 className="text-2xl font-medium text-[#262626]">Clients</h1>
+        <Button className="bg-primary hover:bg-primary/90 h-9">
           <Plus className="mr-2 h-4 w-4" />
           Add Client
         </Button>
@@ -73,18 +81,14 @@ const ClientsPage = () => {
 
       {/* Clients table or empty state */}
       {hasData ? (
-        <Card className="w-full">
-          <div className="p-0 overflow-auto">
-            <ClientsTable
-              clients={clientsData}
-              selectedClients={selectedClients}
-              currentSort={currentSort}
-              onSort={handleSort}
-              onSelectClient={toggleClientSelection}
-              onSelectAll={toggleSelectAll}
-            />
-          </div>
-        </Card>
+        <ClientsTable
+          clients={clientsData}
+          selectedClients={selectedClients}
+          currentSort={currentSort}
+          onSort={handleSort}
+          onSelectClient={toggleClientSelection}
+          onSelectAll={toggleSelectAll}
+        />
       ) : (
         <EmptyState />
       )}

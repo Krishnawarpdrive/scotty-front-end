@@ -1,10 +1,8 @@
 
 import React from 'react';
-import { Search, Filter } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Filter } from "lucide-react";
 
 interface SearchFiltersBarProps {
   searchTerm: string;
@@ -15,80 +13,48 @@ interface SearchFiltersBarProps {
 const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
   searchTerm,
   onSearchChange,
-  selectedClientsCount,
+  selectedClientsCount
 }) => {
   return (
-    <div className="sticky top-0 z-10 bg-background pt-2 pb-3 border-b w-full">
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-grow">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+    <div className="flex items-center justify-between gap-4 mb-4">
+      <div className="flex items-center gap-2 flex-1">
+        <div className="relative flex-1 max-w-sm">
           <Input
+            className="pl-10 h-9"
             placeholder="Search clients..."
             value={searchTerm}
             onChange={onSearchChange}
-            className="pl-8"
           />
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
         </div>
         
-        <div className="flex gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex gap-2">
-                <Filter className="h-4 w-4" />
-                Filters
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-60">
-              <div className="p-2">
-                <h4 className="font-medium mb-2">Account Type</h4>
-                <div className="flex gap-2 flex-wrap">
-                  <Badge variant="outline">Customer</Badge>
-                  <Badge variant="outline">Vendor</Badge>
-                  <Badge variant="outline">Partner</Badge>
-                </div>
-                
-                <h4 className="font-medium mb-2 mt-3">Client Tier</h4>
-                <div className="flex gap-2">
-                  <Badge variant="outline">A</Badge>
-                  <Badge variant="outline">B</Badge>
-                  <Badge variant="outline">C</Badge>
-                </div>
-                
-                <h4 className="font-medium mb-2 mt-3">Status</h4>
-                <div className="flex gap-2 flex-wrap">
-                  <Badge variant="outline">Active</Badge>
-                  <Badge variant="outline">Paused</Badge>
-                  <Badge variant="outline">Blacklisted</Badge>
-                </div>
-                
-                <div className="flex gap-2 mt-4">
-                  <Button variant="outline" size="sm" className="w-1/2">Clear</Button>
-                  <Button size="sm" className="w-1/2 bg-primary hover:bg-primary/90">Apply</Button>
-                </div>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">Bulk Actions</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem disabled={selectedClientsCount === 0}>
-                Assign HR
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled={selectedClientsCount === 0}>
-                Assign Vendor
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled={selectedClientsCount === 0}>
-                Export Selected
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled={selectedClientsCount === 0} className="text-red-500">
-                Archive Selected
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <Button variant="outline" size="sm" className="h-9">
+          <Filter className="h-4 w-4 mr-2" />
+          Filter
+        </Button>
+        
+        {selectedClientsCount > 0 && (
+          <span className="text-sm text-gray-500">
+            {selectedClientsCount} {selectedClientsCount === 1 ? 'client' : 'clients'} selected
+          </span>
+        )}
+      </div>
+      
+      <div className="flex items-center gap-2">
+        <Button variant="outline" size="sm" className="h-9">
+          Export
+        </Button>
+        
+        <Button variant="outline" size="sm" className="h-9">
+          <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+          </svg>
+          Sort
+        </Button>
       </div>
     </div>
   );

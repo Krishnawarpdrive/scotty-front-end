@@ -6,7 +6,6 @@ import {
   SidebarContent, 
   SidebarHeader,
   SidebarTrigger,
-  SidebarProvider,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
@@ -56,7 +55,7 @@ export const AMSSidebar = () => {
   };
 
   return (
-    <Sidebar className="border-r" collapsible="icon" variant="sidebar">
+    <Sidebar className="border-r" collapsedWidth={56} collapsible="icon" variant="sidebar">
       <SidebarHeader>
         <div className="p-2 flex justify-between items-center">
           {!isCollapsed && <h2 className="text-xl font-semibold px-2">AMS</h2>}
