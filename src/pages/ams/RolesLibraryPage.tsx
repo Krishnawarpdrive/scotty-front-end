@@ -1,13 +1,26 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import RoleCreationDrawer from './roles/components/RoleCreationDrawer';
 
 const RolesLibraryPage = () => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const handleOpenDrawer = () => {
+    setDrawerOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Roles Library</h1>
-        <button className="bg-primary text-white px-4 py-2 rounded-md">Create Role</button>
+        <Button 
+          className="bg-primary text-white px-4 py-2 rounded-md"
+          onClick={handleOpenDrawer}
+        >
+          Create Role
+        </Button>
       </div>
 
       <Card>
@@ -21,6 +34,11 @@ const RolesLibraryPage = () => {
           </div>
         </CardContent>
       </Card>
+
+      <RoleCreationDrawer 
+        open={drawerOpen} 
+        onOpenChange={setDrawerOpen}
+      />
     </div>
   );
 };
