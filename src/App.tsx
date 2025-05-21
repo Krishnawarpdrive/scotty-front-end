@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import AMSLayout from "./layouts/AMSLayout";
 import AMSDashboard from "./pages/ams/Dashboard";
 import ClientsPage from "./pages/ams/ClientsPage";
+import ClientAccountCreationPage from "./pages/ams/clients/ClientAccountCreationPage";
 import RolesLibraryPage from "./pages/ams/RolesLibraryPage";
 import RequirementsPage from "./pages/ams/RequirementsPage";
 import SkillsPage from "./pages/ams/SkillsPage";
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/ams" element={<AMSLayout />}>
             <Route path="dashboard" element={<AMSDashboard />} />
             <Route path="clients" element={<ClientsPage />} />
+            <Route path="clients/account-creation" element={<ClientAccountCreationPage />} />
             <Route path="roles" element={<RolesLibraryPage />} />
             <Route path="requirements" element={<RequirementsPage />} />
             <Route path="skills" element={<SkillsPage />} />

@@ -8,6 +8,7 @@ import SearchFiltersBar from './clients/components/SearchFiltersBar';
 import EmptyState from './clients/components/EmptyState';
 import { clientsData } from './clients/data/clientsData';
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 const ClientsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -67,10 +68,12 @@ const ClientsPage = () => {
     <div className="space-y-4 w-full">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-medium text-[#262626]">Clients</h1>
-        <Button className="bg-primary hover:bg-primary/90 h-9">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Client
-        </Button>
+        <Link to="/ams/clients/account-creation">
+          <Button className="bg-primary hover:bg-primary/90 h-9">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Client
+          </Button>
+        </Link>
       </div>
 
       <SearchFiltersBar

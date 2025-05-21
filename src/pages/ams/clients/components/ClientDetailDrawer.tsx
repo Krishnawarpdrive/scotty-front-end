@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
-import { getAccountTypeBadge, getClientTierBadge, getHiringStatusBadge } from './ClientBadges';
+import { getClientTierBadge, getHiringStatusBadge } from './ClientBadges';
 
 interface ClientDetailDrawerProps {
   client: any;
@@ -31,7 +31,7 @@ const ClientDetailDrawer: React.FC<ClientDetailDrawerProps> = ({ client }) => {
                 <dl className="space-y-2">
                   <div className="flex justify-between">
                     <dt className="font-medium">Account Type:</dt>
-                    <dd>{getAccountTypeBadge(client.accountType)}</dd>
+                    <dd>{client.accountType}</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="font-medium">Industry:</dt>
