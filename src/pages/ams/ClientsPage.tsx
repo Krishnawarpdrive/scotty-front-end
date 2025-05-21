@@ -8,13 +8,14 @@ import SearchFiltersBar from './clients/components/SearchFiltersBar';
 import EmptyState from './clients/components/EmptyState';
 import { clientsData } from './clients/data/clientsData';
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "react-router-dom";
+import ClientAccountDrawer from './clients/components/ClientAccountDrawer';
 
 const ClientsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentSort, setCurrentSort] = useState({ field: "", direction: "asc" });
   const [selectedClients, setSelectedClients] = useState<number[]>([]);
   const [hasData, setHasData] = useState<boolean>(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const { toast } = useToast();
   
   useEffect(() => {
@@ -68,12 +69,13 @@ const ClientsPage = () => {
     <div className="space-y-4 w-full">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-medium text-[#262626]">Clients</h1>
-        <Link to="/ams/clients/account-creation">
-          <Button className="bg-primary hover:bg-primary/90 h-9">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Client
-          </Button>
-        </Link>
+        <Button 
+          className="bg-primary hover:bg-primary/90 h-9"
+          onClick={() => setDrawerOpen(true)}
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Add Client
+        </Button>
       </div>
 
       <SearchFiltersBar
@@ -95,6 +97,11 @@ const ClientsPage = () => {
       ) : (
         <EmptyState />
       )}
+      
+      <ClientAccountDrawer 
+        open={drawerOpen} 
+        onOpenChange={setDrawerOpen} 
+      />
     </div>
   );
 };
