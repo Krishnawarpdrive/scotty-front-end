@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 
 import {
@@ -14,50 +13,18 @@ import {
   DrawerFooter,
 } from "@/components/ui/drawer";
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Plus, X } from "lucide-react";
 import FormProgressIndicator from '../../clients/components/FormProgressIndicator';
-import DynamicFieldGroup from '@/components/DynamicFieldGroup';
 
-// Define form schema
-const formSchema = z.object({
-  roleName: z.string().min(1, { message: "Role name is required" }),
-  externalName: z.string().optional(),
-  roleCategory: z.string().min(1, { message: "Role category is required" }),
-  workMode: z.string().min(1, { message: "Work mode is required" }),
-  employmentType: z.string().min(1, { message: "Employment type is required" }),
-  minExperience: z.string().min(1, { message: "Minimum experience is required" }),
-  maxExperience: z.string().min(1, { message: "Maximum experience is required" }),
-  jobDescription: z.string().optional(),
-  saveAsTemplate: z.boolean().default(false),
-});
+// Import schema
+import { formSchema, FormValues, CustomField } from './roleFormSchema';
 
-type FormValues = z.infer<typeof formSchema>;
-
-interface CustomField {
-  id: string;
-  label: string;
-  value: string;
-}
+// Import steps
+import BasicInfoStep from './steps/BasicInfoStep';
+import DetailsStep from './steps/DetailsStep';
+import SkillsTagsStep from './steps/SkillsTagsStep';
+import CustomFieldsStep from './steps/CustomFieldsStep';
 
 interface RoleCreationDrawerProps {
   open: boolean;
@@ -71,9 +38,7 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
   const [currentStep, setCurrentStep] = useState(0);
   const [formProgress, setFormProgress] = useState(0);
   const [skills, setSkills] = useState<string[]>([]);
-  const [newSkill, setNewSkill] = useState('');
   const [tags, setTags] = useState<string[]>([]);
-  const [newTag, setNewTag] = useState('');
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
   const { toast } = useToast();
   
@@ -110,28 +75,6 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
     const percentage = Math.floor((filledFields / fields.length) * 100);
     setFormProgress(percentage);
   }, [form.watch()]);
-
-  const handleAddSkill = () => {
-    if (newSkill && !skills.includes(newSkill)) {
-      setSkills([...skills, newSkill]);
-      setNewSkill('');
-    }
-  };
-
-  const handleRemoveSkill = (skill: string) => {
-    setSkills(skills.filter(s => s !== skill));
-  };
-
-  const handleAddTag = () => {
-    if (newTag && !tags.includes(newTag)) {
-      setTags([...tags, newTag]);
-      setNewTag('');
-    }
-  };
-
-  const handleRemoveTag = (tag: string) => {
-    setTags(tags.filter(t => t !== tag));
-  };
 
   const nextStep = () => {
     if (currentStep < formSections.length - 1) {
@@ -171,6 +114,31 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
     onOpenChange(false);
   };
 
+  // Render appropriate step content based on currentStep
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 0:
+        return <BasicInfoStep form={form} />;
+      case 1:
+        return <DetailsStep form={form} />;
+      case 2:
+        return <SkillsTagsStep 
+                 skills={skills} 
+                 setSkills={setSkills} 
+                 tags={tags} 
+                 setTags={setTags} 
+               />;
+      case 3:
+        return <CustomFieldsStep 
+                 form={form} 
+                 customFields={customFields} 
+                 setCustomFields={setCustomFields} 
+               />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="h-[90vh] max-h-[90vh] flex flex-col">
@@ -191,309 +159,7 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
             <div className="flex-1 overflow-y-auto px-6">
-              {/* Step 1: Basic Information */}
-              {currentStep === 0 && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="roleName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Role Name *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g. Senior Frontend Developer" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="externalName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>External Name (optional)</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Name shown to candidates" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="roleCategory"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Role Category *</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select category" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="tech">Technology</SelectItem>
-                              <SelectItem value="design">Design</SelectItem>
-                              <SelectItem value="management">Management</SelectItem>
-                              <SelectItem value="sales">Sales</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="workMode"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Work Mode *</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select work mode" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="remote">Remote</SelectItem>
-                              <SelectItem value="onsite">Onsite</SelectItem>
-                              <SelectItem value="hybrid">Hybrid</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="employmentType"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Employment Type *</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select employment type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="full-time">Full-time</SelectItem>
-                              <SelectItem value="part-time">Part-time</SelectItem>
-                              <SelectItem value="contract">Contract</SelectItem>
-                              <SelectItem value="freelance">Freelance</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Step 2: Details */}
-              {currentStep === 1 && (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <FormLabel>Experience Range *</FormLabel>
-                    <div className="flex gap-4 items-center">
-                      <FormField
-                        control={form.control}
-                        name="minExperience"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Min" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                                  <SelectItem key={num} value={num.toString()}>{num}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <span>to</span>
-                      <FormField
-                        control={form.control}
-                        name="maxExperience"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Max" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20].map((num) => (
-                                  <SelectItem key={num} value={num.toString()}>{num}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <span>years</span>
-                    </div>
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="jobDescription"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Job Description</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Enter detailed job description..."
-                            className="min-h-[200px]"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              )}
-
-              {/* Step 3: Skills & Tags */}
-              {currentStep === 2 && (
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <FormLabel>Skills</FormLabel>
-                    <div className="flex gap-2">
-                      <Input 
-                        placeholder="Add a skill" 
-                        value={newSkill} 
-                        onChange={(e) => setNewSkill(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            handleAddSkill();
-                          }
-                        }}
-                        className="flex-1"
-                      />
-                      <Button 
-                        type="button" 
-                        onClick={handleAddSkill}
-                        variant="outline"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {skills.map(skill => (
-                        <Badge key={skill} variant="secondary" className="flex items-center gap-1 py-1">
-                          {skill}
-                          <X 
-                            className="h-3 w-3 cursor-pointer" 
-                            onClick={() => handleRemoveSkill(skill)}
-                          />
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <FormLabel>Tags</FormLabel>
-                    <div className="flex gap-2">
-                      <Input 
-                        placeholder="Add a tag" 
-                        value={newTag} 
-                        onChange={(e) => setNewTag(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            handleAddTag();
-                          }
-                        }}
-                        className="flex-1"
-                      />
-                      <Button 
-                        type="button" 
-                        onClick={handleAddTag}
-                        variant="outline"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {tags.map(tag => (
-                        <Badge key={tag} variant="outline" className="flex items-center gap-1 py-1">
-                          {tag}
-                          <X 
-                            className="h-3 w-3 cursor-pointer" 
-                            onClick={() => handleRemoveTag(tag)}
-                          />
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 4: Custom Fields */}
-              {currentStep === 3 && (
-                <div className="space-y-6">
-                  <DynamicFieldGroup
-                    title="Custom Fields"
-                    fields={customFields}
-                    onFieldsChange={setCustomFields}
-                  />
-
-                  <div className="flex items-center space-x-2">
-                    <FormField
-                      control={form.control}
-                      name="saveAsTemplate"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel>Save as template</FormLabel>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-              )}
+              {renderStepContent()}
             </div>
             
             {/* Sticky footer with navigation buttons */}
