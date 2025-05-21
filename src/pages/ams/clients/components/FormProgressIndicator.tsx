@@ -6,12 +6,14 @@ interface FormProgressIndicatorProps {
   steps: string[];
   currentStep: number;
   onStepClick?: (step: number) => void;
+  progress?: number;
 }
 
 const FormProgressIndicator: React.FC<FormProgressIndicatorProps> = ({ 
   steps, 
   currentStep,
-  onStepClick
+  onStepClick,
+  progress = 0
 }) => {
   return (
     <div className="w-full mb-6 px-6">
@@ -22,8 +24,12 @@ const FormProgressIndicator: React.FC<FormProgressIndicatorProps> = ({
             {index > 0 && (
               <div 
                 className={cn(
-                  "flex-1 h-[2px] mx-2",
-                  index <= currentStep ? "bg-primary" : "bg-gray-200"
+                  "flex-1 h-[2px]",
+                  index <= currentStep 
+                    ? "bg-primary" 
+                    : index === currentStep + 1 
+                      ? `bg-gradient-to-r from-primary to-gray-200` 
+                      : "bg-gray-200"
                 )}
               ></div>
             )}
@@ -46,6 +52,14 @@ const FormProgressIndicator: React.FC<FormProgressIndicatorProps> = ({
             </div>
           </React.Fragment>
         ))}
+      </div>
+      
+      {/* Progress indicator under the step text */}
+      <div className="w-full mt-2 h-1 bg-gray-100 rounded-full overflow-hidden">
+        <div 
+          className="h-full bg-primary rounded-full transition-all duration-300 ease-in-out" 
+          style={{ width: `${progress}%` }}
+        ></div>
       </div>
     </div>
   );
