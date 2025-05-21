@@ -159,7 +159,7 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
   
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-[70vw] p-0 overflow-y-hidden flex flex-col">
+      <SheetContent className="sm:max-w-[70vw] p-0 overflow-hidden flex flex-col">
         <SheetHeader className="p-6 border-b">
           <SheetTitle>Add Client Account</SheetTitle>
           <SheetDescription>
