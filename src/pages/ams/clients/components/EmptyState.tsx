@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 
 const EmptyState: React.FC = () => {
   return (
-    <Card>
+    <Card className="w-full">
       <CardContent className="p-6 flex flex-col items-center justify-center min-h-[300px]">
         <p className="text-muted-foreground mb-4">No clients found</p>
         <Button className="bg-primary hover:bg-primary/90">
