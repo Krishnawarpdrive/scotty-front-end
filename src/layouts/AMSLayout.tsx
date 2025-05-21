@@ -28,7 +28,7 @@ export const AMSLayout: React.FC = () => {
   });
 
   return (
-    <SidebarProvider defaultState="expanded" collapsedWidth={56}>
+    <SidebarProvider defaultOpen={true}>
       <div className="flex h-screen w-full">
         <AMSSidebar />
         
