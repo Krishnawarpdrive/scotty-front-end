@@ -12,8 +12,8 @@ interface BasicInfoStepProps {
 
 const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ form }) => {
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           control={form.control}
           name="roleName"
@@ -43,87 +43,35 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ form }) => {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <FormField
-          control={form.control}
-          name="roleCategory"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Role Category *</FormLabel>
-              <Select 
-                onValueChange={field.onChange} 
-                defaultValue={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="tech">Technology</SelectItem>
-                  <SelectItem value="design">Design</SelectItem>
-                  <SelectItem value="management">Management</SelectItem>
-                  <SelectItem value="sales">Sales</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="workMode"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Work Mode *</FormLabel>
-              <Select 
-                onValueChange={field.onChange} 
-                defaultValue={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select work mode" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="remote">Remote</SelectItem>
-                  <SelectItem value="onsite">Onsite</SelectItem>
-                  <SelectItem value="hybrid">Hybrid</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="employmentType"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Employment Type *</FormLabel>
-              <Select 
-                onValueChange={field.onChange} 
-                defaultValue={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select employment type" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="full-time">Full-time</SelectItem>
-                  <SelectItem value="part-time">Part-time</SelectItem>
-                  <SelectItem value="contract">Contract</SelectItem>
-                  <SelectItem value="freelance">Freelance</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+      <FormField
+        control={form.control}
+        name="roleCategory"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Role Category *</FormLabel>
+            <Select 
+              onValueChange={field.onChange} 
+              defaultValue={field.value}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="tech">Technology</SelectItem>
+                <SelectItem value="design">Design</SelectItem>
+                <SelectItem value="management">Management</SelectItem>
+                <SelectItem value="sales">Sales</SelectItem>
+                <SelectItem value="hr">Human Resources</SelectItem>
+                <SelectItem value="finance">Finance</SelectItem>
+                <SelectItem value="marketing">Marketing</SelectItem>
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </div>
   );
 };

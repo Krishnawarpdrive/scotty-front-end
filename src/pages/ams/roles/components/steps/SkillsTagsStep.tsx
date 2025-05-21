@@ -1,10 +1,9 @@
 
 import React, { useState } from 'react';
-import { FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, X } from "lucide-react";
+import { X, Plus } from "lucide-react";
 
 interface SkillsTagsStepProps {
   skills: string[];
@@ -21,7 +20,7 @@ const SkillsTagsStep: React.FC<SkillsTagsStepProps> = ({
 }) => {
   const [newSkill, setNewSkill] = useState('');
   const [newTag, setNewTag] = useState('');
-
+  
   const handleAddSkill = () => {
     if (newSkill && !skills.includes(newSkill)) {
       setSkills([...skills, newSkill]);
@@ -43,11 +42,11 @@ const SkillsTagsStep: React.FC<SkillsTagsStepProps> = ({
   const handleRemoveTag = (tag: string) => {
     setTags(tags.filter(t => t !== tag));
   };
-
+  
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <FormLabel>Skills</FormLabel>
+        <label className="text-sm font-medium">Skills</label>
         <div className="flex gap-2">
           <Input 
             placeholder="Add a skill" 
@@ -79,11 +78,14 @@ const SkillsTagsStep: React.FC<SkillsTagsStepProps> = ({
               />
             </Badge>
           ))}
+          {skills.length === 0 && (
+            <p className="text-sm text-muted-foreground italic">No skills added yet</p>
+          )}
         </div>
       </div>
 
       <div className="space-y-2">
-        <FormLabel>Tags</FormLabel>
+        <label className="text-sm font-medium">Tags</label>
         <div className="flex gap-2">
           <Input 
             placeholder="Add a tag" 
@@ -115,6 +117,9 @@ const SkillsTagsStep: React.FC<SkillsTagsStepProps> = ({
               />
             </Badge>
           ))}
+          {tags.length === 0 && (
+            <p className="text-sm text-muted-foreground italic">No tags added yet</p>
+          )}
         </div>
       </div>
     </div>

@@ -12,7 +12,62 @@ interface DetailsStepProps {
 
 const DetailsStep: React.FC<DetailsStepProps> = ({ form }) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FormField
+          control={form.control}
+          name="workMode"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Work Mode *</FormLabel>
+              <Select 
+                onValueChange={field.onChange} 
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select work mode" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="remote">Remote</SelectItem>
+                  <SelectItem value="onsite">Onsite</SelectItem>
+                  <SelectItem value="hybrid">Hybrid</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="employmentType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Employment Type *</FormLabel>
+              <Select 
+                onValueChange={field.onChange} 
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select employment type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="full-time">Full-time</SelectItem>
+                  <SelectItem value="part-time">Part-time</SelectItem>
+                  <SelectItem value="contract">Contract</SelectItem>
+                  <SelectItem value="freelance">Freelance</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
       <div className="space-y-2">
         <FormLabel>Experience Range *</FormLabel>
         <div className="flex gap-4 items-center">
@@ -20,7 +75,7 @@ const DetailsStep: React.FC<DetailsStepProps> = ({ form }) => {
             control={form.control}
             name="minExperience"
             render={({ field }) => (
-              <FormItem className="flex-1">
+              <FormItem className="w-24">
                 <Select 
                   onValueChange={field.onChange} 
                   defaultValue={field.value}
@@ -40,12 +95,14 @@ const DetailsStep: React.FC<DetailsStepProps> = ({ form }) => {
               </FormItem>
             )}
           />
+          
           <span>to</span>
+          
           <FormField
             control={form.control}
             name="maxExperience"
             render={({ field }) => (
-              <FormItem className="flex-1">
+              <FormItem className="w-24">
                 <Select 
                   onValueChange={field.onChange} 
                   defaultValue={field.value}
@@ -56,7 +113,7 @@ const DetailsStep: React.FC<DetailsStepProps> = ({ form }) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20].map((num) => (
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20].map((num) => (
                       <SelectItem key={num} value={num.toString()}>{num}</SelectItem>
                     ))}
                   </SelectContent>
@@ -65,6 +122,7 @@ const DetailsStep: React.FC<DetailsStepProps> = ({ form }) => {
               </FormItem>
             )}
           />
+          
           <span>years</span>
         </div>
       </div>
