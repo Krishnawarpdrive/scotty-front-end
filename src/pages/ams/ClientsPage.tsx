@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -360,8 +359,11 @@ const ClientsPage = () => {
     }
   };
   
+  // Check if data exists
+  const hasData = clientsData && clientsData.length > 0;
+  
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Clients</h1>
         <Button className="bg-primary hover:bg-primary/90">
@@ -371,7 +373,7 @@ const ClientsPage = () => {
       </div>
 
       {/* Sticky search and filters bar */}
-      <div className="sticky top-0 z-10 bg-background pt-2 pb-3 border-b">
+      <div className="sticky top-0 z-10 bg-background pt-2 pb-3 border-b w-full">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-grow">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -446,9 +448,9 @@ const ClientsPage = () => {
       </div>
 
       {/* Clients table */}
-      <Card>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
+      {hasData ? (
+        <Card className="w-full">
+          <CardContent className="p-0 overflow-auto">
             <Table>
               <TableHeader className="bg-muted/50 sticky top-0">
                 <TableRow>
@@ -581,9 +583,19 @@ const ClientsPage = () => {
                 ))}
               </TableBody>
             </Table>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="p-6 flex flex-col items-center justify-center min-h-[300px]">
+            <p className="text-muted-foreground mb-4">No clients found</p>
+            <Button className="bg-primary hover:bg-primary/90">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Your First Client
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
