@@ -7,7 +7,8 @@ import {
   Download, 
   Upload,
   ArrowUpDown,
-  ChevronDown
+  ChevronDown,
+  X
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -37,7 +38,15 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import SkillFormDrawer from './components/SkillFormDrawer';
+import { cn } from "@/lib/utils";
 
 // Mock data for skills
 const mockSkills = [
@@ -106,13 +115,42 @@ const SkillsLibraryPage: React.FC = () => {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [selectedSkills, setSelectedSkills] = useState<number[]>([]);
+  
+  // Column filters state
+  const [columnFilters, setColumnFilters] = useState<Record<string, string[]>>({
+    name: [],
+    category: [],
+    usageCount: [],
+    dateAdded: []
+  });
+  
+  // Column filter search terms
+  const [columnSearchTerms, setColumnSearchTerms] = useState<Record<string, string>>({
+    name: '',
+    category: '',
+    usageCount: '',
+    dateAdded: ''
+  });
 
   // Filter skills based on search term
-  const filteredSkills = mockSkills.filter((skill) => 
-    skill.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    skill.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    skill.aliases.some(alias => alias.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredSkills = mockSkills.filter((skill) => {
+    // Main search filter
+    const matchesSearch = searchTerm === '' || 
+      skill.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      skill.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      skill.aliases.some(alias => alias.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    // Column filters
+    const matchesNameFilter = columnFilters.name.length === 0 || 
+      columnFilters.name.some(filter => skill.name.includes(filter));
+    
+    const matchesCategoryFilter = columnFilters.category.length === 0 || 
+      columnFilters.category.includes(skill.category);
+    
+    // Add other column filters as needed
+    
+    return matchesSearch && matchesNameFilter && matchesCategoryFilter;
+  });
 
   // Sort skills based on selected column and direction
   const sortedSkills = [...filteredSkills].sort((a, b) => {
@@ -172,6 +210,61 @@ const SkillsLibraryPage: React.FC = () => {
       setSelectedSkills(sortedSkills.map(skill => skill.id));
     }
   };
+  
+  // Handle column filter changes
+  const handleColumnFilterChange = (column: string, value: string) => {
+    if (columnFilters[column].includes(value)) {
+      setColumnFilters({
+        ...columnFilters,
+        [column]: columnFilters[column].filter(item => item !== value)
+      });
+    } else {
+      setColumnFilters({
+        ...columnFilters,
+        [column]: [...columnFilters[column], value]
+      });
+    }
+  };
+  
+  // Clear all filters for a column
+  const clearColumnFilter = (column: string) => {
+    setColumnFilters({
+      ...columnFilters,
+      [column]: []
+    });
+    setColumnSearchTerms({
+      ...columnSearchTerms,
+      [column]: ''
+    });
+  };
+  
+  // Update column search term
+  const handleColumnSearchChange = (column: string, value: string) => {
+    setColumnSearchTerms({
+      ...columnSearchTerms,
+      [column]: value
+    });
+  };
+
+  // Get available options for column filters
+  const getColumnFilterOptions = (column: string) => {
+    switch (column) {
+      case 'name':
+        return mockSkills.map(skill => skill.name)
+          .filter(name => name.toLowerCase().includes(columnSearchTerms.name.toLowerCase()));
+      case 'category':
+        return skillCategories
+          .filter(category => category.toLowerCase().includes(columnSearchTerms.category.toLowerCase()));
+      case 'usageCount':
+        return [...new Set(mockSkills.map(skill => String(skill.usageCount)))]
+          .filter(count => count.includes(columnSearchTerms.usageCount));
+      case 'dateAdded':
+        return [...new Set(mockSkills.map(skill => skill.dateAdded))]
+          .filter(date => date.includes(columnSearchTerms.dateAdded));
+      default:
+        return [];
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -180,7 +273,7 @@ const SkillsLibraryPage: React.FC = () => {
         <div className="flex gap-2">
           <Button 
             variant="outline" 
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 h-9"
             onClick={() => {}}
           >
             <Upload className="h-4 w-4" />
@@ -188,7 +281,7 @@ const SkillsLibraryPage: React.FC = () => {
           </Button>
           <Button 
             variant="outline" 
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 h-9"
             onClick={() => {}}
             disabled={selectedSkills.length === 0}
           >
@@ -196,7 +289,7 @@ const SkillsLibraryPage: React.FC = () => {
             Export
           </Button>
           <Button 
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 h-9 bg-primary hover:bg-primary/90"
             onClick={handleCreateSkill}
           >
             <Plus className="h-4 w-4" />
@@ -224,7 +317,7 @@ const SkillsLibraryPage: React.FC = () => {
               <Button
                 variant="outline"
                 onClick={() => setFilterOpen(true)}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 h-9"
               >
                 <SlidersHorizontal className="h-4 w-4" />
                 Filters
@@ -232,105 +325,321 @@ const SkillsLibraryPage: React.FC = () => {
             </div>
             
             {/* Table */}
-            <div className="border rounded-md overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[40px]">
-                      <input 
-                        type="checkbox" 
-                        checked={selectedSkills.length === sortedSkills.length && sortedSkills.length > 0}
-                        onChange={handleSelectAllSkills}
-                        className="h-4 w-4 rounded border-gray-300"
-                      />
-                    </TableHead>
-                    <TableHead className="cursor-pointer" onClick={() => handleSort('name')}>
-                      <div className="flex items-center">
-                        Skill Name
-                        {sortColumn === 'name' && (
-                          <ArrowUpDown className="ml-2 h-4 w-4" />
-                        )}
-                      </div>
-                    </TableHead>
-                    <TableHead className="cursor-pointer" onClick={() => handleSort('category')}>
-                      <div className="flex items-center">
-                        Category
-                        {sortColumn === 'category' && (
-                          <ArrowUpDown className="ml-2 h-4 w-4" />
-                        )}
-                      </div>
-                    </TableHead>
-                    <TableHead>Aliases</TableHead>
-                    <TableHead className="cursor-pointer" onClick={() => handleSort('usageCount')}>
-                      <div className="flex items-center">
-                        Usage Count
-                        {sortColumn === 'usageCount' && (
-                          <ArrowUpDown className="ml-2 h-4 w-4" />
-                        )}
-                      </div>
-                    </TableHead>
-                    <TableHead className="cursor-pointer" onClick={() => handleSort('dateAdded')}>
-                      <div className="flex items-center">
-                        Date Added
-                        {sortColumn === 'dateAdded' && (
-                          <ArrowUpDown className="ml-2 h-4 w-4" />
-                        )}
-                      </div>
-                    </TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sortedSkills.map((skill) => (
-                    <TableRow key={skill.id}>
-                      <TableCell>
-                        <input 
-                          type="checkbox" 
-                          checked={selectedSkills.includes(skill.id)}
-                          onChange={() => handleSelectSkill(skill.id)}
-                          className="h-4 w-4 rounded border-gray-300"
+            <div className="bg-white rounded-md shadow-sm border border-gray-200">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader className="bg-gray-50">
+                    <TableRow>
+                      <TableHead className="w-10 py-2">
+                        <input
+                          type="checkbox"
+                          checked={selectedSkills.length === sortedSkills.length && sortedSkills.length > 0}
+                          onChange={handleSelectAllSkills}
+                          className="rounded border-gray-300"
                         />
-                      </TableCell>
-                      <TableCell className="font-medium">{skill.name}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{skill.category}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {skill.aliases.map((alias, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
-                              {alias}
-                            </Badge>
-                          ))}
-                        </div>
-                      </TableCell>
-                      <TableCell>{skill.usageCount}</TableCell>
-                      <TableCell>{new Date(skill.dateAdded).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
-                              <ChevronDown className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => handleEditSkill(skill)}>
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>View Usage</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive">
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
+                      </TableHead>
+                      <TableHead className="py-2 text-[12px] font-normal text-[#262626]">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <div className="flex items-center gap-1 cursor-pointer">
+                              Skill Name
+                              {sortColumn === 'name' && (
+                                <ArrowUpDown className="h-3 w-3" />
+                              )}
+                              {columnFilters.name.length > 0 && (
+                                <Badge variant="secondary" className="ml-1 h-5 px-1">
+                                  {columnFilters.name.length}
+                                </Badge>
+                              )}
+                            </div>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-64 p-0" align="start">
+                            <div className="p-2 border-b">
+                              <div className="relative">
+                                <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                                <Input
+                                  placeholder="Search skills..."
+                                  className="pl-7 h-8 text-xs"
+                                  value={columnSearchTerms.name}
+                                  onChange={(e) => handleColumnSearchChange('name', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                            <div className="py-2 max-h-60 overflow-auto">
+                              {getColumnFilterOptions('name').length > 0 ? (
+                                getColumnFilterOptions('name').map((option) => (
+                                  <div key={option} className="flex items-center space-x-2 px-3 py-1 text-xs">
+                                    <Checkbox
+                                      id={`name-${option}`}
+                                      checked={columnFilters.name.includes(option)}
+                                      onCheckedChange={() => handleColumnFilterChange('name', option)}
+                                    />
+                                    <Label htmlFor={`name-${option}`} className="text-xs">
+                                      {option}
+                                    </Label>
+                                  </div>
+                                ))
+                              ) : (
+                                <p className="text-xs text-center py-2 text-muted-foreground">No options found</p>
+                              )}
+                            </div>
+                            <div className="flex items-center justify-between p-2 border-t bg-muted/20">
+                              <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => clearColumnFilter('name')}>
+                                Clear
+                              </Button>
+                              <div className="flex gap-2">
+                                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => {}}>
+                                  Cancel
+                                </Button>
+                                <Button size="sm" className="h-7 text-xs" onClick={() => {}}>
+                                  Apply
+                                </Button>
+                              </div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </TableHead>
+                      <TableHead className="py-2 text-[12px] font-normal text-[#262626]">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <div className="flex items-center gap-1 cursor-pointer">
+                              Category
+                              {sortColumn === 'category' && (
+                                <ArrowUpDown className="h-3 w-3" />
+                              )}
+                              {columnFilters.category.length > 0 && (
+                                <Badge variant="secondary" className="ml-1 h-5 px-1">
+                                  {columnFilters.category.length}
+                                </Badge>
+                              )}
+                            </div>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-64 p-0" align="start">
+                            <div className="p-2 border-b">
+                              <div className="relative">
+                                <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                                <Input
+                                  placeholder="Search categories..."
+                                  className="pl-7 h-8 text-xs"
+                                  value={columnSearchTerms.category}
+                                  onChange={(e) => handleColumnSearchChange('category', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                            <div className="py-2 max-h-60 overflow-auto">
+                              {getColumnFilterOptions('category').length > 0 ? (
+                                getColumnFilterOptions('category').map((option) => (
+                                  <div key={option} className="flex items-center space-x-2 px-3 py-1 text-xs">
+                                    <Checkbox
+                                      id={`category-${option}`}
+                                      checked={columnFilters.category.includes(option)}
+                                      onCheckedChange={() => handleColumnFilterChange('category', option)}
+                                    />
+                                    <Label htmlFor={`category-${option}`} className="text-xs">
+                                      {option}
+                                    </Label>
+                                  </div>
+                                ))
+                              ) : (
+                                <p className="text-xs text-center py-2 text-muted-foreground">No categories found</p>
+                              )}
+                            </div>
+                            <div className="flex items-center justify-between p-2 border-t bg-muted/20">
+                              <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => clearColumnFilter('category')}>
+                                Clear
+                              </Button>
+                              <div className="flex gap-2">
+                                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => {}}>
+                                  Cancel
+                                </Button>
+                                <Button size="sm" className="h-7 text-xs" onClick={() => {}}>
+                                  Apply
+                                </Button>
+                              </div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </TableHead>
+                      <TableHead className="py-2 text-[12px] font-normal text-[#262626]">
+                        Aliases
+                      </TableHead>
+                      <TableHead className="py-2 text-[12px] font-normal text-[#262626]">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <div className="flex items-center gap-1 cursor-pointer">
+                              Usage Count
+                              {sortColumn === 'usageCount' && (
+                                <ArrowUpDown className="h-3 w-3" />
+                              )}
+                              {columnFilters.usageCount.length > 0 && (
+                                <Badge variant="secondary" className="ml-1 h-5 px-1">
+                                  {columnFilters.usageCount.length}
+                                </Badge>
+                              )}
+                            </div>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-64 p-0" align="start">
+                            {/* Usage Count filter content */}
+                            <div className="p-2 border-b">
+                              <div className="relative">
+                                <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                                <Input
+                                  placeholder="Search usage counts..."
+                                  className="pl-7 h-8 text-xs"
+                                  value={columnSearchTerms.usageCount}
+                                  onChange={(e) => handleColumnSearchChange('usageCount', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                            <div className="py-2 max-h-60 overflow-auto">
+                              {getColumnFilterOptions('usageCount').length > 0 ? (
+                                getColumnFilterOptions('usageCount').map((option) => (
+                                  <div key={option} className="flex items-center space-x-2 px-3 py-1 text-xs">
+                                    <Checkbox
+                                      id={`usageCount-${option}`}
+                                      checked={columnFilters.usageCount.includes(option)}
+                                      onCheckedChange={() => handleColumnFilterChange('usageCount', option)}
+                                    />
+                                    <Label htmlFor={`usageCount-${option}`} className="text-xs">
+                                      {option}
+                                    </Label>
+                                  </div>
+                                ))
+                              ) : (
+                                <p className="text-xs text-center py-2 text-muted-foreground">No options found</p>
+                              )}
+                            </div>
+                            <div className="flex items-center justify-between p-2 border-t bg-muted/20">
+                              <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => clearColumnFilter('usageCount')}>
+                                Clear
+                              </Button>
+                              <div className="flex gap-2">
+                                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => {}}>
+                                  Cancel
+                                </Button>
+                                <Button size="sm" className="h-7 text-xs" onClick={() => {}}>
+                                  Apply
+                                </Button>
+                              </div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </TableHead>
+                      <TableHead className="py-2 text-[12px] font-normal text-[#262626]">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <div className="flex items-center gap-1 cursor-pointer">
+                              Date Added
+                              {sortColumn === 'dateAdded' && (
+                                <ArrowUpDown className="h-3 w-3" />
+                              )}
+                              {columnFilters.dateAdded.length > 0 && (
+                                <Badge variant="secondary" className="ml-1 h-5 px-1">
+                                  {columnFilters.dateAdded.length}
+                                </Badge>
+                              )}
+                            </div>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-64 p-0" align="start">
+                            {/* Date Added filter content */}
+                            <div className="p-2 border-b">
+                              <div className="relative">
+                                <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                                <Input
+                                  placeholder="Search dates..."
+                                  className="pl-7 h-8 text-xs"
+                                  value={columnSearchTerms.dateAdded}
+                                  onChange={(e) => handleColumnSearchChange('dateAdded', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                            <div className="py-2 max-h-60 overflow-auto">
+                              {getColumnFilterOptions('dateAdded').length > 0 ? (
+                                getColumnFilterOptions('dateAdded').map((option) => (
+                                  <div key={option} className="flex items-center space-x-2 px-3 py-1 text-xs">
+                                    <Checkbox
+                                      id={`dateAdded-${option}`}
+                                      checked={columnFilters.dateAdded.includes(option)}
+                                      onCheckedChange={() => handleColumnFilterChange('dateAdded', option)}
+                                    />
+                                    <Label htmlFor={`dateAdded-${option}`} className="text-xs">
+                                      {new Date(option).toLocaleDateString()}
+                                    </Label>
+                                  </div>
+                                ))
+                              ) : (
+                                <p className="text-xs text-center py-2 text-muted-foreground">No options found</p>
+                              )}
+                            </div>
+                            <div className="flex items-center justify-between p-2 border-t bg-muted/20">
+                              <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => clearColumnFilter('dateAdded')}>
+                                Clear
+                              </Button>
+                              <div className="flex gap-2">
+                                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => {}}>
+                                  Cancel
+                                </Button>
+                                <Button size="sm" className="h-7 text-xs" onClick={() => {}}>
+                                  Apply
+                                </Button>
+                              </div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </TableHead>
+                      <TableHead className="py-2 text-[12px] font-normal text-[#262626]">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {sortedSkills.map((skill) => (
+                      <TableRow key={skill.id} className={cn(
+                        selectedSkills.includes(skill.id) ? "bg-blue-50" : "",
+                        "h-12"
+                      )}>
+                        <TableCell className="py-2">
+                          <input
+                            type="checkbox"
+                            checked={selectedSkills.includes(skill.id)}
+                            onChange={() => handleSelectSkill(skill.id)}
+                            className="rounded border-gray-300"
+                          />
+                        </TableCell>
+                        <TableCell className="py-2 text-[12px] text-[#262626] cursor-pointer hover:text-blue-600 hover:underline">
+                          {skill.name}
+                        </TableCell>
+                        <TableCell className="py-2">
+                          <Badge variant="outline">{skill.category}</Badge>
+                        </TableCell>
+                        <TableCell className="py-2">
+                          <div className="flex flex-wrap gap-1">
+                            {skill.aliases.map((alias, index) => (
+                              <Badge key={index} variant="secondary" className="text-[10px]">
+                                {alias}
+                              </Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-2 text-[12px] text-[#262626]">{skill.usageCount}</TableCell>
+                        <TableCell className="py-2 text-[12px] text-[#262626]">
+                          {new Date(skill.dateAdded).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell className="py-2">
+                          <div className="flex gap-1 justify-end">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-7 w-7"
+                              onClick={() => handleEditSkill(skill)}
+                            >
+                              <ChevronDown className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </div>
         </CardContent>
