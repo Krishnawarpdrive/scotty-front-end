@@ -8,6 +8,13 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AMSLayout from "./layouts/AMSLayout";
 import AMSDashboard from "./pages/ams/Dashboard";
+import ClientsPage from "./pages/ams/ClientsPage";
+import RolesLibraryPage from "./pages/ams/RolesLibraryPage";
+import RequirementsPage from "./pages/ams/RequirementsPage";
+import SkillsPage from "./pages/ams/SkillsPage";
+import ChecklistsPage from "./pages/ams/ChecklistsPage";
+import CertificationsPage from "./pages/ams/CertificationsPage";
+import CommissionsPage from "./pages/ams/CommissionsPage";
 
 const queryClient = new QueryClient();
 
@@ -23,13 +30,13 @@ const App = () => (
           {/* AMS Routes */}
           <Route path="/ams" element={<AMSLayout />}>
             <Route path="dashboard" element={<AMSDashboard />} />
-            <Route path="clients" element={<div>Clients Page</div>} />
-            <Route path="roles" element={<div>Roles Library Page</div>} />
-            <Route path="requirements" element={<div>Requirements Page</div>} />
-            <Route path="skills" element={<div>Skill Master Page</div>} />
-            <Route path="checklists" element={<div>Checklist Master Page</div>} />
-            <Route path="certifications" element={<div>Certifications Page</div>} />
-            <Route path="commissions" element={<div>Commission Tracker Page</div>} />
+            <Route path="clients" element={<ClientsPage />} />
+            <Route path="roles" element={<RolesLibraryPage />} />
+            <Route path="requirements" element={<RequirementsPage />} />
+            <Route path="skills" element={<SkillsPage />} />
+            <Route path="checklists" element={<ChecklistsPage />} />
+            <Route path="certifications" element={<CertificationsPage />} />
+            <Route path="commissions" element={<CommissionsPage />} />
           </Route>
           
           {/* Catch-all route */}
