@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import ClientDetailDrawer from './ClientDetailDrawer';
 import RolesPopover from './RolesPopover';
 import HRTooltip from './HRTooltip';
-import { getAccountTypeBadge, getClientTierBadge, getHiringStatusBadge, LastActivityIndicator } from './ClientBadges';
+import { getHiringStatusBadge, getClientTierBadge, LastActivityIndicator } from './ClientBadges';
 
 interface ClientsTableProps {
   clients: any[];
@@ -116,7 +116,7 @@ const ClientsTable: React.FC<ClientsTableProps> = ({
                 <TableCell className="py-2 text-[12px] text-[#262626] cursor-pointer hover:text-blue-600 hover:underline">
                   <ClientDetailDrawer client={client} />
                 </TableCell>
-                <TableCell className="py-2">{getAccountTypeBadge(client.accountType)}</TableCell>
+                <TableCell className="py-2 text-[12px] text-[#262626]">{client.accountType}</TableCell>
                 <TableCell className="py-2 text-[12px] text-[#262626]">
                   {new Date(client.createdOn).toLocaleDateString()}
                 </TableCell>

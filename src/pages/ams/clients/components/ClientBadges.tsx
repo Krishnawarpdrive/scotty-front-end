@@ -2,20 +2,6 @@
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 
-// Account type badge variants
-export const getAccountTypeBadge = (type: string) => {
-  switch (type) {
-    case "Customer":
-      return <Badge variant="default" className="bg-primary">{type}</Badge>;
-    case "Vendor":
-      return <Badge variant="secondary" className="bg-purple-600">{type}</Badge>;
-    case "Partner":
-      return <Badge variant="outline" className="border-blue-400 text-blue-500">{type}</Badge>;
-    default:
-      return <Badge>{type}</Badge>;
-  }
-};
-
 // Client tier badge variants
 export const getClientTierBadge = (tier: string) => {
   switch (tier) {
