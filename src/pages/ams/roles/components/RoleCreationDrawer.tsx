@@ -5,13 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerFooter,
-} from "@/components/ui/drawer";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+} from "@/components/ui/sheet";
 
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -140,14 +140,14 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
   };
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="h-[90vh] max-h-[90vh] flex flex-col">
-        <DrawerHeader className="border-b">
-          <DrawerTitle>Create New Role</DrawerTitle>
-          <DrawerDescription>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="w-[90vw] max-w-[800px] sm:max-w-[600px] h-full overflow-y-auto">
+        <SheetHeader className="border-b pb-4">
+          <SheetTitle className="text-xl">Create New Role</SheetTitle>
+          <SheetDescription>
             Add a role to the global role library that can be used across different clients.
-          </DrawerDescription>
-        </DrawerHeader>
+          </SheetDescription>
+        </SheetHeader>
 
         <FormProgressIndicator
           steps={formSections}
@@ -158,12 +158,12 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
-            <div className="flex-1 overflow-y-auto px-6">
+            <div className="flex-1 overflow-y-auto px-1 py-4">
               {renderStepContent()}
             </div>
             
             {/* Sticky footer with navigation buttons */}
-            <DrawerFooter className="p-4 border-t mt-auto">
+            <SheetFooter className="p-4 border-t mt-auto">
               <div className="flex justify-between w-full">
                 <Button 
                   type="button" 
@@ -198,11 +198,11 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
                   )}
                 </div>
               </div>
-            </DrawerFooter>
+            </SheetFooter>
           </form>
         </Form>
-      </DrawerContent>
-    </Drawer>
+      </SheetContent>
+    </Sheet>
   );
 };
 

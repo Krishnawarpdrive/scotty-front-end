@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { 
@@ -118,7 +119,7 @@ const RoleLibraryPage: React.FC = () => {
     setSearchTerm(tag);
   };
 
-  // Handle create role button click
+  // Handle create role button click - open the drawer instead of navigating
   const handleCreateRole = () => {
     setDrawerOpen(true);
   };
