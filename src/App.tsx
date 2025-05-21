@@ -9,7 +9,8 @@ import NotFound from "./pages/NotFound";
 import AMSLayout from "./layouts/AMSLayout";
 import AMSDashboard from "./pages/ams/Dashboard";
 import ClientsPage from "./pages/ams/ClientsPage";
-import RolesLibraryPage from "./pages/ams/roles/RolesLibraryPage";
+import RolesLibraryPage from "./pages/ams/roles/RoleLibraryPage";
+import CreateRolePage from "./pages/ams/roles/CreateRolePage";
 import RequirementsPage from "./pages/ams/RequirementsPage";
 import SkillsPage from "./pages/ams/SkillsPage";
 import ChecklistsPage from "./pages/ams/ChecklistsPage";
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="dashboard" element={<AMSDashboard />} />
             <Route path="clients" element={<ClientsPage />} />
             <Route path="roles" element={<RolesLibraryPage />} />
+            <Route path="roles/create" element={<CreateRolePage />} />
             <Route path="requirements" element={<RequirementsPage />} />
             <Route path="skills" element={<SkillsPage />} />
             <Route path="checklists" element={<ChecklistsPage />} />
