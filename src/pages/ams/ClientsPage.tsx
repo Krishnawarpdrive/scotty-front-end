@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Plus } from "lucide-react";
@@ -12,6 +12,13 @@ const ClientsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentSort, setCurrentSort] = useState({ field: "", direction: "asc" });
   const [selectedClients, setSelectedClients] = useState<number[]>([]);
+  const [hasData, setHasData] = useState<boolean>(false);
+  
+  useEffect(() => {
+    // Check if data exists after the component mounts
+    setHasData(clientsData && clientsData.length > 0);
+    console.log("Clients data:", clientsData);
+  }, []);
   
   // Handle sort click
   const handleSort = (field: string) => {
@@ -46,8 +53,7 @@ const ClientsPage = () => {
     }
   };
   
-  // Check if data exists
-  const hasData = clientsData && clientsData.length > 0;
+  console.log("Rendering ClientsPage, hasData:", hasData);
   
   return (
     <div className="space-y-4 w-full">
@@ -65,7 +71,7 @@ const ClientsPage = () => {
         selectedClientsCount={selectedClients.length}
       />
 
-      {/* Clients table */}
+      {/* Clients table or empty state */}
       {hasData ? (
         <Card className="w-full">
           <div className="p-0 overflow-auto">

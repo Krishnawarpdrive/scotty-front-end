@@ -12,7 +12,8 @@ import {
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuItem,
-  SidebarMenuButton
+  SidebarMenuButton,
+  useSidebar
 } from '@/components/ui/sidebar';
 import { 
   LayoutDashboard, 
@@ -46,6 +47,8 @@ const navigationItems: NavigationItem[] = [
 
 export const AMSSidebar = () => {
   const location = useLocation();
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
   
   // Helper to check if a path is active
   const isActive = (path: string) => {
@@ -53,13 +56,13 @@ export const AMSSidebar = () => {
   };
 
   return (
-    <SidebarProvider>
-      <Sidebar className="border-r">
-        <SidebarHeader>
-          <div className="p-2 flex justify-between items-center">
-            <h2 className="text-xl font-semibold px-2">AMS</h2>
-            <SidebarTrigger />
-          </div>
+    <Sidebar className="border-r" collapsible="icon" variant="sidebar">
+      <SidebarHeader>
+        <div className="p-2 flex justify-between items-center">
+          {!isCollapsed && <h2 className="text-xl font-semibold px-2">AMS</h2>}
+          <SidebarTrigger />
+        </div>
+        {!isCollapsed && (
           <div className="px-2 pb-2">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -69,28 +72,28 @@ export const AMSSidebar = () => {
               />
             </div>
           </div>
-        </SidebarHeader>
-        
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {navigationItems.map((item) => (
-                  <SidebarMenuItem key={item.path}>
-                    <SidebarMenuButton asChild isActive={isActive(item.path)}>
-                      <NavLink to={item.path} className="flex items-center">
-                        <item.icon className="mr-2 h-4 w-4" />
-                        <span>{item.title}</span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-      </Sidebar>
-    </SidebarProvider>
+        )}
+      </SidebarHeader>
+      
+      <SidebarContent>
+        <SidebarGroup>
+          {!isCollapsed && <SidebarGroupLabel>Navigation</SidebarGroupLabel>}
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navigationItems.map((item) => (
+                <SidebarMenuItem key={item.path}>
+                  <SidebarMenuButton asChild isActive={isActive(item.path)} tooltip={isCollapsed ? item.title : undefined}>
+                    <NavLink to={item.path} className="flex items-center">
+                      <item.icon className="mr-2 h-4 w-4" />
+                      {!isCollapsed && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
   );
 };
