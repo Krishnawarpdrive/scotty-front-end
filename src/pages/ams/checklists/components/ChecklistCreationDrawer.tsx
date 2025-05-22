@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { 
   Drawer,
   DrawerClose,
@@ -42,7 +41,6 @@ import { checklistFormSchema } from '../schemas/checklistFormSchema';
 import { Checklist, ChecklistItem } from '../types';
 import { useChecklistsData } from '../hooks/useChecklistsData';
 import { useMockData } from '../hooks/useMockData';
-import { Checkbox } from "@/components/ui/checkbox";
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DraggableItem } from './DraggableItem';
