@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Pencil, Check, X } from 'lucide-react';
 import { Client } from '../../types/ClientTypes';
+import { cn } from '@/lib/utils';
 
 interface ClientOverviewTabProps {
   client: Client;
@@ -47,9 +48,9 @@ const ClientOverviewTab: React.FC<ClientOverviewTabProps> = ({ client }) => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Business Info Card */}
-        <Card>
+        <Card className="shadow-sm hover:shadow transition-shadow duration-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Business Information</CardTitle>
+            <CardTitle className="text-section">Business Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 gap-4">
@@ -90,9 +91,9 @@ const ClientOverviewTab: React.FC<ClientOverviewTabProps> = ({ client }) => {
         </Card>
         
         {/* Account Info Card */}
-        <Card>
+        <Card className="shadow-sm hover:shadow transition-shadow duration-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Account Information</CardTitle>
+            <CardTitle className="text-section">Account Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 gap-4">
@@ -134,9 +135,9 @@ const ClientOverviewTab: React.FC<ClientOverviewTabProps> = ({ client }) => {
       </div>
       
       {/* Location Card */}
-      <Card>
+      <Card className="shadow-sm hover:shadow transition-shadow duration-200">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Location</CardTitle>
+          <CardTitle className="text-section">Location</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -177,14 +178,14 @@ const ClientOverviewTab: React.FC<ClientOverviewTabProps> = ({ client }) => {
       </Card>
       
       {/* Sourcing & Payment Card */}
-      <Card>
+      <Card className="shadow-sm hover:shadow transition-shadow duration-200">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Sourcing & Payment</CardTitle>
+          <CardTitle className="text-section">Sourcing & Payment</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h3 className="font-medium">Sourcing Model</h3>
+              <h3 className="font-medium text-body">Sourcing Model</h3>
               <EditableField
                 label="Sourcing Type"
                 value="Direct" // Placeholder
@@ -209,7 +210,7 @@ const ClientOverviewTab: React.FC<ClientOverviewTabProps> = ({ client }) => {
             </div>
             
             <div className="space-y-4">
-              <h3 className="font-medium">Commission</h3>
+              <h3 className="font-medium text-body">Commission</h3>
               <EditableField
                 label="Commission %"
                 value="10%" // Placeholder
@@ -237,9 +238,9 @@ const ClientOverviewTab: React.FC<ClientOverviewTabProps> = ({ client }) => {
       </Card>
       
       {/* Notes Card */}
-      <Card>
+      <Card className="shadow-sm hover:shadow transition-shadow duration-200 mb-10">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Notes</CardTitle>
+          <CardTitle className="text-section">Notes</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -286,9 +287,9 @@ const EditableField: React.FC<EditableFieldProps> = ({
   onSave
 }) => {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1 group">
       <div className="flex justify-between items-center">
-        <Label htmlFor={field} className="text-sm font-normal text-muted-foreground">
+        <Label htmlFor={field} className="text-label font-normal text-muted-foreground">
           {label}
         </Label>
         {!isEditing && (
@@ -296,7 +297,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
             size="icon"
             variant="ghost"
             onClick={() => onToggleEdit(field)}
-            className="h-6 w-6"
+            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
           >
             <Pencil className="h-3 w-3" />
           </Button>
@@ -310,13 +311,14 @@ const EditableField: React.FC<EditableFieldProps> = ({
               id={field}
               value={editedValue}
               onChange={(e) => onInputChange(field, e.target.value)}
-              className="flex h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+              className="flex h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-body ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
             />
           ) : (
             <Input
               id={field}
               value={editedValue}
               onChange={(e) => onInputChange(field, e.target.value)}
+              className="h-8 text-body border-transparent hover:border-input focus:border-primary"
             />
           )}
           <div className="flex gap-1">
@@ -324,7 +326,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
               size="icon" 
               variant="ghost" 
               onClick={() => onSave(field)}
-              className="h-8 w-8"
+              className="h-7 w-7"
             >
               <Check className="h-4 w-4" />
             </Button>
@@ -332,14 +334,14 @@ const EditableField: React.FC<EditableFieldProps> = ({
               size="icon" 
               variant="ghost" 
               onClick={() => onToggleEdit(field)}
-              className="h-8 w-8"
+              className="h-7 w-7"
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
         </div>
       ) : (
-        <p className="text-base">{value}</p>
+        <p className="text-body pt-1">{value}</p>
       )}
     </div>
   );

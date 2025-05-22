@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,6 +16,7 @@ import ClientRolesTab from './components/client-detail/ClientRolesTab';
 import ClientRequirementsTab from './components/client-detail/ClientRequirementsTab';
 import ClientActivityTab from './components/client-detail/ClientActivityTab';
 import ClientAgreementsTab from './components/client-detail/ClientAgreementsTab';
+import { cn } from '@/lib/utils';
 
 const ClientDetailsPage = () => {
   const navigate = useNavigate();
@@ -24,6 +25,30 @@ const ClientDetailsPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [isRoleDrawerOpen, setIsRoleDrawerOpen] = useState(false);
   const [isRequirementDrawerOpen, setIsRequirementDrawerOpen] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const contentRef = useRef<HTMLDivElement>(null);
+  
+  // Track scroll position for animations
+  useEffect(() => {
+    const handleScroll = () => {
+      if (contentRef.current) {
+        setScrollPosition(contentRef.current.scrollTop);
+      }
+    };
+    
+    const currentRef = contentRef.current;
+    if (currentRef) {
+      currentRef.addEventListener('scroll', handleScroll);
+    }
+    
+    return () => {
+      if (currentRef) {
+        currentRef.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
+  
+  const isHeaderCollapsed = scrollPosition > 100;
   
   if (loading) {
     return <ClientDetailLoading />;
@@ -54,74 +79,98 @@ const ClientDetailsPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <ClientProfileHeader 
-        client={client}
-        onEditClient={() => {}} // To be implemented
-      />
+    <div className="flex flex-col h-full">
+      {/* Header with animation on scroll */}
+      <div className={cn(
+        "transition-all duration-300 ease-in-out",
+        isHeaderCollapsed ? "max-h-20 overflow-hidden opacity-90" : "max-h-[500px]"
+      )}>
+        <ClientProfileHeader 
+          client={client}
+          onEditClient={() => {}} 
+          isCollapsed={isHeaderCollapsed}
+        />
+      </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
-        <TabsList className="w-full border-b mb-0 bg-transparent p-0 h-auto">
-          <div className="flex overflow-x-auto scrollbar-hide">
-            <TabsTrigger 
-              value="overview" 
-              className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none"
-            >
-              Overview
-            </TabsTrigger>
-            <TabsTrigger 
-              value="roles" 
-              className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none"
-            >
-              Roles
-            </TabsTrigger>
-            <TabsTrigger 
-              value="requirements" 
-              className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none"
-            >
-              Requirements
-            </TabsTrigger>
-            <TabsTrigger 
-              value="activity" 
-              className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none"
-            >
-              Activity Logs
-            </TabsTrigger>
-            <TabsTrigger 
-              value="agreements" 
-              className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none"
-            >
-              Agreements
-            </TabsTrigger>
+      {/* Tabs and content */}
+      <div 
+        ref={contentRef} 
+        className="flex-1 overflow-auto flex flex-col"
+      >
+        <Tabs 
+          value={activeTab} 
+          onValueChange={setActiveTab} 
+          className="flex-1 flex flex-col"
+        >
+          <TabsList 
+            className={cn(
+              "w-full border-b bg-background transition-all duration-300 z-10 sticky top-0",
+              isHeaderCollapsed ? "shadow-sm" : ""
+            )}
+          >
+            <div className="flex overflow-x-auto scrollbar-hide">
+              <TabsTrigger 
+                value="overview" 
+                className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none text-table"
+              >
+                Overview
+              </TabsTrigger>
+              <TabsTrigger 
+                value="roles" 
+                className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none text-table"
+              >
+                Roles
+              </TabsTrigger>
+              <TabsTrigger 
+                value="requirements" 
+                className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none text-table"
+              >
+                Requirements
+              </TabsTrigger>
+              <TabsTrigger 
+                value="activity" 
+                className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none text-table"
+              >
+                Activity Logs
+              </TabsTrigger>
+              <TabsTrigger 
+                value="agreements" 
+                className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none text-table"
+              >
+                Agreements
+              </TabsTrigger>
+            </div>
+          </TabsList>
+
+          <div className="flex-1 overflow-y-auto">
+            <TabsContent value="overview" className="mt-6 p-4 h-full">
+              <ClientOverviewTab client={client} />
+            </TabsContent>
+
+            <TabsContent value="roles" className="mt-6 p-4 h-full">
+              <ClientRolesTab 
+                client={client} 
+                onCreateRole={handleCreateRole} 
+              />
+            </TabsContent>
+
+            <TabsContent value="requirements" className="mt-6 p-4 h-full">
+              <ClientRequirementsTab
+                client={client}
+                onCreateRequirement={handleCreateRequirement}
+              />
+            </TabsContent>
+
+            <TabsContent value="activity" className="mt-6 p-4 h-full">
+              <ClientActivityTab client={client} />
+            </TabsContent>
+
+            <TabsContent value="agreements" className="mt-6 p-4 h-full">
+              <ClientAgreementsTab client={client} />
+            </TabsContent>
           </div>
-        </TabsList>
-
-        <TabsContent value="overview" className="mt-6">
-          <ClientOverviewTab client={client} />
-        </TabsContent>
-
-        <TabsContent value="roles" className="mt-6">
-          <ClientRolesTab 
-            client={client} 
-            onCreateRole={handleCreateRole} 
-          />
-        </TabsContent>
-
-        <TabsContent value="requirements" className="mt-6">
-          <ClientRequirementsTab
-            client={client}
-            onCreateRequirement={handleCreateRequirement}
-          />
-        </TabsContent>
-
-        <TabsContent value="activity" className="mt-6">
-          <ClientActivityTab client={client} />
-        </TabsContent>
-
-        <TabsContent value="agreements" className="mt-6">
-          <ClientAgreementsTab client={client} />
-        </TabsContent>
-      </Tabs>
+        </Tabs>
+      </div>
 
       <RoleCreationDrawer
         open={isRoleDrawerOpen}
@@ -131,7 +180,13 @@ const ClientDetailsPage = () => {
         onRoleCreated={handleRoleCreated}
       />
 
-      {/* Requirement drawer would be implemented here */}
+      {/* Floating action button for quick actions */}
+      <Button 
+        className="fixed bottom-6 right-6 rounded-full shadow-lg" 
+        size="icon"
+      >
+        <PlusCircle className="h-5 w-5" />
+      </Button>
     </div>
   );
 };
