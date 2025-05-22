@@ -76,8 +76,8 @@ export const useClientDetail = () => {
           healthScore: clientData.health_score || 0,
           budgetUtilized: clientData.budget_utilized || 0,
           notes: clientData.notes || null,
-          industry: clientData.industry || '',
-          headquarters: clientData.headquarters || '',
+          industry: '', // Default value for industry
+          headquarters: '', // Default value for headquarters
         };
         
         setClient(client);
