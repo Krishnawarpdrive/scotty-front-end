@@ -1,241 +1,168 @@
 
 import React, { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { PlusCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Plus, ChevronDown, ChevronRight, Search } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Input } from "@/components/ui/input";
 import { Client } from '../../types/ClientTypes';
 
 interface ClientRolesTabProps {
   client: Client;
-  onCreateRole: () => void;
+  onCreateRole: (clientId: string) => void;
 }
 
-interface Role {
-  id: string;
-  name: string;
-  status: 'Open' | 'Closed';
-  vacancies: number;
-  hiringManager: string;
-  createdDate: string;
-  updatedDate: string;
-  requirements?: Requirement[];
+interface RoleSectionProps {
+  role: any;
+  isOpen: boolean;
+  onToggle: () => void;
 }
 
-interface Requirement {
-  id: string;
-  name: string;
-  status: string;
-  assignedTo: string;
-  dueDate: string;
-  priority: 'High' | 'Medium' | 'Low';
-}
+const RoleSection: React.FC<RoleSectionProps> = ({ role, isOpen, onToggle }) => {
+  return (
+    <div className="mb-2 border rounded-md overflow-hidden animate-fade-in">
+      <div 
+        className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50"
+        onClick={onToggle}
+      >
+        <div className="flex items-center gap-2">
+          {isOpen ? 
+            <ChevronDown className="h-3 w-3 text-muted-foreground" /> : 
+            <ChevronRight className="h-3 w-3 text-muted-foreground" />
+          }
+          <span className="font-medium text-xs">{role.name}</span>
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-200 text-xs">Active</Badge>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">5 Openings</span>
+          <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">View</Button>
+        </div>
+      </div>
+      
+      <Collapsible open={isOpen}>
+        <CollapsibleContent className="p-3 pt-0 border-t">
+          <div className="text-xs space-y-2">
+            <div className="flex justify-between pb-2">
+              <span className="text-muted-foreground">Created: {new Date().toLocaleDateString()}</span>
+              <span className="text-muted-foreground">Hiring Manager: John Doe</span>
+            </div>
+            
+            <div className="pt-2 border-t">
+              <h4 className="font-medium mb-2">Requirements (3)</h4>
+              <ul className="space-y-1">
+                <li className="flex justify-between items-center py-1 px-2 rounded bg-muted/50">
+                  <span>Senior Developer</span>
+                  <Badge variant="outline" className="text-xs">Open</Badge>
+                </li>
+                <li className="flex justify-between items-center py-1 px-2 rounded bg-muted/50">
+                  <span>Full Stack Developer</span>
+                  <Badge variant="outline" className="text-xs">In Progress</Badge>
+                </li>
+                <li className="flex justify-between items-center py-1 px-2 rounded bg-muted/50">
+                  <span>UX Designer</span>
+                  <Badge variant="outline" className="text-xs">Closed</Badge>
+                </li>
+              </ul>
+            </div>
+            
+            <div className="flex justify-end pt-2">
+              <Button 
+                className="h-7 text-xs"
+                size="sm"
+                variant="outline"
+              >
+                <Plus className="h-3 w-3 mr-1" />
+                Add Requirement
+              </Button>
+            </div>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+    </div>
+  );
+};
 
 const ClientRolesTab: React.FC<ClientRolesTabProps> = ({ client, onCreateRole }) => {
-  // Expanded state for roles
-  const [expandedRoles, setExpandedRoles] = useState<Record<string, boolean>>({});
-
-  // Get roles from client or use demo data if not available
-  const roles = client.roles && client.roles.length > 0 
-    ? client.roles.map(role => ({
-        id: role.id,
-        name: role.name,
-        status: 'Open' as const,
-        vacancies: 2,
-        hiringManager: 'John Doe',
-        createdDate: '2025-05-10',
-        updatedDate: '2025-05-15',
-        requirements: [
-          {
-            id: `req-${role.id}-1`,
-            name: `${role.name} Developer`,
-            status: 'In Progress',
-            assignedTo: 'Alice Smith',
-            dueDate: '2025-06-15',
-            priority: 'High' as const
-          },
-          {
-            id: `req-${role.id}-2`,
-            name: `Sr. ${role.name} Developer`,
-            status: 'Open',
-            assignedTo: 'Bob Johnson',
-            dueDate: '2025-06-20',
-            priority: 'Medium' as const
-          }
-        ]
-      }))
-    : [];
-
-  const toggleRoleExpand = (roleId: string) => {
-    setExpandedRoles(prev => ({
-      ...prev,
-      [roleId]: !prev[roleId]
-    }));
+  const [openRoleIds, setOpenRoleIds] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  const toggleRole = (roleId: string) => {
+    setOpenRoleIds(prev => 
+      prev.includes(roleId) 
+        ? prev.filter(id => id !== roleId) 
+        : [...prev, roleId]
+    );
   };
 
-  const getStatusBadgeClass = (status: string) => {
-    switch (status) {
-      case 'Open':
-        return 'bg-green-50 text-green-700 border-green-200';
-      case 'Closed':
-        return 'bg-gray-50 text-gray-700 border-gray-200';
-      case 'In Progress':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
-      default:
-        return 'bg-gray-50 text-gray-700 border-gray-200';
-    }
-  };
+  const mockRoles = client.roles?.length ? client.roles : [
+    { id: '1', name: 'Software Engineer' },
+    { id: '2', name: 'Product Manager' },
+    { id: '3', name: 'UX Designer' }
+  ];
 
-  const getPriorityBadgeClass = (priority: string) => {
-    switch (priority) {
-      case 'High':
-        return 'bg-red-50 text-red-700 border-red-200';
-      case 'Medium':
-        return 'bg-yellow-50 text-yellow-700 border-yellow-200';
-      case 'Low':
-        return 'bg-green-50 text-green-700 border-green-200';
-      default:
-        return 'bg-blue-50 text-blue-700 border-blue-200';
-    }
-  };
+  const filteredRoles = mockRoles.filter(role => 
+    role.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Client Roles</h2>
+    <div className="space-y-4 pb-4">
+      <div className="flex justify-between items-center mb-4">
+        <div className="relative w-full max-w-xs">
+          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input 
+            placeholder="Search roles..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="h-8 pl-8 text-xs"
+          />
+        </div>
         <Button 
-          onClick={onCreateRole}
-          className="flex items-center gap-2"
+          onClick={() => onCreateRole(client.id)}
+          className="h-8 text-xs flex items-center gap-1"
+          size="sm"
         >
-          <PlusCircle className="h-4 w-4" />
-          Add New Role
+          <Plus className="h-3 w-3" />
+          Add Role
         </Button>
       </div>
       
-      {roles.length > 0 ? (
-        <Card>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[40%]">Role Name</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Vacancies</TableHead>
-                  <TableHead>Hiring Manager</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Updated</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {roles.map((role) => (
-                  <React.Fragment key={role.id}>
-                    <TableRow 
-                      className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => toggleRoleExpand(role.id)}
-                    >
-                      <TableCell className="font-medium">{role.name}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={getStatusBadgeClass(role.status)}>
-                          {role.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{role.vacancies}</TableCell>
-                      <TableCell>{role.hiringManager}</TableCell>
-                      <TableCell>{role.createdDate}</TableCell>
-                      <TableCell>{role.updatedDate}</TableCell>
-                      <TableCell>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleRoleExpand(role.id);
-                          }}
-                        >
-                          {expandedRoles[role.id] ? 
-                            <ChevronUp className="h-4 w-4" /> : 
-                            <ChevronDown className="h-4 w-4" />}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                    
-                    {/* Expanded Requirements View */}
-                    {expandedRoles[role.id] && (
-                      <TableRow>
-                        <TableCell colSpan={7} className="bg-muted/30 p-0">
-                          <div className="p-4 space-y-4">
-                            <div className="flex justify-between items-center">
-                              <h4 className="font-medium">Requirements</h4>
-                              <Button variant="outline" size="sm" className="flex items-center gap-1">
-                                <PlusCircle className="h-3 w-3" />
-                                Add Requirement
-                              </Button>
-                            </div>
-                            
-                            {role.requirements && role.requirements.length > 0 ? (
-                              <Table>
-                                <TableHeader>
-                                  <TableRow>
-                                    <TableHead>Requirement Name</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Assigned To</TableHead>
-                                    <TableHead>Due Date</TableHead>
-                                    <TableHead>Priority</TableHead>
-                                  </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                  {role.requirements.map((req) => (
-                                    <TableRow key={req.id}>
-                                      <TableCell>{req.name}</TableCell>
-                                      <TableCell>
-                                        <Badge variant="outline" className={getStatusBadgeClass(req.status)}>
-                                          {req.status}
-                                        </Badge>
-                                      </TableCell>
-                                      <TableCell>{req.assignedTo}</TableCell>
-                                      <TableCell>{req.dueDate}</TableCell>
-                                      <TableCell>
-                                        <Badge variant="outline" className={getPriorityBadgeClass(req.priority)}>
-                                          {req.priority}
-                                        </Badge>
-                                      </TableCell>
-                                    </TableRow>
-                                  ))}
-                                </TableBody>
-                              </Table>
-                            ) : (
-                              <div className="text-center py-6 bg-muted/10 rounded-md">
-                                <p className="text-muted-foreground">No requirements found for this role</p>
-                                <Button variant="outline" size="sm" className="mt-2 flex items-center gap-1">
-                                  <PlusCircle className="h-3 w-3" />
-                                  Create First Requirement
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </React.Fragment>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </Card>
+      {filteredRoles.length > 0 ? (
+        <div className="space-y-1">
+          {filteredRoles.map((role) => (
+            <RoleSection 
+              key={role.id} 
+              role={role} 
+              isOpen={openRoleIds.includes(role.id)}
+              onToggle={() => toggleRole(role.id)}
+            />
+          ))}
+        </div>
       ) : (
-        <div className="text-center p-12 bg-muted/20 rounded-lg border">
-          <h3 className="text-lg font-medium mb-2">No Roles Found</h3>
-          <p className="text-muted-foreground mb-6">
-            This client doesn't have any roles yet. Create your first role to get started.
-          </p>
-          <Button onClick={onCreateRole} className="flex items-center gap-2">
-            <PlusCircle className="h-4 w-4" />
+        <div className="text-center py-8 bg-muted/20 rounded-lg border animate-fade-in">
+          <h3 className="font-medium mb-2 text-sm">No roles found</h3>
+          <p className="text-muted-foreground mb-4 text-xs">This client doesn't have any roles yet.</p>
+          <Button 
+            onClick={() => onCreateRole(client.id)}
+            className="h-8 text-xs flex items-center gap-1"
+            size="sm"
+          >
+            <Plus className="h-3 w-3" />
             Create First Role
           </Button>
         </div>
       )}
+      
+      {/* Sticky action button */}
+      <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 animate-fade-in">
+        <Button 
+          onClick={() => onCreateRole(client.id)}
+          className="rounded-full h-12 w-12 shadow-lg"
+          size="icon"
+        >
+          <Plus className="h-5 w-5" />
+        </Button>
+      </div>
     </div>
   );
 };
