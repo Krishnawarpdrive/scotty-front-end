@@ -1,100 +1,47 @@
 
-import { Checklist, ChecklistItem } from '../types';
+import { Checklist } from '../types';
 
 export const mockChecklists: Checklist[] = [
   {
     id: '1',
-    name: 'General Onboarding Checklist',
+    name: 'General Onboarding',
     type: 'general',
     items: [
-      { id: '1', text: 'Send welcome email', completed: false },
-      { id: '2', text: 'Setup company accounts', completed: false },
-      { id: '3', text: 'Conduct initial orientation', completed: false },
-      { id: '4', text: 'Complete paperwork', completed: false }
+      { id: '1-1', text: 'Complete personal information form', completed: false },
+      { id: '1-2', text: 'Sign confidentiality agreement', completed: false },
+      { id: '1-3', text: 'Set up company email account', completed: false },
+      { id: '1-4', text: 'Schedule orientation session', completed: false }
     ],
-    createdAt: '2025-05-10T08:00:00.000Z',
-    updatedAt: '2025-05-10T08:00:00.000Z'
+    createdAt: '2023-04-15T10:30:00Z',
+    updatedAt: '2023-04-15T10:30:00Z'
   },
   {
     id: '2',
-    name: 'Tech Interview Process',
+    name: 'Frontend Developer Checklist',
     type: 'role',
-    roleId: '1',
+    roleId: 'role-1',
     items: [
-      { id: '1', text: 'Technical screening call', completed: false },
-      { id: '2', text: 'Coding assessment', completed: false },
-      { id: '3', text: 'System design interview', completed: false },
-      { id: '4', text: 'Culture fit interview', completed: false }
+      { id: '2-1', text: 'Set up development environment', completed: false },
+      { id: '2-2', text: 'Review project architecture documents', completed: false },
+      { id: '2-3', text: 'Complete Git workflow training', completed: false },
+      { id: '2-4', text: 'Assign first task in JIRA', completed: false }
     ],
-    createdAt: '2025-05-11T10:30:00.000Z',
-    updatedAt: '2025-05-11T10:30:00.000Z'
+    createdAt: '2023-05-20T14:45:00Z',
+    updatedAt: '2023-05-20T14:45:00Z'
   },
   {
     id: '3',
-    name: 'Acme Corp Compliance',
+    name: 'Acme Corporation Onboarding',
     type: 'client',
-    clientId: '1',
+    clientId: 'client-1',
     subdomain: 'region-north',
     items: [
-      { id: '1', text: 'NDA signing', completed: false },
-      { id: '2', text: 'Security clearance', completed: false },
-      { id: '3', text: 'Client-specific training', completed: false }
+      { id: '3-1', text: 'Review client documentation', completed: false },
+      { id: '3-2', text: 'Set up client-specific access', completed: false },
+      { id: '3-3', text: 'Schedule introduction call with client', completed: false },
+      { id: '3-4', text: 'Complete client security training', completed: false }
     ],
-    createdAt: '2025-05-12T14:15:00.000Z',
-    updatedAt: '2025-05-12T14:15:00.000Z'
-  },
-  {
-    id: '4',
-    name: 'Sales Team Onboarding',
-    type: 'role',
-    roleId: '2',
-    items: [
-      { id: '1', text: 'CRM training', completed: false },
-      { id: '2', text: 'Product knowledge session', completed: false },
-      { id: '3', text: 'Sales methodology training', completed: false },
-      { id: '4', text: 'Territory assignment', completed: false }
-    ],
-    createdAt: '2025-05-13T09:45:00.000Z',
-    updatedAt: '2025-05-13T09:45:00.000Z'
-  },
-  {
-    id: '5',
-    name: 'GlobalTech Recruitment Process',
-    type: 'client',
-    clientId: '2',
-    subdomain: 'department-hr',
-    items: [
-      { id: '1', text: 'Initial client screening', completed: false },
-      { id: '2', text: 'Custom assessment', completed: false },
-      { id: '3', text: 'Client interview coordination', completed: false },
-      { id: '4', text: 'Offer management', completed: false }
-    ],
-    createdAt: '2025-05-14T11:20:00.000Z',
-    updatedAt: '2025-05-14T11:20:00.000Z'
+    createdAt: '2023-06-05T09:15:00Z',
+    updatedAt: '2023-06-05T09:15:00Z'
   }
 ];
-
-// Mock roles for selection in role-based checklists
-export const roles = [
-  { id: '1', name: 'Software Engineer' },
-  { id: '2', name: 'Sales Representative' },
-  { id: '3', name: 'UX Designer' },
-  { id: '4', name: 'Product Manager' },
-  { id: '5', name: 'DevOps Engineer' }
-];
-
-// Mock clients for selection in client-based checklists
-export const clients = [
-  { id: '1', name: 'Acme Corporation' },
-  { id: '2', name: 'GlobalTech Industries' },
-  { id: '3', name: 'Innovate Solutions' },
-  { id: '4', name: 'Tech Startup Inc.' },
-  { id: '5', name: 'Enterprise Systems' }
-];
-
-export const useMockData = () => {
-  return {
-    roles,
-    clients
-  };
-};

@@ -21,6 +21,15 @@ export const useChecklistsData = () => {
     );
   };
   
+  // Edit checklist (opens drawer with checklist data for editing)
+  const editChecklist = (checklist: Checklist) => {
+    // This function is passed to components that need to trigger editing
+    // It simply passes the checklist to another component via state
+    // The actual updating happens with updateChecklist after editing is done
+    console.log('Edit checklist:', checklist.id);
+    return checklist;
+  };
+  
   // Delete a checklist
   const deleteChecklist = (checklistId: string) => {
     setChecklists(checklists.filter(checklist => checklist.id !== checklistId));
@@ -55,6 +64,7 @@ export const useChecklistsData = () => {
     isLoading,
     addChecklist,
     updateChecklist,
+    editChecklist,
     deleteChecklist,
     getChecklistById,
     getChecklistsByType,
