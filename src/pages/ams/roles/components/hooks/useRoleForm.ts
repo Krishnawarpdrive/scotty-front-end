@@ -65,7 +65,7 @@ export const useRoleForm = (clientId?: string, onSuccess?: (values: RoleFormValu
       };
 
       // Insert role into Supabase
-      const { data: insertedRoleData, error: roleError } = await supabase
+      const { data: insertedRole, error: roleError } = await supabase
         .from('roles')
         .insert(roleDataToInsert)
         .select()
@@ -73,7 +73,7 @@ export const useRoleForm = (clientId?: string, onSuccess?: (values: RoleFormValu
 
       if (roleError) throw roleError;
       
-      const roleId = insertedRoleData.id;
+      const roleId = insertedRole.id;
       
       // Insert skills relationships
       if (values.primarySkills.length > 0 || values.secondarySkills.length > 0) {
