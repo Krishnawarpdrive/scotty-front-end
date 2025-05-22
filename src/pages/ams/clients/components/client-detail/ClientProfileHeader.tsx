@@ -67,7 +67,7 @@ const ClientProfileHeader: React.FC<ClientProfileHeaderProps> = ({
                 <Input 
                   value={editedName} 
                   onChange={(e) => setEditedName(e.target.value)}
-                  className="h-8 text-base border-primary focus-visible:ring-1 focus-visible:ring-primary"
+                  className="h-8 text-xs border-primary focus-visible:ring-1 focus-visible:ring-primary"
                 />
                 <Button size="icon" variant="ghost" onClick={handleNameSave} className="h-7 w-7">
                   <Check className="h-3 w-3" />
@@ -77,7 +77,7 @@ const ClientProfileHeader: React.FC<ClientProfileHeaderProps> = ({
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 group">
                 <h1 className={cn(
                   "font-bold",
                   isCollapsed ? "text-lg" : "text-2xl"
@@ -97,20 +97,20 @@ const ClientProfileHeader: React.FC<ClientProfileHeaderProps> = ({
               </div>
             )}
             {!isCollapsed && (
-              <p className="text-xs text-muted-foreground">Client ID: {client.id.slice(0, 8)}</p>
+              <p className="text-[10px] text-muted-foreground">Client ID: {client.id.slice(0, 8)}</p>
             )}
           </div>
         </div>
 
         {!isCollapsed && (
           <div className="flex flex-wrap gap-2">
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-[10px]">
               {client.accountType || 'Customer'}
             </Badge>
             <Badge 
               variant="outline" 
               className={cn(
-                "text-xs",
+                "text-[10px]",
                 client.healthScore >= 70 ? 'bg-green-50 text-green-700 border-green-200' : 
                 client.healthScore >= 40 ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 
                 'bg-red-50 text-red-700 border-red-200'
@@ -141,7 +141,7 @@ const ClientProfileHeader: React.FC<ClientProfileHeaderProps> = ({
         <>
           {/* Contact Information */}
           <div className="pt-2 border-t mt-2 group">
-            <h3 className="text-xs font-medium mb-2">Contact Information</h3>
+            <h3 className="text-[10px] font-medium mb-2">Contact Information</h3>
             
             {isEditingContact ? (
               <div className="flex flex-col space-y-2">
@@ -162,8 +162,8 @@ const ClientProfileHeader: React.FC<ClientProfileHeaderProps> = ({
                   />
                 </div>
                 <div className="flex items-center gap-2 mt-2">
-                  <Button size="sm" variant="outline" onClick={handleContactSave} className="h-7 text-xs">Save</Button>
-                  <Button size="sm" variant="ghost" onClick={() => setIsEditingContact(false)} className="h-7 text-xs">Cancel</Button>
+                  <Button size="sm" variant="outline" onClick={handleContactSave} className="h-7 text-[10px]">Save</Button>
+                  <Button size="sm" variant="ghost" onClick={() => setIsEditingContact(false)} className="h-7 text-[10px]">Cancel</Button>
                 </div>
               </div>
             ) : (
@@ -207,7 +207,7 @@ const ClientProfileHeader: React.FC<ClientProfileHeaderProps> = ({
                   size="sm"
                   variant="ghost"
                   onClick={() => setIsEditingContact(true)}
-                  className="self-start md:self-center opacity-0 group-hover:opacity-100 transition-opacity h-7 text-xs"
+                  className="self-start md:self-center opacity-0 group-hover:opacity-100 transition-opacity h-7 text-[10px]"
                 >
                   <Pencil className="h-3 w-3 mr-1" /> Edit
                 </Button>
@@ -218,15 +218,15 @@ const ClientProfileHeader: React.FC<ClientProfileHeaderProps> = ({
           {/* Communication Channels & Additional Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t mt-2">
             <div>
-              <h3 className="text-xs font-medium mb-2">Communication Channels</h3>
+              <h3 className="text-[10px] font-medium mb-2">Communication Channels</h3>
               <div className="flex gap-2">
-                <Badge variant="outline" className="bg-gray-50 text-xs">Slack: No</Badge>
-                <Badge variant="outline" className="bg-gray-50 text-xs">Teams: No</Badge>
+                <Badge variant="outline" className="bg-gray-50 text-[10px]">Slack: No</Badge>
+                <Badge variant="outline" className="bg-gray-50 text-[10px]">Teams: No</Badge>
               </div>
             </div>
             
             <div>
-              <h3 className="text-xs font-medium mb-2">Client Owner</h3>
+              <h3 className="text-[10px] font-medium mb-2">Client Owner</h3>
               <p className="text-xs">{client.assignedHR || 'Not assigned'}</p>
             </div>
           </div>

@@ -111,31 +111,31 @@ const ClientDetailsPage = () => {
             <div className="flex overflow-x-auto scrollbar-hide">
               <TabsTrigger 
                 value="overview" 
-                className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none text-table"
+                className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none text-sm"
               >
                 Overview
               </TabsTrigger>
               <TabsTrigger 
                 value="roles" 
-                className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none text-table"
+                className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none text-sm"
               >
                 Roles
               </TabsTrigger>
               <TabsTrigger 
                 value="requirements" 
-                className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none text-table"
+                className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none text-sm"
               >
                 Requirements
               </TabsTrigger>
               <TabsTrigger 
                 value="activity" 
-                className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none text-table"
+                className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none text-sm"
               >
                 Activity Logs
               </TabsTrigger>
               <TabsTrigger 
                 value="agreements" 
-                className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none text-table"
+                className="flex-shrink-0 h-10 px-4 border-b-2 data-[state=active]:border-primary border-transparent rounded-none text-sm"
               >
                 Agreements
               </TabsTrigger>

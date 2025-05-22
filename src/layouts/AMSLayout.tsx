@@ -4,6 +4,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { AMSSidebar } from './AMSSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import Header from '@/components/common/Header';
 
 export const AMSLayout: React.FC = () => {
   const location = useLocation();
@@ -29,38 +30,44 @@ export const AMSLayout: React.FC = () => {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex h-screen w-full">
-        <AMSSidebar />
+      <div className="flex flex-col h-screen w-full">
+        <Header userName="Admin User" />
         
-        <div className="flex-1 overflow-auto">
-          <div className="p-6 w-full">
-            {/* Breadcrumb */}
-            <Breadcrumb className="mb-4">
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="/ams/dashboard">AMS</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                
-                {breadcrumbItems.map((item, index) => (
-                  item.isLastItem ? (
-                    <BreadcrumbItem key={index}>
-                      <BreadcrumbPage>{item.label}</BreadcrumbPage>
-                    </BreadcrumbItem>
-                  ) : (
-                    <React.Fragment key={index}>
-                      <BreadcrumbItem>
-                        <BreadcrumbLink href={item.path}>{item.label}</BreadcrumbLink>
+        <div className="flex flex-1 overflow-hidden">
+          <AMSSidebar />
+          
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* Sticky Breadcrumb */}
+            <div className="sticky top-0 z-10 bg-background border-b px-6 py-3">
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href="/ams/dashboard">AMS</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  
+                  {breadcrumbItems.map((item, index) => (
+                    item.isLastItem ? (
+                      <BreadcrumbItem key={index}>
+                        <BreadcrumbPage>{item.label}</BreadcrumbPage>
                       </BreadcrumbItem>
-                      <BreadcrumbSeparator />
-                    </React.Fragment>
-                  )
-                ))}
-              </BreadcrumbList>
-            </Breadcrumb>
+                    ) : (
+                      <React.Fragment key={index}>
+                        <BreadcrumbItem>
+                          <BreadcrumbLink href={item.path}>{item.label}</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                      </React.Fragment>
+                    )
+                  ))}
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
             
             {/* Main content area */}
-            <Outlet />
+            <div className="flex-1 overflow-auto p-6">
+              <Outlet />
+            </div>
           </div>
         </div>
       </div>
