@@ -10,7 +10,7 @@ import ClientDetailLoading from './components/ClientDetailLoading';
 import ClientDetailError from './components/ClientDetailError';
 import { useClientDetail } from './hooks/useClientDetail';
 import RoleCreationDrawer from '../roles/components/RoleCreationDrawer';
-import ClientProfileHeader from './components/client-detail/ClientProfileHeader';
+import ClientProfileHeader from './components/client-detail/profile-header';
 import ClientOverviewTab from './components/client-detail/ClientOverviewTab';
 import ClientRolesTab from './components/client-detail/ClientRolesTab';
 import ClientRequirementsTab from './components/client-detail/ClientRequirementsTab';
