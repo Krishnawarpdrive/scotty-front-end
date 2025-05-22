@@ -3,29 +3,36 @@ import React from 'react';
 import { TableRow, TableCell } from "@/components/ui/table";
 import { DataTableColumn } from './types';
 import { cn } from "@/lib/utils";
-import { getColumnValue } from './utils';
 
-interface DataTableRowProps<T> {
+export interface DataTableRowProps<T> {
   item: T;
   columns: DataTableColumn<T>[];
   onRowClick?: (item: T) => void;
 }
 
-export function DataTableRow<T>({
-  item,
+export function DataTableRow<T extends Record<string, any>>({ 
+  item, 
   columns,
   onRowClick,
 }: DataTableRowProps<T>) {
   return (
-    <TableRow 
-      className={cn(onRowClick && "cursor-pointer hover:bg-gray-50")}
+    <TableRow
+      className={cn(
+        "group",
+        onRowClick && "cursor-pointer hover:bg-muted/60"
+      )}
       onClick={() => onRowClick && onRowClick(item)}
     >
-      {columns.map((column) => (
-        <TableCell key={column.id}>
-          {column.cell ? column.cell(item) : getColumnValue(item, column)}
-        </TableCell>
-      ))}
+      {columns.map((column) => {
+        return (
+          <TableCell 
+            key={column.id}
+            className="text-[12px] text-[#262626] group-hover:text-[#009933] transition-colors"
+          >
+            {column.cell ? column.cell(item) : item[column.id]}
+          </TableCell>
+        );
+      })}
     </TableRow>
-  )
+  );
 }

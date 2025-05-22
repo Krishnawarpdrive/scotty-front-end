@@ -1,70 +1,84 @@
 
 import React from 'react';
-import { Eye, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Edit, Trash2, Eye } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ClientTableActionsProps {
   client: any;
-  onView: (client: any) => void;
+  onEdit?: (client: any) => void;
+  onDelete?: (client: any) => void;
+  onView?: (client: any) => void;
 }
 
-export const ClientTableActions: React.FC<ClientTableActionsProps> = ({ 
+const ClientTableActions: React.FC<ClientTableActionsProps> = ({ 
   client,
-  onView
+  onEdit,
+  onDelete,
+  onView 
 }) => {
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onEdit && onEdit(client);
+  };
+  
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete && onDelete(client.id);
+  };
+  
+  const handleView = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onView && onView(client);
+  };
+  
   return (
-    <div className="flex gap-1 justify-end">
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-7 w-7"
-              onClick={(e) => {
-                e.stopPropagation();
-                onView(client);
-              }}
-            >
-              <Eye className="h-3.5 w-3.5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>View Details</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+    <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+      <Button 
+        variant="outline" 
+        size="sm" 
+        className="h-8 w-8 p-0 border-green-100 hover:bg-green-50 hover:text-green-700"
+        onClick={handleView}
+      >
+        <Eye className="h-4 w-4" />
+        <span className="sr-only">View</span>
+      </Button>
       
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-7 w-7"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Edit className="h-3.5 w-3.5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Edit Client</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Button 
+        variant="outline" 
+        size="sm" 
+        className="h-8 w-8 p-0 border-blue-100 hover:bg-blue-50 hover:text-blue-700"
+        onClick={handleEdit}
+      >
+        <Edit className="h-4 w-4" />
+        <span className="sr-only">Edit</span>
+      </Button>
       
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-7 w-7 text-red-500"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Archive Client</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-8 w-8 p-0 border-red-100 hover:bg-red-50 hover:text-red-700"
+          >
+            <Trash2 className="h-4 w-4" />
+            <span className="sr-only">Delete</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuItem
+            onClick={handleDelete}
+            className="text-red-600 focus:text-red-600 cursor-pointer"
+          >
+            Confirm delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 };

@@ -1,15 +1,19 @@
 
 import React from 'react';
+import { cn } from "@/lib/utils";
 
 interface ClientNameCellProps {
   name: string;
 }
 
-export const ClientNameCell: React.FC<ClientNameCellProps> = ({ name }) => {
+const ClientNameCell: React.FC<ClientNameCellProps> = ({ name }) => {
   return (
-    <span className="font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer">
+    <div className={cn(
+      "font-medium hover:text-green-600 transition-colors",
+      "cursor-pointer"
+    )}>
       {name}
-    </span>
+    </div>
   );
 };
 
