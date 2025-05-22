@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import { RoleFormValues } from '../types/roleTypes';
+import { RoleFormValues, CustomField } from '../types/roleTypes';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import SkillSelector from '@/components/shared/SkillSelector';
@@ -32,7 +32,7 @@ const RoleSkills: React.FC<RoleSkillsProps> = ({ form }) => {
     form.setValue('tags', tags, { shouldValidate: true });
   }, [tags, form]);
 
-  const handleCustomFieldsChange = (updatedFields: any[]) => {
+  const handleCustomFieldsChange = (updatedFields: CustomField[]) => {
     form.setValue('customFields', updatedFields, { shouldValidate: true });
   };
 

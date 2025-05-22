@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import { RoleFormValues } from '../types/roleTypes';
+import { RoleFormValues, CustomField } from '../types/roleTypes';
 import { FormLabel } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -94,7 +94,7 @@ const RoleCertifications: React.FC<RoleCertificationsProps> = ({ form }) => {
     );
   };
 
-  const handleCustomFieldsChange = (updatedFields: any[]) => {
+  const handleCustomFieldsChange = (updatedFields: CustomField[]) => {
     form.setValue('customFields', updatedFields, { shouldValidate: true });
   };
   

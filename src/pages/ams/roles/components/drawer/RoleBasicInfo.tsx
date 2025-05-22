@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import { RoleFormValues } from '../types/roleTypes';
+import { RoleFormValues, CustomField } from '../types/roleTypes';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,7 +14,7 @@ interface RoleBasicInfoProps {
 const RoleBasicInfo: React.FC<RoleBasicInfoProps> = ({ form }) => {
   const customFields = form.watch('customFields') || [];
 
-  const handleCustomFieldsChange = (updatedFields: any[]) => {
+  const handleCustomFieldsChange = (updatedFields: CustomField[]) => {
     form.setValue('customFields', updatedFields, { shouldValidate: true });
   };
 

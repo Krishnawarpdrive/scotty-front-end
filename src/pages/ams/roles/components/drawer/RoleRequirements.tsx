@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import { RoleFormValues } from '../types/roleTypes';
+import { RoleFormValues, CustomField } from '../types/roleTypes';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import CustomFieldInput from './CustomFieldInput';
@@ -13,7 +13,7 @@ interface RoleRequirementsProps {
 const RoleRequirements: React.FC<RoleRequirementsProps> = ({ form }) => {
   const customFields = form.watch('customFields') || [];
 
-  const handleCustomFieldsChange = (updatedFields: any[]) => {
+  const handleCustomFieldsChange = (updatedFields: CustomField[]) => {
     form.setValue('customFields', updatedFields, { shouldValidate: true });
   };
   

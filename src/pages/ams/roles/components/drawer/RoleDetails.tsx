@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import { RoleFormValues } from '../types/roleTypes';
+import { RoleFormValues, CustomField } from '../types/roleTypes';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ interface RoleDetailsProps {
 const RoleDetails: React.FC<RoleDetailsProps> = ({ form }) => {
   const customFields = form.watch('customFields') || [];
 
-  const handleCustomFieldsChange = (updatedFields: any[]) => {
+  const handleCustomFieldsChange = (updatedFields: CustomField[]) => {
     form.setValue('customFields', updatedFields, { shouldValidate: true });
   };
 
@@ -124,6 +124,12 @@ const RoleDetails: React.FC<RoleDetailsProps> = ({ form }) => {
               <FormMessage />
             </FormItem>
           )}
+        />
+        
+        <CustomFieldInput 
+          section="basic"
+          customFields={customFields}
+          onFieldsChange={handleCustomFieldsChange}
         />
       </div>
     </div>
