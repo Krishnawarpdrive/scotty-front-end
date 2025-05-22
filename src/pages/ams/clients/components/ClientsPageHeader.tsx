@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Plus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
+import { Link, useNavigate } from 'react-router-dom';
 
 interface ClientsPageHeaderProps {
   onCreateClient: () => void;
@@ -9,15 +10,22 @@ interface ClientsPageHeaderProps {
 
 const ClientsPageHeader: React.FC<ClientsPageHeaderProps> = ({ onCreateClient }) => {
   return (
-    <div className="flex justify-between items-center">
-      <h1 className="text-3xl font-bold">Clients</h1>
-      <Button 
-        onClick={onCreateClient} 
-        className="bg-primary text-white flex items-center gap-2"
-      >
-        <Plus className="h-4 w-4" />
-        Add Client
-      </Button>
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h1 className="text-2xl font-semibold">Clients Management</h1>
+        <p className="text-muted-foreground">
+          Manage your client accounts, roles, and requirements
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Button 
+          onClick={onCreateClient}
+          className="flex items-center gap-2"
+        >
+          <PlusCircle className="h-4 w-4" />
+          Add Client
+        </Button>
+      </div>
     </div>
   );
 };

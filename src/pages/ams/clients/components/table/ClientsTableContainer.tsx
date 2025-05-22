@@ -1,56 +1,76 @@
 
 import React from 'react';
-import { DataTable } from "@/components/ui/data-table";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ClientsTableContainerProps {
   clients: any[];
   columns: any[];
-  onRowClick: (client: any) => void;
+  isLoading?: boolean;
+  onRowClick?: (client: any) => void;
 }
 
-export const ClientsTableContainer: React.FC<ClientsTableContainerProps> = ({
+const ClientsTableContainer: React.FC<ClientsTableContainerProps> = ({
   clients,
   columns,
+  isLoading = false,
   onRowClick
 }) => {
-  return (
-    <div className="overflow-hidden rounded-md border">
-      <div className="max-h-[calc(100vh-250px)] overflow-auto">
-        <div className="sticky-column-wrapper min-w-full">
-          <DataTable
-            data={clients}
-            columns={columns}
-            onRowClick={onRowClick}
-          />
-        </div>
+  if (isLoading) {
+    return (
+      <div className="w-full overflow-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {columns.map((column, i) => (
+                <TableHead key={i}>
+                  <Skeleton className="h-4 w-20" />
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array(5).fill(0).map((_, i) => (
+              <TableRow key={i}>
+                {columns.map((_, cellIndex) => (
+                  <TableCell key={cellIndex}>
+                    <Skeleton className="h-4 w-full" />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
-      <style>
-        {`
-        .sticky-column-wrapper table thead tr th:nth-child(2),
-        .sticky-column-wrapper table tbody tr td:nth-child(2) {
-          position: sticky;
-          left: 0;
-          z-index: 20;
-          background-color: white;
-        }
-        
-        .sticky-column-wrapper table thead tr th:nth-child(2)::after,
-        .sticky-column-wrapper table tbody tr td:nth-child(2)::after {
-          content: '';
-          position: absolute;
-          right: 0;
-          top: 0;
-          bottom: 0;
-          width: 1px;
-          background-color: #e5e7eb;
-        }
-        
-        .dark .sticky-column-wrapper table thead tr th:nth-child(2),
-        .dark .sticky-column-wrapper table tbody tr td:nth-child(2) {
-          background-color: hsl(var(--background));
-        }
-        `}
-      </style>
+    );
+  }
+
+  return (
+    <div className="w-full overflow-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {columns.map((column, i) => (
+              <TableHead key={i}>{column.header}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {clients.map((client) => (
+            <TableRow 
+              key={client.id} 
+              className="cursor-pointer hover:bg-muted/50"
+              onClick={() => onRowClick && onRowClick(client)}
+            >
+              {columns.map((column, i) => (
+                <TableCell key={i}>
+                  {column.cell ? column.cell(client) : client[column.accessorKey]}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };

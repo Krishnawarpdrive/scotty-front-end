@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import ClientsTableContainer from './ClientsTableContainer';
 import useClientTableColumns from './useClientTableColumns';
 import ClientDetailDrawer from '../ClientDetailDrawer';
@@ -28,6 +29,8 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
   onSelectAll,
   onSort
 }) => {
+  const navigate = useNavigate();
+  
   const { 
     selectedClient,
     handleViewClient, 
@@ -37,6 +40,11 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
   
   const handleSelectClient = (id: string) => {
     onSelectClient && onSelectClient(id);
+  };
+  
+  const handleRowClick = (client: any) => {
+    // Navigate to client details page
+    navigate(`/ams/clients/${client.id}`);
   };
   
   const columns = useClientTableColumns({
@@ -50,7 +58,7 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
       <ClientsTableContainer 
         clients={clients}
         columns={columns}
-        onRowClick={handleViewClient}
+        onRowClick={handleRowClick}
       />
       
       {selectedClient && (
