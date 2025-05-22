@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Eye, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,19 +13,26 @@ import { getHiringStatusBadge, getClientTierBadge, LastActivityIndicator } from 
 
 interface ClientsTableProps {
   clients: any[];
-  selectedClients: number[];
-  currentSort: {
-    field: string;
-    direction: string;
-  };
-  onSelectClient: (clientId: number) => void;
-  onSelectAll: () => void;
+  isLoading?: boolean;
+  onEdit?: (client: any) => void;
+  onDelete?: (id: string) => void;
+  onViewDetails?: (client: any) => void;
+  onSelectClient?: (client: any) => void;
+  selectedClients?: any[];
+  onSelectAll?: () => void;
+  onSort?: (column: string, direction: 'asc' | 'desc') => void; // Add this property
 }
 
-const ClientsTable: React.FC<ClientsTableProps> = ({
+export const ClientsTable: React.FC<ClientsTableProps> = ({ 
   clients,
-  selectedClients,
+  isLoading = false,
+  onEdit,
+  onDelete,
+  onViewDetails,
   onSelectClient,
+  selectedClients = [],
+  onSelectAll,
+  onSort // Receive this prop
 }) => {
   const [clientDetailId, setClientDetailId] = useState<number | null>(null);
   

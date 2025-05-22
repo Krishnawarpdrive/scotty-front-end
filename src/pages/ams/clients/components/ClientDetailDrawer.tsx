@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,15 +8,21 @@ import { getClientTierBadge, getHiringStatusBadge } from './ClientBadges';
 
 interface ClientDetailDrawerProps {
   client: any;
+  open: boolean;  // Add this property to match expected props
+  onOpenChange: () => void;
 }
 
-const ClientDetailDrawer: React.FC<ClientDetailDrawerProps> = ({ client }) => {
+const ClientDetailDrawer: React.FC<ClientDetailDrawerProps> = ({ 
+  client, 
+  open,
+  onOpenChange 
+}) => {
   return (
     <Drawer>
       <DrawerTrigger asChild>
         <Button variant="ghost" className="text-primary hover:text-primary/80 p-0 h-auto">{client.name}</Button>
       </DrawerTrigger>
-      <DrawerContent className="max-h-[85vh]">
+      <DrawerContent className="max-h-[85vh]" open={open} onOpenChange={onOpenChange}>
         <DrawerHeader>
           <DrawerTitle>Client Details: {client.name}</DrawerTitle>
         </DrawerHeader>
