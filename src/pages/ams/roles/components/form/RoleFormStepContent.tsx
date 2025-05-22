@@ -31,7 +31,7 @@ const RoleFormStepContent: React.FC<RoleFormStepContentProps> = ({
   setCustomFields
 }) => {
   const { formProgress } = useFormProgress(form);
-  const { currentStep } = formProgress;
+  const currentStep = formProgress.currentStep;
 
   return (
     <div className="py-4 flex-1">

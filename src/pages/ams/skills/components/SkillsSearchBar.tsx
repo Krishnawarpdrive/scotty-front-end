@@ -1,39 +1,63 @@
 
 import React from 'react';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search, Trash2, Download } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-interface SkillsSearchBarProps {
+export interface SkillsSearchBarProps {
   searchTerm: string;
-  onSearchChange: (value: string) => void;
+  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  selectedCount: number;
   onFilterClick: () => void;
+  onDeleteClick: () => void;
+  onExportClick: () => void;
+  setSearchTerm?: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const SkillsSearchBar: React.FC<SkillsSearchBarProps> = ({
   searchTerm,
   onSearchChange,
-  onFilterClick
+  selectedCount,
+  onDeleteClick,
+  onExportClick
 }) => {
   return (
-    <div className="flex gap-2 items-center">
+    <div className="flex items-center gap-2">
       <div className="relative flex-1">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search by Skill Name, Category, Aliases..."
-          className="pl-8"
+          placeholder="Search skills..."
+          className="pl-10"
           value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={onSearchChange}
         />
       </div>
-      <Button
-        variant="outline"
-        onClick={onFilterClick}
-        className="flex items-center gap-2 h-9"
-      >
-        <SlidersHorizontal className="h-4 w-4" />
-        Filters
-      </Button>
+      
+      {selectedCount > 0 && (
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
+            {selectedCount} selected
+          </span>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={onDeleteClick}
+            className="flex items-center gap-1"
+          >
+            <Trash2 className="h-4 w-4" />
+            Delete
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={onExportClick}
+            className="flex items-center gap-1"
+          >
+            <Download className="h-4 w-4" />
+            Export
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

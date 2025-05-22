@@ -1,5 +1,5 @@
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -9,232 +9,197 @@ export interface Skill {
   category: string;
   popularity: number;
   created_at: string;
-  aliases?: string[];
 }
 
 export const useSkillsData = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortColumn, setSortColumn] = useState<string | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
-  const [skills, setSkills] = useState<Skill[]>([]);
-  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  
-  const [columnFilters, setColumnFilters] = useState<Record<string, string[]>>({
-    name: [],
-    category: [],
-    popularity: [],
-    created_at: []
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [filteredSkills, setFilteredSkills] = useState<Skill[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sort, setSort] = useState<{ column: string; direction: 'asc' | 'desc' }>({
+    column: 'name',
+    direction: 'asc'
   });
-  const [columnSearchTerms, setColumnSearchTerms] = useState<Record<string, string>>({
-    name: '',
-    category: '',
-    popularity: '',
-    created_at: ''
-  });
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+  const [popularityFilter, setPopularityFilter] = useState<[number, number]>([0, 100]);
+  const [nameFilter, setNameFilter] = useState('');
 
-  // Fetch skills data from Supabase
+  // Fetch skills from Supabase
   useEffect(() => {
-    const fetchSkills = async () => {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('skills')
-          .select('*');
-        
-        if (error) {
-          throw error;
-        }
-        
-        // Transform data to match our Skill interface
-        const transformedData = data.map(skill => ({
-          ...skill,
-          aliases: [], // We don't have aliases in the database yet
-          usageCount: skill.popularity || 0,
-          dateAdded: skill.created_at
-        }));
-        
-        setSkills(transformedData);
-      } catch (error) {
-        console.error('Error fetching skills:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load skills data. Please try again later.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchSkills();
-  }, [toast]);
+  }, []);
 
-  // Filter skills based on search term and column filters
-  const filteredSkills = useMemo(() => {
-    return skills.filter((skill) => {
-      // Main search filter
-      const matchesSearch = searchTerm === '' || 
-        skill.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        skill.category?.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      // Column filters
-      const matchesNameFilter = columnFilters.name.length === 0 || 
-        columnFilters.name.some(filter => skill.name.includes(filter));
-      
-      const matchesCategoryFilter = columnFilters.category.length === 0 || 
-        columnFilters.category.includes(skill.category);
-      
-      // Add other column filters as needed
-      
-      return matchesSearch && matchesNameFilter && matchesCategoryFilter;
-    });
-  }, [searchTerm, columnFilters, skills]);
-
-  // Sort skills based on selected column and direction
-  const sortedSkills = useMemo(() => {
-    return [...filteredSkills].sort((a, b) => {
-      if (!sortColumn) return 0;
-      
-      const compareValue = (col: string) => {
-        switch (col) {
-          case 'name':
-            return a.name.localeCompare(b.name);
-          case 'category':
-            return (a.category || '').localeCompare(b.category || '');
-          case 'popularity':
-            return (a.popularity || 0) - (b.popularity || 0);
-          case 'created_at':
-            return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-          default:
-            return 0;
-        }
-      };
+  // Apply filters
+  useEffect(() => {
+    applyFilters();
+  }, [skills, searchTerm, nameFilter, categoryFilter, popularityFilter]);
   
-      return sortDirection === 'asc' 
-        ? compareValue(sortColumn) 
-        : -compareValue(sortColumn);
-    });
-  }, [filteredSkills, sortColumn, sortDirection]);
-
-  const handleSort = (column: string) => {
-    if (sortColumn === column) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortColumn(column);
-      setSortDirection('asc');
-    }
-  };
-
-  const handleSelectSkill = (id: string) => {
-    if (selectedSkills.includes(id)) {
-      setSelectedSkills(selectedSkills.filter(skillId => skillId !== id));
-    } else {
-      setSelectedSkills([...selectedSkills, id]);
-    }
-  };
-
-  const handleSelectAllSkills = () => {
-    if (selectedSkills.length === sortedSkills.length) {
-      setSelectedSkills([]);
-    } else {
-      setSelectedSkills(sortedSkills.map(skill => skill.id));
-    }
-  };
-  
-  // Handle column filter changes
-  const handleColumnFilterChange = (column: string, value: string) => {
-    if (columnFilters[column].includes(value)) {
-      setColumnFilters({
-        ...columnFilters,
-        [column]: columnFilters[column].filter(item => item !== value)
-      });
-    } else {
-      setColumnFilters({
-        ...columnFilters,
-        [column]: [...columnFilters[column], value]
-      });
-    }
-  };
-  
-  // Clear all filters for a column
-  const clearColumnFilter = (column: string) => {
-    setColumnFilters({
-      ...columnFilters,
-      [column]: []
-    });
-    setColumnSearchTerms({
-      ...columnSearchTerms,
-      [column]: ''
-    });
-  };
-  
-  // Update column search term
-  const handleColumnSearchChange = (column: string, value: string) => {
-    setColumnSearchTerms({
-      ...columnSearchTerms,
-      [column]: value
-    });
-  };
-
-  // Add new skill to database
-  const addSkill = async (skill: { name: string; category: string }) => {
+  const fetchSkills = async () => {
+    setLoading(true);
     try {
       const { data, error } = await supabase
         .from('skills')
-        .insert([{ 
-          name: skill.name,
-          category: skill.category,
-          popularity: 0
-        }])
-        .select();
-
-      if (error) throw error;
+        .select('*');
       
-      // Add to local state if successful
-      if (data && data[0]) {
-        setSkills([...skills, {
-          ...data[0],
-          aliases: [],
-          usageCount: 0,
-          dateAdded: data[0].created_at
-        }]);
+      if (error) throw error;
 
-        toast({
-          title: "Success",
-          description: `Skill "${skill.name}" has been added.`,
-        });
+      setSkills(data as Skill[]);
+      setFilteredSkills(data as Skill[]);
+    } catch (error) {
+      console.error('Error fetching skills:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load skills data',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const applyFilters = () => {
+    let filtered = [...skills];
+
+    // Apply search term
+    if (searchTerm) {
+      filtered = filtered.filter(skill => 
+        skill.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (skill.category && skill.category.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }
+
+    // Apply name filter
+    if (nameFilter) {
+      filtered = filtered.filter(skill => 
+        skill.name.toLowerCase().includes(nameFilter.toLowerCase())
+      );
+    }
+
+    // Apply category filter
+    if (categoryFilter.length > 0) {
+      filtered = filtered.filter(skill => 
+        categoryFilter.includes(skill.category || 'Uncategorized')
+      );
+    }
+
+    // Apply popularity filter
+    filtered = filtered.filter(skill => {
+      const popularity = skill.popularity || 0;
+      return popularity >= popularityFilter[0] && popularity <= popularityFilter[1];
+    });
+
+    // Apply sorting
+    filtered = sortSkills(filtered);
+
+    setFilteredSkills(filtered);
+  };
+
+  const sortSkills = (skillsToSort: Skill[]) => {
+    return [...skillsToSort].sort((a, b) => {
+      const aValue = a[sort.column as keyof Skill];
+      const bValue = b[sort.column as keyof Skill];
+
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sort.direction === 'asc' 
+          ? aValue.localeCompare(bValue) 
+          : bValue.localeCompare(aValue);
       }
       
-      return data?.[0];
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return sort.direction === 'asc' ? aValue - bValue : bValue - aValue;
+      }
+
+      return 0;
+    });
+  };
+
+  const handleSort = (column: string, direction: 'asc' | 'desc') => {
+    setSort({ column, direction });
+
+    const sorted = sortSkills(filteredSkills);
+    setFilteredSkills(sorted);
+  };
+
+  const handleSelectSkill = (skillId: string) => {
+    setSelectedSkills(prev => {
+      if (prev.includes(skillId)) {
+        return prev.filter(id => id !== skillId);
+      } else {
+        return [...prev, skillId];
+      }
+    });
+  };
+
+  const handleSelectAllSkills = () => {
+    if (selectedSkills.length === filteredSkills.length) {
+      setSelectedSkills([]);
+    } else {
+      setSelectedSkills(filteredSkills.map(skill => skill.id));
+    }
+  };
+
+  const resetFilters = () => {
+    setNameFilter('');
+    setCategoryFilter([]);
+    setPopularityFilter([0, 100]);
+    setSearchTerm('');
+  };
+
+  const addSkill = async (skillData: { name: string; category: string }) => {
+    try {
+      const { data, error } = await supabase
+        .from('skills')
+        .insert([
+          { 
+            name: skillData.name,
+            category: skillData.category,
+            popularity: 0,
+          }
+        ])
+        .select();
+      
+      if (error) throw error;
+      
+      // Add the new skill to the list
+      if (data && data.length > 0) {
+        const newSkill = data[0] as Skill;
+        setSkills(prev => [...prev, newSkill]);
+        return newSkill;
+      }
+      
+      return null;
     } catch (error) {
       console.error('Error adding skill:', error);
       toast({
-        title: "Error",
-        description: "Failed to add skill. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to add skill',
+        variant: 'destructive',
       });
       return null;
     }
   };
 
+  // Prepare data for the table
+  const sortedSkills = filteredSkills;
+
   return {
     searchTerm,
     setSearchTerm,
-    sortColumn,
-    sortDirection,
-    selectedSkills,
-    columnFilters,
-    columnSearchTerms,
     sortedSkills,
+    selectedSkills,
     loading,
+    nameFilter,
+    setNameFilter,
+    categoryFilter,
+    setCategoryFilter,
+    popularityFilter,
+    setPopularityFilter,
+    resetFilters,
     handleSort,
     handleSelectSkill,
     handleSelectAllSkills,
-    handleColumnFilterChange,
-    clearColumnFilter,
-    handleColumnSearchChange,
     addSkill
   };
 };

@@ -8,7 +8,7 @@ import SkillsTable from './components/SkillsTable';
 import SkillsSearchBar from './components/SkillsSearchBar';
 import SkillsFilterSheet from './components/SkillsFilterSheet';
 import SkillFormDrawer from './components/SkillFormDrawer';
-import { useSkillsData, Skill } from './hooks/useSkillsData';
+import { useSkillsData } from './hooks/useSkillsData';
 import { skillCategories } from './data/mockData';
 
 const SkillsLibraryPage: React.FC = () => {
@@ -26,7 +26,14 @@ const SkillsLibraryPage: React.FC = () => {
     handleSelectSkill,
     handleSelectAllSkills,
     loading,
-    addSkill
+    addSkill,
+    nameFilter,
+    setNameFilter,
+    categoryFilter,
+    setCategoryFilter,
+    popularityFilter, 
+    setPopularityFilter,
+    resetFilters
   } = skillsData;
 
   const handleAddSkill = async (skillData: { name: string; category: string }) => {
@@ -63,6 +70,20 @@ const SkillsLibraryPage: React.FC = () => {
     });
   };
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filterData = {
+    nameFilter,
+    setNameFilter,
+    categoryFilter,
+    setCategoryFilter,
+    popularityFilter,
+    setPopularityFilter,
+    resetFilters
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -83,7 +104,7 @@ const SkillsLibraryPage: React.FC = () => {
         <CardContent>
           <SkillsSearchBar 
             searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
+            onSearchChange={handleSearchChange}
             selectedCount={selectedSkills.length}
             onFilterClick={() => setFilterSheetOpen(true)}
             onDeleteClick={handleDeleteSkills}
@@ -106,8 +127,8 @@ const SkillsLibraryPage: React.FC = () => {
       <SkillsFilterSheet 
         open={filterSheetOpen}
         onOpenChange={setFilterSheetOpen}
-        skillsData={skillsData}
         categories={skillCategories}
+        skillsData={filterData}
       />
 
       <SkillFormDrawer 
