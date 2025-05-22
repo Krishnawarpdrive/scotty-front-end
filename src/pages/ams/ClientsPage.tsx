@@ -9,6 +9,7 @@ import ClientsPageHeader from './clients/components/ClientsPageHeader';
 import ClientsPageContent from './clients/components/ClientsPageContent';
 import ClientDetailDrawer from './clients/components/ClientDetailDrawer';
 import ClientAccountDrawer from './clients/components/ClientAccountDrawer';
+import { Client } from './clients/types/ClientTypes';
 
 const ClientsPage = () => {
   const { toast } = useToast();

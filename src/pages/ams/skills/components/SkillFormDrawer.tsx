@@ -1,130 +1,138 @@
-
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import React, { useState } from 'react';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerFooter,
-} from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
-// Define the skill form schema
 const skillFormSchema = z.object({
-  name: z.string().min(1, { message: "Skill name is required" }),
-  category: z.string().min(1, { message: "Category is required" }),
+  name: z.string().min(2, {
+    message: "Skill name must be at least 2 characters.",
+  }),
+  category: z.string().optional(),
 });
 
-type SkillFormValues = z.infer<typeof skillFormSchema>;
-
-export interface SkillFormDrawerProps {
+interface SkillFormDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  categories: string[];
-  onSkillCreated?: (skillData: { name: string; category: string }) => Promise<void>;
+  onSkillCreated?: (skill: any) => void;
 }
 
-const SkillFormDrawer: React.FC<SkillFormDrawerProps> = ({
-  open,
-  onOpenChange,
-  categories,
-  onSkillCreated
-}) => {
-  const form = useForm<SkillFormValues>({
+const SkillFormDrawer: React.FC<SkillFormDrawerProps> = ({ open, onOpenChange, onSkillCreated }) => {
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<z.infer<typeof skillFormSchema>>({
     resolver: zodResolver(skillFormSchema),
     defaultValues: {
       name: "",
-      category: "",
+      category: "General",
     },
   });
+  
+  const onSubmit = async (data: z.infer<typeof skillFormSchema>) => {
+    try {
+      setIsSubmitting(true);
+      
+      // Ensure name and category are not undefined
+      const skillData = {
+        name: data.name || '',
+        category: data.category || 'General'
+      };
 
-  const { reset, formState } = form;
-  const { isSubmitting } = formState;
+      const { data: newSkill, error } = await supabase
+        .from('skills')
+        .insert([skillData])
+        .select()
+        .single();
 
-  // Reset form when drawer is opened
-  React.useEffect(() => {
-    if (open) {
-      reset();
-    }
-  }, [open, reset]);
+      if (error) {
+        console.error("Error creating skill:", error);
+        toast({
+          title: "Error",
+          description: "Failed to create skill. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-  const handleSubmit = async (data: SkillFormValues) => {
-    if (onSkillCreated) {
-      await onSkillCreated(data);
+      toast({
+        title: "Success",
+        description: `Skill ${newSkill.name} created successfully.`,
+      });
+
+      onSkillCreated?.(newSkill);
+      onOpenChange(false);
       form.reset();
+    } catch (error) {
+      console.error("Skill creation error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create skill. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
-        <div className="mx-auto w-full max-w-sm">
-          <DrawerHeader>
-            <DrawerTitle>Add New Skill</DrawerTitle>
-          </DrawerHeader>
-          
-          <div className="px-4">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Skill Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter skill name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="category"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Category</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category} value={category}>
-                              {category}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <DrawerFooter className="px-0 pb-0 pt-2">
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? 'Creating...' : 'Create Skill'}
-                  </Button>
-                  <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                    Cancel
-                  </Button>
-                </DrawerFooter>
-              </form>
-            </Form>
-          </div>
-        </div>
-      </DrawerContent>
-    </Drawer>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="sm:max-w-md">
+        <SheetHeader>
+          <SheetTitle>Create Skill</SheetTitle>
+        </SheetHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Skill Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter skill name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter category" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Creating..." : "Create Skill"}
+            </Button>
+          </form>
+        </Form>
+      </SheetContent>
+    </Sheet>
   );
 };
 

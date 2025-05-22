@@ -1,12 +1,20 @@
 
 import React from 'react';
-import { UseFormReturn, useWatch } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
+
+export interface FormProgressType {
+  currentStep: number;
+  isFirstStep: boolean;
+  isLastStep: boolean;
+  goToNextStep: () => void;
+  goToPrevStep: () => void;
+}
 
 export const useFormProgress = (form: UseFormReturn<any>) => {
   const formSteps = ['basicInfo', 'details', 'skills', 'preview', 'customFields'];
   const [currentStep, setCurrentStep] = React.useState(0);
 
-  const formProgress = {
+  const formProgress: FormProgressType = {
     currentStep,
     isFirstStep: currentStep === 0,
     isLastStep: currentStep === formSteps.length - 1,

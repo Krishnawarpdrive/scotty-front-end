@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
@@ -10,6 +9,7 @@ import SkillsFilterSheet from './components/SkillsFilterSheet';
 import SkillFormDrawer from './components/SkillFormDrawer';
 import { useSkillsData } from './hooks/useSkillsData';
 import { skillCategories } from './data/mockData';
+import { Skill } from './types/SkillTypes';
 
 const SkillsLibraryPage: React.FC = () => {
   const { toast } = useToast();
