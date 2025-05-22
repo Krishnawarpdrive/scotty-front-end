@@ -31,10 +31,16 @@ const skillFormSchema = z.object({
 interface SkillFormDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSkillCreated?: (skill: any) => void;
+  onSkillCreated: (skillData: { name: string; category: string }) => Promise<void>;
+  categories: string[];
 }
 
-const SkillFormDrawer: React.FC<SkillFormDrawerProps> = ({ open, onOpenChange, onSkillCreated }) => {
+export const SkillFormDrawer: React.FC<SkillFormDrawerProps> = ({
+  open,
+  onOpenChange,
+  onSkillCreated,
+  categories
+}) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 

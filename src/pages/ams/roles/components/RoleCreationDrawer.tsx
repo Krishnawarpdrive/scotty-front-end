@@ -1,180 +1,125 @@
-
-import React, { useState } from 'react';
-import { useForm, UseFormReturn } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState, useEffect } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+  SheetDescription
+} from '@/components/ui/sheet';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from "@/components/ui/textarea";
 
-import { Form } from "@/components/ui/form";
+const roleFormSchema = z.object({
+  roleName: z.string().min(2, {
+    message: "Role name must be at least 2 characters.",
+  }),
+  jobTitle: z.string().min(2, {
+    message: "Job title must be at least 2 characters.",
+  }),
+  department: z.string().optional(),
+  experienceLevel: z.string().optional(),
+  employmentType: z.string().optional(),
+  location: z.string().optional(),
+  salaryRange: z.string().optional(),
+  responsibilities: z.string().optional(),
+  requirements: z.string().optional(),
+});
 
-// Import schema
-import { formSchema, FormValues } from './roleFormSchema';
-
-// Import refactored components
-import { RoleFormProvider } from './context/RoleFormContext';
-import { useRoleTemplates } from './hooks/useRoleTemplates';
-import { useFormProgress } from './hooks/useFormProgress';
-import RoleFormNavigation from './form/RoleFormNavigation';
-import RoleFormStepSelector from './form/RoleFormStepSelector';
-import RoleTemplateSelector from './form/RoleTemplateSelector';
-import RoleFormStepContent from './form/RoleFormStepContent';
+type RoleFormValues = z.infer<typeof roleFormSchema>;
 
 interface RoleCreationDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onRoleCreated?: (values: RoleFormValues) => void;
   clientId?: string;
   clientName?: string;
-  onRoleCreated?: (role: any) => void;
 }
 
-export const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
+const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
   open,
   onOpenChange,
+  onRoleCreated,
   clientId,
-  clientName,
-  onRoleCreated
+  clientName
 }) => {
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const formSections = ["Basic Info", "Details", "Skills", "Tags", "Custom Fields"];
+  const [currentStep, setCurrentStep] = useState(0);
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<RoleFormValues>({
+    resolver: zodResolver(roleFormSchema),
     defaultValues: {
       roleName: "",
-      externalName: "",
-      roleCategory: "",
-      workMode: "",
+      jobTitle: "",
+      department: "",
+      experienceLevel: "",
       employmentType: "",
-      minExperience: "",
-      maxExperience: "",
-      jobDescription: "",
-      saveAsTemplate: false
+      location: "",
+      salaryRange: "",
+      responsibilities: "",
+      requirements: "",
     },
-    mode: "onChange"
   });
 
-  const { roleTemplates, selectedTemplate, setSelectedTemplate } = useRoleTemplates(form);
+  const calculateProgress = (values: RoleFormValues): number => {
+    const totalFields = Object.keys(values).length;
+    const filledFields = Object.values(values).filter(value => !!value).length;
+    return (filledFields / totalFields) * 100;
+  };
 
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [customFields, setCustomFields] = useState<{ id: string; label: string; value: string; }[]>([]);
+  const currentValues = form.getValues();
+  const formProgress: number = calculateProgress(currentValues);
 
-  const headerTitle = clientId 
-    ? `Create New Role for ${clientName}` 
-    : "Create New Role";
+  useEffect(() => {
+    form.reset({
+      ...form.getValues(),
+    });
+  }, [open]);
 
-  const headerDescription = clientId 
-    ? `Add a role specifically for ${clientName}` 
-    : "Add a role to the global role library that can be used across different clients.";
-
-  const onSubmit = async (values: FormValues) => {
+  const onSubmit = async (values: RoleFormValues) => {
     try {
       setIsSubmitting(true);
-      
-      // First, insert the role
-      const { data: roleData, error: roleError } = await supabase
-        .from('roles')
-        .insert([
-          {
-            name: values.roleName,
-            external_name: values.externalName || null,
-            category: values.roleCategory,
-            work_mode: values.workMode,
-            employment_type: values.employmentType,
-            min_experience: values.minExperience,
-            max_experience: values.maxExperience,
-            job_description: values.jobDescription || null,
-            is_template: values.saveAsTemplate,
-            client_id: clientId || null,
-            created_by: 'Current User', // Replace with actual user name when auth is implemented
-          }
-        ])
-        .select();
 
-      if (roleError) throw roleError;
-      
-      const roleId = roleData[0].id;
-      
-      // Add skills relationships if there are any selected skills
-      if (selectedSkills.length > 0) {
-        const skillRelations = selectedSkills.map(skillId => ({
-          role_id: roleId,
-          skill_id: skillId
-        }));
-        
-        const { error: skillsError } = await supabase
-          .from('role_skills')
-          .insert(skillRelations);
-          
-        if (skillsError) throw skillsError;
-      }
-      
-      // Add tags relationships if there are any selected tags
-      if (selectedTags.length > 0) {
-        const tagRelations = selectedTags.map(tagId => ({
-          role_id: roleId,
-          tag_id: tagId
-        }));
-        
-        const { error: tagsError } = await supabase
-          .from('role_tags')
-          .insert(tagRelations);
-          
-        if (tagsError) throw tagsError;
-      }
-      
-      // Add custom fields if any
-      if (customFields.length > 0) {
-        const customFieldsData = customFields.map(field => ({
-          role_id: roleId,
-          label: field.label,
-          value: field.value
-        }));
-        
-        const { error: customFieldsError } = await supabase
-          .from('custom_fields')
-          .insert(customFieldsData);
-          
-        if (customFieldsError) throw customFieldsError;
-      }
-      
-      toast({
-        title: "Role created successfully",
-        description: `${values.roleName} has been added to ${clientName || "the global role library"}.`,
-      });
-      
-      // Trigger the callback if provided
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Notify parent component about successful role creation
       if (onRoleCreated) {
-        onRoleCreated(roleData[0]);
+        onRoleCreated(values);
       }
-      
-      // Close drawer and navigate if appropriate
+
+      toast({
+        title: "Success!",
+        description: `Role ${values.roleName} has been created successfully.`,
+      });
+
+      // Reset form
+      form.reset();
+
+      // Close drawer
       onOpenChange(false);
-      
-      if (clientId) {
-        navigate(`/ams/clients/${clientId}`, { 
-          state: { 
-            fromRoleCreation: true,
-            clientName
-          } 
-        });
-      } else {
-        navigate("/ams/roles");
-      }
     } catch (error) {
-      console.error('Error creating role:', error);
+      console.error("Error creating role:", error);
       toast({
         title: "Error",
         description: "Failed to create role. Please try again.",
@@ -186,77 +131,190 @@ export const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
   };
 
   return (
-    <RoleFormProvider clientId={clientId} clientName={clientName}>
-      <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="w-[70vw] max-w-[800px] h-full overflow-y-auto">
-          <SheetHeader className="border-b pb-4">
-            <SheetTitle className="text-xl">{headerTitle}</SheetTitle>
-            <SheetDescription>
-              {headerDescription}
-            </SheetDescription>
-            
-            <RoleTemplateSelector 
-              selectedTemplate={selectedTemplate}
-              setSelectedTemplate={setSelectedTemplate}
-              roleTemplates={roleTemplates}
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="w-full max-w-md">
+        <SheetHeader className="space-y-2.5">
+          <SheetTitle>Create New Role</SheetTitle>
+          <SheetDescription>
+            {clientName ? `Create a new role for ${clientName}.` : 'Enter the role details to create a new job opening.'}
+          </SheetDescription>
+        </SheetHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="roleName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. Software Engineer" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </SheetHeader>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
-              <RoleFormStepSelectorWithProgress 
-                form={form} 
-                formSections={formSections} 
-              />
-              
-              <RoleFormStepContent 
-                form={form} 
-                selectedSkills={selectedSkills}
-                setSelectedSkills={setSelectedSkills}
-                selectedTags={selectedTags}
-                setSelectedTags={setSelectedTags}
-                customFields={customFields}
-                setCustomFields={setCustomFields}
-              />
-              
-              <RoleFormNavigationWithProgress 
-                form={form}
-                formSections={formSections}
-                onClose={() => onOpenChange(false)}
-                isSubmitting={isSubmitting}
-              />
-            </form>
-          </Form>
-        </SheetContent>
-      </Sheet>
-    </RoleFormProvider>
-  );
-};
+            <FormField
+              control={form.control}
+              name="jobTitle"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. Senior Software Engineer" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-// Helper component to inject form progress to StepSelector
-const RoleFormStepSelectorWithProgress: React.FC<{
-  form: UseFormReturn<FormValues>;
-  formSections: string[];
-}> = ({ form, formSections }) => {
-  const { formProgress } = useFormProgress(form);
-  return <RoleFormStepSelector formSections={formSections} formProgress={formProgress} />;
-};
+            <FormField
+              control={form.control}
+              name="department"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Department</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. Engineering" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-// Helper component to inject form progress to Navigation
-const RoleFormNavigationWithProgress: React.FC<{
-  form: UseFormReturn<FormValues>;
-  formSections: string[];
-  onClose: () => void;
-  isSubmitting: boolean;
-}> = ({ form, formSections, onClose, isSubmitting }) => {
-  const { formProgress } = useFormProgress(form);
-  return (
-    <RoleFormNavigation 
-      formSections={formSections} 
-      onClose={onClose} 
-      formProgress={formProgress}
-      isSubmitting={isSubmitting}
-    />
+            <FormField
+              control={form.control}
+              name="experienceLevel"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Experience Level</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select experience level" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Entry Level">Entry Level</SelectItem>
+                      <SelectItem value="Mid Level">Mid Level</SelectItem>
+                      <SelectItem value="Senior Level">Senior Level</SelectItem>
+                      <SelectItem value="Lead">Lead</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="employmentType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Employment Type</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select employment type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Full-time">Full-time</SelectItem>
+                      <SelectItem value="Part-time">Part-time</SelectItem>
+                      <SelectItem value="Contract">Contract</SelectItem>
+                      <SelectItem value="Temporary">Temporary</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. New York, NY" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="salaryRange"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Salary Range</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. $80,000 - $120,000" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="responsibilities"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Responsibilities</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="List the main responsibilities of this role"
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="requirements"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Requirements</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="List the main requirements for this role"
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex justify-end gap-3">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2"></div>
+                    Creating
+                  </>
+                ) : (
+                  "Create Role"
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </SheetContent>
+    </Sheet>
   );
 };
 

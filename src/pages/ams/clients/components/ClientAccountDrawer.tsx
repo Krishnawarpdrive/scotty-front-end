@@ -2,9 +2,9 @@
 import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Progress } from "@/components/ui/progress";
 
 import {
   Sheet,
@@ -14,37 +14,14 @@ import {
   SheetDescription
 } from '@/components/ui/sheet';
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-
-import { Input } from '@/components/ui/input';
+import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
-// Simplified form schema for client creation
-const formSchema = z.object({
-  name: z.string().min(1, { message: "Client name is required" }),
-  contact: z.string().min(1, { message: "Contact person is required" }),
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  accountType: z.string().min(1, { message: "Account type is required" }),
-  assignedHR: z.string().min(1, { message: "Assigned HR is required" }),
-  clientTier: z.string().min(1, { message: "Client tier is required" }),
-  status: z.string().min(1, { message: "Status is required" }),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import AccountInfoStep from './drawer/AccountInfoStep';
+import CompanyProfileStep from './drawer/CompanyProfileStep';
+import SourcingDetailsStep from './drawer/SourcingDetailsStep';
+import AddressDetailsStep from './drawer/AddressDetailsStep';
+import { drawerFormSchema, DrawerFormValues, CustomField } from './drawer/clientDrawerSchema';
 
 interface ClientAccountDrawerProps {
   open: boolean;
@@ -59,21 +36,78 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
 }) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [sameAsBilling, setSameAsBilling] = useState(true);
+  
+  // Custom fields state
+  const [customAccountFields, setCustomAccountFields] = useState<CustomField[]>([]);
+  const [customProfileFields, setCustomProfileFields] = useState<CustomField[]>([]);
+  const [customSourcingFields, setCustomSourcingFields] = useState<CustomField[]>([]);
+  
+  // Steps titles
+  const formSections = ["Account Information", "Company Profile", "Sourcing Details", "Address Details"];
+  
+  // Calculate progress based on current step
+  const progress = ((currentStep + 1) / formSections.length) * 100;
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<DrawerFormValues>({
+    resolver: zodResolver(drawerFormSchema),
     defaultValues: {
-      name: '',
-      contact: '',
+      // Account Information
+      accountName: '',
+      accountType: '',
+      customerCode: '',
+      parentAccount: '',
+      website: '',
+      phone: '',
       email: '',
-      accountType: 'Enterprise',
-      assignedHR: 'Sarah Lee',
-      clientTier: 'A',
-      status: 'active',
+      description: '',
+      
+      // Company Profile
+      currency: '',
+      headquarters: '',
+      industry: '',
+      employees: '',
+      segment: '',
+      
+      // Sourcing Details
+      sourcingType: '',
+      sourcingAccount: '',
+      sourcingPerson: '',
+      referrerAccount: '',
+      commission: '',
+      campaignName: '',
+      
+      // Address Details
+      billingCountry: '',
+      billingState: '',
+      billingCity: '',
+      billingZip: '',
+      billingStreet: '',
+      sameAsBilling: true,
+      shippingCountry: '',
+      shippingState: '',
+      shippingCity: '',
+      shippingZip: '',
+      shippingStreet: '',
     },
+    mode: "onChange"
   });
 
-  const onSubmit = async (values: FormValues) => {
+  // Handle step navigation
+  const nextStep = () => {
+    if (currentStep < formSections.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+  
+  const prevStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const onSubmit = async (values: DrawerFormValues) => {
     try {
       setIsSubmitting(true);
       
@@ -82,17 +116,19 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
         .from('clients')
         .insert([
           {
-            name: values.name,
-            contact: values.contact,
+            name: values.accountName,
+            contact: values.sourcingPerson || 'Contact Person',
             email: values.email,
             account_type: values.accountType,
-            assigned_hr: values.assignedHR,
-            client_tier: values.clientTier,
-            status: values.status,
+            assigned_hr: 'Sarah Lee', // Default HR
+            client_tier: 'A', // Default tier
+            status: 'active',
             health_score: 100, // Default values
             budget_utilized: 0,
             total_requirements: 0,
-            hiring_status: 'Active'
+            hiring_status: 'Active',
+            industry: values.industry,
+            headquarters: values.headquarters
           }
         ])
         .select();
@@ -116,7 +152,9 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
         clientTier: data[0].client_tier,
         healthScore: data[0].health_score,
         budgetUtilized: data[0].budget_utilized,
-        notes: data[0].notes
+        notes: data[0].notes,
+        industry: data[0].industry,
+        headquarters: data[0].headquarters
       };
       
       // Notify parent component about successful client creation
@@ -126,11 +164,12 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
       
       toast({
         title: 'Success!',
-        description: `Client ${values.name} has been created successfully.`,
+        description: `Client ${values.accountName} has been created successfully.`,
       });
       
-      // Reset form
+      // Reset form and steps
       form.reset();
+      setCurrentStep(0);
       
       // Close drawer
       onOpenChange(false);
@@ -146,156 +185,80 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
     }
   };
 
+  // When sameAsBilling changes
+  React.useEffect(() => {
+    const billingData = form.getValues();
+    
+    if (sameAsBilling) {
+      form.setValue("shippingCountry", billingData.billingCountry);
+      form.setValue("shippingState", billingData.billingState);
+      form.setValue("shippingCity", billingData.billingCity);
+      form.setValue("shippingZip", billingData.billingZip);
+      form.setValue("shippingStreet", billingData.billingStreet);
+    }
+  }, [sameAsBilling, form]);
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full max-w-md overflow-y-auto">
-        <SheetHeader className="mb-6">
+      <SheetContent className="w-full lg:max-w-md overflow-y-auto">
+        <SheetHeader className="mb-4">
           <SheetTitle>Add New Client</SheetTitle>
           <SheetDescription>
             Create a new client account in your system.
           </SheetDescription>
         </SheetHeader>
 
+        {/* Progress indicator */}
+        <div className="mb-6">
+          <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <span>{formSections[currentStep]}</span>
+            <span>Step {currentStep + 1} of {formSections.length}</span>
+          </div>
+          <Progress value={progress} className="h-2" />
+        </div>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Client Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Acme Corporation" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+            <div className="max-h-[calc(100vh-220px)] overflow-y-auto pr-1">
+              {/* Account Information - Step 0 */}
+              {currentStep === 0 && (
+                <AccountInfoStep 
+                  form={form} 
+                  customAccountFields={customAccountFields}
+                  setCustomAccountFields={setCustomAccountFields}
+                />
               )}
-            />
-
-            <FormField
-              control={form.control}
-              name="contact"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contact Person</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John Doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+              
+              {/* Company Profile - Step 1 */}
+              {currentStep === 1 && (
+                <CompanyProfileStep 
+                  form={form} 
+                  customProfileFields={customProfileFields}
+                  setCustomProfileFields={setCustomProfileFields}
+                />
               )}
-            />
-
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contact Email</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="john@acme.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+              
+              {/* Sourcing Details - Step 2 */}
+              {currentStep === 2 && (
+                <SourcingDetailsStep 
+                  form={form} 
+                  customSourcingFields={customSourcingFields}
+                  setCustomSourcingFields={setCustomSourcingFields}
+                />
               )}
-            />
-
-            <FormField
-              control={form.control}
-              name="accountType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Account Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select account type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Enterprise">Enterprise</SelectItem>
-                      <SelectItem value="SMB">SMB</SelectItem>
-                      <SelectItem value="Startup">Startup</SelectItem>
-                      <SelectItem value="Government">Government</SelectItem>
-                      <SelectItem value="Non-Profit">Non-Profit</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
+              
+              {/* Address Details - Step 3 */}
+              {currentStep === 3 && (
+                <AddressDetailsStep 
+                  form={form} 
+                  sameAsBilling={sameAsBilling} 
+                  setSameAsBilling={setSameAsBilling} 
+                />
               )}
-            />
+            </div>
 
-            <FormField
-              control={form.control}
-              name="assignedHR"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Assigned HR</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select HR representative" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Sarah Lee">Sarah Lee</SelectItem>
-                      <SelectItem value="Mike Chen">Mike Chen</SelectItem>
-                      <SelectItem value="Anna Smith">Anna Smith</SelectItem>
-                      <SelectItem value="David Rodriguez">David Rodriguez</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="clientTier"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Client Tier</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select client tier" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="A">Tier A</SelectItem>
-                      <SelectItem value="B">Tier B</SelectItem>
-                      <SelectItem value="C">Tier C</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Status</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex justify-end gap-3 pt-2">
+            {/* Form navigation controls */}
+            <div className="flex justify-between items-center border-t pt-4 mt-4">
               <Button 
                 type="button" 
                 variant="outline" 
@@ -303,19 +266,41 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
               >
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-1"></div>
-                    Creating...
-                  </>
-                ) : (
-                  'Create Client'
+              
+              <div className="flex space-x-2">
+                {currentStep > 0 && (
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={prevStep}
+                  >
+                    Previous
+                  </Button>
                 )}
-              </Button>
+                
+                {currentStep < formSections.length - 1 ? (
+                  <Button 
+                    type="button" 
+                    onClick={nextStep}
+                  >
+                    Next
+                  </Button>
+                ) : (
+                  <Button 
+                    type="submit" 
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-1"></div>
+                        Creating...
+                      </>
+                    ) : (
+                      'Create Client'
+                    )}
+                  </Button>
+                )}
+              </div>
             </div>
           </form>
         </Form>
