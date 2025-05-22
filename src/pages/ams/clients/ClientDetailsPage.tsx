@@ -40,10 +40,11 @@ const ClientDetailsPage = () => {
         open={isRoleDrawerOpen}
         onOpenChange={setIsRoleDrawerOpen}
         clientId={client.id}
-        onRoleCreated={(role) => {
+        clientName={client.name}
+        onRoleCreated={(values) => {
           toast({
             title: "Role Created",
-            description: `The role "${role.name || 'New role'}" has been created successfully.`,
+            description: `The role "${values.roleName || 'New role'}" has been created successfully.`,
           });
         }}
       />

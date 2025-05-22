@@ -4,42 +4,52 @@ import { Skill } from '../types/SkillTypes';
 export const initialSkills: Skill[] = [
   {
     id: "1",
-    name: "React",
-    category: "Frontend Development",
-    aliases: ["ReactJS", "React.js"],
-    usageCount: 42,
-    dateAdded: "2025-01-15"
+    name: "JavaScript",
+    category: "Programming Language",
+    popularity: 95,
+    created_at: "2023-01-15T00:00:00.000Z",
+    aliases: ["JS", "ECMAScript"],
+    usageCount: 1250,
+    dateAdded: "2023-01-15"
   },
   {
     id: "2",
-    name: "TypeScript",
-    category: "Programming Languages",
-    aliases: ["TS", "JavaScript with Types"],
-    usageCount: 38,
-    dateAdded: "2025-01-20"
+    name: "React",
+    category: "Frontend Framework",
+    popularity: 90,
+    created_at: "2023-01-20T00:00:00.000Z",
+    aliases: ["ReactJS"],
+    usageCount: 980,
+    dateAdded: "2023-01-20"
   },
   {
     id: "3",
-    name: "Leadership",
-    category: "Soft Skills",
-    aliases: ["Team Leadership", "People Management"],
-    usageCount: 27,
-    dateAdded: "2025-02-03"
+    name: "Node.js",
+    category: "Backend Technology",
+    popularity: 85,
+    created_at: "2023-01-25T00:00:00.000Z",
+    aliases: ["Node"],
+    usageCount: 870,
+    dateAdded: "2023-01-25"
   },
   {
     id: "4",
-    name: "AWS",
-    category: "Cloud Services",
-    aliases: ["Amazon Web Services", "Amazon Cloud"],
-    usageCount: 35,
-    dateAdded: "2025-02-10"
+    name: "TypeScript",
+    category: "Programming Language",
+    popularity: 88,
+    created_at: "2023-02-01T00:00:00.000Z",
+    aliases: ["TS"],
+    usageCount: 920,
+    dateAdded: "2023-02-01"
   },
   {
     id: "5",
-    name: "Project Management",
-    category: "Management",
-    aliases: ["PM", "Project Coordination"],
-    usageCount: 31,
-    dateAdded: "2025-03-05"
+    name: "Python",
+    category: "Programming Language",
+    popularity: 92,
+    created_at: "2023-02-05T00:00:00.000Z",
+    aliases: ["Py"],
+    usageCount: 1450,
+    dateAdded: "2023-02-05"
   }
 ];

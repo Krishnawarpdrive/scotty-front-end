@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { Client } from '../../types/ClientTypes';
 
 interface ClientRolesTabProps {
@@ -12,6 +13,8 @@ interface ClientRolesTabProps {
 }
 
 const ClientRolesTab: React.FC<ClientRolesTabProps> = ({ client, onCreateRole }) => {
+  const [loading, setLoading] = useState(false);
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">

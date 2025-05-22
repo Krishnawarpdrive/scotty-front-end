@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 import {
   Sheet,
   SheetContent,
@@ -100,8 +102,31 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
     try {
       setIsSubmitting(true);
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!clientId) {
+        throw new Error("Client ID is required");
+      }
+
+      // Map form values to the database schema
+      const roleData = {
+        name: values.roleName,
+        external_name: values.jobTitle, // using jobTitle for external_name field
+        client_id: clientId,
+        employment_type: values.employmentType || "Full-time", // Default to Full-time
+        category: values.department || "General", // Using department as category
+        min_experience: values.experienceLevel || "0 years", // Default minimum
+        max_experience: values.experienceLevel || "5+ years", // Default maximum
+        work_mode: "Hybrid", // Default value
+        job_description: `${values.responsibilities || ''}\n\n${values.requirements || ''}`,
+      };
+
+      // Insert role into Supabase
+      const { data, error } = await supabase
+        .from('roles')
+        .insert(roleData)
+        .select()
+        .single();
+
+      if (error) throw error;
 
       // Notify parent component about successful role creation
       if (onRoleCreated) {

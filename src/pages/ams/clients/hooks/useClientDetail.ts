@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 import { Client } from '../types/ClientTypes';
 
 export const useClientDetail = () => {
@@ -31,83 +32,58 @@ export const useClientDetail = () => {
       return;
     }
 
-    // Mock API call - in real app, this would be a Supabase query
-    setLoading(true);
-    setError(null);
-    
-    // Simulate API delay
-    setTimeout(() => {
+    const fetchClientData = async () => {
+      setLoading(true);
+      setError(null);
+      
       try {
-        // This is mock data - replace with actual Supabase query
-        const mockClients = [
-          { 
-            id: '1', 
-            name: 'Acme Corp', 
-            contact: 'John Doe', 
-            email: 'john@example.com', 
-            status: 'active',
-            accountType: 'Enterprise',
-            industry: 'Technology',
-            headquarters: 'New York, NY',
-            createdOn: '2023-05-15',
-            lastActivity: { days: 3, active: true },
-            roles: [
-              { name: 'Software Engineer', id: 'r1' },
-              { name: 'Product Manager', id: 'r2' }
-            ],
-            totalRequirements: 12,
-            assignedHR: 'Sarah Lee',
-            hiringStatus: 'Active',
-            clientTier: 'A',
-            healthScore: 85,
-            budgetUtilized: 65,
-            notes: 'Key client with strong growth potential'
+        // Fetch client from Supabase
+        const { data: clientData, error: clientError } = await supabase
+          .from('clients')
+          .select('*')
+          .eq('id', clientId)
+          .single();
+        
+        if (clientError) throw new Error(clientError.message);
+        if (!clientData) throw new Error("Client not found");
+        
+        // Fetch client roles from Supabase
+        const { data: rolesData, error: rolesError } = await supabase
+          .from('roles')
+          .select('id, name')
+          .eq('client_id', clientId);
+
+        if (rolesError) throw new Error(rolesError.message);
+        
+        // Transform client data to match the Client interface
+        const client: Client = {
+          id: clientData.id,
+          name: clientData.name,
+          contact: clientData.contact || '',
+          email: clientData.email || '',
+          status: clientData.status || 'active',
+          accountType: clientData.account_type || 'Enterprise',
+          createdOn: clientData.created_on || new Date().toISOString(),
+          lastActivity: { 
+            days: calculateDaysSince(clientData.last_activity_date), 
+            active: clientData.status === 'active' 
           },
-          { 
-            id: '2', 
-            name: 'Beta Co', 
-            contact: 'Jane Smith', 
-            email: 'jane@example.com', 
-            status: 'inactive',
-            accountType: 'SMB',
-            industry: 'Retail',
-            headquarters: 'Chicago, IL',
-            createdOn: '2023-06-22',
-            lastActivity: { days: 7, active: false },
-            roles: [{ name: 'Data Analyst', id: 'r3' }],
-            totalRequirements: 5,
-            assignedHR: 'Mike Chen',
-            hiringStatus: 'Paused',
-            clientTier: 'B',
-            healthScore: 62,
-            budgetUtilized: 40,
-            notes: 'Recently paused hiring due to budget constraints'
-          },
-        ];
+          roles: rolesData || [],
+          totalRequirements: clientData.total_requirements || 0,
+          assignedHR: clientData.assigned_hr || '',
+          hiringStatus: clientData.hiring_status || 'Active',
+          clientTier: clientData.client_tier || '',
+          healthScore: clientData.health_score || 0,
+          budgetUtilized: clientData.budget_utilized || 0,
+          notes: clientData.notes || null,
+          industry: clientData.industry || '',
+          headquarters: clientData.headquarters || '',
+        };
         
-        // Check if client exists in local storage (for newly created clients)
-        const localStorageClients = localStorage.getItem('amsClients');
-        let allClients = [...mockClients];
-        
-        if (localStorageClients) {
-          const parsedClients = JSON.parse(localStorageClients);
-          allClients = [...mockClients, ...parsedClients];
-        }
-        
-        const foundClient = allClients.find(c => c.id === clientId);
-        
-        if (foundClient) {
-          setClient(foundClient);
-        } else {
-          setError("Client not found");
-          toast({
-            title: "Client Not Found",
-            description: "The requested client could not be found.",
-            variant: "destructive"
-          });
-        }
+        setClient(client);
       } catch (err) {
-        setError("Error loading client data");
+        console.error('Error fetching client data:', err);
+        setError(err instanceof Error ? err.message : "Failed to load client data");
         toast({
           title: "Error",
           description: "Failed to load client data. Please try again.",
@@ -116,8 +92,22 @@ export const useClientDetail = () => {
       } finally {
         setLoading(false);
       }
-    }, 500);
-  }, [clientId, navigate, toast]);
+    };
+    
+    fetchClientData();
+  }, [clientId, toast]);
+
+  // Helper function to calculate days since a given date
+  const calculateDaysSince = (dateString: string | null) => {
+    if (!dateString) return 0;
+    
+    const date = new Date(dateString);
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays;
+  };
 
   return {
     client,
