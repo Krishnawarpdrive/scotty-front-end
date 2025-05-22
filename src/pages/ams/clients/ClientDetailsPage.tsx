@@ -103,7 +103,7 @@ const ClientDetailsPage = () => {
           </TabsList>
 
           <div className="flex-1 overflow-y-auto">
-            <TabsContent value="overview" className="mt-6 p-4 h-full my-0 px-card-padding py-0">
+            <TabsContent value="overview" className="mt-6 p-4 h-full my-0 px-card-padding py-[8px]">
               <ClientOverviewTab client={client} />
             </TabsContent>
 
