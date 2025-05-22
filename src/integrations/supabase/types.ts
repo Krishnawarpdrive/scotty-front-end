@@ -9,7 +9,268 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      clients: {
+        Row: {
+          account_type: string | null
+          assigned_hr: string | null
+          budget_utilized: number | null
+          client_tier: string | null
+          contact: string | null
+          created_at: string | null
+          created_on: string | null
+          email: string | null
+          health_score: number | null
+          hiring_status: string | null
+          id: string
+          last_activity_date: string | null
+          name: string
+          notes: string | null
+          status: string | null
+          total_requirements: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          account_type?: string | null
+          assigned_hr?: string | null
+          budget_utilized?: number | null
+          client_tier?: string | null
+          contact?: string | null
+          created_at?: string | null
+          created_on?: string | null
+          email?: string | null
+          health_score?: number | null
+          hiring_status?: string | null
+          id?: string
+          last_activity_date?: string | null
+          name: string
+          notes?: string | null
+          status?: string | null
+          total_requirements?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          account_type?: string | null
+          assigned_hr?: string | null
+          budget_utilized?: number | null
+          client_tier?: string | null
+          contact?: string | null
+          created_at?: string | null
+          created_on?: string | null
+          email?: string | null
+          health_score?: number | null
+          hiring_status?: string | null
+          id?: string
+          last_activity_date?: string | null
+          name?: string
+          notes?: string | null
+          status?: string | null
+          total_requirements?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      custom_fields: {
+        Row: {
+          created_at: string | null
+          id: string
+          label: string
+          role_id: string | null
+          value: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          label: string
+          role_id?: string | null
+          value?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          label?: string
+          role_id?: string | null
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_fields_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      role_skills: {
+        Row: {
+          id: string
+          role_id: string | null
+          skill_id: string | null
+        }
+        Insert: {
+          id?: string
+          role_id?: string | null
+          skill_id?: string | null
+        }
+        Update: {
+          id?: string
+          role_id?: string | null
+          skill_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_skills_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "role_skills_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      role_tags: {
+        Row: {
+          id: string
+          role_id: string | null
+          tag_id: string | null
+        }
+        Insert: {
+          id?: string
+          role_id?: string | null
+          tag_id?: string | null
+        }
+        Update: {
+          id?: string
+          role_id?: string | null
+          tag_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_tags_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "role_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roles: {
+        Row: {
+          category: string
+          client_id: string | null
+          created_at: string | null
+          created_by: string | null
+          employment_type: string
+          external_name: string | null
+          id: string
+          is_template: boolean | null
+          job_description: string | null
+          max_experience: string
+          min_experience: string
+          name: string
+          updated_at: string | null
+          usage_count: number | null
+          work_mode: string
+        }
+        Insert: {
+          category: string
+          client_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          employment_type: string
+          external_name?: string | null
+          id?: string
+          is_template?: boolean | null
+          job_description?: string | null
+          max_experience: string
+          min_experience: string
+          name: string
+          updated_at?: string | null
+          usage_count?: number | null
+          work_mode: string
+        }
+        Update: {
+          category?: string
+          client_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          employment_type?: string
+          external_name?: string | null
+          id?: string
+          is_template?: boolean | null
+          job_description?: string | null
+          max_experience?: string
+          min_experience?: string
+          name?: string
+          updated_at?: string | null
+          usage_count?: number | null
+          work_mode?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roles_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      skills: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          id: string
+          name: string
+          popularity: number | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          popularity?: number | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          popularity?: number | null
+        }
+        Relationships: []
+      }
+      tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

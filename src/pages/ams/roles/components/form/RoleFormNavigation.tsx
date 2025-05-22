@@ -1,75 +1,89 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { SheetFooter } from "@/components/ui/sheet";
-import { useRoleForm } from '../context/RoleFormContext';
+import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
 
 interface RoleFormNavigationProps {
   formSections: string[];
+  formProgress: {
+    currentStep: number;
+    isFirstStep: boolean;
+    isLastStep: boolean;
+    goToNextStep: () => void;
+    goToPrevStep: () => void;
+  };
   onClose: () => void;
-  formProgress: number;
+  isSubmitting?: boolean;
 }
 
-const RoleFormNavigation: React.FC<RoleFormNavigationProps> = ({
-  formSections,
+const RoleFormNavigation: React.FC<RoleFormNavigationProps> = ({ 
+  formSections, 
+  formProgress,
   onClose,
-  formProgress
+  isSubmitting = false
 }) => {
-  const { currentStep, setCurrentStep } = useRoleForm();
-
-  const nextStep = () => {
-    if (currentStep < formSections.length - 1) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const prevStep = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
+  const { 
+    currentStep, 
+    isFirstStep, 
+    isLastStep,
+    goToNextStep,
+    goToPrevStep
+  } = formProgress;
 
   return (
-    <SheetFooter className="p-4 border-t mt-auto">
-      <div className="flex justify-between w-full">
-        <Button 
-          type="button" 
-          variant="outline" 
-          onClick={onClose}
-        >
-          Cancel
-        </Button>
-        
-        <div className="flex space-x-2">
-          {currentStep > 0 && (
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={prevStep}
-            >
-              Previous
-            </Button>
-          )}
-          
-          {currentStep < formSections.length - 1 ? (
-            <Button 
-              type="button" 
-              onClick={nextStep}
-            >
-              Next
-            </Button>
-          ) : (
-            <Button 
-              type="submit"
-              disabled={formProgress < 60} // Require at least basic information to be filled
-              className={formProgress === 100 ? "bg-green-600 hover:bg-green-700" : ""}
-            >
-              {formProgress === 100 ? "Create Role ✨" : "Create Role"}
-            </Button>
-          )}
-        </div>
+    <div className="mt-6 border-t pt-4 flex items-center justify-between">
+      <Button
+        type="button"
+        variant="outline"
+        onClick={onClose}
+        className="px-3"
+      >
+        Cancel
+      </Button>
+
+      <div className="flex gap-2">
+        {!isFirstStep && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={goToPrevStep}
+            className="gap-1"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+        )}
+
+        {isLastStep ? (
+          <Button 
+            type="submit"
+            className="gap-1"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-1"></div>
+                Saving
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                Save Role
+              </>
+            )}
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            onClick={goToNextStep}
+            className="gap-1"
+          >
+            Next
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        )}
       </div>
-    </SheetFooter>
+    </div>
   );
 };
 

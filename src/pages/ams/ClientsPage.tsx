@@ -1,89 +1,150 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Filter } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { ClientsTable } from './clients/components/table/ClientsTable';
 import ClientDetailDrawer from './clients/components/ClientDetailDrawer';
 import ClientAccountDrawer from './clients/components/ClientAccountDrawer';
 import SearchFiltersBar from './clients/components/SearchFiltersBar';
 
+interface Client {
+  id: string;
+  name: string;
+  contact: string;
+  email: string;
+  status: string;
+  accountType: string;
+  createdOn: string;
+  lastActivity: { days: number; active: boolean };
+  roles: { name: string; id: string }[];
+  totalRequirements: number;
+  assignedHR: string;
+  hiringStatus: string;
+  clientTier: string;
+  healthScore: number;
+  budgetUtilized: number;
+  notes: string | null;
+}
+
 const ClientsPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [clients, setClients] = useState([
-    { 
-      id: '1', 
-      name: 'Acme Corp', 
-      contact: 'John Doe', 
-      email: 'john@example.com', 
-      status: 'active',
-      accountType: 'Enterprise',
-      createdOn: '2023-05-15',
-      lastActivity: { days: 3, active: true },
-      roles: [{ name: 'Software Engineer', id: 'r1' }, { name: 'Product Manager', id: 'r2' }],
-      totalRequirements: 12,
-      assignedHR: 'Sarah Lee',
-      hiringStatus: 'Active',
-      clientTier: 'A',
-      healthScore: 85,
-      budgetUtilized: 65,
-      notes: 'Key client with strong growth potential'
-    },
-    { 
-      id: '2', 
-      name: 'Beta Co', 
-      contact: 'Jane Smith', 
-      email: 'jane@example.com', 
-      status: 'inactive',
-      accountType: 'SMB',
-      createdOn: '2023-06-22',
-      lastActivity: { days: 7, active: false },
-      roles: [{ name: 'Data Analyst', id: 'r3' }],
-      totalRequirements: 5,
-      assignedHR: 'Mike Chen',
-      hiringStatus: 'Paused',
-      clientTier: 'B',
-      healthScore: 62,
-      budgetUtilized: 40,
-      notes: 'Recently paused hiring due to budget constraints'
-    },
-  ]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClients, setSelectedClients] = useState<string[]>([]);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [selectedClient, setSelectedClient] = useState(null);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false);
   const [showFilterPanel, setShowFilterPanel] = useState(false);
+
+  // Fetch clients from Supabase
+  useEffect(() => {
+    const fetchClients = async () => {
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('clients')
+          .select('*');
+        
+        if (error) throw error;
+        
+        // Transform data to match the expected Client interface
+        const transformedClients: Client[] = data.map(client => ({
+          id: client.id,
+          name: client.name,
+          contact: client.contact || '',
+          email: client.email || '',
+          status: client.status || 'active',
+          accountType: client.account_type || 'Enterprise',
+          createdOn: client.created_on || new Date().toISOString(),
+          lastActivity: { 
+            days: calculateDaysSince(client.last_activity_date), 
+            active: client.status === 'active' 
+          },
+          roles: [], // Will be populated with a separate query if needed
+          totalRequirements: client.total_requirements || 0,
+          assignedHR: client.assigned_hr || '',
+          hiringStatus: client.hiring_status || 'Active',
+          clientTier: client.client_tier || '',
+          healthScore: client.health_score || 0,
+          budgetUtilized: client.budget_utilized || 0,
+          notes: client.notes
+        }));
+        
+        setClients(transformedClients);
+      } catch (error) {
+        console.error('Error fetching clients:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load client data. Please try again later.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchClients();
+  }, [toast]);
+  
+  // Helper function to calculate days since a given date
+  const calculateDaysSince = (dateString: string | null) => {
+    if (!dateString) return 0;
+    
+    const date = new Date(dateString);
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays;
+  };
 
   const handleCreateClient = () => {
     setIsAccountDrawerOpen(true);
   };
 
-  const handleEditClient = (client) => {
+  const handleEditClient = (client: Client) => {
     toast({
       title: "Not implemented",
       description: "This feature is not implemented yet.",
     });
   };
 
-  const handleDeleteClient = (id: string) => {
-    setClients(clients.filter(client => client.id !== id));
-    toast({
-      title: "Client Deleted",
-      description: "The client has been deleted successfully.",
-    });
+  const handleDeleteClient = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      setClients(clients.filter(client => client.id !== id));
+      toast({
+        title: "Client Deleted",
+        description: "The client has been deleted successfully.",
+      });
+    } catch (error) {
+      console.error('Error deleting client:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete client. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleViewClientDetails = (client) => {
+  const handleViewClientDetails = (client: Client) => {
     setSelectedClient(client);
     setIsDetailsOpen(true);
   };
 
-  const handleSelectClient = (client) => {
+  const handleSelectClient = (client: Client) => {
     const clientId = client.id;
     setSelectedClients(prev => {
       if (prev.includes(clientId)) {
@@ -116,12 +177,11 @@ const ClientsPage = () => {
   // Add a sort handler function
   const handleSort = (column: string, direction: 'asc' | 'desc') => {
     console.log(`Sorting by ${column} in ${direction} order`);
-    // Implement actual sorting logic here
+    // Implement sorting logic if needed
   };
 
   // Handle client creation success
-  const handleClientCreated = (newClient) => {
-    console.log("New client created:", newClient);
+  const handleClientCreated = (newClient: Client) => {
     setClients(prev => [...prev, newClient]);
     toast({
       title: "Awesome!",
@@ -129,11 +189,7 @@ const ClientsPage = () => {
     });
     
     // Option to navigate to client details page
-    const viewDetails = window.confirm(`Would you like to view ${newClient.name}'s details?`);
-    if (viewDetails) {
-      setIsAccountDrawerOpen(false); // Close drawer
-      navigate(`/ams/clients/${newClient.id}`);
-    }
+    navigate(`/ams/clients/${newClient.id}`);
   };
 
   // Handle filter toggle
