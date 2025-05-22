@@ -9,7 +9,7 @@ import NotFound from "./pages/NotFound";
 import AMSLayout from "./layouts/AMSLayout";
 import AMSDashboard from "./pages/ams/Dashboard";
 import ClientsPage from "./pages/ams/ClientsPage";
-import RolesLibraryPage from "./pages/ams/roles/RolesLibraryPage";
+import RolesLibraryPage from "./pages/ams/RolesLibraryPage";
 import CreateRolePage from "./pages/ams/roles/CreateRolePage";
 import RequirementsPage from "./pages/ams/RequirementsPage";
 import SkillsLibraryPage from "./pages/ams/skills/SkillsLibraryPage";
