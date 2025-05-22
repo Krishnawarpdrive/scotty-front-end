@@ -16,4 +16,6 @@ export interface Client {
   healthScore: number;
   budgetUtilized: number;
   notes: string | null;
+  industry?: string;
+  headquarters?: string;
 }
