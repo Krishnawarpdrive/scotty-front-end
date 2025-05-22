@@ -55,7 +55,12 @@ export const AMSSidebar = () => {
   };
 
   return (
-    <Sidebar className={`border-r ${isCollapsed ? 'w-14' : 'w-60'}`} collapsible="icon" variant="sidebar">
+    <Sidebar 
+      className="border-r transition-width duration-300 ease-in-out"
+      style={{ width: isCollapsed ? '64px' : '240px' }} 
+      collapsible="icon" 
+      variant="sidebar"
+    >
       <SidebarHeader>
         <div className="p-2 flex justify-between items-center">
           {!isCollapsed && <h2 className="text-xl font-semibold px-2">AMS</h2>}
@@ -81,10 +86,15 @@ export const AMSSidebar = () => {
             <SidebarMenu>
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.path}>
-                  <SidebarMenuButton asChild isActive={isActive(item.path)} tooltip={isCollapsed ? item.title : undefined}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={isActive(item.path)} 
+                    tooltip={isCollapsed ? item.title : undefined}
+                    className="my-1"
+                  >
                     <NavLink to={item.path} className="flex items-center">
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {!isCollapsed && <span>{item.title}</span>}
+                      <item.icon className="h-4 w-4 min-w-4" />
+                      {!isCollapsed && <span className="ml-2 truncate">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
