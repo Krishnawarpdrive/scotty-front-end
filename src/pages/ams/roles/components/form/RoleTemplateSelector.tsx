@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import TemplateSelector from '@/components/shared/TemplateSelector';
 
 interface RoleTemplateSelectorProps {
   selectedTemplate: string;
@@ -14,23 +14,14 @@ const RoleTemplateSelector: React.FC<RoleTemplateSelectorProps> = ({
   roleTemplates
 }) => {
   return (
-    <div className="mt-4">
-      <label className="text-sm font-medium mb-2 block">
-        Select from Role Library Templates (Optional)
-      </label>
-      <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select a role template" />
-        </SelectTrigger>
-        <SelectContent>
-          {roleTemplates.map(template => (
-            <SelectItem key={template.id} value={template.id}>
-              {template.name} - {template.category}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <TemplateSelector 
+      selectedTemplate={selectedTemplate} 
+      onTemplateChange={setSelectedTemplate} 
+      templateOptions={roleTemplates}
+      label="Select from Role Library Templates (Optional)"
+      placeholder="Select a role template"
+      className="mt-4"
+    />
   );
 };
 
