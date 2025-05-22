@@ -9,14 +9,16 @@ import { Client } from '../types/ClientTypes';
 
 interface ClientOverviewTabsProps {
   client: Client;
-  onEditClient: (client: Client) => void;
-  onCreateRole: (clientId: string) => void;
+  onEditClient?: (client: Client) => void;
+  onCreateRole?: (clientId: string) => void;
+  onAddRole?: () => void;
 }
 
 const ClientOverviewTabs: React.FC<ClientOverviewTabsProps> = ({ 
   client,
-  onEditClient,
-  onCreateRole
+  onEditClient = () => {},
+  onCreateRole = () => {},
+  onAddRole = () => {}
 }) => {
   const [activeTab, setActiveTab] = useState("overview");
   
@@ -39,11 +41,11 @@ const ClientOverviewTabs: React.FC<ClientOverviewTabsProps> = ({
         </TabsList>
         
         <TabsContent value="overview">
-          <ClientOverviewTab client={client} onCreateRole={onCreateRole} />
+          <ClientOverviewTab client={client} onCreateRole={() => onAddRole()} />
         </TabsContent>
         
         <TabsContent value="roles">
-          <ClientRolesTab client={client} onCreateRole={onCreateRole} />
+          <ClientRolesTab client={client} onCreateRole={() => onAddRole()} />
         </TabsContent>
         
         <TabsContent value="contacts">

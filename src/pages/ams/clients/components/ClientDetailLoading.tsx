@@ -1,7 +1,11 @@
 
 import React from 'react';
 
-const ClientDetailLoading: React.FC = () => {
+export interface ClientDetailLoadingProps {
+  // No props needed for this component
+}
+
+const ClientDetailLoading: React.FC<ClientDetailLoadingProps> = () => {
   return (
     <div className="flex items-center justify-center h-64">
       <div className="text-center">
