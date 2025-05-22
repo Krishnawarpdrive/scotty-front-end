@@ -6,13 +6,13 @@ import { Badge } from "@/components/ui/badge";
 export const getClientTierBadge = (tier: string) => {
   switch (tier) {
     case "A":
-      return <Badge className="bg-[#F2FCE2] text-green-800 hover:bg-[#E2ECD2]">{tier}</Badge>;
+      return <Badge className="bg-green-600">{tier}</Badge>;
     case "B":
-      return <Badge className="bg-[#D3E4FD] text-blue-800 hover:bg-[#C3D4ED]">{tier}</Badge>;
+      return <Badge className="bg-blue-500">{tier}</Badge>;
     case "C":
-      return <Badge className="bg-[#FEF7CD] text-amber-800 hover:bg-[#EEE7BD]">{tier}</Badge>;
+      return <Badge className="bg-amber-500">{tier}</Badge>;
     default:
-      return <Badge className="bg-[#F1F0FB] text-gray-800 hover:bg-[#E1E0EB]">{tier}</Badge>;
+      return <Badge>{tier}</Badge>;
   }
 };
 
@@ -20,13 +20,13 @@ export const getClientTierBadge = (tier: string) => {
 export const getHiringStatusBadge = (status: string) => {
   switch (status) {
     case "Active":
-      return <Badge className="bg-[#F2FCE2] text-green-800 hover:bg-[#E2ECD2] border-0">{status}</Badge>;
+      return <Badge className="bg-emerald-500">{status}</Badge>;
     case "Paused":
-      return <Badge className="bg-[#FEF7CD] text-amber-800 hover:bg-[#EEE7BD] border-0">{status}</Badge>;
+      return <Badge variant="outline" className="border-amber-400 text-amber-500">{status}</Badge>;
     case "Blacklisted":
-      return <Badge className="bg-[#FFDEE2] text-red-800 hover:bg-[#EFCED2] border-0">{status}</Badge>;
+      return <Badge variant="destructive">{status}</Badge>;
     default:
-      return <Badge className="bg-[#F1F0FB] text-gray-800 hover:bg-[#E1E0EB] border-0">{status}</Badge>;
+      return <Badge>{status}</Badge>;
   }
 };
 

@@ -1,99 +1,130 @@
 
-import React, { useState } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import React, { useState, useEffect } from 'react';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { Progress } from "@/components/ui/progress";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetDescription
-} from '@/components/ui/sheet';
+  SheetFooter,
+} from "@/components/ui/sheet";
+import {
+  Form
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import FormProgressIndicator from './FormProgressIndicator';
 
-import { Form } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-
+// Import component steps
 import AccountInfoStep from './drawer/AccountInfoStep';
 import CompanyProfileStep from './drawer/CompanyProfileStep';
 import SourcingDetailsStep from './drawer/SourcingDetailsStep';
 import AddressDetailsStep from './drawer/AddressDetailsStep';
+
+// Import schema
 import { drawerFormSchema, DrawerFormValues, CustomField } from './drawer/clientDrawerSchema';
 
 interface ClientAccountDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onClientCreated?: (client: any) => void;
 }
 
-const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
-  open,
-  onOpenChange,
-  onClientCreated
+const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({ 
+  open, 
+  onOpenChange 
 }) => {
-  const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [formProgress, setFormProgress] = useState(0);
   const [sameAsBilling, setSameAsBilling] = useState(true);
-  
-  // Custom fields state
   const [customAccountFields, setCustomAccountFields] = useState<CustomField[]>([]);
   const [customProfileFields, setCustomProfileFields] = useState<CustomField[]>([]);
   const [customSourcingFields, setCustomSourcingFields] = useState<CustomField[]>([]);
   
-  // Steps titles
   const formSections = ["Account Information", "Company Profile", "Sourcing Details", "Address Details"];
+  const { toast } = useToast();
+  const isMobile = useIsMobile();
   
-  // Calculate progress based on current step
-  const progress = ((currentStep + 1) / formSections.length) * 100;
-
+  // Initialize form
   const form = useForm<DrawerFormValues>({
     resolver: zodResolver(drawerFormSchema),
     defaultValues: {
-      // Account Information
-      accountName: '',
-      accountType: '',
-      customerCode: '',
-      parentAccount: '',
-      website: '',
-      phone: '',
-      email: '',
-      description: '',
-      
-      // Company Profile
-      currency: '',
-      headquarters: '',
-      industry: '',
-      employees: '',
-      segment: '',
-      
-      // Sourcing Details
-      sourcingType: '',
-      sourcingAccount: '',
-      sourcingPerson: '',
-      referrerAccount: '',
-      commission: '',
-      campaignName: '',
-      
-      // Address Details
-      billingCountry: '',
-      billingState: '',
-      billingCity: '',
-      billingZip: '',
-      billingStreet: '',
+      accountName: "",
+      accountType: "",
+      customerCode: "",
+      parentAccount: "",
+      website: "",
+      phone: "",
+      email: "",
+      description: "",
+      currency: "",
+      headquarters: "",
+      industry: "",
+      employees: "",
+      segment: "",
+      sourcingType: "",
+      sourcingAccount: "",
+      sourcingPerson: "",
+      referrerAccount: "",
+      commission: "",
+      campaignName: "",
+      billingCountry: "",
+      billingState: "",
+      billingCity: "",
+      billingZip: "",
+      billingStreet: "",
       sameAsBilling: true,
-      shippingCountry: '',
-      shippingState: '',
-      shippingCity: '',
-      shippingZip: '',
-      shippingStreet: '',
+      shippingCountry: "",
+      shippingState: "",
+      shippingCity: "",
+      shippingZip: "",
+      shippingStreet: "",
     },
     mode: "onChange"
   });
-
+  
+  // Calculate progress based on form completion
+  useEffect(() => {
+    const values = form.getValues();
+    const fields = Object.keys(values);
+    
+    // Count filled fields
+    const filledFields = fields.filter(field => {
+      const value = values[field as keyof DrawerFormValues];
+      return typeof value === 'boolean' ? true : !!value;
+    }).length;
+    
+    // Calculate percentage
+    const percentage = Math.floor((filledFields / fields.length) * 100);
+    setFormProgress(percentage);
+  }, [form.watch()]);
+  
+  // Handle form submission
+  const onSubmit = (values: DrawerFormValues) => {
+    // Create complete data with custom fields
+    const completeData = {
+      ...values,
+      customFields: {
+        account: customAccountFields,
+        profile: customProfileFields,
+        sourcing: customSourcingFields,
+      }
+    };
+    
+    console.log("Form submitted:", completeData);
+    
+    toast({
+      title: "Success!",
+      description: `🎉 Client '${values.accountName}' has been created successfully!`,
+    });
+    
+    // Close drawer
+    onOpenChange(false);
+  };
+  
   // Handle step navigation
   const nextStep = () => {
     if (currentStep < formSections.length - 1) {
@@ -106,88 +137,15 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
       setCurrentStep(currentStep - 1);
     }
   };
-
-  const onSubmit = async (values: DrawerFormValues) => {
-    try {
-      setIsSubmitting(true);
-      
-      // Create client in Supabase
-      const { data, error } = await supabase
-        .from('clients')
-        .insert([
-          {
-            name: values.accountName,
-            contact: values.sourcingPerson || 'Contact Person',
-            email: values.email,
-            account_type: values.accountType,
-            assigned_hr: 'Sarah Lee', // Default HR
-            client_tier: 'A', // Default tier
-            status: 'active',
-            health_score: 100, // Default values
-            budget_utilized: 0,
-            total_requirements: 0,
-            hiring_status: 'Active',
-            industry: values.industry,
-            headquarters: values.headquarters,
-            notes: values.description
-          }
-        ])
-        .select();
-
-      if (error) throw error;
-      
-      // Format the client data for the callback
-      const createdClient = {
-        id: data[0].id,
-        name: data[0].name,
-        contact: data[0].contact,
-        email: data[0].email,
-        status: data[0].status,
-        accountType: data[0].account_type,
-        createdOn: data[0].created_on,
-        lastActivity: { days: 0, active: true },
-        roles: [],
-        totalRequirements: data[0].total_requirements,
-        assignedHR: data[0].assigned_hr,
-        hiringStatus: data[0].hiring_status,
-        clientTier: data[0].client_tier,
-        healthScore: data[0].health_score,
-        budgetUtilized: data[0].budget_utilized,
-        notes: data[0].notes,
-        industry: values.industry,
-        headquarters: values.headquarters
-      };
-      
-      // Notify parent component about successful client creation
-      if (onClientCreated) {
-        onClientCreated(createdClient);
-      }
-      
-      toast({
-        title: 'Success!',
-        description: `Client ${values.accountName} has been created successfully.`,
-      });
-      
-      // Reset form and steps
-      form.reset();
-      setCurrentStep(0);
-      
-      // Close drawer
-      onOpenChange(false);
-    } catch (error) {
-      console.error('Error creating client:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to create client. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsSubmitting(false);
+  
+  const goToStep = (step: number) => {
+    if (step >= 0 && step < formSections.length) {
+      setCurrentStep(step);
     }
   };
-
+  
   // When sameAsBilling changes
-  React.useEffect(() => {
+  useEffect(() => {
     const billingData = form.getValues();
     
     if (sameAsBilling) {
@@ -197,30 +155,28 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
       form.setValue("shippingZip", billingData.billingZip);
       form.setValue("shippingStreet", billingData.billingStreet);
     }
-  }, [sameAsBilling, form]);
-
+  }, [sameAsBilling]);
+  
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full lg:max-w-md overflow-y-auto">
-        <SheetHeader className="mb-4">
-          <SheetTitle>Add New Client</SheetTitle>
+      <SheetContent className="sm:max-w-[70vw] p-0 overflow-hidden flex flex-col">
+        <SheetHeader className="p-6 border-b">
+          <SheetTitle>Add Client Account</SheetTitle>
           <SheetDescription>
-            Create a new client account in your system.
+            Let's onboard your client — enter their profile, sourcing setup, and contact info to get started.
           </SheetDescription>
         </SheetHeader>
-
-        {/* Progress indicator */}
-        <div className="mb-6">
-          <div className="flex justify-between text-xs text-gray-500 mb-1">
-            <span>{formSections[currentStep]}</span>
-            <span>Step {currentStep + 1} of {formSections.length}</span>
-          </div>
-          <Progress value={progress} className="h-2" />
-        </div>
-
+        
+        <FormProgressIndicator
+          steps={formSections}
+          currentStep={currentStep}
+          onStepClick={goToStep}
+          progress={formProgress}
+        />
+        
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="max-h-[calc(100vh-220px)] overflow-y-auto pr-1">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
+            <div className="flex-1 px-6 overflow-y-auto">
               {/* Account Information - Step 0 */}
               {currentStep === 0 && (
                 <AccountInfoStep 
@@ -257,52 +213,44 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
                 />
               )}
             </div>
-
-            {/* Form navigation controls */}
-            <div className="flex justify-between items-center border-t pt-4 mt-4">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => onOpenChange(false)}
-              >
-                Cancel
-              </Button>
-              
-              <div className="flex space-x-2">
-                {currentStep > 0 && (
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={prevStep}
-                  >
-                    Previous
-                  </Button>
-                )}
+            
+            {/* Sticky footer with navigation buttons */}
+            <SheetFooter className="p-4 border-t mt-auto">
+              <div className="flex justify-between w-full">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => onOpenChange(false)}
+                >
+                  Cancel
+                </Button>
                 
-                {currentStep < formSections.length - 1 ? (
-                  <Button 
-                    type="button" 
-                    onClick={nextStep}
-                  >
-                    Next
-                  </Button>
-                ) : (
-                  <Button 
-                    type="submit" 
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-1"></div>
-                        Creating...
-                      </>
-                    ) : (
-                      'Create Client'
-                    )}
-                  </Button>
-                )}
+                <div className="flex space-x-2">
+                  {currentStep > 0 && (
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={prevStep}
+                    >
+                      Previous
+                    </Button>
+                  )}
+                  
+                  {currentStep < formSections.length - 1 ? (
+                    <Button 
+                      type="button" 
+                      onClick={nextStep}
+                    >
+                      Next
+                    </Button>
+                  ) : (
+                    <Button type="submit">
+                      Save
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
+            </SheetFooter>
           </form>
         </Form>
       </SheetContent>

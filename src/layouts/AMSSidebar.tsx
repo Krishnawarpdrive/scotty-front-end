@@ -38,7 +38,7 @@ const navigationItems: NavigationItem[] = [
   { title: 'Clients', path: '/ams/clients', icon: Users },
   { title: 'Global Role Library', path: '/ams/roles', icon: Briefcase },
   { title: 'Requirements', path: '/ams/requirements', icon: FileText },
-  { title: 'Skills Library', path: '/ams/skills', icon: ListChecks },
+  { title: 'Skill Master', path: '/ams/skills', icon: ListChecks },
   { title: 'Checklist Master', path: '/ams/checklists', icon: ClipboardList },
   { title: 'Certifications', path: '/ams/certifications', icon: Award },
   { title: 'Commission Tracker', path: '/ams/commissions', icon: TrendingUp }

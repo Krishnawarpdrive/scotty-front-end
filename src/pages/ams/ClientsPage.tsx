@@ -1,103 +1,106 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Plus } from "lucide-react";
+import ClientsTable from './clients/components/ClientsTable';
+import SearchFiltersBar from './clients/components/SearchFiltersBar';
+import EmptyState from './clients/components/EmptyState';
+import { clientsData } from './clients/data/clientsData';
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
-import { useClients } from './clients/hooks/useClients';
-import { useClientSelection } from './clients/hooks/useClientSelection';
-import { useClientSearch } from './clients/hooks/useClientSearch';
-import ClientsPageHeader from './clients/components/ClientsPageHeader';
-import ClientsPageContent from './clients/components/ClientsPageContent';
-import ClientDetailDrawer from './clients/components/ClientDetailDrawer';
 import ClientAccountDrawer from './clients/components/ClientAccountDrawer';
-import { Client } from './clients/types/ClientTypes';
 
 const ClientsPage = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentSort, setCurrentSort] = useState({ field: "", direction: "asc" });
+  const [selectedClients, setSelectedClients] = useState<number[]>([]);
+  const [hasData, setHasData] = useState<boolean>(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const { clients, isLoading, deleteClient } = useClients();
-  const { 
-    selectedClients, 
-    selectedClient, 
-    isDetailsOpen, 
-    setIsDetailsOpen,
-    handleViewClientDetails,
-    handleSelectClient,
-    handleSelectAll,
-    setSelectedClient
-  } = useClientSelection(clients);
   
-  const {
-    searchTerm,
-    setSearchTerm,
-    filteredClients,
-    showFilterPanel,
-    toggleFilterPanel
-  } = useClientSearch(clients);
-
-  const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false);
-
-  const handleCreateClient = () => {
-    setIsAccountDrawerOpen(true);
-  };
-
-  const handleEditClient = (client: Client) => {
-    toast({
-      title: "Not implemented",
-      description: "This feature is not implemented yet.",
-    });
-  };
-
-  // Handle search change
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
-  // Add a sort handler function
-  const handleSort = (column: string, direction: 'asc' | 'desc') => {
-    console.log(`Sorting by ${column} in ${direction} order`);
-    // Implement sorting logic if needed
-  };
-
-  // Handle client creation success
-  const handleClientCreated = (newClient: Client) => {
-    toast({
-      title: "Awesome!",
-      description: `Client ${newClient.name} has been created successfully.`,
-    });
+  useEffect(() => {
+    // Check if data exists after the component mounts
+    const dataExists = clientsData && clientsData.length > 0;
+    setHasData(dataExists);
+    console.log("Clients data:", clientsData, "Has data:", dataExists);
+  }, []);
+  
+  // Handle sort click
+  const handleSort = (field: string) => {
+    if (currentSort.field === field) {
+      setCurrentSort({
+        field,
+        direction: currentSort.direction === "asc" ? "desc" : "asc",
+      });
+    } else {
+      setCurrentSort({
+        field,
+        direction: "asc",
+      });
+    }
     
-    // Option to navigate to client details page
-    navigate(`/ams/clients/${newClient.id}`);
+    toast({
+      title: "Sorting changed",
+      description: `Sorted by ${field} ${currentSort.field === field && currentSort.direction === "asc" ? "descending" : "ascending"}`,
+    });
   };
-
+  
+  // Handle client selection
+  const toggleClientSelection = (clientId: number) => {
+    if (selectedClients.includes(clientId)) {
+      setSelectedClients(selectedClients.filter(id => id !== clientId));
+    } else {
+      setSelectedClients([...selectedClients, clientId]);
+    }
+  };
+  
+  // Select all clients
+  const toggleSelectAll = () => {
+    if (selectedClients.length === clientsData.length) {
+      setSelectedClients([]);
+    } else {
+      setSelectedClients(clientsData.map(client => client.id));
+    }
+  };
+  
+  console.log("Rendering ClientsPage, hasData:", hasData);
+  
   return (
-    <div className="space-y-4">
-      <ClientsPageHeader onCreateClient={handleCreateClient} />
+    <div className="space-y-4 w-full">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-medium text-[#262626]">Clients</h1>
+        <Button 
+          className="bg-primary hover:bg-primary/90 h-9"
+          onClick={() => setDrawerOpen(true)}
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Add Client
+        </Button>
+      </div>
 
-      <ClientsPageContent 
-        filteredClients={filteredClients}
-        isLoading={isLoading}
+      <SearchFiltersBar
         searchTerm={searchTerm}
-        onSearchChange={handleSearchChange}
-        selectedClients={selectedClients}
-        toggleFilterPanel={toggleFilterPanel}
-        onEditClient={handleEditClient}
-        onDeleteClient={deleteClient}
-        onViewClientDetails={handleViewClientDetails}
-        onSelectClient={handleSelectClient}
-        onSelectAll={handleSelectAll}
-        onSort={handleSort}
+        onSearchChange={(e) => setSearchTerm(e.target.value)}
+        selectedClientsCount={selectedClients.length}
       />
 
-      <ClientDetailDrawer
-        client={selectedClient}
-        open={isDetailsOpen}
-        onOpenChange={() => setIsDetailsOpen(false)}
-      />
-
-      <ClientAccountDrawer
-        open={isAccountDrawerOpen}
-        onOpenChange={setIsAccountDrawerOpen}
-        onClientCreated={handleClientCreated}
+      {/* Clients table or empty state */}
+      {hasData ? (
+        <ClientsTable
+          clients={clientsData}
+          selectedClients={selectedClients}
+          currentSort={currentSort}
+          onSort={handleSort}
+          onSelectClient={toggleClientSelection}
+          onSelectAll={toggleSelectAll}
+        />
+      ) : (
+        <EmptyState />
+      )}
+      
+      <ClientAccountDrawer 
+        open={drawerOpen} 
+        onOpenChange={setDrawerOpen} 
       />
     </div>
   );

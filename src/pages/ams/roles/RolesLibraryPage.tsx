@@ -6,7 +6,10 @@ import {
   SlidersHorizontal, 
   CalendarDays, 
   Plus, 
-  Briefcase
+  Briefcase, 
+  Clock, 
+  Building, 
+  Award
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,80 +18,72 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
 import RoleCreationDrawer from './components/RoleCreationDrawer';
-import { supabase } from "@/integrations/supabase/client";
 
-interface Role {
-  id: string;
-  name: string;
-  category: string;
-  work_mode: string;
-  min_experience: string;
-  max_experience: string;
-  created_by: string | null;
-  updated_at: string | null;
-  usage_count: number | null;
-}
+// Mock data for roles
+const mockRoles = [
+  {
+    id: 1,
+    name: "UX Designer",
+    category: "Design",
+    workMode: "Remote",
+    experienceRange: "3-5 years",
+    lastUpdatedBy: "Alex Johnson",
+    updatedOn: "2025-04-20",
+    usageCount: 12
+  },
+  {
+    id: 2,
+    name: "Java Developer",
+    category: "Technology",
+    workMode: "Hybrid",
+    experienceRange: "5-8 years",
+    lastUpdatedBy: "Maria Garcia",
+    updatedOn: "2025-05-01",
+    usageCount: 24
+  },
+  {
+    id: 3,
+    name: "Product Manager",
+    category: "Management",
+    workMode: "Onsite",
+    experienceRange: "8+ years",
+    lastUpdatedBy: "David Kim",
+    updatedOn: "2025-05-10",
+    usageCount: 8
+  },
+  {
+    id: 4,
+    name: "DevOps Engineer",
+    category: "Technology",
+    workMode: "Remote",
+    experienceRange: "4-7 years",
+    lastUpdatedBy: "Sophie Chen",
+    updatedOn: "2025-05-05",
+    usageCount: 18
+  },
+  {
+    id: 5,
+    name: "Sales Executive",
+    category: "Sales",
+    workMode: "Hybrid",
+    experienceRange: "3-6 years",
+    lastUpdatedBy: "James Wilson",
+    updatedOn: "2025-04-28",
+    usageCount: 15
+  }
+];
+
+const popularTags = ["UX Designer", "Java Dev", "Product Manager", "DevOps", "Sales", "Recruiter"];
 
 const RoleLibraryPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterOpen, setFilterOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [sortOption, setSortOption] = useState('updated');
-  const [roles, setRoles] = useState<Role[]>([]);
-  const [popularTags, setPopularTags] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [roles, setRoles] = useState(mockRoles);
   const navigate = useNavigate();
   const location = useLocation();
-  const { toast } = useToast();
-
-  // Fetch roles from Supabase
-  useEffect(() => {
-    const fetchRoles = async () => {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('roles')
-          .select('*');
-        
-        if (error) {
-          throw error;
-        }
-        
-        setRoles(data || []);
-      } catch (error) {
-        console.error('Error fetching roles:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load roles. Please try again later.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchPopularTags = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('tags')
-          .select('name')
-          .limit(8);
-        
-        if (error) {
-          throw error;
-        }
-        
-        setPopularTags(data.map(tag => tag.name) || []);
-      } catch (error) {
-        console.error('Error fetching tags:', error);
-      }
-    };
-
-    fetchRoles();
-    fetchPopularTags();
-  }, [toast]);
 
   // Open drawer if navigated from create role page
   useEffect(() => {
@@ -105,18 +100,13 @@ const RoleLibraryPage: React.FC = () => {
     role.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Format experience range
-  const formatExperienceRange = (min: string, max: string) => {
-    return `${min}-${max} years`;
-  };
-
   // Sort roles based on selected option
   const sortedRoles = [...filteredRoles].sort((a, b) => {
     switch (sortOption) {
       case 'updated':
-        return new Date(b.updated_at || '').getTime() - new Date(a.updated_at || '').getTime();
+        return new Date(b.updatedOn).getTime() - new Date(a.updatedOn).getTime();
       case 'usage':
-        return (b.usage_count || 0) - (a.usage_count || 0);
+        return b.usageCount - a.usageCount;
       case 'alpha':
         return a.name.localeCompare(b.name);
       default:
@@ -132,32 +122,6 @@ const RoleLibraryPage: React.FC = () => {
   // Handle create role button click - open the drawer instead of navigating
   const handleCreateRole = () => {
     setDrawerOpen(true);
-  };
-
-  // Handle role creation success
-  const handleRoleCreated = () => {
-    // Refresh the roles list
-    const fetchRoles = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('roles')
-          .select('*');
-        
-        if (error) {
-          throw error;
-        }
-        
-        setRoles(data || []);
-        toast({
-          title: "Success",
-          description: "Role has been created successfully.",
-        });
-      } catch (error) {
-        console.error('Error fetching roles:', error);
-      }
-    };
-
-    fetchRoles();
   };
 
   return (
@@ -211,35 +175,29 @@ const RoleLibraryPage: React.FC = () => {
             </div>
             
             {/* Popular Tags */}
-            {popularTags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {popularTags.map((tag) => (
-                  <Badge 
-                    key={tag} 
-                    className="cursor-pointer hover:bg-primary/70" 
-                    onClick={() => handleTagClick(tag)}
-                  >
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            )}
+            <div className="flex flex-wrap gap-2">
+              {popularTags.map((tag) => (
+                <Badge 
+                  key={tag} 
+                  className="cursor-pointer hover:bg-primary/70" 
+                  onClick={() => handleTagClick(tag)}
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
 
             {/* Table or Empty State */}
-            {loading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            ) : sortedRoles.length > 0 ? (
+            {sortedRoles.length > 0 ? (
               <div className="border rounded-md overflow-hidden">
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Role Name</TableHead>
-                      <TableHead>Category</TableHead>
+                      <TableHead>Role Category</TableHead>
                       <TableHead>Work Mode</TableHead>
                       <TableHead>Experience Range</TableHead>
-                      <TableHead>Created By</TableHead>
+                      <TableHead>Last Updated By</TableHead>
                       <TableHead>Usage Count</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -249,12 +207,12 @@ const RoleLibraryPage: React.FC = () => {
                       <TableRow key={role.id}>
                         <TableCell className="font-medium">{role.name}</TableCell>
                         <TableCell>{role.category}</TableCell>
-                        <TableCell>{role.work_mode}</TableCell>
-                        <TableCell>{formatExperienceRange(role.min_experience, role.max_experience)}</TableCell>
-                        <TableCell>{role.created_by || 'System'}</TableCell>
-                        <TableCell>{role.usage_count || 0}</TableCell>
+                        <TableCell>{role.workMode}</TableCell>
+                        <TableCell>{role.experienceRange}</TableCell>
+                        <TableCell>{role.lastUpdatedBy}</TableCell>
+                        <TableCell>{role.usageCount}</TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="sm" onClick={() => navigate(`/ams/roles/${role.id}`)}>View</Button>
+                          <Button variant="ghost" size="sm">View</Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -348,8 +306,7 @@ const RoleLibraryPage: React.FC = () => {
       {/* Role Creation Drawer */}
       <RoleCreationDrawer 
         open={drawerOpen} 
-        onOpenChange={setDrawerOpen}
-        onRoleCreated={handleRoleCreated}
+        onOpenChange={setDrawerOpen} 
       />
     </div>
   );

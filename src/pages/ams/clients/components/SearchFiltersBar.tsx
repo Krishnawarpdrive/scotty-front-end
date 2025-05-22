@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Filter, Download, ArrowUpDown } from "lucide-react";
+import { Filter } from "lucide-react";
 
 interface SearchFiltersBarProps {
   searchTerm: string;
@@ -17,8 +17,8 @@ const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
 }) => {
   return (
     <div className="flex items-center justify-between gap-4 mb-4">
-      <div className="flex items-center gap-2">
-        <div className="relative max-w-xs">
+      <div className="flex items-center gap-2 flex-1">
+        <div className="relative flex-1 max-w-sm">
           <Input
             className="pl-10 h-9"
             placeholder="Search clients..."
@@ -32,26 +32,27 @@ const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
           </div>
         </div>
         
-        <Button variant="outline" size="sm" className="h-9 flex items-center gap-1.5">
-          <Filter className="h-4 w-4" />
+        <Button variant="outline" size="sm" className="h-9">
+          <Filter className="h-4 w-4 mr-2" />
           Filter
         </Button>
         
         {selectedClientsCount > 0 && (
-          <span className="text-sm text-gray-500 ml-2">
+          <span className="text-sm text-gray-500">
             {selectedClientsCount} {selectedClientsCount === 1 ? 'client' : 'clients'} selected
           </span>
         )}
       </div>
       
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" className="h-9 flex items-center gap-1.5">
-          <Download className="h-4 w-4" />
+        <Button variant="outline" size="sm" className="h-9">
           Export
         </Button>
         
-        <Button variant="outline" size="sm" className="h-9 flex items-center gap-1.5">
-          <ArrowUpDown className="h-4 w-4" />
+        <Button variant="outline" size="sm" className="h-9">
+          <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+          </svg>
           Sort
         </Button>
       </div>
