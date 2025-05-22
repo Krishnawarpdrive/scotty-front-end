@@ -1,8 +1,10 @@
+
 import React, { useState } from 'react';
 import { Plus, Filter } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import { ClientsTable } from './clients/components/table/ClientsTable';
 import ClientDetailDrawer from './clients/components/ClientDetailDrawer';
 import ClientAccountDrawer from './clients/components/ClientAccountDrawer';
@@ -10,6 +12,7 @@ import SearchFiltersBar from './clients/components/SearchFiltersBar';
 
 const ClientsPage = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [clients, setClients] = useState([
     { 
       id: '1', 
@@ -118,12 +121,19 @@ const ClientsPage = () => {
 
   // Handle client creation success
   const handleClientCreated = (newClient) => {
+    console.log("New client created:", newClient);
     setClients(prev => [...prev, newClient]);
     toast({
       title: "Awesome!",
       description: `Client ${newClient.name} has been created successfully.`,
     });
-    // Keep drawer open but update UI
+    
+    // Option to navigate to client details page
+    const viewDetails = window.confirm(`Would you like to view ${newClient.name}'s details?`);
+    if (viewDetails) {
+      setIsAccountDrawerOpen(false); // Close drawer
+      navigate(`/ams/clients/${newClient.id}`);
+    }
   };
 
   // Handle filter toggle

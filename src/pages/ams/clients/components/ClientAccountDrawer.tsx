@@ -110,7 +110,7 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
   // Handle form submission
   const onSubmit = (values: DrawerFormValues) => {
     // Create complete data with custom fields
-    const completeData = {
+    const newClient = {
       ...values,
       customFields: {
         account: customAccountFields,
@@ -118,32 +118,40 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
         sourcing: customSourcingFields,
       },
       id: Math.random().toString(36).substring(2, 9),
+      name: values.accountName, // Important for displaying in other components
+      contact: values.sourcingPerson || "Not specified",
+      email: values.email,
+      status: "active",
       hiringStatus: 'Active',
       clientTier: 'B',
       healthScore: 75,
       budgetUtilized: 0,
       lastActivity: { days: 0, active: true },
       roles: [],
-      totalRequirements: 0
+      totalRequirements: 0,
+      assignedHR: "Unassigned",
+      industry: values.industry,
+      headquarters: values.headquarters,
+      createdOn: new Date().toISOString().split('T')[0]
     };
     
-    console.log("Form submitted:", completeData);
+    console.log("Form submitted:", newClient);
     
     // Set the just created client for CTA display
     setJustCreatedClient({
-      id: completeData.id,
+      id: newClient.id,
       name: values.accountName
     });
     
     // Call the callback if provided
     if (onClientCreated) {
-      onClientCreated(completeData);
-    } else {
-      toast({
-        title: "Success!",
-        description: `🎉 Client '${values.accountName}' has been created successfully!`,
-      });
+      onClientCreated(newClient);
     }
+
+    toast({
+      title: "Success!",
+      description: `🎉 Client '${values.accountName}' has been created successfully!`,
+    });
   };
   
   // Handle step navigation
@@ -165,8 +173,17 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
     }
   };
 
+  // Reset form and state when drawer closes
+  useEffect(() => {
+    if (!open) {
+      setJustCreatedClient(null);
+    }
+  }, [open]);
+
   // Handle role creation for the new client
   const handleCreateRole = () => {
+    if (!justCreatedClient) return;
+    
     // Close the drawer
     onOpenChange(false);
     
