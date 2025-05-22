@@ -2,15 +2,8 @@
 import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { RoleFormValues } from '../types/roleTypes';
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '@/components/ui/form';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 
 interface RoleRequirementsProps {
   form: UseFormReturn<RoleFormValues>;
@@ -18,43 +11,46 @@ interface RoleRequirementsProps {
 
 const RoleRequirements: React.FC<RoleRequirementsProps> = ({ form }) => {
   return (
-    <>
-      <FormField
-        control={form.control}
-        name="responsibilities"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Responsibilities</FormLabel>
-            <FormControl>
-              <Textarea
-                placeholder="List the main responsibilities of this role"
-                className="resize-none"
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+    <div className="space-y-6">
+      <h3 className="text-lg font-medium">Job Description</h3>
+      <div className="space-y-4">
+        <FormField
+          control={form.control}
+          name="responsibilities"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Responsibilities</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Enter roles and responsibilities" 
+                  className="min-h-24 resize-y"
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <FormField
-        control={form.control}
-        name="requirements"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Requirements</FormLabel>
-            <FormControl>
-              <Textarea
-                placeholder="List the main requirements for this role"
-                className="resize-none"
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </>
+        <FormField
+          control={form.control}
+          name="requirements"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Requirements</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Enter job requirements" 
+                  className="min-h-24 resize-y"
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+    </div>
   );
 };
 

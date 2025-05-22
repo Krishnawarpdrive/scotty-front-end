@@ -1,30 +1,36 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
 interface RoleFormActionsProps {
   isSubmitting: boolean;
   onCancel: () => void;
 }
 
-const RoleFormActions: React.FC<RoleFormActionsProps> = ({
+const RoleFormActions: React.FC<RoleFormActionsProps> = ({ 
   isSubmitting,
   onCancel
 }) => {
   return (
-    <div className="flex justify-end gap-3">
-      <Button type="button" variant="outline" onClick={onCancel}>
+    <div className="flex gap-2 justify-end w-full">
+      <Button 
+        type="button"
+        variant="outline"
+        onClick={onCancel}
+        disabled={isSubmitting}
+      >
         Cancel
       </Button>
-      <Button type="submit" disabled={isSubmitting}>
+      <Button 
+        type="submit"
+        disabled={isSubmitting}
+      >
         {isSubmitting ? (
           <>
-            <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2"></div>
-            Creating
+            <span className="animate-spin mr-2">⏳</span>
+            Saving...
           </>
-        ) : (
-          "Create Role"
-        )}
+        ) : 'Save Role'}
       </Button>
     </div>
   );
