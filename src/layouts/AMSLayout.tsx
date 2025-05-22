@@ -1,35 +1,27 @@
-
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { AMSSidebar } from './AMSSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import Header from '@/components/common/Header';
-
 export const AMSLayout: React.FC = () => {
   const location = useLocation();
-  
+
   // Generate breadcrumb items based on current path
   const pathSegments = location.pathname.split('/').filter(Boolean);
   const breadcrumbItems = pathSegments.map((segment, index) => {
     const path = `/${pathSegments.slice(0, index + 1).join('/')}`;
     const isLastItem = index === pathSegments.length - 1;
-    
+
     // Format segment for display (capitalize first letter, replace hyphens with spaces)
-    const formattedSegment = segment
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-    
+    const formattedSegment = segment.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     return {
       path,
       label: formattedSegment,
       isLastItem
     };
   });
-
-  return (
-    <SidebarProvider defaultOpen={true}>
+  return <SidebarProvider defaultOpen={true}>
       <div className="flex flex-col h-screen w-full">
         <Header userName="Admin User" />
         
@@ -46,33 +38,25 @@ export const AMSLayout: React.FC = () => {
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   
-                  {breadcrumbItems.map((item, index) => (
-                    item.isLastItem ? (
-                      <BreadcrumbItem key={index}>
+                  {breadcrumbItems.map((item, index) => item.isLastItem ? <BreadcrumbItem key={index}>
                         <BreadcrumbPage>{item.label}</BreadcrumbPage>
-                      </BreadcrumbItem>
-                    ) : (
-                      <React.Fragment key={index}>
+                      </BreadcrumbItem> : <React.Fragment key={index}>
                         <BreadcrumbItem>
                           <BreadcrumbLink href={item.path}>{item.label}</BreadcrumbLink>
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />
-                      </React.Fragment>
-                    )
-                  ))}
+                      </React.Fragment>)}
                 </BreadcrumbList>
               </Breadcrumb>
             </div>
             
             {/* Main content area */}
-            <div className="flex-1 overflow-auto p-6">
+            <div className="flex-1 overflow-auto p-6 py-0 px-0">
               <Outlet />
             </div>
           </div>
         </div>
       </div>
-    </SidebarProvider>
-  );
+    </SidebarProvider>;
 };
-
 export default AMSLayout;
