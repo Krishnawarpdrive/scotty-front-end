@@ -24,7 +24,8 @@ export const ClientsTableContainer: React.FC<ClientsTableContainerProps> = ({
           />
         </div>
       </div>
-      <style jsx global>{`
+      <style>
+        {`
         .sticky-column-wrapper table thead tr th:nth-child(2),
         .sticky-column-wrapper table tbody tr td:nth-child(2) {
           position: sticky;
@@ -48,7 +49,8 @@ export const ClientsTableContainer: React.FC<ClientsTableContainerProps> = ({
         .dark .sticky-column-wrapper table tbody tr td:nth-child(2) {
           background-color: hsl(var(--background));
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
