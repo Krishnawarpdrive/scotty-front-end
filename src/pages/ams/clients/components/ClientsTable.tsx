@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Eye, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ interface ClientsTableProps {
   onSelectClient?: (client: any) => void;
   selectedClients?: any[];
   onSelectAll?: () => void;
-  onSort?: (column: string, direction: 'asc' | 'desc') => void; // Add this property
+  onSort?: (column: string, direction: 'asc' | 'desc') => void;
 }
 
 export const ClientsTable: React.FC<ClientsTableProps> = ({ 
@@ -32,7 +33,7 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
   onSelectClient,
   selectedClients = [],
   onSelectAll,
-  onSort // Receive this prop
+  onSort
 }) => {
   const [clientDetailId, setClientDetailId] = useState<number | null>(null);
   
@@ -86,11 +87,14 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
     {
       id: 'lastActivity',
       header: 'Last Activity',
-      accessorKey: (client) => client.lastActivity.days,
+      accessorKey: (client) => client.lastActivity?.days || 0,
       enableSorting: true,
       enableFiltering: false,
       cell: (client) => (
-        <LastActivityIndicator days={client.lastActivity.days} active={client.lastActivity.active} />
+        <LastActivityIndicator 
+          days={client.lastActivity?.days || 0} 
+          active={client.lastActivity?.active || false} 
+        />
       ),
     },
     {

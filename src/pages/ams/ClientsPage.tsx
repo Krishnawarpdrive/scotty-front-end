@@ -23,8 +23,42 @@ import { Icons } from '@/components/icons';
 const ClientsPage = () => {
   const { toast } = useToast();
   const [clients, setClients] = useState([
-    { id: '1', name: 'Acme Corp', contact: 'John Doe', email: 'john@example.com', status: 'active' },
-    { id: '2', name: 'Beta Co', contact: 'Jane Smith', email: 'jane@example.com', status: 'inactive' },
+    { 
+      id: '1', 
+      name: 'Acme Corp', 
+      contact: 'John Doe', 
+      email: 'john@example.com', 
+      status: 'active',
+      accountType: 'Enterprise',
+      createdOn: '2023-05-15',
+      lastActivity: { days: 3, active: true },
+      roles: [{ name: 'Software Engineer', id: 'r1' }, { name: 'Product Manager', id: 'r2' }],
+      totalRequirements: 12,
+      assignedHR: 'Sarah Lee',
+      hiringStatus: 'Active',
+      clientTier: 'A',
+      healthScore: 85,
+      budgetUtilized: 65,
+      notes: 'Key client with strong growth potential'
+    },
+    { 
+      id: '2', 
+      name: 'Beta Co', 
+      contact: 'Jane Smith', 
+      email: 'jane@example.com', 
+      status: 'inactive',
+      accountType: 'SMB',
+      createdOn: '2023-06-22',
+      lastActivity: { days: 7, active: false },
+      roles: [{ name: 'Data Analyst', id: 'r3' }],
+      totalRequirements: 5,
+      assignedHR: 'Mike Chen',
+      hiringStatus: 'Paused',
+      clientTier: 'B',
+      healthScore: 62,
+      budgetUtilized: 40,
+      notes: 'Recently paused hiring due to budget constraints'
+    },
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -125,7 +159,7 @@ const ClientsPage = () => {
               onSelectClient={handleSelectClient}
               selectedClients={selectedClients}
               onSelectAll={handleSelectAll}
-              onSort={handleSort} // Add this prop
+              onSort={handleSort}
             />
           </div>
         </CardContent>
