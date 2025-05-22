@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Eye, Edit, Trash2 } from "lucide-react";
+import { Eye, Edit, Trash2, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -236,12 +236,14 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
   ];
 
   return (
-    <>
-      <DataTable
-        data={clients}
-        columns={columns}
-        onRowClick={handleViewClient}
-      />
+    <div className="overflow-hidden rounded-md border">
+      <div className="max-h-[70vh] overflow-auto">
+        <DataTable
+          data={clients}
+          columns={columns}
+          onRowClick={handleViewClient}
+        />
+      </div>
       
       {clientDetailId && (
         <ClientDetailDrawer 
@@ -250,7 +252,7 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
           onOpenChange={() => setClientDetailId(null)}
         />
       )}
-    </>
+    </div>
   );
 };
 

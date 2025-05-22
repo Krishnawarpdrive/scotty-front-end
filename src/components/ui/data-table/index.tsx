@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Search, Filter, ArrowUp, ArrowDown, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Filter, ArrowUp, ArrowDown, X, Check } from 'lucide-react';
 import {
   Table,
   TableHeader,
@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Popover,
   PopoverContent,
@@ -49,6 +50,29 @@ export function DataTable<T extends Record<string, any>>({
   
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [activeColumnFilter, setActiveColumnFilter] = useState<string | null>(null);
+  const [columnValues, setColumnValues] = useState<Record<string, Set<string>>>({});
+  const [selectedFilterValues, setSelectedFilterValues] = useState<Record<string, string[]>>({});
+  const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
+  
+  // Extract unique values for each column for filtering
+  useEffect(() => {
+    const values: Record<string, Set<string>> = {};
+    
+    columns.forEach(column => {
+      if (column.enableFiltering) {
+        const uniqueValues = new Set<string>();
+        data.forEach(item => {
+          const value = getColumnValue(item, column);
+          if (value !== undefined && value !== null) {
+            uniqueValues.add(String(value));
+          }
+        });
+        values[column.id] = uniqueValues;
+      }
+    });
+    
+    setColumnValues(values);
+  }, [data, columns]);
   
   const handleSort = (columnId: string) => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -69,14 +93,45 @@ export function DataTable<T extends Record<string, any>>({
     }));
   };
   
+  const toggleFilterValue = (columnId: string, value: string) => {
+    setSelectedFilterValues(prev => {
+      const currentValues = prev[columnId] || [];
+      const newValues = currentValues.includes(value)
+        ? currentValues.filter(v => v !== value)
+        : [...currentValues, value];
+      
+      // If no values are selected, remove the filter
+      if (newValues.length === 0) {
+        const newFilters = { ...filters };
+        delete newFilters[columnId];
+        setFilters(newFilters);
+        return { ...prev, [columnId]: [] };
+      }
+      
+      // Apply the filter
+      setFilters(current => ({
+        ...current,
+        [columnId]: newValues.join('|')
+      }));
+      
+      return { ...prev, [columnId]: newValues };
+    });
+  };
+  
   const clearFilter = (columnId: string) => {
     const newFilters = { ...filters };
     delete newFilters[columnId];
     setFilters(newFilters);
+    setSelectedFilterValues(prev => {
+      const newValues = { ...prev };
+      delete newValues[columnId];
+      return newValues;
+    });
   };
   
   const clearAllFilters = () => {
     setFilters({});
+    setSelectedFilterValues({});
   };
   
   const getColumnValue = (item: T, column: DataTableColumn<T>) => {
@@ -94,10 +149,20 @@ export function DataTable<T extends Record<string, any>>({
     if (filterValue && filterValue.trim() !== '') {
       const column = columns.find(col => col.id === columnId);
       if (column) {
-        filteredData = filteredData.filter(item => {
-          const value = getColumnValue(item, column);
-          return String(value).toLowerCase().includes(filterValue.toLowerCase());
-        });
+        // If the filter contains pipe characters, it's a multi-value filter
+        if (filterValue.includes('|')) {
+          const filterValues = filterValue.split('|');
+          filteredData = filteredData.filter(item => {
+            const value = String(getColumnValue(item, column));
+            return filterValues.some(fv => value === fv);
+          });
+        } else {
+          // Text search filter
+          filteredData = filteredData.filter(item => {
+            const value = getColumnValue(item, column);
+            return String(value).toLowerCase().includes(filterValue.toLowerCase());
+          });
+        }
       }
     }
   });
@@ -137,7 +202,7 @@ export function DataTable<T extends Record<string, any>>({
                 variant="outline"
                 className="bg-gray-100 text-gray-800 flex items-center gap-1"
               >
-                {column?.header}: {value}
+                {column?.header}: {value.includes('|') ? `${selectedFilterValues[columnId]?.length} selected` : value}
                 <Button 
                   variant="ghost" 
                   size="sm" 
@@ -176,6 +241,8 @@ export function DataTable<T extends Record<string, any>>({
                       activeColumnFilter === column.id && "bg-gray-100"
                     )}
                     onClick={() => column.enableSorting && handleSort(column.id)}
+                    onMouseEnter={() => setHoveredColumn(column.id)}
+                    onMouseLeave={() => setHoveredColumn(null)}
                   >
                     <div className="flex items-center space-x-1">
                       <span>{column.header}</span>
@@ -200,30 +267,55 @@ export function DataTable<T extends Record<string, any>>({
                               variant="ghost"
                               size="sm"
                               className={cn(
-                                "h-6 w-6 p-0 opacity-70 hover:opacity-100",
-                                filters[column.id] && "text-primary opacity-100"
+                                "h-6 w-6 p-0",
+                                (hoveredColumn === column.id || filters[column.id]) 
+                                  ? "opacity-100" 
+                                  : "opacity-0 hover:opacity-100",
+                                filters[column.id] && "text-primary"
                               )}
                             >
                               <Filter className="h-3.5 w-3.5" />
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent align="start" className="w-56 p-2">
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                               <p className="text-sm font-medium">Filter {column.header}</p>
+                              
                               <div className="relative">
                                 <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
                                 <Input
                                   placeholder="Search..."
                                   className="pl-8"
                                   value={filters[column.id] || ''}
-                                  onChange={(e) => handleFilterChange(column.id, e.target.value)}
+                                  onChange={(e) => !e.target.value.includes('|') && handleFilterChange(column.id, e.target.value)}
                                 />
                               </div>
+                              
+                              <div className="max-h-[200px] overflow-auto">
+                                <div className="space-y-2">
+                                  {Array.from(columnValues[column.id] || []).sort().map((value) => (
+                                    <div key={value} className="flex items-center space-x-2">
+                                      <Checkbox 
+                                        id={`filter-${column.id}-${value}`}
+                                        checked={(selectedFilterValues[column.id] || []).includes(value)}
+                                        onCheckedChange={() => toggleFilterValue(column.id, value)}
+                                      />
+                                      <label 
+                                        htmlFor={`filter-${column.id}-${value}`}
+                                        className="text-sm cursor-pointer grow truncate"
+                                      >
+                                        {value}
+                                      </label>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                              
                               {filters[column.id] && (
                                 <Button
-                                  variant="ghost"
+                                  variant="outline"
                                   size="sm"
-                                  className="w-full text-xs h-8"
+                                  className="w-full text-xs h-8 mt-2"
                                   onClick={() => clearFilter(column.id)}
                                 >
                                   Clear filter
