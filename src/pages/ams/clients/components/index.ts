@@ -2,7 +2,7 @@
 // Export all components to maintain imports
 export { default as ClientsTable } from './table/ClientsTable';
 export { default as ClientDetailDrawer } from './ClientDetailDrawer';
-export { default as ClientBadges, getHiringStatusBadge, getClientTierBadge, LastActivityIndicator } from './ClientBadges';
+export { getHiringStatusBadge, getClientTierBadge, LastActivityIndicator } from './ClientBadges';
 export { default as RolesPopover } from './RolesPopover';
 export { default as HRTooltip } from './HRTooltip';
 export { default as FormProgressIndicator } from './FormProgressIndicator';

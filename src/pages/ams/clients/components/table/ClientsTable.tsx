@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import ClientsTableContainer from './ClientsTableContainer';
 import useClientTableColumns from './useClientTableColumns';
 import ClientDetailDrawer from '../ClientDetailDrawer';
+import { useClientDetails } from './hooks/useClientDetails';
 
 interface ClientsTableProps {
   clients: any[];
@@ -27,12 +28,13 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
   onSelectAll,
   onSort
 }) => {
-  const [clientDetailId, setClientDetailId] = useState<number | null>(null);
+  const { 
+    selectedClient,
+    handleViewClient, 
+    handleCloseDetail,
+    isDetailOpen 
+  } = useClientDetails({ clients });
   
-  const handleViewClient = (client: any) => {
-    setClientDetailId(client.id);
-  };
-
   const handleSelectClient = (id: string) => {
     onSelectClient && onSelectClient(id);
   };
@@ -51,11 +53,11 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
         onRowClick={handleViewClient}
       />
       
-      {clientDetailId && (
+      {selectedClient && (
         <ClientDetailDrawer 
-          client={clients.find(c => c.id === clientDetailId)} 
-          open={clientDetailId !== null}
-          onOpenChange={() => setClientDetailId(null)}
+          client={selectedClient} 
+          open={isDetailOpen}
+          onOpenChange={handleCloseDetail}
         />
       )}
     </>

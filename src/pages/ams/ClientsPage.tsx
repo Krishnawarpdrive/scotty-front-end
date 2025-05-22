@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { ClientsTable } from './clients/components/ClientsTable';
+import { ClientsTable } from './clients/components/table/ClientsTable';
 import ClientDetailDrawer from './clients/components/ClientDetailDrawer';
 import { Icons } from '@/components/icons';
 
