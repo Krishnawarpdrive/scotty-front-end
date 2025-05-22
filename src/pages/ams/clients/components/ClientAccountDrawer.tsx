@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useNavigate } from "react-router-dom";
 
 import {
   Sheet,
@@ -31,11 +32,13 @@ import { drawerFormSchema, DrawerFormValues, CustomField } from './drawer/client
 interface ClientAccountDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onClientCreated?: (client: any) => void;
 }
 
 const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({ 
   open, 
-  onOpenChange 
+  onOpenChange,
+  onClientCreated
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formProgress, setFormProgress] = useState(0);
@@ -43,10 +46,12 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
   const [customAccountFields, setCustomAccountFields] = useState<CustomField[]>([]);
   const [customProfileFields, setCustomProfileFields] = useState<CustomField[]>([]);
   const [customSourcingFields, setCustomSourcingFields] = useState<CustomField[]>([]);
+  const [justCreatedClient, setJustCreatedClient] = useState<any>(null);
   
   const formSections = ["Account Information", "Company Profile", "Sourcing Details", "Address Details"];
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   
   // Initialize form
   const form = useForm<DrawerFormValues>({
@@ -111,18 +116,34 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
         account: customAccountFields,
         profile: customProfileFields,
         sourcing: customSourcingFields,
-      }
+      },
+      id: Math.random().toString(36).substring(2, 9),
+      hiringStatus: 'Active',
+      clientTier: 'B',
+      healthScore: 75,
+      budgetUtilized: 0,
+      lastActivity: { days: 0, active: true },
+      roles: [],
+      totalRequirements: 0
     };
     
     console.log("Form submitted:", completeData);
     
-    toast({
-      title: "Success!",
-      description: `🎉 Client '${values.accountName}' has been created successfully!`,
+    // Set the just created client for CTA display
+    setJustCreatedClient({
+      id: completeData.id,
+      name: values.accountName
     });
     
-    // Close drawer
-    onOpenChange(false);
+    // Call the callback if provided
+    if (onClientCreated) {
+      onClientCreated(completeData);
+    } else {
+      toast({
+        title: "Success!",
+        description: `🎉 Client '${values.accountName}' has been created successfully!`,
+      });
+    }
   };
   
   // Handle step navigation
@@ -142,6 +163,20 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
     if (step >= 0 && step < formSections.length) {
       setCurrentStep(step);
     }
+  };
+
+  // Handle role creation for the new client
+  const handleCreateRole = () => {
+    // Close the drawer
+    onOpenChange(false);
+    
+    // Navigate to the role creation page with client info
+    navigate('/ams/roles/create', { 
+      state: { 
+        clientId: justCreatedClient.id,
+        clientName: justCreatedClient.name 
+      } 
+    });
   };
   
   // When sameAsBilling changes
@@ -212,6 +247,25 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
                   setSameAsBilling={setSameAsBilling} 
                 />
               )}
+
+              {/* Success state with CTA */}
+              {justCreatedClient && (
+                <div className="bg-green-50 p-6 rounded-lg border border-green-200 mt-4 text-center">
+                  <h3 className="text-lg font-semibold text-green-800 mb-2">
+                    Awesome! Client {justCreatedClient.name} has been created successfully.
+                  </h3>
+                  <p className="text-green-700 mb-4">
+                    Would you like to create a role for this client now?
+                  </p>
+                  <Button 
+                    onClick={handleCreateRole} 
+                    size="lg"
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    Create Role for {justCreatedClient.name}
+                  </Button>
+                </div>
+              )}
             </div>
             
             {/* Sticky footer with navigation buttons */}
@@ -226,7 +280,7 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
                 </Button>
                 
                 <div className="flex space-x-2">
-                  {currentStep > 0 && (
+                  {currentStep > 0 && !justCreatedClient && (
                     <Button 
                       type="button" 
                       variant="outline" 
@@ -236,18 +290,18 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
                     </Button>
                   )}
                   
-                  {currentStep < formSections.length - 1 ? (
+                  {currentStep < formSections.length - 1 && !justCreatedClient ? (
                     <Button 
                       type="button" 
                       onClick={nextStep}
                     >
                       Next
                     </Button>
-                  ) : (
+                  ) : !justCreatedClient ? (
                     <Button type="submit">
                       Save
                     </Button>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </SheetFooter>

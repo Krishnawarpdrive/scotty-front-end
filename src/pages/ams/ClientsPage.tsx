@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Filter } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -55,6 +54,7 @@ const ClientsPage = () => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
   const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false);
+  const [showFilterPanel, setShowFilterPanel] = useState(false);
 
   const handleCreateClient = () => {
     setIsAccountDrawerOpen(true);
@@ -64,7 +64,7 @@ const ClientsPage = () => {
     toast({
       title: "Not implemented",
       description: "This feature is not implemented yet.",
-    })
+    });
   };
 
   const handleDeleteClient = (id: string) => {
@@ -72,7 +72,7 @@ const ClientsPage = () => {
     toast({
       title: "Client Deleted",
       description: "The client has been deleted successfully.",
-    })
+    });
   };
 
   const handleViewClientDetails = (client) => {
@@ -116,6 +116,21 @@ const ClientsPage = () => {
     // Implement actual sorting logic here
   };
 
+  // Handle client creation success
+  const handleClientCreated = (newClient) => {
+    setClients(prev => [...prev, newClient]);
+    toast({
+      title: "Awesome!",
+      description: `Client ${newClient.name} has been created successfully.`,
+    });
+    // Keep drawer open but update UI
+  };
+
+  // Handle filter toggle
+  const toggleFilterPanel = () => {
+    setShowFilterPanel(!showFilterPanel);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -131,11 +146,23 @@ const ClientsPage = () => {
 
       <Card className="mt-2">
         <CardContent className="p-4">
-          <SearchFiltersBar 
-            searchTerm={searchTerm}
-            onSearchChange={handleSearchChange}
-            selectedClientsCount={selectedClients.length}
-          />
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-2/5">
+              <SearchFiltersBar 
+                searchTerm={searchTerm}
+                onSearchChange={handleSearchChange}
+                selectedClientsCount={selectedClients.length}
+              />
+            </div>
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2"
+              onClick={toggleFilterPanel}
+            >
+              <Filter className="h-4 w-4" />
+              Filters
+            </Button>
+          </div>
           
           <ClientsTable 
             clients={filteredClients}
@@ -160,6 +187,7 @@ const ClientsPage = () => {
       <ClientAccountDrawer
         open={isAccountDrawerOpen}
         onOpenChange={setIsAccountDrawerOpen}
+        onClientCreated={handleClientCreated}
       />
     </div>
   );

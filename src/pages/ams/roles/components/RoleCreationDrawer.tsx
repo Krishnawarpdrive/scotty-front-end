@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 import {
   Sheet,
@@ -16,6 +17,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Import schema
 import { formSchema, FormValues, CustomField } from './roleFormSchema';
@@ -30,11 +32,15 @@ import SkillsSelectionStep from './steps/SkillsSelectionStep';
 interface RoleCreationDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  clientId?: string;
+  clientName?: string;
 }
 
-const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
+export const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
   open,
-  onOpenChange
+  onOpenChange,
+  clientId,
+  clientName
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formProgress, setFormProgress] = useState(0);
@@ -42,9 +48,21 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
+  const [roleTemplates, setRoleTemplates] = useState<any[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const formSections = ["Basic Info", "Details", "Skills", "Tags", "Custom Fields"];
+
+  // Mock role templates data
+  useEffect(() => {
+    setRoleTemplates([
+      { id: "1", name: "Software Engineer", category: "Technology", workMode: "Remote", minExperience: "2", maxExperience: "5" },
+      { id: "2", name: "Product Manager", category: "Management", workMode: "Hybrid", minExperience: "3", maxExperience: "7" },
+      { id: "3", name: "UX Designer", category: "Design", workMode: "Onsite", minExperience: "1", maxExperience: "4" }
+    ]);
+  }, []);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -58,9 +76,29 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
       maxExperience: "",
       jobDescription: "",
       saveAsTemplate: false,
+      client: clientId || "",
     },
     mode: "onChange"
   });
+
+  // Apply role template when selected
+  useEffect(() => {
+    if (selectedTemplate) {
+      const template = roleTemplates.find(t => t.id === selectedTemplate);
+      if (template) {
+        form.setValue("roleName", template.name);
+        form.setValue("roleCategory", template.category);
+        form.setValue("workMode", template.workMode);
+        form.setValue("minExperience", template.minExperience);
+        form.setValue("maxExperience", template.maxExperience);
+        // Set other template values as needed
+        toast({
+          title: "Template Applied",
+          description: `${template.name} template has been applied. You can customize as needed.`
+        });
+      }
+    }
+  }, [selectedTemplate, roleTemplates, form, toast]);
 
   // Calculate form progress based on filled fields
   useEffect(() => {
@@ -119,18 +157,31 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
       ...values,
       skills: selectedSkills,
       tags,
-      customFields
+      customFields,
+      clientId,
+      clientName
     };
     
     console.log("Form submitted:", completeData);
     
     toast({
       title: "Role created successfully",
-      description: `${values.roleName} has been added to the global role library.`,
+      description: `${values.roleName} has been added to ${clientName || "the global role library"}.`,
     });
     
-    // Close drawer
+    // Close drawer and navigate if appropriate
     onOpenChange(false);
+    
+    if (clientId) {
+      navigate(`/ams/clients/${clientId}`, { 
+        state: { 
+          fromRoleCreation: true,
+          clientName
+        } 
+      });
+    } else {
+      navigate("/ams/roles");
+    }
   };
 
   // Render appropriate step content based on currentStep
@@ -151,14 +202,40 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
     }
   };
 
+  const headerTitle = clientId 
+    ? `Create New Role for ${clientName}` 
+    : "Create New Role";
+
+  const headerDescription = clientId 
+    ? `Add a role specifically for ${clientName}` 
+    : "Add a role to the global role library that can be used across different clients.";
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-[70vw] max-w-[800px] h-full overflow-y-auto">
         <SheetHeader className="border-b pb-4">
-          <SheetTitle className="text-xl">Create New Role</SheetTitle>
+          <SheetTitle className="text-xl">{headerTitle}</SheetTitle>
           <SheetDescription>
-            Add a role to the global role library that can be used across different clients.
+            {headerDescription}
           </SheetDescription>
+          
+          <div className="mt-4">
+            <label className="text-sm font-medium mb-2 block">
+              Select from Role Library Templates (Optional)
+            </label>
+            <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a role template" />
+              </SelectTrigger>
+              <SelectContent>
+                {roleTemplates.map(template => (
+                  <SelectItem key={template.id} value={template.id}>
+                    {template.name} - {template.category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </SheetHeader>
 
         <div className="my-4">

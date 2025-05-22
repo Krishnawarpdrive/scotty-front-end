@@ -27,7 +27,7 @@ export function DataTableRow<T extends Record<string, any>>({
         return (
           <TableCell 
             key={column.id}
-            className="text-[12px] text-[#262626] group-hover:text-[#009933] transition-colors"
+            className="text-[12px] text-[#262626] transition-colors"
           >
             {column.cell ? column.cell(item) : item[column.id]}
           </TableCell>

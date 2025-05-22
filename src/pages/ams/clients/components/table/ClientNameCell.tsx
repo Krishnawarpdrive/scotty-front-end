@@ -9,7 +9,7 @@ interface ClientNameCellProps {
 const ClientNameCell: React.FC<ClientNameCellProps> = ({ name }) => {
   return (
     <div className={cn(
-      "font-medium hover:text-green-600 transition-colors",
+      "font-medium text-[#262626] hover:text-green-500 transition-colors",
       "cursor-pointer"
     )}>
       {name}
