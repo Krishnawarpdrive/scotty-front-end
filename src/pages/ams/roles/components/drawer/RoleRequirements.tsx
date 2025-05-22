@@ -4,12 +4,19 @@ import { UseFormReturn } from 'react-hook-form';
 import { RoleFormValues } from '../types/roleTypes';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import CustomFieldInput from './CustomFieldInput';
 
 interface RoleRequirementsProps {
   form: UseFormReturn<RoleFormValues>;
 }
 
 const RoleRequirements: React.FC<RoleRequirementsProps> = ({ form }) => {
+  const customFields = form.watch('customFields') || [];
+
+  const handleCustomFieldsChange = (updatedFields: any[]) => {
+    form.setValue('customFields', updatedFields, { shouldValidate: true });
+  };
+  
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-medium">Job Description</h3>
@@ -48,6 +55,12 @@ const RoleRequirements: React.FC<RoleRequirementsProps> = ({ form }) => {
               <FormMessage />
             </FormItem>
           )}
+        />
+        
+        <CustomFieldInput 
+          section="description"
+          customFields={customFields}
+          onFieldsChange={handleCustomFieldsChange}
         />
       </div>
     </div>

@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
+import { Save } from 'lucide-react';
 
 interface RoleFormActionsProps {
   isSubmitting: boolean;
@@ -12,7 +13,7 @@ const RoleFormActions: React.FC<RoleFormActionsProps> = ({
   onCancel
 }) => {
   return (
-    <div className="flex gap-2 justify-end w-full">
+    <div className="flex gap-2 justify-end w-full sticky bottom-0 bg-background py-3 border-t">
       <Button 
         type="button"
         variant="outline"
@@ -24,13 +25,19 @@ const RoleFormActions: React.FC<RoleFormActionsProps> = ({
       <Button 
         type="submit"
         disabled={isSubmitting}
+        className="gap-2"
       >
         {isSubmitting ? (
           <>
-            <span className="animate-spin mr-2">⏳</span>
+            <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
             Saving...
           </>
-        ) : 'Save Role'}
+        ) : (
+          <>
+            <Save className="h-4 w-4" />
+            Save Role
+          </>
+        )}
       </Button>
     </div>
   );

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { roleFormSchema, RoleFormValues } from '../types/roleTypes';
+import { roleFormSchema, RoleFormValues, CustomField } from '../types/roleTypes';
 
 export const useRoleForm = (clientId?: string, onSuccess?: (values: RoleFormValues) => void) => {
   const { toast } = useToast();
@@ -16,50 +16,161 @@ export const useRoleForm = (clientId?: string, onSuccess?: (values: RoleFormValu
       roleName: "",
       jobTitle: "",
       department: "",
+      workMode: "",
       experienceLevel: "",
       employmentType: "",
       location: "",
       salaryRange: "",
       responsibilities: "",
       requirements: "",
+      primarySkills: [],
+      secondarySkills: [],
+      certifications: [],
+      tags: [],
+      customFields: [],
+      saveAsTemplate: false,
     },
   });
 
   const calculateProgress = (values: RoleFormValues): number => {
-    const totalFields = Object.keys(values).length;
-    const filledFields = Object.values(values).filter(value => !!value).length;
-    return (filledFields / totalFields) * 100;
+    // Count required fields
+    const requiredFields = ['roleName', 'department', 'experienceLevel', 'employmentType', 'workMode'];
+    const totalRequiredFields = requiredFields.length;
+    
+    // Count filled required fields
+    const filledRequiredFields = requiredFields.filter(field => 
+      values[field as keyof RoleFormValues]
+    ).length;
+    
+    // Calculate progress percentage
+    return (filledRequiredFields / totalRequiredFields) * 100;
   };
 
   const onSubmit = async (values: RoleFormValues) => {
     try {
       setIsSubmitting(true);
 
-      if (!clientId) {
-        throw new Error("Client ID is required");
-      }
-
       // Map form values to the database schema
       const roleData = {
         name: values.roleName,
-        external_name: values.jobTitle, // using jobTitle for external_name field
+        external_name: values.jobTitle, 
         client_id: clientId,
-        employment_type: values.employmentType || "Full-time", // Default to Full-time
-        category: values.department || "General", // Using department as category
-        min_experience: values.experienceLevel || "0 years", // Default minimum
-        max_experience: values.experienceLevel || "5+ years", // Default maximum
-        work_mode: "Hybrid", // Default value
+        employment_type: values.employmentType,
+        category: values.department,
+        min_experience: values.experienceLevel?.split('-')[0] || "0",
+        max_experience: values.experienceLevel?.split('-')[1] || "1+",
+        work_mode: values.workMode,
         job_description: `${values.responsibilities || ''}\n\n${values.requirements || ''}`,
+        is_template: values.saveAsTemplate,
       };
 
       // Insert role into Supabase
-      const { data, error } = await supabase
+      const { data: roleData, error: roleError } = await supabase
         .from('roles')
         .insert(roleData)
         .select()
         .single();
 
-      if (error) throw error;
+      if (roleError) throw roleError;
+      
+      const roleId = roleData.id;
+      
+      // Insert skills relationships
+      if (values.primarySkills.length > 0 || values.secondarySkills.length > 0) {
+        // Handle primary skills
+        const primarySkillPromises = values.primarySkills.map(async (skillName) => {
+          // Check if skill exists, if not create it
+          let skillId;
+          
+          const { data: existingSkill } = await supabase
+            .from('skills')
+            .select('id')
+            .eq('name', skillName)
+            .single();
+          
+          if (existingSkill) {
+            skillId = existingSkill.id;
+          } else {
+            const { data: newSkill } = await supabase
+              .from('skills')
+              .insert({ name: skillName, category: 'primary' })
+              .select()
+              .single();
+              
+            if (newSkill) skillId = newSkill.id;
+          }
+          
+          if (skillId) {
+            // Create relationship
+            return supabase
+              .from('role_skills')
+              .insert({ role_id: roleId, skill_id: skillId });
+          }
+          
+          return Promise.resolve();
+        });
+        
+        await Promise.all(primarySkillPromises);
+        
+        // Handle secondary skills - similar to primary skills
+        const secondarySkillPromises = values.secondarySkills.map(async (skillName) => {
+          // Similar logic as above for secondarySkills
+          let skillId;
+          
+          const { data: existingSkill } = await supabase
+            .from('skills')
+            .select('id')
+            .eq('name', skillName)
+            .single();
+          
+          if (existingSkill) {
+            skillId = existingSkill.id;
+          } else {
+            const { data: newSkill } = await supabase
+              .from('skills')
+              .insert({ name: skillName, category: 'secondary' })
+              .select()
+              .single();
+              
+            if (newSkill) skillId = newSkill.id;
+          }
+          
+          if (skillId) {
+            // Create relationship
+            return supabase
+              .from('role_skills')
+              .insert({ role_id: roleId, skill_id: skillId });
+          }
+          
+          return Promise.resolve();
+        });
+        
+        await Promise.all(secondarySkillPromises);
+      }
+      
+      // Handle tags
+      if (values.tags.length > 0) {
+        const tagPromises = values.tags.map(tagId => {
+          return supabase
+            .from('role_tags')
+            .insert({ role_id: roleId, tag_id: tagId });
+        });
+        
+        await Promise.all(tagPromises);
+      }
+      
+      // Handle custom fields
+      if (values.customFields.length > 0) {
+        const customFieldsData = values.customFields.map(field => ({
+          role_id: roleId,
+          label: field.label,
+          value: field.value || ''
+        }));
+        
+        await supabase
+          .from('custom_fields')
+          .insert(customFieldsData);
+      }
 
       // Notify parent component about successful role creation
       if (onSuccess) {

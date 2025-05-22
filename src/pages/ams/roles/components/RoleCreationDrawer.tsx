@@ -3,13 +3,8 @@ import React, { useEffect } from 'react';
 import { Form } from '@/components/ui/form';
 import { useRoleForm } from './hooks/useRoleForm';
 import { RoleFormValues } from './types/roleTypes';
-import RoleBasicInfo from './drawer/RoleBasicInfo';
-import RoleDetails from './drawer/RoleDetails';
-import RoleSkills from './drawer/RoleSkills';
-import RoleRequirements from './drawer/RoleRequirements';
-import RoleFormActions from './drawer/RoleFormActions';
+import RoleCreationForm from './drawer/RoleCreationForm';
 import { SideDrawer } from '@/components/ui/side-drawer';
-import { Button } from '@/components/ui/button';
 
 interface RoleCreationDrawerProps {
   open: boolean;
@@ -35,13 +30,6 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
   }, [open, form]);
 
   const handleSubmit = form.handleSubmit(onSubmit);
-  
-  const footerContent = (
-    <RoleFormActions 
-      isSubmitting={isSubmitting}
-      onCancel={() => onOpenChange(false)}
-    />
-  );
 
   return (
     <SideDrawer 
@@ -49,15 +37,15 @@ const RoleCreationDrawer: React.FC<RoleCreationDrawerProps> = ({
       onOpenChange={onOpenChange}
       title="Create New Role"
       description={clientName ? `Create a new role for ${clientName}.` : 'Enter the role details to create a new job opening.'}
-      footer={footerContent}
+      size="lg"
     >
       <Form {...form}>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <RoleBasicInfo form={form} />
-          <RoleDetails form={form} />
-          <RoleRequirements form={form} />
-          <RoleSkills form={form} />
-        </form>
+        <RoleCreationForm
+          form={form}
+          onSubmit={onSubmit}
+          isSubmitting={isSubmitting}
+          onCancel={() => onOpenChange(false)}
+        />
       </Form>
     </SideDrawer>
   );

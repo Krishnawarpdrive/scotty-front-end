@@ -4,18 +4,48 @@ import { UseFormReturn } from 'react-hook-form';
 import { RoleFormValues } from '../types/roleTypes';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import CustomFieldInput from './CustomFieldInput';
 
 interface RoleDetailsProps {
   form: UseFormReturn<RoleFormValues>;
 }
 
 const RoleDetails: React.FC<RoleDetailsProps> = ({ form }) => {
+  const customFields = form.watch('customFields') || [];
+
+  const handleCustomFieldsChange = (updatedFields: any[]) => {
+    form.setValue('customFields', updatedFields, { shouldValidate: true });
+  };
+
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-medium">Role Details</h3>
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="workMode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Work Mode *</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select work mode" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="remote">Remote</SelectItem>
+                    <SelectItem value="onsite">Onsite</SelectItem>
+                    <SelectItem value="hybrid">Hybrid</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="employmentType"
@@ -34,29 +64,6 @@ const RoleDetails: React.FC<RoleDetailsProps> = ({ form }) => {
                     <SelectItem value="contract">Contract</SelectItem>
                     <SelectItem value="freelance">Freelance</SelectItem>
                     <SelectItem value="internship">Internship</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="location"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Work Mode *</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select work mode" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="remote">Remote</SelectItem>
-                    <SelectItem value="onsite">Onsite</SelectItem>
-                    <SelectItem value="hybrid">Hybrid</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -86,6 +93,34 @@ const RoleDetails: React.FC<RoleDetailsProps> = ({ form }) => {
                   <SelectItem value="10+">10+ years</SelectItem>
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="location"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Location (optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g. New York, Remote US, etc." {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="salaryRange"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Salary Range (optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g. $80,000 - $100,000" {...field} />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

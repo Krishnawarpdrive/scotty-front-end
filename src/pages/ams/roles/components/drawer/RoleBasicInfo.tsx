@@ -5,12 +5,19 @@ import { RoleFormValues } from '../types/roleTypes';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import CustomFieldInput from './CustomFieldInput';
 
 interface RoleBasicInfoProps {
   form: UseFormReturn<RoleFormValues>;
 }
 
 const RoleBasicInfo: React.FC<RoleBasicInfoProps> = ({ form }) => {
+  const customFields = form.watch('customFields') || [];
+
+  const handleCustomFieldsChange = (updatedFields: any[]) => {
+    form.setValue('customFields', updatedFields, { shouldValidate: true });
+  };
+
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-medium">Basic Information</h3>
@@ -68,6 +75,12 @@ const RoleBasicInfo: React.FC<RoleBasicInfoProps> = ({ form }) => {
               <FormMessage />
             </FormItem>
           )}
+        />
+        
+        <CustomFieldInput 
+          section="basic"
+          customFields={customFields}
+          onFieldsChange={handleCustomFieldsChange}
         />
       </div>
     </div>

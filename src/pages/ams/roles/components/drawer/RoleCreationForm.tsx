@@ -5,6 +5,7 @@ import { RoleFormValues } from '../types/roleTypes';
 import RoleBasicInfo from './RoleBasicInfo';
 import RoleDetails from './RoleDetails';
 import RoleSkills from './RoleSkills';
+import RoleCertifications from './RoleCertifications';
 import RoleRequirements from './RoleRequirements';
 import RoleFormActions from './RoleFormActions';
 
@@ -22,11 +23,14 @@ const RoleCreationForm: React.FC<RoleCreationFormProps> = ({
   onCancel 
 }) => {
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      <RoleBasicInfo form={form} />
-      <RoleDetails form={form} />
-      <RoleSkills form={form} />
-      <RoleRequirements form={form} />
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <div className="space-y-8 pb-16">
+        <RoleBasicInfo form={form} />
+        <RoleDetails form={form} />
+        <RoleRequirements form={form} />
+        <RoleSkills form={form} />
+        <RoleCertifications form={form} />
+      </div>
       
       <RoleFormActions 
         isSubmitting={isSubmitting}

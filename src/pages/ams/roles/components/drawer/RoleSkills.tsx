@@ -1,39 +1,80 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { RoleFormValues } from '../types/roleTypes';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import SkillSelector from '@/components/shared/SkillSelector';
 import TagsInput from '@/components/shared/TagsInput';
+import CustomFieldInput from './CustomFieldInput';
 
 interface RoleSkillsProps {
   form: UseFormReturn<RoleFormValues>;
 }
 
 const RoleSkills: React.FC<RoleSkillsProps> = ({ form }) => {
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [primarySkills, setPrimarySkills] = useState<string[]>([]);
+  const [secondarySkills, setSecondarySkills] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
+  
+  const customFields = form.watch('customFields') || [];
+
+  // Sync form values with local state
+  useEffect(() => {
+    form.setValue('primarySkills', primarySkills, { shouldValidate: true });
+  }, [primarySkills, form]);
+  
+  useEffect(() => {
+    form.setValue('secondarySkills', secondarySkills, { shouldValidate: true });
+  }, [secondarySkills, form]);
+  
+  useEffect(() => {
+    form.setValue('tags', tags, { shouldValidate: true });
+  }, [tags, form]);
+
+  const handleCustomFieldsChange = (updatedFields: any[]) => {
+    form.setValue('customFields', updatedFields, { shouldValidate: true });
+  };
 
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-medium">Skills & Tags</h3>
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div className="space-y-2">
-          <FormLabel>Primary & Secondary Skills</FormLabel>
+          <FormLabel>Primary Skills</FormLabel>
           <SkillSelector 
-            selectedSkills={selectedSkills}
-            onChange={setSelectedSkills}
+            selectedSkills={primarySkills}
+            onSkillsChange={setPrimarySkills}
           />
         </div>
         
         <div className="space-y-2">
+          <FormLabel>Secondary Skills</FormLabel>
+          <SkillSelector 
+            selectedSkills={secondarySkills}
+            onSkillsChange={setSecondarySkills}
+          />
+        </div>
+        
+        <CustomFieldInput 
+          section="skills"
+          customFields={customFields}
+          onFieldsChange={handleCustomFieldsChange}
+        />
+        
+        <div className="space-y-2 pt-4 border-t">
           <FormLabel>Tags</FormLabel>
           <TagsInput 
-            tags={selectedTags}
-            onTagsChange={setSelectedTags}
+            tags={tags}
+            onTagsChange={setTags}
             placeholder="Add role-related tags"
             helpText="Press Enter to add new tags"
+          />
+          
+          <CustomFieldInput 
+            section="tags"
+            customFields={customFields}
+            onFieldsChange={handleCustomFieldsChange}
           />
         </div>
 
@@ -41,7 +82,7 @@ const RoleSkills: React.FC<RoleSkillsProps> = ({ form }) => {
           control={form.control}
           name="saveAsTemplate"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-6">
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-6 pt-4 border-t">
               <FormControl>
                 <Checkbox
                   checked={field.value}

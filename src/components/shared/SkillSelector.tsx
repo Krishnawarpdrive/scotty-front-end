@@ -24,7 +24,7 @@ interface SkillSelectorProps {
 /**
  * A reusable component for selecting skills from a list or adding custom skills
  */
-export const SkillSelector: React.FC<SkillSelectorProps> = ({
+const SkillSelector: React.FC<SkillSelectorProps> = ({
   selectedSkills,
   onSkillsChange,
   availableSkills = [],
