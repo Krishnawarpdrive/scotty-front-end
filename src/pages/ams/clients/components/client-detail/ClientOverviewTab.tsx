@@ -1,161 +1,346 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Plus, ChevronDown, ChevronUp } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Pencil, Check, X } from 'lucide-react';
 import { Client } from '../../types/ClientTypes';
-import { Progress } from "@/components/ui/progress";
-import { 
-  Accordion, 
-  AccordionContent, 
-  AccordionItem, 
-  AccordionTrigger 
-} from "@/components/ui/accordion";
-import { cn } from "@/lib/utils";
 
 interface ClientOverviewTabProps {
   client: Client;
 }
 
 const ClientOverviewTab: React.FC<ClientOverviewTabProps> = ({ client }) => {
-  const [expandedSections, setExpandedSections] = useState<string[]>(['details', 'metrics', 'notes']);
-  
-  const toggleSection = (section: string) => {
-    setExpandedSections(prev => 
-      prev.includes(section) 
-        ? prev.filter(s => s !== section) 
-        : [...prev, section]
-    );
+  const [editableFields, setEditableFields] = useState<Record<string, boolean>>({});
+  const [editedValues, setEditedValues] = useState<Record<string, any>>({});
+
+  const toggleEdit = (field: string) => {
+    setEditableFields(prev => ({ 
+      ...prev, 
+      [field]: !prev[field] 
+    }));
+    
+    if (!editableFields[field]) {
+      // Initialize with current value when starting edit
+      setEditedValues(prev => ({
+        ...prev,
+        [field]: client[field as keyof Client] || ''
+      }));
+    }
   };
 
-  const isSectionExpanded = (section: string) => expandedSections.includes(section);
+  const handleInputChange = (field: string, value: string) => {
+    setEditedValues(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSave = (field: string) => {
+    // Here you would call an API to update the client data
+    console.log(`Saving ${field} with value: ${editedValues[field]}`);
+    toggleEdit(field);
+  };
 
   return (
-    <div className="space-y-4 pb-4">
-      <Accordion type="multiple" value={expandedSections} className="space-y-2">
-        <AccordionItem value="details" className="border rounded-md overflow-hidden">
-          <AccordionTrigger className="px-4 py-2 hover:no-underline">
-            <span className="text-xs font-medium">Client Details</span>
-          </AccordionTrigger>
-          <AccordionContent className="px-4 pb-4 pt-0">
-            <dl className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">Industry:</dt>
-                <dd>{client.industry || "Not specified"}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">Location:</dt>
-                <dd>{client.headquarters || "Not specified"}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">Contact:</dt>
-                <dd>{client.contact || "Not specified"}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">Email:</dt>
-                <dd>{client.email || "Not specified"}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">Created On:</dt>
-                <dd>{new Date(client.createdOn).toLocaleDateString()}</dd>
-              </div>
-            </dl>
-          </AccordionContent>
-        </AccordionItem>
-        
-        <AccordionItem value="metrics" className="border rounded-md overflow-hidden">
-          <AccordionTrigger className="px-4 py-2 hover:no-underline">
-            <span className="text-xs font-medium">Key Metrics</span>
-          </AccordionTrigger>
-          <AccordionContent className="px-4 pb-4 pt-0">
-            <div className="space-y-3 text-xs">
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-muted-foreground">Health Score</span>
-                  <span className="font-medium">{client.healthScore}%</span>
-                </div>
-                <Progress value={client.healthScore} className="h-1.5" />
-              </div>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Business Info Card */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Business Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              <EditableField
+                label="Industry"
+                value={client.industry || 'Not specified'}
+                field="industry"
+                isEditing={!!editableFields.industry}
+                editedValue={editedValues.industry}
+                onToggleEdit={toggleEdit}
+                onInputChange={handleInputChange}
+                onSave={handleSave}
+              />
               
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-muted-foreground">Budget Utilized</span>
-                  <span className="font-medium">{client.budgetUtilized}%</span>
-                </div>
-                <Progress value={client.budgetUtilized} className="h-1.5" />
-              </div>
+              <EditableField
+                label="Number of Employees"
+                value={client.totalRequirements || 'Not specified'}
+                field="totalRequirements"
+                isEditing={!!editableFields.totalRequirements}
+                editedValue={editedValues.totalRequirements}
+                onToggleEdit={toggleEdit}
+                onInputChange={handleInputChange}
+                onSave={handleSave}
+              />
               
-              <dl className="space-y-1">
-                <div className="flex justify-between">
-                  <dt className="text-muted-foreground">Total Roles:</dt>
-                  <dd className="font-medium">{client.roles?.length || 0}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-muted-foreground">Requirements:</dt>
-                  <dd className="font-medium">{client.totalRequirements}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-muted-foreground">Assigned HR:</dt>
-                  <dd className="font-medium">{client.assignedHR || "None"}</dd>
-                </div>
-              </dl>
+              <EditableField
+                label="Headquarters"
+                value={client.headquarters || 'Not specified'}
+                field="headquarters"
+                isEditing={!!editableFields.headquarters}
+                editedValue={editedValues.headquarters}
+                onToggleEdit={toggleEdit}
+                onInputChange={handleInputChange}
+                onSave={handleSave}
+              />
             </div>
-          </AccordionContent>
-        </AccordionItem>
+          </CardContent>
+        </Card>
         
-        <AccordionItem value="notes" className="border rounded-md overflow-hidden">
-          <AccordionTrigger className="px-4 py-2 hover:no-underline">
-            <span className="text-xs font-medium">Notes & Activity</span>
-          </AccordionTrigger>
-          <AccordionContent className="px-4 pb-4 pt-0">
-            <div className="text-xs">
-              <p className="text-muted-foreground italic">
-                {client.notes || "No notes available for this client."}
-              </p>
+        {/* Account Info Card */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Account Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              <EditableField
+                label="Account Type"
+                value={client.accountType || 'Customer'}
+                field="accountType"
+                isEditing={!!editableFields.accountType}
+                editedValue={editedValues.accountType}
+                onToggleEdit={toggleEdit}
+                onInputChange={handleInputChange}
+                onSave={handleSave}
+              />
               
-              <div className="mt-3 pt-3 border-t">
-                <h4 className="font-medium mb-2">Recent Activity</h4>
-                <ul className="space-y-2">
-                  <li className="text-xs text-muted-foreground">
-                    <span className="block">Last login: {client.lastActivity?.days} days ago</span>
-                    <span className="block text-green-600">Status: {client.lastActivity?.active ? "Active" : "Inactive"}</span>
-                  </li>
-                </ul>
-              </div>
+              <EditableField
+                label="Client Tier"
+                value={client.clientTier || 'Standard'}
+                field="clientTier"
+                isEditing={!!editableFields.clientTier}
+                editedValue={editedValues.clientTier}
+                onToggleEdit={toggleEdit}
+                onInputChange={handleInputChange}
+                onSave={handleSave}
+              />
+              
+              <EditableField
+                label="Currency"
+                value="USD" // Placeholder
+                field="currency"
+                isEditing={!!editableFields.currency}
+                editedValue={editedValues.currency}
+                onToggleEdit={toggleEdit}
+                onInputChange={handleInputChange}
+                onSave={handleSave}
+              />
             </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-      
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium">Quick Actions</h3>
+          </CardContent>
+        </Card>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-        <Button 
-          className="h-auto py-4 flex flex-col items-center justify-center space-y-1 text-xs bg-primary/10 hover:bg-primary/20 text-primary"
-          variant="ghost"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Create New Role</span>
-        </Button>
-        
-        <Button 
-          className="h-auto py-4 flex flex-col items-center justify-center space-y-1 text-xs"
-          variant="outline"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Add Requirement</span>
-        </Button>
-        
-        <Button 
-          className="h-auto py-4 flex flex-col items-center justify-center space-y-1 text-xs"
-          variant="outline"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Schedule Meeting</span>
-        </Button>
+      {/* Location Card */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Location</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <EditableField
+              label="Country"
+              value="United States" // Placeholder
+              field="country"
+              isEditing={!!editableFields.country}
+              editedValue={editedValues.country}
+              onToggleEdit={toggleEdit}
+              onInputChange={handleInputChange}
+              onSave={handleSave}
+            />
+            
+            <EditableField
+              label="State"
+              value="California" // Placeholder
+              field="state"
+              isEditing={!!editableFields.state}
+              editedValue={editedValues.state}
+              onToggleEdit={toggleEdit}
+              onInputChange={handleInputChange}
+              onSave={handleSave}
+            />
+            
+            <EditableField
+              label="City"
+              value="San Francisco" // Placeholder
+              field="city"
+              isEditing={!!editableFields.city}
+              editedValue={editedValues.city}
+              onToggleEdit={toggleEdit}
+              onInputChange={handleInputChange}
+              onSave={handleSave}
+            />
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Sourcing & Payment Card */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Sourcing & Payment</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <h3 className="font-medium">Sourcing Model</h3>
+              <EditableField
+                label="Sourcing Type"
+                value="Direct" // Placeholder
+                field="sourcingType"
+                isEditing={!!editableFields.sourcingType}
+                editedValue={editedValues.sourcingType}
+                onToggleEdit={toggleEdit}
+                onInputChange={handleInputChange}
+                onSave={handleSave}
+              />
+              
+              <EditableField
+                label="Referral Source"
+                value="Internal" // Placeholder
+                field="referralSource"
+                isEditing={!!editableFields.referralSource}
+                editedValue={editedValues.referralSource}
+                onToggleEdit={toggleEdit}
+                onInputChange={handleInputChange}
+                onSave={handleSave}
+              />
+            </div>
+            
+            <div className="space-y-4">
+              <h3 className="font-medium">Commission</h3>
+              <EditableField
+                label="Commission %"
+                value="10%" // Placeholder
+                field="commissionPercentage"
+                isEditing={!!editableFields.commissionPercentage}
+                editedValue={editedValues.commissionPercentage}
+                onToggleEdit={toggleEdit}
+                onInputChange={handleInputChange}
+                onSave={handleSave}
+              />
+              
+              <EditableField
+                label="Payment Terms"
+                value="Net 30" // Placeholder
+                field="paymentTerms"
+                isEditing={!!editableFields.paymentTerms}
+                editedValue={editedValues.paymentTerms}
+                onToggleEdit={toggleEdit}
+                onInputChange={handleInputChange}
+                onSave={handleSave}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Notes Card */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Notes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <EditableField
+              label="Client Notes"
+              value={client.notes || 'No notes available for this client.'}
+              field="notes"
+              isEditing={!!editableFields.notes}
+              editedValue={editedValues.notes}
+              onToggleEdit={toggleEdit}
+              onInputChange={handleInputChange}
+              onSave={handleSave}
+              isTextArea
+            />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+// Helper component for editable fields
+interface EditableFieldProps {
+  label: string;
+  value: string | number;
+  field: string;
+  isEditing: boolean;
+  editedValue: string;
+  isTextArea?: boolean;
+  onToggleEdit: (field: string) => void;
+  onInputChange: (field: string, value: string) => void;
+  onSave: (field: string) => void;
+}
+
+const EditableField: React.FC<EditableFieldProps> = ({
+  label,
+  value,
+  field,
+  isEditing,
+  editedValue,
+  isTextArea = false,
+  onToggleEdit,
+  onInputChange,
+  onSave
+}) => {
+  return (
+    <div className="space-y-2">
+      <div className="flex justify-between items-center">
+        <Label htmlFor={field} className="text-sm font-normal text-muted-foreground">
+          {label}
+        </Label>
+        {!isEditing && (
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => onToggleEdit(field)}
+            className="h-6 w-6"
+          >
+            <Pencil className="h-3 w-3" />
+          </Button>
+        )}
       </div>
+      
+      {isEditing ? (
+        <div className="flex items-center gap-2">
+          {isTextArea ? (
+            <textarea
+              id={field}
+              value={editedValue}
+              onChange={(e) => onInputChange(field, e.target.value)}
+              className="flex h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+            />
+          ) : (
+            <Input
+              id={field}
+              value={editedValue}
+              onChange={(e) => onInputChange(field, e.target.value)}
+            />
+          )}
+          <div className="flex gap-1">
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              onClick={() => onSave(field)}
+              className="h-8 w-8"
+            >
+              <Check className="h-4 w-4" />
+            </Button>
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              onClick={() => onToggleEdit(field)}
+              className="h-8 w-8"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <p className="text-base">{value}</p>
+      )}
     </div>
   );
 };
