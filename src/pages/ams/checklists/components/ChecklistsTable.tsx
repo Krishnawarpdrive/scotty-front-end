@@ -1,10 +1,8 @@
 
-import React from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+import React, { useState } from 'react';
+import { Pencil, Trash2, ListChecks } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Checklist } from '../types';
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -16,6 +14,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { DataTable, DataTableColumn } from "@/components/ui/data-table";
+import { ChecklistDrawer } from "@/components/ui/checklist-drawer";
+import { Checklist } from '../types';
 
 interface ChecklistsTableProps {
   checklists: Checklist[];
@@ -28,6 +29,9 @@ export const ChecklistsTable: React.FC<ChecklistsTableProps> = ({
   onEdit,
   onDelete
 }) => {
+  const [selectedChecklist, setSelectedChecklist] = useState<Checklist | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -37,17 +41,9 @@ export const ChecklistsTable: React.FC<ChecklistsTableProps> = ({
     });
   };
   
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'general':
-        return 'bg-blue-100 text-blue-800 hover:bg-blue-100';
-      case 'role':
-        return 'bg-purple-100 text-purple-800 hover:bg-purple-100';
-      case 'client':
-        return 'bg-green-100 text-green-800 hover:bg-green-100';
-      default:
-        return 'bg-gray-100 text-gray-800 hover:bg-gray-100';
-    }
+  const handleViewChecklist = (checklist: Checklist) => {
+    setSelectedChecklist(checklist);
+    setDrawerOpen(true);
   };
   
   const getTypeLabel = (type: string) => {
@@ -62,81 +58,128 @@ export const ChecklistsTable: React.FC<ChecklistsTableProps> = ({
         return type;
     }
   };
-
+  
+  const columns: DataTableColumn<Checklist>[] = [
+    {
+      id: 'name',
+      header: 'Checklist Name',
+      accessorKey: 'name',
+      enableSorting: true,
+      enableFiltering: true,
+      cell: (checklist) => (
+        <span className="font-medium">{checklist.name}</span>
+      ),
+    },
+    {
+      id: 'type',
+      header: 'Type',
+      accessorKey: 'type',
+      enableSorting: true,
+      enableFiltering: true,
+      cell: (checklist) => (
+        <Badge variant="outline" className="bg-gray-100 text-gray-800 font-normal">
+          {getTypeLabel(checklist.type)}
+        </Badge>
+      ),
+    },
+    {
+      id: 'items',
+      header: 'Items',
+      accessorKey: (checklist) => checklist.items.length,
+      enableSorting: true,
+      enableFiltering: false,
+    },
+    {
+      id: 'createdAt',
+      header: 'Created Date',
+      accessorKey: (checklist) => formatDate(checklist.createdAt),
+      enableSorting: true,
+      enableFiltering: true,
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      accessorKey: 'id',
+      enableSorting: false,
+      enableFiltering: false,
+      cell: (checklist) => (
+        <div className="flex gap-2 justify-end">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleViewChecklist(checklist);
+            }}
+            className="h-8 w-8 p-0"
+          >
+            <ListChecks className="h-4 w-4" />
+            <span className="sr-only">View</span>
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(checklist);
+            }}
+            className="h-8 w-8 p-0"
+          >
+            <Pencil className="h-4 w-4" />
+            <span className="sr-only">Edit</span>
+          </Button>
+          
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 text-red-600 hover:text-red-800 hover:bg-red-100"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only">Delete</span>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Checklist</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete "{checklist.name}"? This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => onDelete(checklist.id)}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      )
+    },
+  ];
+  
   return (
-    <div className="border rounded-md overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="h-12 px-4 text-left align-middle font-medium text-[12px] text-[#262626]">Checklist Name</TableHead>
-            <TableHead className="h-12 px-4 text-left align-middle font-medium text-[12px] text-[#262626]">Type</TableHead>
-            <TableHead className="h-12 px-4 text-left align-middle font-medium text-[12px] text-[#262626]">Items</TableHead>
-            <TableHead className="h-12 px-4 text-left align-middle font-medium text-[12px] text-[#262626]">Created Date</TableHead>
-            <TableHead className="h-12 px-4 text-left align-middle font-medium text-[12px] text-[#262626]">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {checklists.map((checklist) => (
-            <TableRow key={checklist.id}>
-              <TableCell className="p-4 align-middle text-[12px] text-[#262626] font-medium">{checklist.name}</TableCell>
-              <TableCell className="p-4 align-middle text-[12px] text-[#262626]">
-                <Badge className={`text-[10px] ${getTypeColor(checklist.type)}`}>
-                  {getTypeLabel(checklist.type)}
-                </Badge>
-              </TableCell>
-              <TableCell className="p-4 align-middle text-[12px] text-[#262626]">
-                {checklist.items.length}
-              </TableCell>
-              <TableCell className="p-4 align-middle text-[12px] text-[#262626]">
-                {formatDate(checklist.createdAt)}
-              </TableCell>
-              <TableCell className="p-4 align-middle text-[12px] text-[#262626]">
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onEdit(checklist)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Pencil className="h-4 w-4" />
-                    <span className="sr-only">Edit</span>
-                  </Button>
-                  
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-red-600 hover:text-red-800 hover:bg-red-100"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Delete</span>
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Checklist</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete "{checklist.name}"? This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => onDelete(checklist.id)}
-                          className="bg-red-600 hover:bg-red-700 text-white"
-                        >
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+    <>
+      <DataTable
+        data={checklists}
+        columns={columns}
+        onRowClick={handleViewChecklist}
+      />
+      
+      <ChecklistDrawer 
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        checklist={selectedChecklist}
+        viewOnly={true}
+        onComplete={() => setDrawerOpen(false)}
+      />
+    </>
   );
 };

@@ -1,33 +1,37 @@
 
 import React, { useState } from 'react';
-import { Search, Plus, CheckSquare, Filter, Trash2, Edit, X } from 'lucide-react';
+import { Search, Plus, Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ChecklistCreationDrawer from './checklists/components/ChecklistCreationDrawer';
 import { useChecklistsData } from './checklists/hooks/useChecklistsData';
 import { ChecklistTypeFilter } from './checklists/components/ChecklistTypeFilter';
 import { ChecklistsTable } from './checklists/components/ChecklistsTable';
 import { ChecklistEmptyState } from './checklists/components/ChecklistEmptyState';
+import { Checklist } from './checklists/types';
 
 const ChecklistsPage = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [editingChecklist, setEditingChecklist] = useState<Checklist | null>(null);
   
   const { 
     checklists,
     isLoading,
-    deleteChecklist,
-    editChecklist
+    deleteChecklist
   } = useChecklistsData();
   
   const handleOpenDrawer = () => {
+    setEditingChecklist(null);
+    setDrawerOpen(true);
+  };
+  
+  const handleEditChecklist = (checklist: Checklist) => {
+    setEditingChecklist(checklist);
     setDrawerOpen(true);
   };
   
@@ -88,7 +92,7 @@ const ChecklistsPage = () => {
           </Tabs>
           
           <div className="flex flex-col gap-4">
-            <div className="flex gap-2 items-center">
+            <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
               <div className="relative flex-1">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -103,6 +107,7 @@ const ChecklistsPage = () => {
                 <ChecklistTypeFilter 
                   selectedType={selectedType}
                   onTypeChange={handleTypeChange}
+                  className="w-full sm:w-auto"
                 />
               )}
             </div>
@@ -110,7 +115,7 @@ const ChecklistsPage = () => {
             {filteredChecklists.length > 0 ? (
               <ChecklistsTable 
                 checklists={filteredChecklists}
-                onEdit={editChecklist}
+                onEdit={handleEditChecklist}
                 onDelete={deleteChecklist}
               />
             ) : (
@@ -126,6 +131,7 @@ const ChecklistsPage = () => {
       <ChecklistCreationDrawer 
         open={drawerOpen} 
         onOpenChange={setDrawerOpen}
+        editingChecklist={editingChecklist}
       />
     </div>
   );

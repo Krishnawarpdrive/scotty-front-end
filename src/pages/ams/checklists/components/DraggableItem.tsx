@@ -2,8 +2,9 @@
 import React, { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { Trash2, GripVertical } from 'lucide-react';
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { cn } from '@/lib/utils';
 
 interface DraggableItemProps {
   id: string;
@@ -15,8 +16,8 @@ interface DraggableItemProps {
 }
 
 interface DragItem {
-  index: number;
   id: string;
+  index: number;
   type: string;
 }
 
@@ -30,8 +31,16 @@ export const DraggableItem: React.FC<DraggableItemProps> = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   
+  const [{ isDragging }, drag, preview] = useDrag({
+    type: 'CHECKLIST_ITEM',
+    item: { id, index, type: 'CHECKLIST_ITEM' },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+  
   const [{ handlerId }, drop] = useDrop({
-    accept: 'checklist-item',
+    accept: 'CHECKLIST_ITEM',
     collect(monitor) {
       return {
         handlerId: monitor.getHandlerId(),
@@ -41,6 +50,7 @@ export const DraggableItem: React.FC<DraggableItemProps> = ({
       if (!ref.current) {
         return;
       }
+      
       const dragIndex = item.index;
       const hoverIndex = index;
       
@@ -87,42 +97,35 @@ export const DraggableItem: React.FC<DraggableItemProps> = ({
     },
   });
   
-  const [{ isDragging }, drag] = useDrag({
-    type: 'checklist-item',
-    item: () => {
-      return { id, index };
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
-  
-  const opacity = isDragging ? 0.4 : 1;
-  
-  drag(drop(ref));
+  // Initialize the drag preview and the drop target
+  preview(drop(ref));
   
   return (
-    <div
+    <div 
       ref={ref}
-      className="flex items-center gap-2 p-2 rounded-md border bg-card hover:bg-accent/50 transition-colors"
-      style={{ opacity }}
       data-handler-id={handlerId}
+      className={cn(
+        "flex items-center gap-2 border rounded-md p-2 bg-white transition-opacity",
+        isDragging && "opacity-50"
+      )}
     >
-      <div className="cursor-move flex items-center justify-center px-1">
-        <GripVertical className="h-4 w-4 text-muted-foreground" />
+      <div ref={drag} className="cursor-move touch-none">
+        <GripVertical className="h-5 w-5 text-gray-400" />
       </div>
+      
       <Input
         value={text}
         onChange={(e) => onTextChange(e.target.value)}
-        placeholder="Enter checklist item..."
-        className="flex-1 text-[12px]"
+        placeholder="Enter checklist item text..."
+        className="flex-1"
       />
+      
       <Button
         type="button"
         variant="ghost"
         size="sm"
         onClick={onRemove}
-        className="h-8 w-8 p-0 text-red-600 hover:text-red-800 hover:bg-red-100"
+        className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
       >
         <Trash2 className="h-4 w-4" />
         <span className="sr-only">Remove item</span>
