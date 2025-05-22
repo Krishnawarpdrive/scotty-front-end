@@ -1,15 +1,21 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { 
+  Sheet, 
+  SheetContent, 
+  SheetHeader, 
+  SheetTitle 
+} from "@/components/ui/sheet";
 import { getClientTierBadge, getHiringStatusBadge } from './ClientBadges';
 
 interface ClientDetailDrawerProps {
   client: any;
-  open: boolean;  // Add this property to match expected props
-  onOpenChange: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 const ClientDetailDrawer: React.FC<ClientDetailDrawerProps> = ({ 
@@ -17,17 +23,16 @@ const ClientDetailDrawer: React.FC<ClientDetailDrawerProps> = ({
   open,
   onOpenChange 
 }) => {
+  if (!client) return null;
+
   return (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <Button variant="ghost" className="text-primary hover:text-primary/80 p-0 h-auto">{client.name}</Button>
-      </DrawerTrigger>
-      <DrawerContent className="max-h-[85vh]" open={open} onOpenChange={onOpenChange}>
-        <DrawerHeader>
-          <DrawerTitle>Client Details: {client.name}</DrawerTitle>
-        </DrawerHeader>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="w-[70vw] max-h-screen overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Client Details: {client.name}</SheetTitle>
+        </SheetHeader>
         <div className="p-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Client Information</CardTitle>
@@ -110,8 +115,8 @@ const ClientDetailDrawer: React.FC<ClientDetailDrawerProps> = ({
             </CardContent>
           </Card>
         </div>
-      </DrawerContent>
-    </Drawer>
+      </SheetContent>
+    </Sheet>
   );
 };
 

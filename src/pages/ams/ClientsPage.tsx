@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { Plus, Pencil, Eye, Copy, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +17,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { ClientsTable } from './clients/components/ClientsTable';
-import { ClientDetailDrawer } from './clients/components/ClientDetailDrawer';
+import ClientDetailDrawer from './clients/components/ClientDetailDrawer';
+import { Icons } from '@/components/icons';
 
 const ClientsPage = () => {
   const { toast } = useToast();
@@ -105,7 +107,7 @@ const ClientsPage = () => {
         <CardContent>
           <div className="grid gap-4">
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Icons.search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search clients..."
                 className="pl-8"
