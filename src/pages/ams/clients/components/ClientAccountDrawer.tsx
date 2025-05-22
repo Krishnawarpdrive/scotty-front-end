@@ -5,17 +5,9 @@ import { useForm } from 'react-hook-form';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Progress } from "@/components/ui/progress";
-
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription
-} from '@/components/ui/sheet';
-
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
+import { SideDrawer } from '@/components/ui/side-drawer';
 
 import AccountInfoStep from './drawer/AccountInfoStep';
 import CompanyProfileStep from './drawer/CompanyProfileStep';
@@ -200,113 +192,109 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
   }, [sameAsBilling, form]);
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full lg:max-w-md overflow-y-auto">
-        <SheetHeader className="mb-4">
-          <SheetTitle>Add New Client</SheetTitle>
-          <SheetDescription>
-            Create a new client account in your system.
-          </SheetDescription>
-        </SheetHeader>
-
-        {/* Progress indicator */}
-        <div className="mb-6">
-          <div className="flex justify-between text-xs text-gray-500 mb-1">
-            <span>{formSections[currentStep]}</span>
-            <span>Step {currentStep + 1} of {formSections.length}</span>
-          </div>
-          <Progress value={progress} className="h-2" />
+    <SideDrawer
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Add New Client"
+      description="Create a new client account in your system."
+    >
+      {/* Progress indicator */}
+      <div className="mb-6">
+        <div className="flex justify-between text-xs text-gray-500 mb-1">
+          <span>{formSections[currentStep]}</span>
+          <span>Step {currentStep + 1} of {formSections.length}</span>
         </div>
+        <Progress value={progress} className="h-2" />
+      </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="max-h-[calc(100vh-220px)] overflow-y-auto pr-1">
-              {/* Account Information - Step 0 */}
-              {currentStep === 0 && (
-                <AccountInfoStep 
-                  form={form} 
-                  customAccountFields={customAccountFields}
-                  setCustomAccountFields={setCustomAccountFields}
-                />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="max-h-[calc(100vh-220px)] overflow-y-auto pr-1">
+            {/* Account Information - Step 0 */}
+            {currentStep === 0 && (
+              <AccountInfoStep 
+                form={form} 
+                customAccountFields={customAccountFields}
+                setCustomAccountFields={setCustomAccountFields}
+              />
+            )}
+            
+            {/* Company Profile - Step 1 */}
+            {currentStep === 1 && (
+              <CompanyProfileStep 
+                form={form} 
+                customProfileFields={customProfileFields}
+                setCustomProfileFields={setCustomProfileFields}
+              />
+            )}
+            
+            {/* Sourcing Details - Step 2 */}
+            {currentStep === 2 && (
+              <SourcingDetailsStep 
+                form={form} 
+                customSourcingFields={customSourcingFields}
+                setCustomSourcingFields={setCustomSourcingFields}
+              />
+            )}
+            
+            {/* Address Details - Step 3 */}
+            {currentStep === 3 && (
+              <AddressDetailsStep 
+                form={form} 
+                sameAsBilling={sameAsBilling} 
+                setSameAsBilling={setSameAsBilling} 
+              />
+            )}
+          </div>
+
+          {/* Form navigation controls */}
+          <div className="flex justify-between items-center border-t pt-4 mt-4">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            
+            <div className="flex space-x-2">
+              {currentStep > 0 && (
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={prevStep}
+                >
+                  Previous
+                </Button>
               )}
               
-              {/* Company Profile - Step 1 */}
-              {currentStep === 1 && (
-                <CompanyProfileStep 
-                  form={form} 
-                  customProfileFields={customProfileFields}
-                  setCustomProfileFields={setCustomProfileFields}
-                />
-              )}
-              
-              {/* Sourcing Details - Step 2 */}
-              {currentStep === 2 && (
-                <SourcingDetailsStep 
-                  form={form} 
-                  customSourcingFields={customSourcingFields}
-                  setCustomSourcingFields={setCustomSourcingFields}
-                />
-              )}
-              
-              {/* Address Details - Step 3 */}
-              {currentStep === 3 && (
-                <AddressDetailsStep 
-                  form={form} 
-                  sameAsBilling={sameAsBilling} 
-                  setSameAsBilling={setSameAsBilling} 
-                />
+              {currentStep < formSections.length - 1 ? (
+                <Button 
+                  type="button" 
+                  onClick={nextStep}
+                >
+                  Next
+                </Button>
+              ) : (
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-1"></div>
+                      Creating...
+                    </>
+                  ) : (
+                    'Create Client'
+                  )}
+                </Button>
               )}
             </div>
-
-            {/* Form navigation controls */}
-            <div className="flex justify-between items-center border-t pt-4 mt-4">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => onOpenChange(false)}
-              >
-                Cancel
-              </Button>
-              
-              <div className="flex space-x-2">
-                {currentStep > 0 && (
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={prevStep}
-                  >
-                    Previous
-                  </Button>
-                )}
-                
-                {currentStep < formSections.length - 1 ? (
-                  <Button 
-                    type="button" 
-                    onClick={nextStep}
-                  >
-                    Next
-                  </Button>
-                ) : (
-                  <Button 
-                    type="submit" 
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-1"></div>
-                        Creating...
-                      </>
-                    ) : (
-                      'Create Client'
-                    )}
-                  </Button>
-                )}
-              </div>
-            </div>
-          </form>
-        </Form>
-      </SheetContent>
-    </Sheet>
+          </div>
+        </form>
+      </Form>
+    </SideDrawer>
   );
 };
 
