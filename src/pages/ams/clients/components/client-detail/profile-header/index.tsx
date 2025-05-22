@@ -10,7 +10,6 @@ import { cn } from '@/lib/utils';
 import ClientNameEditor from './ClientNameEditor';
 import ClientBadges from './ClientBadges';
 import ClientContactInfo from './ClientContactInfo';
-import ClientContactForm from './ClientContactForm';
 import ClientAdditionalInfo from './ClientAdditionalInfo';
 
 interface ClientProfileHeaderProps {
@@ -51,15 +50,15 @@ const ClientProfileHeader: React.FC<ClientProfileHeaderProps> = ({
 
   return (
     <Card className={cn(
-      "shadow-md transition-all duration-300",
+      "shadow-sm transition-all duration-300",
       isCollapsed 
         ? "p-3 rounded-none border-0 border-b" 
-        : "p-6 m-4 rounded-lg"
+        : "p-4 m-4 rounded-lg"
     )}>
       <div className="flex justify-between items-center mb-2">
         <div className="flex items-center gap-2">
           {!isCollapsed && (
-            <Avatar className="h-14 w-14 bg-primary/10 border hidden sm:flex">
+            <Avatar className="h-12 w-12 bg-primary/10 border hidden sm:flex">
               <span className="text-lg font-bold">
                 {client.name?.charAt(0) || 'C'}
               </span>
@@ -129,6 +128,8 @@ const ClientProfileHeader: React.FC<ClientProfileHeaderProps> = ({
           {/* Additional Information */}
           <ClientAdditionalInfo 
             isExpanded={isExpanded} 
+            hasSlackIntegration={false}
+            clientOwner={client.assignedHR || ''}
           />
         </>
       )}

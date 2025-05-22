@@ -1,10 +1,11 @@
-
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Pencil, Check, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Avatar } from '@/components/ui/avatar';
+import { Pencil, Check, X, UserRound, Mail, Phone } from 'lucide-react';
 import { Client } from '../../types/ClientTypes';
 import { cn } from '@/lib/utils';
 
@@ -44,8 +45,51 @@ const ClientOverviewTab: React.FC<ClientOverviewTabProps> = ({ client }) => {
     toggleEdit(field);
   };
 
+  // Primary Contact Card
+  const PrimaryContactCard = () => (
+    <Card className="shadow-sm hover:shadow transition-shadow duration-200 mb-6">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-section">Primary Contact</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center gap-4">
+          <Avatar className="h-12 w-12 bg-primary/10">
+            <span className="text-lg font-bold">
+              {client.contact?.charAt(0) || 'C'}
+            </span>
+          </Avatar>
+          <div className="space-y-1">
+            <h3 className="font-medium">{client.contact || "No contact name"}</h3>
+            <div className="flex gap-2 text-sm text-muted-foreground">
+              {client.email && (
+                <div className="flex items-center gap-1">
+                  <Mail className="h-3 w-3" />
+                  <span>{client.email}</span>
+                </div>
+              )}
+              {client.contact && !isNaN(Number(client.contact.replace(/\D/g, ''))) && (
+                <div className="flex items-center gap-1">
+                  <Phone className="h-3 w-3" />
+                  <span>{client.contact}</span>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="ml-auto">
+            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+              Primary
+            </Badge>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <div className="space-y-6">
+      {/* Primary Contact Card */}
+      <PrimaryContactCard />
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Business Info Card */}
         <Card className="shadow-sm hover:shadow transition-shadow duration-200">
@@ -120,11 +164,11 @@ const ClientOverviewTab: React.FC<ClientOverviewTabProps> = ({ client }) => {
               />
               
               <EditableField
-                label="Currency"
-                value="USD" // Placeholder
-                field="currency"
-                isEditing={!!editableFields.currency}
-                editedValue={editedValues.currency}
+                label="Client Owner"
+                value={client.assignedHR || 'Not assigned'}
+                field="assignedHR"
+                isEditing={!!editableFields.assignedHR}
+                editedValue={editedValues.assignedHR}
                 onToggleEdit={toggleEdit}
                 onInputChange={handleInputChange}
                 onSave={handleSave}

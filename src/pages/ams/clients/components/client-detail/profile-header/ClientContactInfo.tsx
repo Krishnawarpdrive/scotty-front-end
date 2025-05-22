@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Phone, Mail, AlertCircle, Pencil } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ClientContactInfoProps {
   contact: string;
@@ -15,39 +16,51 @@ const ClientContactInfo: React.FC<ClientContactInfoProps> = ({
   setIsEditingContact
 }) => {
   return (
-    <div className="flex flex-col md:flex-row gap-4">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col md:flex-row items-center gap-4">
+      <div className="flex items-center">
         {contact ? (
-          <>
-            <span className="text-xs">{contact}</span>
-            <Button size="icon" variant="outline" className="h-7 w-7">
-              <Phone className="h-3 w-3" />
-            </Button>
-          </>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button size="icon" variant="outline" className="h-7 w-7 hover:bg-muted/20">
+                  <Phone className="h-3 w-3" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{contact}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         ) : (
-          <span className="text-muted-foreground flex items-center gap-1 text-xs">
-            <AlertCircle className="h-3 w-3" /> No contact added
-          </span>
+          <Button size="icon" variant="outline" className="h-7 w-7 text-muted-foreground opacity-50 cursor-not-allowed">
+            <Phone className="h-3 w-3" />
+          </Button>
         )}
       </div>
       
-      <div className="flex items-center gap-2">
+      <div className="flex items-center">
         {email ? (
-          <>
-            <span className="text-xs">{email}</span>
-            <Button
-              size="icon" 
-              variant="outline" 
-              className="h-7 w-7"
-              onClick={() => window.location.href = `mailto:${email}`}
-            >
-              <Mail className="h-3 w-3" />
-            </Button>
-          </>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon" 
+                  variant="outline" 
+                  className="h-7 w-7 hover:bg-muted/20"
+                  onClick={() => window.location.href = `mailto:${email}`}
+                >
+                  <Mail className="h-3 w-3" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{email}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         ) : (
-          <span className="text-muted-foreground flex items-center gap-1 text-xs">
-            <AlertCircle className="h-3 w-3" /> No email added
-          </span>
+          <Button size="icon" variant="outline" className="h-7 w-7 text-muted-foreground opacity-50 cursor-not-allowed">
+            <Mail className="h-3 w-3" />
+          </Button>
         )}
       </div>
       

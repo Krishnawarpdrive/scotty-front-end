@@ -16,6 +16,7 @@ import ClientRequirementsTab from './components/client-detail/ClientRequirements
 import ClientActivityTab from './components/client-detail/ClientActivityTab';
 import ClientAgreementsTab from './components/client-detail/ClientAgreementsTab';
 import { cn } from '@/lib/utils';
+
 const ClientDetailsPage = () => {
   const navigate = useNavigate();
   const {
@@ -73,10 +74,20 @@ const ClientDetailsPage = () => {
       setActiveTab("roles");
     }
   };
+  
+  const handleEditClient = (updatedClient: any) => {
+    // This would normally update the client data via API
+    console.log("Updating client data:", updatedClient);
+    toast({
+      title: "Client Updated",
+      description: "Client information has been successfully updated."
+    });
+  };
+  
   return <div className="flex flex-col h-full">
       {/* Header with animation on scroll */}
       <div className={cn("transition-all duration-300 ease-in-out", isHeaderCollapsed ? "max-h-20 overflow-hidden opacity-90" : "max-h-[500px]")}>
-        <ClientProfileHeader client={client} onEditClient={() => {}} isCollapsed={isHeaderCollapsed} />
+        <ClientProfileHeader client={client} onEditClient={handleEditClient} isCollapsed={isHeaderCollapsed} />
       </div>
 
       {/* Tabs and content */}
