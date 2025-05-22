@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -45,7 +46,7 @@ import { initialSkills } from './data/mockSkills';
 
 const SkillsLibraryPage = () => {
   const { toast } = useToast();
-  const [skillsData, setSkillsData] = useState(initialSkills);
+  const [skillsData, setSkillsData] = useState<Skill[]>(initialSkills);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -73,7 +74,7 @@ const SkillsLibraryPage = () => {
     dateAdded: skill.created_at || new Date().toISOString()
   }));
 
-  const selectedSkills: number[] = selectedSkillIds.map(id => parseInt(id, 10));
+  const selectedSkills = selectedSkillIds.map(id => parseInt(id, 10));
 
   const handleSkillCreated = useCallback(async (skillData: { name: string; category: string }) => {
     const newSkill: Skill = {

@@ -128,7 +128,8 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
             total_requirements: 0,
             hiring_status: 'Active',
             industry: values.industry,
-            headquarters: values.headquarters
+            headquarters: values.headquarters,
+            notes: values.description
           }
         ])
         .select();
@@ -153,8 +154,8 @@ const ClientAccountDrawer: React.FC<ClientAccountDrawerProps> = ({
         healthScore: data[0].health_score,
         budgetUtilized: data[0].budget_utilized,
         notes: data[0].notes,
-        industry: data[0].industry,
-        headquarters: data[0].headquarters
+        industry: values.industry,
+        headquarters: values.headquarters
       };
       
       // Notify parent component about successful client creation
