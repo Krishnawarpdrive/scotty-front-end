@@ -9,34 +9,32 @@ import {
 } from "@/components/ui/tooltip";
 import { DataTableColumn } from "@/components/ui/data-table/types";
 
-const getCTAColor = (alertReason: string) => {
-  const highPriority = ["No roles created", "Overdue roles for priority client", "Agreement not uploaded"];
-  const mediumPriority = ["Multiple roles pending TA", "Client uncontacted for 14+ days", "Unapproved items pending"];
-  
-  if (highPriority.some(reason => alertReason.includes(reason))) {
-    return "bg-red-500 hover:bg-red-600 text-white";
-  } else if (mediumPriority.some(reason => alertReason.includes(reason))) {
-    return "bg-orange-500 hover:bg-orange-600 text-white";
-  }
-  return "bg-blue-500 hover:bg-blue-600 text-white";
+// Define alert reasons and their corresponding CTAs
+const alertReasonToCta: Record<string, { action: string; priority: 'high' | 'medium' | 'low' }> = {
+  "No roles created": { action: "Add Role", priority: 'high' },
+  "Multiple roles pending TA": { action: "Assign TA to Roles", priority: 'medium' },
+  "Client uncontacted for 14+ days": { action: "Follow Up with Client", priority: 'medium' },
+  "Unapproved items pending": { action: "Approve Pending Items", priority: 'medium' },
+  "Agreement not uploaded": { action: "Upload Agreement", priority: 'high' },
+  "Overdue roles for priority client": { action: "Escalate to Exec Team", priority: 'high' },
+  "Stalled progress on roles": { action: "Review Pipeline Bottlenecks", priority: 'low' },
+  "TA overload/mismatch": { action: "Reassign TA", priority: 'low' },
+  "Missing JD": { action: "Request JD from Client", priority: 'high' },
+  "Frequent rejections": { action: "Notify Client of Rework", priority: 'medium' }
 };
 
-// Mapping from alert reasons to appropriate CTAs
-const getCtaForAlert = (alertReason: string) => {
-  const ctaMapping: Record<string, string> = {
-    "No roles created": "Add Role",
-    "Multiple roles pending TA": "Assign TA to Roles",
-    "Client uncontacted for 14+ days": "Follow Up with Client",
-    "Unapproved items pending": "Approve Pending Items",
-    "Agreement not uploaded": "Upload Agreement",
-    "Overdue roles for priority client": "Escalate to Exec Team",
-    "Stalled progress on roles": "Review Pipeline Bottlenecks",
-    "TA overload/mismatch": "Reassign TA",
-    "Missing JD": "Request JD from Client",
-    "Frequent rejections": "Notify Client of Rework"
-  };
-  
-  return ctaMapping[alertReason] || "Take Action";
+// Function to get CTA color based on priority
+const getCTAColor = (priority: 'high' | 'medium' | 'low') => {
+  switch (priority) {
+    case 'high':
+      return "bg-red-500 hover:bg-red-600 text-white";
+    case 'medium':
+      return "bg-orange-500 hover:bg-orange-600 text-white";
+    case 'low':
+      return "bg-blue-500 hover:bg-blue-600 text-white";
+    default:
+      return "bg-blue-500 hover:bg-blue-600 text-white";
+  }
 };
 
 export const getClientsColumns = (handleClientClick: (clientName: string) => void): DataTableColumn<any>[] => [
@@ -256,7 +254,7 @@ export const getClientsColumns = (handleClientClick: (clientName: string) => voi
       ];
       
       const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
-      const cta = getCtaForAlert(randomReason);
+      const { action, priority } = alertReasonToCta[randomReason] || { action: "Take Action", priority: 'low' };
       
       return (
         <TooltipProvider>
@@ -264,16 +262,16 @@ export const getClientsColumns = (handleClientClick: (clientName: string) => voi
             <TooltipTrigger asChild>
               <Button 
                 size="sm" 
-                className={`text-xs h-7 px-2 ${getCTAColor(randomReason)}`}
-                onClick={() => console.log(`Executing: ${cta} for client: ${client.name}`)}
+                className={`text-xs h-7 px-2 ${getCTAColor(priority)}`}
+                onClick={() => console.log(`Executing: ${action} for client: ${client.name}`)}
               >
-                {cta}
+                {action}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
               <div className="space-y-1">
                 <p className="font-semibold">Action Required</p>
-                <p>{cta}</p>
+                <p>{action}</p>
                 <p className="text-xs text-gray-500">Click to execute</p>
               </div>
             </TooltipContent>

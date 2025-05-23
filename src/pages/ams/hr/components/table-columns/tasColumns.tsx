@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Tooltip, 
   TooltipContent, 
@@ -9,34 +10,32 @@ import {
 } from "@/components/ui/tooltip";
 import { DataTableColumn } from "@/components/ui/data-table/types";
 
-const getCTAColor = (alertReason: string) => {
-  const highPriority = ["TA overloaded", "Inactive TA", "Escalation record"];
-  const mediumPriority = ["TA underloaded", "Low conversion rate", "High rejection"];
-  
-  if (highPriority.some(reason => alertReason.includes(reason))) {
-    return "bg-red-500 hover:bg-red-600 text-white";
-  } else if (mediumPriority.some(reason => alertReason.includes(reason))) {
-    return "bg-orange-500 hover:bg-orange-600 text-white";
-  }
-  return "bg-blue-500 hover:bg-blue-600 text-white";
+// Define alert reasons and their corresponding CTAs
+const alertReasonToCta: Record<string, { action: string; priority: 'high' | 'medium' | 'low' }> = {
+  "TA overloaded": { action: "Reassign Load", priority: 'high' },
+  "TA underloaded": { action: "Assign New Roles", priority: 'low' },
+  "Inactive TA": { action: "Follow Up", priority: 'high' },
+  "Low conversion rate": { action: "Schedule Performance Review", priority: 'medium' },
+  "High rejection": { action: "Review Screening Strategy", priority: 'medium' },
+  "No sourcing logged": { action: "Activate TA Sourcing", priority: 'medium' },
+  "No outreach logged": { action: "Nudge TA", priority: 'low' },
+  "Poor feedback submission": { action: "Remind Feedback", priority: 'low' },
+  "Escalation record": { action: "Open Investigation", priority: 'high' },
+  "TA switched mid-req": { action: "Assign Transition Support", priority: 'medium' }
 };
 
-// Mapping from alert reasons to appropriate CTAs
-const getCtaForAlert = (alertReason: string) => {
-  const ctaMapping: Record<string, string> = {
-    "TA overloaded": "Reassign Load",
-    "TA underloaded": "Assign New Roles",
-    "Inactive TA": "Follow Up",
-    "Low conversion rate": "Schedule Performance Review",
-    "High rejection": "Review Screening Strategy",
-    "No sourcing logged": "Activate TA Sourcing",
-    "No outreach logged": "Nudge TA",
-    "Poor feedback submission": "Remind Feedback",
-    "Escalation record": "Open Investigation",
-    "TA switched mid-req": "Assign Transition Support"
-  };
-  
-  return ctaMapping[alertReason] || "Take Action";
+// Function to get CTA color based on priority
+const getCTAColor = (priority: 'high' | 'medium' | 'low') => {
+  switch (priority) {
+    case 'high':
+      return "bg-red-500 hover:bg-red-600 text-white";
+    case 'medium':
+      return "bg-orange-500 hover:bg-orange-600 text-white";
+    case 'low':
+      return "bg-blue-500 hover:bg-blue-600 text-white";
+    default:
+      return "bg-blue-500 hover:bg-blue-600 text-white";
+  }
 };
 
 export const getTasColumns = (): DataTableColumn<any>[] => [
@@ -52,9 +51,10 @@ export const getTasColumns = (): DataTableColumn<any>[] => [
           <TooltipTrigger asChild>
             <div className="flex items-center gap-2 min-w-[120px] cursor-help">
               <Avatar className="h-6 w-6">
-                <div className="flex h-full w-full items-center justify-center bg-gray-200 text-xs font-medium">
+                <AvatarImage src={ta.avatarUrl} alt={ta.name} />
+                <AvatarFallback className="bg-gray-200 text-gray-700">
                   {ta.name.charAt(0)}
-                </div>
+                </AvatarFallback>
               </Avatar>
               <span className="font-medium hover:text-primary cursor-pointer truncate">
                 {ta.name}
@@ -200,13 +200,13 @@ export const getTasColumns = (): DataTableColumn<any>[] => [
         "High rejection",
         "No sourcing logged",
         "No outreach logged",
-        "Poor feedback submission",
+        "Poor feedback submission", 
         "Escalation record",
         "TA switched mid-req"
       ];
       
       const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
-      const cta = getCtaForAlert(randomReason);
+      const { action, priority } = alertReasonToCta[randomReason] || { action: "Take Action", priority: 'low' };
       
       return (
         <TooltipProvider>
@@ -214,16 +214,16 @@ export const getTasColumns = (): DataTableColumn<any>[] => [
             <TooltipTrigger asChild>
               <Button 
                 size="sm" 
-                className={`text-xs h-7 px-2 ${getCTAColor(randomReason)}`}
-                onClick={() => console.log(`Executing: ${cta} for TA: ${ta.name}`)}
+                className={`text-xs h-7 px-2 ${getCTAColor(priority)}`}
+                onClick={() => console.log(`Executing: ${action} for TA: ${ta.name}`)}
               >
-                {cta}
+                {action}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
               <div className="space-y-1">
                 <p className="font-semibold">Action Required</p>
-                <p>{cta}</p>
+                <p>{action}</p>
                 <p className="text-xs text-gray-500">Click to execute</p>
               </div>
             </TooltipContent>

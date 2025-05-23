@@ -23,7 +23,8 @@ import {
   ClipboardList,
   Award,
   TrendingUp,
-  Search
+  Search,
+  BarChart
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { 
@@ -41,6 +42,8 @@ interface NavigationItem {
 
 const navigationItems: NavigationItem[] = [
   { title: 'Dashboard', path: '/ams/dashboard', icon: LayoutDashboard },
+  { title: 'HR Dashboard', path: '/ams/hr/dashboard', icon: BarChart },
+  { title: 'Role Management', path: '/ams/hr/role-management', icon: Briefcase },
   { title: 'Clients', path: '/ams/clients', icon: Users },
   { title: 'Global Role Library', path: '/ams/roles', icon: Briefcase },
   { title: 'Requirements', path: '/ams/requirements', icon: FileText },
@@ -52,8 +55,7 @@ const navigationItems: NavigationItem[] = [
 
 export const AMSSidebar = () => {
   const location = useLocation();
-  const { open } = useSidebar();
-  const isCollapsed = !open;
+  const { open, toggleSidebar } = useSidebar();
   
   // Helper to check if a path is active
   const isActive = (path: string) => {
@@ -63,15 +65,15 @@ export const AMSSidebar = () => {
   return (
     <Sidebar 
       className="border-r transition-all duration-300 ease-in-out"
-      collapsible="icon" 
+      collapsible="icon"
       variant="sidebar"
     >
       <SidebarHeader className="border-b">
         <div className="p-2 flex justify-between items-center">
-          {!isCollapsed && <h2 className="text-xl font-semibold px-2">AMS</h2>}
+          {open && <h2 className="text-xl font-semibold px-2">AMS</h2>}
           <SidebarTrigger className="ml-auto h-8 w-8" />
         </div>
-        {!isCollapsed && (
+        {open && (
           <div className="px-2 pb-2">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -86,7 +88,7 @@ export const AMSSidebar = () => {
       
       <SidebarContent>
         <SidebarGroup>
-          {!isCollapsed && <SidebarGroupLabel>Navigation</SidebarGroupLabel>}
+          {open && <SidebarGroupLabel>Navigation</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => (
@@ -101,11 +103,11 @@ export const AMSSidebar = () => {
                         >
                           <NavLink to={item.path} className="flex items-center">
                             <item.icon className="h-4 w-4 min-w-4" />
-                            {!isCollapsed && <span className="ml-2 truncate">{item.title}</span>}
+                            {open && <span className="ml-2 truncate">{item.title}</span>}
                           </NavLink>
                         </SidebarMenuButton>
                       </TooltipTrigger>
-                      {isCollapsed && (
+                      {!open && (
                         <TooltipContent side="right">
                           <p>{item.title}</p>
                         </TooltipContent>
