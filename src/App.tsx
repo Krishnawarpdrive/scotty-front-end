@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "./theme/ThemeProvider";
@@ -6,8 +7,8 @@ import { ThemeProvider } from "./theme/ThemeProvider";
 import AMSLayout from "./layouts/AMSLayout";
 
 // Pages
-import { Index } from "./pages/Index";
-import { NotFound } from "./pages/NotFound";
+import Index from "./pages/Index";
+import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/ams/Dashboard";
 import ClientsPage from "./pages/ams/ClientsPage";
 import RolesLibraryPage from "./pages/ams/RolesLibraryPage";
