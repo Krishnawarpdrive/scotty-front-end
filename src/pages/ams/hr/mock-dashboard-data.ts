@@ -1,183 +1,177 @@
 
-// Mock data for HR Dashboard
+// Mock data for the HR Dashboard
 
-// Mock Time to Hire Data
 export const mockTimeToHireData = [
-  { name: 'Engineering', value: 32 },
-  { name: 'Design', value: 24 },
-  { name: 'Product', value: 28 },
-  { name: 'Marketing', value: 22 },
-  { name: 'Sales', value: 26 },
-  { name: 'Operations', value: 30 },
+  { name: 'Software Engineer', value: 32 },
+  { name: 'Product Manager', value: 28 },
+  { name: 'UX Designer', value: 24 },
+  { name: 'Data Scientist', value: 30 },
+  { name: 'DevOps Engineer', value: 26 }
 ];
 
-// Mock TA Progress Data
 export const mockTAProgressData = [
-  { name: 'John', completed: 92, pending: 8 },
-  { name: 'Sarah', completed: 61, pending: 39 },
-  { name: 'Michael', completed: 78, pending: 22 },
-  { name: 'Emma', completed: 85, pending: 15 },
-  { name: 'David', completed: 72, pending: 28 },
+  { name: 'Sarah Johnson', value: 78, progress: 78 },
+  { name: 'Mike Peterson', value: 85, progress: 85 },
+  { name: 'Emma Wilson', value: 72, progress: 72 },
+  { name: 'John Taylor', value: 92, progress: 92 },
+  { name: 'Rachel Garcia', value: 68, progress: 68 }
 ];
 
-// Mock Role Success Data
 export const mockRoleSuccessData = [
-  { name: 'Successful', value: 68.5 },
-  { name: 'In Progress', value: 21.5 },
-  { name: 'Failed', value: 10 },
+  { name: 'Filled', value: 68.5 },
+  { name: 'In Progress', value: 23.5 },
+  { name: 'Pending', value: 8 }
 ];
 
-// Mock Interviewer Load Data
 export const mockInterviewerLoadData = [
-  { name: 'Engineering', assigned: 23, available: 15 },
-  { name: 'Design', assigned: 18, available: 12 },
-  { name: 'Product', assigned: 15, available: 8 },
-  { name: 'Leadership', assigned: 6, available: 4 },
+  { name: 'Mon', assigned: 12, available: 15 },
+  { name: 'Tue', assigned: 14, available: 18 },
+  { name: 'Wed', assigned: 10, available: 16 },
+  { name: 'Thu', assigned: 16, available: 20 },
+  { name: 'Fri', assigned: 8, available: 12 }
 ];
 
-// Mock Role Efficiency Data
 export const mockRoleEfficiencyData = [
-  { name: 'Optimally Matched', value: 83.5 },
-  { name: 'Adequate Match', value: 12.5 },
-  { name: 'Suboptimal Match', value: 4 },
+  { name: 'Optimal Match', value: 83.5 },
+  { name: 'Good Match', value: 12.3 },
+  { name: 'Suboptimal', value: 4.2 }
 ];
 
-// Mock Candidate Pipeline Data
-export const mockCandidatePipelineData = [
-  { name: 'John Doe', value: 32 },
-  { name: 'Sarah Smith', value: 28 },
-  { name: 'Michael Brown', value: 42 },
-  { name: 'Emma Wilson', value: 24 },
-  { name: 'David Chen', value: 21 },
-];
-
-// Mock Interview to Offer Data
-export const mockInterviewOfferData = [
-  { name: 'Jan', value: 32 },
-  { name: 'Feb', value: 35 },
-  { name: 'Mar', value: 30 },
-  { name: 'Apr', value: 40 },
-  { name: 'May', value: 42 },
-  { name: 'Jun', value: 38 },
-  { name: 'Jul', value: 45 },
-];
-
-// Mock Partner Effectiveness Data
-export const mockPartnerEffectivenessData = [
-  { name: 'Direct Sourcing', value: 64 },
-  { name: 'Agency A', value: 20 },
-  { name: 'Agency B', value: 12 },
-  { name: 'Referral', value: 4 },
-];
-
-// Mock New Hire Data
-export const mockNewHireData = [
-  { name: 'Performance', value: 4.2 },
-  { name: 'Cultural Fit', value: 4.5 },
-  { name: 'Technical Skills', value: 4.3 },
-  { name: 'Communication', value: 3.9 },
-  { name: 'Initiative', value: 4.0 },
-];
-
-// Mock Stuck Candidates Data
-export const mockStuckCandidatesData = [
-  { name: 'John Smith', stage: 'Interview - 9 days', role: 'Senior Engineer' },
-  { name: 'Ana Martinez', stage: 'Offer - 8 days', role: 'UX Designer' },
-  { name: 'Robert Chen', stage: 'Technical Test - 12 days', role: 'Backend Dev' },
-  { name: 'Lisa Wong', stage: 'Reference Check - 7 days', role: 'Product Manager' },
-  { name: 'Mark Johnson', stage: 'Screening - 11 days', role: 'Data Analyst' },
-];
-
-// Mock Activity Feed Data
 export const mockActivityData = [
   {
     user: 'Sarah Johnson',
-    action: 'assigned 2 new roles to',
-    target: 'Emma Wilson',
-    time: '10 minutes ago',
+    action: 'scheduled an interview for',
+    target: 'Senior Developer role',
+    time: '5 mins ago',
+    type: 'role',
     avatarUrl: '',
-    alert: 'High Priority',
+    alert: 'Urgent',
     alertLevel: 'critical'
   },
   {
-    user: 'Michael Brown',
-    action: 'filled requirement',
-    target: 'React Developer for Client A',
-    time: '1 hour ago',
+    user: 'Mike Peterson',
+    action: 'submitted feedback for',
+    target: 'Alice Smith',
+    time: '12 mins ago',
+    type: 'candidate',
     avatarUrl: '',
-    alert: 'Success',
-    alertLevel: 'success'
+    alert: 'Review needed',
+    alertLevel: 'warning'
   },
   {
     user: 'Emma Wilson',
-    action: 'scheduled interview for',
-    target: 'John Smith',
+    action: 'updated requirements for',
+    target: 'Acme Corp - UX Designer',
+    time: '1 hour ago',
+    type: 'client',
+    avatarUrl: '',
+    alert: '',
+    alertLevel: 'good'
+  },
+  {
+    user: 'John Taylor',
+    action: 'created a new role for',
+    target: 'Tech Innovations Inc',
     time: '2 hours ago',
+    type: 'role',
     avatarUrl: '',
-    alert: null,
-    alertLevel: null
+    alert: 'New assignment',
+    alertLevel: 'good'
   },
   {
-    user: 'David Chen',
-    action: 'added new requirement',
-    target: 'UX Designer for Client B',
+    user: 'Rachel Garcia',
+    action: 'sent offer letter to',
+    target: 'Bob Chen',
     time: '3 hours ago',
+    type: 'candidate',
     avatarUrl: '',
-    alert: null,
-    alertLevel: null
+    alert: 'Awaiting response',
+    alertLevel: 'warning'
   },
   {
-    user: 'Alex Rodriguez',
-    action: 'shared feedback on candidate',
-    target: 'Lisa Wang',
+    user: 'David Lee',
+    action: 'onboarded new client',
+    target: 'Future Systems LLC',
     time: '4 hours ago',
+    type: 'client',
     avatarUrl: '',
-    alert: 'Negative Feedback',
-    alertLevel: 'warning'
+    alert: 'Welcome sent',
+    alertLevel: 'good'
+  }
+];
+
+// Mock data for candidate pipeline
+export const mockCandidatePipelineData = [
+  { 
+    stage: 'Screening', 
+    count: 45, 
+    color: '#10b981',
+    candidates: [
+      { name: 'John Doe', role: 'Software Engineer', ta: 'Sarah Johnson', client: 'Acme Corp' },
+      { name: 'Jane Smith', role: 'UX Designer', ta: 'Mike Peterson', client: 'Tech Innovations' }
+    ]
+  },
+  { 
+    stage: 'Interview', 
+    count: 32, 
+    color: '#f59e0b',
+    candidates: [
+      { name: 'Alice Brown', role: 'Product Manager', ta: 'Emma Wilson', client: 'Global Solutions' },
+      { name: 'Bob Chen', role: 'Data Scientist', ta: 'John Taylor', client: 'Future Systems' }
+    ]
+  },
+  { 
+    stage: 'Offer', 
+    count: 18, 
+    color: '#3b82f6',
+    candidates: [
+      { name: 'Carol Davis', role: 'DevOps Engineer', ta: 'Rachel Garcia', client: 'Quantum Labs' }
+    ]
+  },
+  { 
+    stage: 'Onboarding', 
+    count: 12, 
+    color: '#8b5cf6',
+    candidates: [
+      { name: 'David Wilson', role: 'Software Engineer', ta: 'Sarah Johnson', client: 'Acme Corp' }
+    ]
+  }
+];
+
+// Mock secondary metrics data
+export const mockSecondaryMetrics = [
+  {
+    title: 'Candidate Pipeline by TA',
+    data: [
+      { name: 'Sarah Johnson', value: 24 },
+      { name: 'Mike Peterson', value: 19 },
+      { name: 'Emma Wilson', value: 22 },
+      { name: 'John Taylor', value: 18 },
+      { name: 'Rachel Garcia', value: 16 }
+    ]
   },
   {
-    user: 'Sophia Kim',
-    action: 'updated client agreement for',
-    target: 'Global Tech Solutions',
-    time: '5 hours ago',
-    avatarUrl: '',
-    alert: null,
-    alertLevel: null
+    title: 'Interview-to-Offer Ratio',
+    value: '67%',
+    trend: 5,
+    trendLabel: '5% better than last month'
   },
   {
-    user: 'Robert Johnson',
-    action: 'marked requirement as',
-    target: 'urgent',
-    time: 'Yesterday',
-    avatarUrl: '',
-    alert: 'Critical',
-    alertLevel: 'critical'
+    title: 'Partner Collaboration',
+    value: '23%',
+    data: [
+      { name: 'Internal', value: 77 },
+      { name: 'Partners', value: 23 }
+    ]
   },
   {
-    user: 'Jennifer Garcia',
-    action: 'completed onboarding for',
-    target: 'New Client Z',
-    time: 'Yesterday',
-    avatarUrl: '',
-    alert: null,
-    alertLevel: null
+    title: 'New Hire Performance',
+    rating: 4.2,
+    totalRatings: 48
   },
   {
-    user: 'Chris Wilson',
-    action: 'reassigned candidates to',
-    target: 'Michael Brown',
-    time: 'Yesterday',
-    avatarUrl: '',
-    alert: 'TA Switch',
-    alertLevel: 'warning'
-  },
-  {
-    user: 'Maria Lopez',
-    action: 'uploaded new JD for',
-    target: 'Frontend Engineer',
-    time: '2 days ago',
-    avatarUrl: '',
-    alert: null,
-    alertLevel: null
+    title: 'Stuck Candidates',
+    count: 7,
+    urgentCount: 3
   }
 ];
