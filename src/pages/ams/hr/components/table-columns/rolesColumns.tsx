@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { 
@@ -21,6 +20,24 @@ const getCTAColor = (alertReason: string) => {
     return "bg-orange-500 hover:bg-orange-600 text-white";
   }
   return "bg-blue-500 hover:bg-blue-600 text-white";
+};
+
+// Mapping from alert reasons to appropriate CTAs
+const getCtaForAlert = (alertReason: string) => {
+  const ctaMapping: Record<string, string> = {
+    "TA not assigned": "Assign TA",
+    "Pipeline not configured": "Configure Pipeline",
+    "Candidate progress stalled": "Check Pipeline Stage",
+    "Low interview-to-offer ratio": "Investigate Interview Quality",
+    "JD not attached": "Upload JD",
+    "Inactive TA": "Ping TA",
+    "Vacancies filled": "Mark Role as Completed",
+    "No candidates sourced": "Activate Sourcing",
+    "Overdue vacancies": "Escalate Deadline",
+    "Duplicate role": "Review Duplicate Roles"
+  };
+  
+  return ctaMapping[alertReason] || "Take Action";
 };
 
 export const getRolesColumns = (handleClientClick: (clientName: string) => void): DataTableColumn<any>[] => [
@@ -247,18 +264,6 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
     enableSorting: false,
     enableFiltering: false,
     cell: (role: any) => {
-      const ctas = [
-        "Assign TA",
-        "Configure Pipeline",
-        "Check Pipeline Stage",
-        "Investigate Interview Quality",
-        "Upload JD",
-        "Ping TA",
-        "Mark Role as Completed",
-        "Activate Sourcing",
-        "Escalate Deadline",
-        "Review Duplicate Roles"
-      ];
       const alertReasons = [
         "TA not assigned",
         "Pipeline not configured",
@@ -272,8 +277,8 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
         "Duplicate role"
       ];
       
-      const randomCta = ctas[Math.floor(Math.random() * ctas.length)];
       const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
+      const cta = getCtaForAlert(randomReason);
       
       return (
         <TooltipProvider>
@@ -282,15 +287,15 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
               <Button 
                 size="sm" 
                 className={`text-xs h-7 px-2 ${getCTAColor(randomReason)}`}
-                onClick={() => console.log(`Executing: ${randomCta} for role: ${role.name}`)}
+                onClick={() => console.log(`Executing: ${cta} for role: ${role.name}`)}
               >
-                {randomCta}
+                {cta}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
               <div className="space-y-1">
                 <p className="font-semibold">Action Required</p>
-                <p>{randomCta}</p>
+                <p>{cta}</p>
                 <p className="text-xs text-gray-500">Click to execute</p>
               </div>
             </TooltipContent>

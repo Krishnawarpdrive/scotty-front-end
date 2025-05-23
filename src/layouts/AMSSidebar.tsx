@@ -52,8 +52,8 @@ const navigationItems: NavigationItem[] = [
 
 export const AMSSidebar = () => {
   const location = useLocation();
-  const { state } = useSidebar();
-  const isCollapsed = state === "collapsed";
+  const { open } = useSidebar();
+  const isCollapsed = !open;
   
   // Helper to check if a path is active
   const isActive = (path: string) => {

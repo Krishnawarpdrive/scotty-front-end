@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { 
@@ -19,6 +18,24 @@ const getCTAColor = (alertReason: string) => {
     return "bg-orange-500 hover:bg-orange-600 text-white";
   }
   return "bg-blue-500 hover:bg-blue-600 text-white";
+};
+
+// Mapping from alert reasons to appropriate CTAs
+const getCtaForAlert = (alertReason: string) => {
+  const ctaMapping: Record<string, string> = {
+    "TA not assigned": "Assign TA",
+    "Requirement not approved": "Send for Approval",
+    "No candidates sourced": "Start Sourcing",
+    "High rejection rate": "Revise Criteria",
+    "Due soon": "Notify TA",
+    "TA slow response": "Follow Up TA",
+    "No interview feedback": "Request Feedback",
+    "Multiple edits": "Audit Changes",
+    "Pipeline mismatch": "Fix Hiring Flow",
+    "Pending for 7+ days": "Confirm Requirement"
+  };
+  
+  return ctaMapping[alertReason] || "Take Action";
 };
 
 export const getRequirementsColumns = (): DataTableColumn<any>[] => [
@@ -238,18 +255,6 @@ export const getRequirementsColumns = (): DataTableColumn<any>[] => [
     enableSorting: false,
     enableFiltering: false,
     cell: (req: any) => {
-      const ctas = [
-        "Assign TA",
-        "Send for Approval",
-        "Start Sourcing",
-        "Revise Criteria",
-        "Notify TA",
-        "Follow Up TA",
-        "Request Feedback",
-        "Audit Changes",
-        "Fix Hiring Flow",
-        "Confirm Requirement"
-      ];
       const alertReasons = [
         "TA not assigned",
         "Requirement not approved",
@@ -263,8 +268,8 @@ export const getRequirementsColumns = (): DataTableColumn<any>[] => [
         "Pending for 7+ days"
       ];
       
-      const randomCta = ctas[Math.floor(Math.random() * ctas.length)];
       const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
+      const cta = getCtaForAlert(randomReason);
       
       return (
         <TooltipProvider>
@@ -273,15 +278,15 @@ export const getRequirementsColumns = (): DataTableColumn<any>[] => [
               <Button 
                 size="sm" 
                 className={`text-xs h-7 px-2 ${getCTAColor(randomReason)}`}
-                onClick={() => console.log(`Executing: ${randomCta} for requirement: ${req.id}`)}
+                onClick={() => console.log(`Executing: ${cta} for requirement: ${req.id}`)}
               >
-                {randomCta}
+                {cta}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
               <div className="space-y-1">
                 <p className="font-semibold">Action Required</p>
-                <p>{randomCta}</p>
+                <p>{cta}</p>
                 <p className="text-xs text-gray-500">Click to execute</p>
               </div>
             </TooltipContent>

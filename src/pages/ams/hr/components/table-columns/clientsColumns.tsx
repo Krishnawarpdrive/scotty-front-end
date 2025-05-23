@@ -21,6 +21,24 @@ const getCTAColor = (alertReason: string) => {
   return "bg-blue-500 hover:bg-blue-600 text-white";
 };
 
+// Mapping from alert reasons to appropriate CTAs
+const getCtaForAlert = (alertReason: string) => {
+  const ctaMapping: Record<string, string> = {
+    "No roles created": "Add Role",
+    "Multiple roles pending TA": "Assign TA to Roles",
+    "Client uncontacted for 14+ days": "Follow Up with Client",
+    "Unapproved items pending": "Approve Pending Items",
+    "Agreement not uploaded": "Upload Agreement",
+    "Overdue roles for priority client": "Escalate to Exec Team",
+    "Stalled progress on roles": "Review Pipeline Bottlenecks",
+    "TA overload/mismatch": "Reassign TA",
+    "Missing JD": "Request JD from Client",
+    "Frequent rejections": "Notify Client of Rework"
+  };
+  
+  return ctaMapping[alertReason] || "Take Action";
+};
+
 export const getClientsColumns = (handleClientClick: (clientName: string) => void): DataTableColumn<any>[] => [
   {
     id: "clientName",
@@ -224,18 +242,6 @@ export const getClientsColumns = (handleClientClick: (clientName: string) => voi
     enableSorting: false,
     enableFiltering: false,
     cell: (client: any) => {
-      const ctas = [
-        "Add Role",
-        "Assign TA to Roles",
-        "Follow Up with Client",
-        "Approve Pending Items",
-        "Upload Agreement",
-        "Escalate to Exec Team",
-        "Review Pipeline Bottlenecks",
-        "Reassign TA",
-        "Request JD from Client",
-        "Notify Client of Rework"
-      ];
       const alertReasons = [
         "No roles created",
         "Multiple roles pending TA",
@@ -249,8 +255,8 @@ export const getClientsColumns = (handleClientClick: (clientName: string) => voi
         "Frequent rejections"
       ];
       
-      const randomCta = ctas[Math.floor(Math.random() * ctas.length)];
       const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
+      const cta = getCtaForAlert(randomReason);
       
       return (
         <TooltipProvider>
@@ -259,15 +265,15 @@ export const getClientsColumns = (handleClientClick: (clientName: string) => voi
               <Button 
                 size="sm" 
                 className={`text-xs h-7 px-2 ${getCTAColor(randomReason)}`}
-                onClick={() => console.log(`Executing: ${randomCta} for client: ${client.name}`)}
+                onClick={() => console.log(`Executing: ${cta} for client: ${client.name}`)}
               >
-                {randomCta}
+                {cta}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
               <div className="space-y-1">
                 <p className="font-semibold">Action Required</p>
-                <p>{randomCta}</p>
+                <p>{cta}</p>
                 <p className="text-xs text-gray-500">Click to execute</p>
               </div>
             </TooltipContent>

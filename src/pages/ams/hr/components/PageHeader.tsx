@@ -37,22 +37,30 @@ const PageHeader = ({ activeTab, setActiveTab, tabCounts }: PageHeaderProps) => 
           <TabsTrigger value="clients" className="flex items-center gap-1">
             <Users className="h-4 w-4" />
             <span className="hidden sm:inline">Clients</span>
-            <span className="ml-1 text-xs text-gray-600">({tabCounts.clients})</span>
+            <span className="ml-1 text-xs bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded">
+              {tabCounts.clients}
+            </span>
           </TabsTrigger>
           <TabsTrigger value="roles" className="flex items-center gap-1">
             <Briefcase className="h-4 w-4" />
             <span className="hidden sm:inline">Roles</span>
-            <span className="ml-1 text-xs text-gray-600">({tabCounts.roles})</span>
+            <span className="ml-1 text-xs bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded">
+              {tabCounts.roles}
+            </span>
           </TabsTrigger>
           <TabsTrigger value="requirements" className="flex items-center gap-1">
             <ClipboardList className="h-4 w-4" />
             <span className="hidden sm:inline">Requirements</span>
-            <span className="ml-1 text-xs text-gray-600">({tabCounts.requirements})</span>
+            <span className="ml-1 text-xs bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded">
+              {tabCounts.requirements}
+            </span>
           </TabsTrigger>
           <TabsTrigger value="tas" className="flex items-center gap-1">
             <GraduationCap className="h-4 w-4" />
             <span className="hidden sm:inline">TAs</span>
-            <span className="ml-1 text-xs text-gray-600">({tabCounts.tas})</span>
+            <span className="ml-1 text-xs bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded">
+              {tabCounts.tas}
+            </span>
           </TabsTrigger>
         </TabsList>
       </div>
