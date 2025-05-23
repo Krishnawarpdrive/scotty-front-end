@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Filter, ChevronDown, Download } from 'lucide-react';
@@ -5,11 +6,11 @@ import { MetricCard } from './components/dashboard/MetricCard';
 import { EnhancedFilters } from './components/dashboard/EnhancedFilters';
 import { MetricDetailsDrawer } from './components/dashboard/metric-details/MetricDetailsDrawer';
 import { RecentActivityPanel, CollapsedActivityPanel } from './components/dashboard/RecentActivityPanel';
-import { GamificationBadges } from './components/dashboard/GamificationBadges';
 import { ProgressBar } from './components/dashboard/ProgressBar';
 import { CandidatePipelineChart } from './components/dashboard/CandidatePipelineChart';
 import { SecondaryMetrics } from './components/dashboard/SecondaryMetrics';
 import { PipelineDetailSidebar } from './components/dashboard/PipelineDetailSidebar';
+import { ActivityDetailDrawer } from './components/dashboard/ActivityDetailDrawer';
 import { useDashboardData, MetricData } from './hooks/useDashboardData';
 import { useFilterOptions } from './hooks/useFilterOptions';
 import { motion } from 'framer-motion';
@@ -24,6 +25,8 @@ const HRDashboardPage: React.FC = () => {
   const [activityPanelCollapsed, setActivityPanelCollapsed] = useState(false);
   const [pipelineDrawerOpen, setPipelineDrawerOpen] = useState(false);
   const [selectedPipelineStage, setSelectedPipelineStage] = useState<{ stage: string; data: any } | null>(null);
+  const [activityDetailOpen, setActivityDetailOpen] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<any>(null);
   
   const { metrics, isLoading } = useDashboardData(dateRange, taFilter, roleFilter, clientFilter);
   const { dateRangeOptions, taOptions, roleOptions, clientOptions } = useFilterOptions();
@@ -36,6 +39,11 @@ const HRDashboardPage: React.FC = () => {
   const handlePipelineStageClick = (stage: string, data: any) => {
     setSelectedPipelineStage({ stage, data });
     setPipelineDrawerOpen(true);
+  };
+  
+  const handleActivityClick = (activity: any) => {
+    setSelectedActivity(activity);
+    setActivityDetailOpen(true);
   };
 
   return (
@@ -127,21 +135,11 @@ const HRDashboardPage: React.FC = () => {
             </div>
           </motion.div>
           
-          {/* Gamification Badges */}
-          <motion.div 
-            className="mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <GamificationBadges />
-          </motion.div>
-          
           {/* Primary Metrics Pentagrid */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="mb-8"
           >
             <h2 className="font-bold text-xl mb-4">Primary Hiring Metrics</h2>
@@ -169,7 +167,7 @@ const HRDashboardPage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
           >
             <h2 className="font-bold text-xl mb-4">Secondary Metrics & Insights</h2>
             <SecondaryMetrics />
@@ -182,7 +180,8 @@ const HRDashboardPage: React.FC = () => {
         ) : (
           <RecentActivityPanel 
             collapsed={activityPanelCollapsed} 
-            onToggle={() => setActivityPanelCollapsed(true)} 
+            onToggle={() => setActivityPanelCollapsed(true)}
+            onActivityClick={handleActivityClick}
           />
         )}
       </div>
@@ -200,6 +199,13 @@ const HRDashboardPage: React.FC = () => {
         onOpenChange={setPipelineDrawerOpen}
         stage={selectedPipelineStage?.stage || null}
         data={selectedPipelineStage?.data || null}
+      />
+      
+      {/* Activity Detail Drawer */}
+      <ActivityDetailDrawer
+        open={activityDetailOpen}
+        onOpenChange={setActivityDetailOpen}
+        activity={selectedActivity}
       />
     </div>
   );
