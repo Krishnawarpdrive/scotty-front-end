@@ -5,8 +5,6 @@ import { MetricData } from '../../hooks/useDashboardData';
 import { Button } from '@/components/ui/button';
 import { ResponsiveContainer, LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, XAxis, YAxis, Tooltip as RechartsTooltip } from 'recharts';
 import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { ArrowRight } from 'lucide-react';
 
 // Define color schemes for status
 const STATUS_COLORS = {
@@ -83,24 +81,6 @@ export const MetricCard: React.FC<MetricCardProps> = ({ metric, onClick }) => {
     }
   };
 
-  // Get the appropriate call to action based on metric title
-  const getCardCTA = () => {
-    switch (title) {
-      case 'Time to Hire':
-        return 'Review Roles';
-      case 'TA Work Progress':
-        return 'Assign Tasks';
-      case 'TA Success Rate':
-        return 'Acknowledge Top TAs';
-      case 'Interviewer Load':
-        return 'Rebalance Interviews';
-      case 'Role Assignment Efficiency':
-        return 'Optimize Assignments';
-      default:
-        return 'View Details';
-    }
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -109,55 +89,42 @@ export const MetricCard: React.FC<MetricCardProps> = ({ metric, onClick }) => {
       whileHover={{ scale: 1.02 }}
     >
       <Card 
-        className="p-5 flex flex-col h-[280px] hover:shadow-md transition-all cursor-pointer border-l-4"
-        style={{ borderLeftColor: STATUS_COLORS[status] }}
+        className="p-5 flex flex-col h-[280px] hover:shadow-md transition-all cursor-pointer"
         onClick={onClick}
       >
-        <div className="flex justify-between items-start mb-3">
-          <Badge 
-            variant={status === 'good' ? 'outline' : status === 'warning' ? 'outline' : 'destructive'}
-            className={
-              status === 'good' 
-                ? 'bg-emerald-100 text-emerald-800 border-emerald-200' 
-                : status === 'warning'
-                ? 'bg-amber-100 text-amber-800 border-amber-200'
-                : ''
-            }
+        <div className="flex justify-between items-start mb-2">
+          <div className="flex items-center">
+            <div className={`h-3 w-3 rounded-full mr-2 bg-${status === 'good' ? 'emerald' : status === 'warning' ? 'amber' : 'red'}-500`}></div>
+            <h3 className="font-semibold">{title}</h3>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick();
+            }}
           >
-            {status === 'good' ? 'Good' : status === 'warning' ? 'Needs Attention' : 'Critical'}
-          </Badge>
+            Details
+          </Button>
         </div>
-        
-        <h3 className="font-bold text-lg">{title}</h3>
-        <div className="flex items-baseline gap-1.5 mb-1">
-          <span className="text-3xl font-bold" style={{ color: STATUS_COLORS[status] }}>
-            {value}
-          </span>
-          <span className="text-sm font-normal text-gray-500">{unit}</span>
+        <div className="text-3xl font-bold mb-2" style={{ color: STATUS_COLORS[status] }}>
+          {value} <span className="text-sm font-normal text-gray-500">{unit}</span>
         </div>
-        <div className="text-sm text-gray-600 mb-4 line-clamp-2">{description}</div>
-        
+        <div className="text-sm text-gray-500 mb-4">{description}</div>
         <div className="flex-1 min-h-0">
           {renderChart()}
         </div>
-        
-        <div className="flex justify-between items-center mt-4">
-          <div className="flex items-center text-xs">
-            <span 
-              className={`inline-block w-2 h-2 rounded-full mr-1
-                ${trend > 0 ? 'bg-emerald-500' : 'bg-amber-500'}`}
-            ></span>
-            <span className={`
-              ${trend > 0 ? 'text-emerald-600' : 'text-amber-600'}
-            `}>
-              {trendLabel}
-            </span>
-          </div>
-          
-          <Button variant="ghost" size="sm" className="text-xs flex items-center gap-1 -mr-2">
-            {getCardCTA()}
-            <ArrowRight className="h-3 w-3" />
-          </Button>
+        <div className="flex items-center text-xs mt-2">
+          <span 
+            className={`inline-block w-2 h-2 rounded-full mr-1
+              ${trend > 0 ? 'bg-emerald-500' : 'bg-amber-500'}`}
+          ></span>
+          <span className={`
+            ${trend > 0 ? 'text-emerald-600' : 'text-amber-600'}
+          `}>
+            {trendLabel}
+          </span>
         </div>
       </Card>
     </motion.div>
