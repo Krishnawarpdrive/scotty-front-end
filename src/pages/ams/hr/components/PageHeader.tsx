@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { UserPlus, Plus, Users, Briefcase, ClipboardList, GraduationCap } from "lucide-react";
 
@@ -34,30 +34,28 @@ const PageHeader = ({ activeTab, setActiveTab, tabCounts }: PageHeaderProps) => 
       </div>
 
       <div className="px-6 pt-4">
-        <Tabs defaultValue={activeTab} className="w-full" onValueChange={setActiveTab}>
-          <TabsList className="bg-background border">
-            <TabsTrigger value="clients" className="flex items-center gap-1">
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Clients</span>
-              <Badge className="ml-1 h-5 text-[10px]">{tabCounts.clients}</Badge>
-            </TabsTrigger>
-            <TabsTrigger value="roles" className="flex items-center gap-1">
-              <Briefcase className="h-4 w-4" />
-              <span className="hidden sm:inline">Roles</span>
-              <Badge className="ml-1 h-5 text-[10px]">{tabCounts.roles}</Badge>
-            </TabsTrigger>
-            <TabsTrigger value="requirements" className="flex items-center gap-1">
-              <ClipboardList className="h-4 w-4" />
-              <span className="hidden sm:inline">Requirements</span>
-              <Badge className="ml-1 h-5 text-[10px]">{tabCounts.requirements}</Badge>
-            </TabsTrigger>
-            <TabsTrigger value="tas" className="flex items-center gap-1">
-              <GraduationCap className="h-4 w-4" />
-              <span className="hidden sm:inline">TAs</span>
-              <Badge className="ml-1 h-5 text-[10px]">{tabCounts.tas}</Badge>
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <TabsList className="bg-background border">
+          <TabsTrigger value="clients" className="flex items-center gap-1">
+            <Users className="h-4 w-4" />
+            <span className="hidden sm:inline">Clients</span>
+            <Badge className="ml-1 h-5 text-[10px]">{tabCounts.clients}</Badge>
+          </TabsTrigger>
+          <TabsTrigger value="roles" className="flex items-center gap-1">
+            <Briefcase className="h-4 w-4" />
+            <span className="hidden sm:inline">Roles</span>
+            <Badge className="ml-1 h-5 text-[10px]">{tabCounts.roles}</Badge>
+          </TabsTrigger>
+          <TabsTrigger value="requirements" className="flex items-center gap-1">
+            <ClipboardList className="h-4 w-4" />
+            <span className="hidden sm:inline">Requirements</span>
+            <Badge className="ml-1 h-5 text-[10px]">{tabCounts.requirements}</Badge>
+          </TabsTrigger>
+          <TabsTrigger value="tas" className="flex items-center gap-1">
+            <GraduationCap className="h-4 w-4" />
+            <span className="hidden sm:inline">TAs</span>
+            <Badge className="ml-1 h-5 text-[10px]">{tabCounts.tas}</Badge>
+          </TabsTrigger>
+        </TabsList>
       </div>
     </div>
   );

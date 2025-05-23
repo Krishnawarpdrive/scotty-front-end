@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { TabsContent } from "@/components/ui/tabs";
+import { Tabs } from "@/components/ui/tabs";
 import { clientsData, rolesData, requirementsData, tasData } from './mockData';
 import ClientDetailDrawer from './components/ClientDetailDrawer';
 import PageHeader from './components/PageHeader';
@@ -39,45 +39,47 @@ const RoleManagementPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Page Header with Tabs */}
-      <PageHeader 
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        tabCounts={tabCounts}
-      />
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        {/* Page Header with Tabs */}
+        <PageHeader 
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          tabCounts={tabCounts}
+        />
 
-      {/* Content Area */}
-      <div className="px-6 overflow-auto max-h-[calc(100vh-180px)]">
-        <TabsContent value="clients" className="m-0">
-          <ClientsTabContent 
-            clientsData={clientsData} 
-            handleClientClick={handleClientClick}
-            handleRowClick={handleRowClick}
-          />
-        </TabsContent>
+        {/* Content Area */}
+        <div className="px-6 overflow-auto max-h-[calc(100vh-180px)]">
+          {activeTab === "clients" && (
+            <ClientsTabContent 
+              clientsData={clientsData} 
+              handleClientClick={handleClientClick}
+              handleRowClick={handleRowClick}
+            />
+          )}
 
-        <TabsContent value="roles" className="m-0">
-          <RolesTabContent 
-            rolesData={rolesData}
-            handleClientClick={handleClientClick}
-            handleRowClick={handleRowClick}
-          />
-        </TabsContent>
+          {activeTab === "roles" && (
+            <RolesTabContent 
+              rolesData={rolesData}
+              handleClientClick={handleClientClick}
+              handleRowClick={handleRowClick}
+            />
+          )}
 
-        <TabsContent value="requirements" className="m-0">
-          <RequirementsTabContent 
-            requirementsData={requirementsData}
-            handleRowClick={handleRowClick}
-          />
-        </TabsContent>
+          {activeTab === "requirements" && (
+            <RequirementsTabContent 
+              requirementsData={requirementsData}
+              handleRowClick={handleRowClick}
+            />
+          )}
 
-        <TabsContent value="tas" className="m-0">
-          <TasTabContent 
-            tasData={tasData}
-            handleRowClick={handleRowClick}
-          />
-        </TabsContent>
-      </div>
+          {activeTab === "tas" && (
+            <TasTabContent 
+              tasData={tasData}
+              handleRowClick={handleRowClick}
+            />
+          )}
+        </div>
+      </Tabs>
 
       {/* Client Detail Drawer */}
       <ClientDetailDrawer
