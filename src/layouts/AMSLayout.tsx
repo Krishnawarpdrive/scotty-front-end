@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { AMSSidebar } from './AMSSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import Header from '@/components/common/Header';
+
 export const AMSLayout: React.FC = () => {
   const location = useLocation();
 
@@ -21,7 +23,9 @@ export const AMSLayout: React.FC = () => {
       isLastItem
     };
   });
-  return <SidebarProvider defaultOpen={true}>
+
+  return (
+    <SidebarProvider defaultOpen={true}>
       <div className="flex flex-col h-screen w-full">
         <Header userName="Admin User" />
         
@@ -30,33 +34,53 @@ export const AMSLayout: React.FC = () => {
           
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Sticky Breadcrumb */}
-            <div className="sticky top-0 z-10 bg-background border-b px-6 py-3">
+            <div className="sticky top-0 z-10 bg-background border-b px-6 py-3 shadow-sm">
               <Breadcrumb>
                 <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href="/ams/dashboard">AMS</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  
-                  {breadcrumbItems.map((item, index) => item.isLastItem ? <BreadcrumbItem key={index}>
-                        <BreadcrumbPage>{item.label}</BreadcrumbPage>
-                      </BreadcrumbItem> : <React.Fragment key={index}>
-                        <BreadcrumbItem>
-                          <BreadcrumbLink href={item.path}>{item.label}</BreadcrumbLink>
+                  {pathSegments[0] === "ams" && pathSegments[1] === "hr" ? (
+                    <React.Fragment>
+                      <BreadcrumbItem>
+                        <BreadcrumbLink href="/ams/hr">HR</BreadcrumbLink>
+                      </BreadcrumbItem>
+                      <BreadcrumbSeparator />
+                      <BreadcrumbItem>
+                        <BreadcrumbPage>Role Management</BreadcrumbPage>
+                      </BreadcrumbItem>
+                    </React.Fragment>
+                  ) : (
+                    <>
+                      <BreadcrumbItem>
+                        <BreadcrumbLink href="/ams/dashboard">AMS</BreadcrumbLink>
+                      </BreadcrumbItem>
+                      <BreadcrumbSeparator />
+                      
+                      {breadcrumbItems.map((item, index) => item.isLastItem ? (
+                        <BreadcrumbItem key={index}>
+                          <BreadcrumbPage>{item.label}</BreadcrumbPage>
                         </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                      </React.Fragment>)}
+                      ) : (
+                        <React.Fragment key={index}>
+                          <BreadcrumbItem>
+                            <BreadcrumbLink href={item.path}>{item.label}</BreadcrumbLink>
+                          </BreadcrumbItem>
+                          <BreadcrumbSeparator />
+                        </React.Fragment>
+                      ))}
+                    </>
+                  )}
                 </BreadcrumbList>
               </Breadcrumb>
             </div>
             
             {/* Main content area */}
-            <div className="flex-1 overflow-auto p-6 py-0 px-0">
+            <div className="flex-1 overflow-auto">
               <Outlet />
             </div>
           </div>
         </div>
       </div>
-    </SidebarProvider>;
+    </SidebarProvider>
+  );
 };
+
 export default AMSLayout;

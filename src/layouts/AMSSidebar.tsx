@@ -26,6 +26,12 @@ import {
   Search
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from "@/components/ui/tooltip";
 
 interface NavigationItem {
   title: string;
@@ -56,7 +62,7 @@ export const AMSSidebar = () => {
 
   return (
     <Sidebar 
-      className="border-r transition-width duration-300 ease-in-out"
+      className="border-r transition-all duration-300 ease-in-out"
       style={{ width: isCollapsed ? '64px' : '240px' }} 
       collapsible="icon" 
       variant="sidebar"
@@ -86,17 +92,27 @@ export const AMSSidebar = () => {
             <SidebarMenu>
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.path}>
-                  <SidebarMenuButton 
-                    asChild 
-                    isActive={isActive(item.path)} 
-                    tooltip={isCollapsed ? item.title : undefined}
-                    className="my-1"
-                  >
-                    <NavLink to={item.path} className="flex items-center">
-                      <item.icon className="h-4 w-4 min-w-4" />
-                      {!isCollapsed && <span className="ml-2 truncate">{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={isActive(item.path)} 
+                          className="my-1"
+                        >
+                          <NavLink to={item.path} className="flex items-center">
+                            <item.icon className="h-4 w-4 min-w-4" />
+                            {!isCollapsed && <span className="ml-2 truncate">{item.title}</span>}
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </TooltipTrigger>
+                      {isCollapsed && (
+                        <TooltipContent side="right">
+                          <p>{item.title}</p>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TooltipProvider>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
