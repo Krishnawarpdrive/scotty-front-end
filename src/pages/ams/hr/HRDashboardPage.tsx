@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Filter, ChevronDown, Download } from 'lucide-react';
 import { MetricCard } from './components/dashboard/MetricCard';
 import { EnhancedFilters } from './components/dashboard/EnhancedFilters';
-import { MetricDetailsDrawer } from './components/dashboard/MetricDetailsDrawer';
+import { MetricDetailsDrawer } from './components/dashboard/metric-details/MetricDetailsDrawer';
 import { RecentActivityPanel, CollapsedActivityPanel } from './components/dashboard/RecentActivityPanel';
 import { GamificationBadges } from './components/dashboard/GamificationBadges';
 import { ProgressBar } from './components/dashboard/ProgressBar';

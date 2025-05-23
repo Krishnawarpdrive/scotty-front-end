@@ -137,9 +137,9 @@ export const SecondaryMetrics: React.FC = () => {
             <div className="text-center">
               <div className="text-4xl font-bold text-amber-600 mb-2">{stuckCandidates.count}</div>
               <Badge variant="destructive" className="mb-2">
-                {stuckCandidates.urgentCount} Urgent (>14 days)
+                {stuckCandidates.urgentCount} Urgent ({'>'}14 days)
               </Badge>
-              <div className="text-sm text-gray-500">Candidates stuck >7 days</div>
+              <div className="text-sm text-gray-500">Candidates stuck {'>'}7 days</div>
             </div>
           </div>
           <div className="space-y-2">
