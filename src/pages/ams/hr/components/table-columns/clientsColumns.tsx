@@ -14,124 +14,48 @@ import { DataTableColumn } from "@/components/ui/data-table/types";
 export const getClientsColumns = (handleClientClick: (clientName: string) => void): DataTableColumn<any>[] => [
   {
     id: "clientName",
-    header: "Client Name + ID",
+    header: "Client Name",
     accessorKey: "name",
     enableSorting: true,
     enableFiltering: true,
     cell: (client: any) => (
-      <div className="flex flex-col">
-        <span className="font-medium hover:text-primary cursor-pointer">
+      <div className="flex flex-col min-w-[140px]">
+        <span 
+          className="font-medium hover:text-primary cursor-pointer truncate"
+          onClick={() => handleClientClick(client.name)}
+        >
           {client.name}
         </span>
-        <span className="text-[10px] text-muted-foreground">
+        <span className="text-[10px] text-muted-foreground truncate">
           #{client.id.substring(0, 8)}
         </span>
       </div>
     ),
   },
   {
-    id: "contactPerson",
-    header: "Contact Person",
-    accessorKey: "contactPerson",
-    enableSorting: true,
-    enableFiltering: true,
-    cell: (client: any) => (
-      <div className="flex items-center gap-1">
-        <span>{client.contactPerson}</span>
-        <div className="flex ml-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button size="icon" variant="ghost" className="h-6 w-6 p-1">
-                  <Phone className="h-3 w-3" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Call via operator</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button size="icon" variant="ghost" className="h-6 w-6 p-1">
-                  <Mail className="h-3 w-3" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Send email</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      </div>
-    ),
-  },
-  {
     id: "rolesProgress",
-    header: "Roles Needed / Hired",
+    header: "Roles Hired / Needed",
     accessorKey: "rolesProgress",
     enableSorting: true,
     enableFiltering: false,
     cell: (client: any) => (
-      <div className="flex items-center">
+      <div className="flex items-center min-w-[100px]">
         <span>{client.rolesHired} / {client.rolesNeeded}</span>
       </div>
     ),
   },
   {
-    id: "requirementsCount",
-    header: "Requirements Count",
-    accessorKey: "requirementsCount",
-    enableSorting: true,
-    enableFiltering: true,
-  },
-  {
-    id: "unassignedItems",
-    header: "Roles / Requirements Unassigned",
+    id: "unassignedRoles",
+    header: "Unassigned Roles",
     accessorKey: "unassignedRoles",
     enableSorting: true,
     enableFiltering: false,
     cell: (client: any) => (
-      <div className="flex items-center">
+      <div className="flex items-center min-w-[80px]">
         <span className={client.unassignedRoles > 0 ? "text-amber-600" : ""}>
           {client.unassignedRoles} / {client.totalRoles}
         </span>
       </div>
-    ),
-  },
-  {
-    id: "tasAssigned",
-    header: "TAs Assigned",
-    accessorKey: "tasAssigned",
-    enableSorting: true,
-    enableFiltering: true,
-    cell: (client: any) => (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="cursor-help">
-              {client.tasAssigned.length}
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{client.tasAssigned.join(', ')}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    ),
-  },
-  {
-    id: "status",
-    header: "Client Status",
-    accessorKey: "status",
-    enableSorting: true,
-    enableFiltering: true,
-    cell: (client: any) => (
-      <Badge variant={client.status === "Active" ? "default" : "outline"}>
-        {client.status}
-      </Badge>
     ),
   },
   {
@@ -146,8 +70,12 @@ export const getClientsColumns = (handleClientClick: (clientName: string) => voi
       const isOverdue = dueDate < today;
       
       return (
-        <span className={isOverdue ? "text-red-500 font-medium" : ""}>
-          {dueDate.toLocaleDateString()}
+        <span className={`min-w-[90px] inline-block ${isOverdue ? "text-red-500 font-medium" : ""}`}>
+          {dueDate.toLocaleDateString('en-GB', { 
+            day: '2-digit', 
+            month: 'short', 
+            year: 'numeric'
+          })}
         </span>
       );
     },
@@ -159,27 +87,94 @@ export const getClientsColumns = (handleClientClick: (clientName: string) => voi
     enableSorting: true,
     enableFiltering: true,
     cell: (client: any) => (
-      <Badge variant="outline" className={
-        client.priority === "High" 
-          ? "bg-red-100 text-red-800 border-red-200" 
-          : client.priority === "Medium" 
-            ? "bg-amber-100 text-amber-800 border-amber-200"
-            : "bg-green-100 text-green-800 border-green-200"
-      }>
-        {client.priority}
-      </Badge>
+      <div className="min-w-[70px]">
+        <Badge variant="outline" className="bg-gray-200 text-gray-700 border-gray-300">
+          {client.priority}
+        </Badge>
+      </div>
     ),
   },
   {
-    id: "lastActivity",
-    header: "Last Activity Date",
-    accessorKey: "lastActivity",
+    id: "status",
+    header: "Status",
+    accessorKey: "status",
     enableSorting: true,
     enableFiltering: true,
     cell: (client: any) => (
-      <span className="text-muted-foreground text-sm">
-        {new Date(client.lastActivity).toLocaleDateString()}
-      </span>
+      <div className="min-w-[70px]">
+        <Badge variant="outline" className="bg-gray-200 text-gray-700 border-gray-300">
+          {client.status}
+        </Badge>
+      </div>
     ),
+  },
+  {
+    id: "alertReason",
+    header: "Alert Reason",
+    accessorKey: "alertReason",
+    enableSorting: true,
+    enableFiltering: true,
+    cell: (client: any) => {
+      const alertReasons = [
+        "No roles created",
+        "Multiple roles pending TA",
+        "Client uncontacted for 14+ days",
+        "Unapproved items pending",
+        "Agreement not uploaded",
+        "Overdue roles for priority client",
+        "Stalled progress on roles",
+        "TA overload/mismatch",
+        "Missing JD",
+        "Frequent rejections"
+      ];
+      const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
+      
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-sm text-gray-600 truncate max-w-[150px] inline-block">
+                {randomReason}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{randomReason}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
+  },
+  {
+    id: "cta",
+    header: "CTA",
+    accessorKey: "cta",
+    enableSorting: false,
+    enableFiltering: false,
+    cell: (client: any) => {
+      const ctas = [
+        "Add Role",
+        "Assign TA to Roles",
+        "Follow Up with Client",
+        "Approve Pending Items",
+        "Upload Agreement",
+        "Escalate to Exec Team",
+        "Review Pipeline Bottlenecks",
+        "Reassign TA",
+        "Request JD from Client",
+        "Notify Client of Rework"
+      ];
+      const randomCta = ctas[Math.floor(Math.random() * ctas.length)];
+      
+      return (
+        <Button 
+          size="sm" 
+          variant="outline" 
+          className="text-xs h-7 px-2 bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300"
+        >
+          {randomCta}
+        </Button>
+      );
+    },
   },
 ];

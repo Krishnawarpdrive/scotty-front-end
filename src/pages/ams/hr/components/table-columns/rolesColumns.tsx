@@ -1,13 +1,14 @@
 
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { 
   Tooltip, 
   TooltipContent, 
   TooltipProvider, 
   TooltipTrigger 
 } from "@/components/ui/tooltip";
-import { AlertCircle, CheckCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { DataTableColumn } from "@/components/ui/data-table/types";
 
 export const getRolesColumns = (handleClientClick: (clientName: string) => void): DataTableColumn<any>[] => [
@@ -21,7 +22,7 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="flex flex-col truncate max-w-[200px]">
+            <div className="flex flex-col truncate min-w-[160px]">
               <span className="font-medium truncate hover:text-primary cursor-pointer">
                 {role.name}
               </span>
@@ -40,7 +41,7 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
   },
   {
     id: "clientName",
-    header: "Client Name",
+    header: "Client",
     accessorKey: "clientName",
     enableSorting: true,
     enableFiltering: true,
@@ -49,7 +50,7 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
         <Tooltip>
           <TooltipTrigger asChild>
             <span 
-              className="truncate max-w-[150px] inline-block hover:text-primary cursor-pointer"
+              className="truncate min-w-[100px] inline-block hover:text-primary cursor-pointer"
               onClick={() => handleClientClick(role.clientName)}
             >
               {role.clientName}
@@ -74,7 +75,7 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
       const isOverdue = dueDate < today;
       
       return (
-        <div className="flex items-center whitespace-nowrap">
+        <div className="flex items-center whitespace-nowrap min-w-[90px]">
           <span className={isOverdue ? "text-red-500 font-medium" : ""}>
             {dueDate.toLocaleDateString('en-GB', { 
               day: '2-digit', 
@@ -100,26 +101,14 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
   },
   {
     id: "vacancies",
-    header: "Vacancies",
+    header: "Vacancies Filled / Open",
     accessorKey: "vacanciesFilled",
     enableSorting: true,
     enableFiltering: false,
     cell: (role: any) => (
-      <span className="whitespace-nowrap">
+      <span className="whitespace-nowrap min-w-[80px] inline-block">
         {role.vacanciesFilled} / {role.vacanciesOpen + role.vacanciesFilled}
       </span>
-    ),
-  },
-  {
-    id: "activeRole",
-    header: "Status",
-    accessorKey: "isActive",
-    enableSorting: true,
-    enableFiltering: true,
-    cell: (role: any) => (
-      <Badge variant={role.isActive ? "default" : "outline"} className={role.isActive ? "bg-green-500" : "bg-gray-200 text-gray-600"}>
-        {role.isActive ? "Active" : "Inactive"}
-      </Badge>
     ),
   },
   {
@@ -132,7 +121,7 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="cursor-help whitespace-nowrap">
+            <div className="cursor-help whitespace-nowrap min-w-[60px]">
               {role.taAssigned.length}
             </div>
           </TooltipTrigger>
@@ -159,7 +148,7 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className={`${textColor} whitespace-nowrap`}>
+              <span className={`${textColor} whitespace-nowrap min-w-[80px] inline-block`}>
                 {role.candidatesProgressed} / {role.candidatesTotal}
               </span>
             </TooltipTrigger>
@@ -173,24 +162,36 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
     },
   },
   {
-    id: "stageConfigured",
-    header: "Stage Configured",
-    accessorKey: "stageConfiguredPercent",
+    id: "alertReason",
+    header: "Alert Reason",
+    accessorKey: "alertReason",
     enableSorting: true,
-    enableFiltering: false,
+    enableFiltering: true,
     cell: (role: any) => {
-      const isComplete = role.stageConfiguredPercent === 100;
+      const alertReasons = [
+        "TA not assigned",
+        "Pipeline not configured",
+        "Candidate progress stalled",
+        "Low interview-to-offer ratio",
+        "JD not attached",
+        "Inactive TA",
+        "Vacancies filled",
+        "No candidates sourced",
+        "Overdue vacancies",
+        "Duplicate role"
+      ];
+      const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
       
       return (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge variant="outline" className={isComplete ? "bg-green-100 text-green-800 border-green-200" : "bg-amber-100 text-amber-800 border-amber-200"}>
-                {isComplete ? "100%" : "Incomplete"}
-              </Badge>
+              <span className="text-sm text-gray-600 truncate max-w-[150px] inline-block">
+                {randomReason}
+              </span>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{role.stageConfiguredPercent}% configured</p>
+              <p>{randomReason}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -198,55 +199,34 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
     },
   },
   {
-    id: "interviewRatio",
-    header: "Interview-to-Offer",
-    accessorKey: "interviewRatio",
-    enableSorting: true,
-    enableFiltering: false,
-    cell: (role: any) => {
-      const isLow = role.interviewRatio < 40;
-      
-      return (
-        <span className={isLow ? "text-red-500" : ""}>
-          {role.interviewRatio}%
-        </span>
-      );
-    },
-  },
-  {
-    id: "alerts",
-    header: "Alerts",
-    accessorKey: "alerts",
+    id: "cta",
+    header: "CTA",
+    accessorKey: "cta",
     enableSorting: false,
     enableFiltering: false,
     cell: (role: any) => {
-      const hasAlerts = role.openActions > 0 || role.alerts > 0;
+      const ctas = [
+        "Assign TA",
+        "Configure Pipeline",
+        "Check Pipeline Stage",
+        "Investigate Interview Quality",
+        "Upload JD",
+        "Ping TA",
+        "Mark Role as Completed",
+        "Activate Sourcing",
+        "Escalate Deadline",
+        "Review Duplicate Roles"
+      ];
+      const randomCta = ctas[Math.floor(Math.random() * ctas.length)];
       
-      return hasAlerts ? (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex">
-                {role.openActions > 0 && (
-                  <Badge variant="destructive" className="mr-1">
-                    {role.openActions}
-                  </Badge>
-                )}
-                {role.alerts > 0 && (
-                  <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
-                    {role.alerts}
-                  </Badge>
-                )}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              {role.openActions > 0 && <p>{role.openActions} pending actions</p>}
-              {role.alerts > 0 && <p>{role.alerts} alerts</p>}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ) : (
-        <CheckCircle className="h-4 w-4 text-green-500 opacity-50" />
+      return (
+        <Button 
+          size="sm" 
+          variant="outline" 
+          className="text-xs h-7 px-2 bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300"
+        >
+          {randomCta}
+        </Button>
       );
     },
   },

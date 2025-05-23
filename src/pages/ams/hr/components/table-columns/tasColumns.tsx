@@ -3,13 +3,6 @@ import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipProvider, 
-  TooltipTrigger 
-} from "@/components/ui/tooltip";
-import { Phone, Mail } from "lucide-react";
 import { DataTableColumn } from "@/components/ui/data-table/types";
 
 export const getTasColumns = (): DataTableColumn<any>[] => [
@@ -20,118 +13,108 @@ export const getTasColumns = (): DataTableColumn<any>[] => [
     enableSorting: true,
     enableFiltering: true,
     cell: (ta: any) => (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 min-w-[120px]">
         <Avatar className="h-6 w-6">
           <div className="flex h-full w-full items-center justify-center bg-muted text-xs">
             {ta.name.charAt(0)}
           </div>
         </Avatar>
-        <span className="font-medium hover:text-primary cursor-pointer">
+        <span className="font-medium hover:text-primary cursor-pointer truncate">
           {ta.name}
         </span>
       </div>
     ),
   },
   {
-    id: "requirementsAssigned",
-    header: "Requirements Assigned",
+    id: "assignedRoles",
+    header: "Assigned Roles",
     accessorKey: "requirementsAssigned",
     enableSorting: true,
     enableFiltering: false,
-  },
-  {
-    id: "rolesManaged",
-    header: "Roles Managed",
-    accessorKey: "rolesManaged",
-    enableSorting: true,
-    enableFiltering: false,
-  },
-  {
-    id: "candidatesSourced",
-    header: "Candidates Sourced",
-    accessorKey: "candidatesSourced",
-    enableSorting: true,
-    enableFiltering: false,
-  },
-  {
-    id: "outreachActivities",
-    header: "Outreach Activities",
-    accessorKey: "outreachActivities",
-    enableSorting: true,
-    enableFiltering: false,
-  },
-  {
-    id: "efficiencyMetrics",
-    header: "Efficiency Metrics",
-    accessorKey: "conversionRate",
-    enableSorting: true,
-    enableFiltering: false,
     cell: (ta: any) => (
-      <div className="flex flex-col">
-        <span>
-          Conv: {ta.conversionRate}%
-        </span>
-        <span className="text-[10px] text-muted-foreground">
-          Avg. Time: {ta.averageSourcingTime} days
-        </span>
-      </div>
+      <span className="min-w-[60px] inline-block">5</span>
     ),
   },
   {
-    id: "workloadStatus",
-    header: "Workload Status",
+    id: "openRequirements",
+    header: "Open Requirements",
+    accessorKey: "rolesManaged",
+    enableSorting: true,
+    enableFiltering: false,
+    cell: (ta: any) => (
+      <span className="min-w-[80px] inline-block">10</span>
+    ),
+  },
+  {
+    id: "efficiency",
+    header: "Efficiency",
     accessorKey: "workloadStatus",
     enableSorting: true,
     enableFiltering: true,
+    cell: (ta: any) => (
+      <Badge variant="outline" className="bg-gray-200 text-gray-700 border-gray-300 min-w-[70px]">
+        Medium
+      </Badge>
+    ),
+  },
+  {
+    id: "alertReason",
+    header: "Alert Reason",
+    accessorKey: "alertReason",
+    enableSorting: true,
+    enableFiltering: true,
     cell: (ta: any) => {
-      let colorClass = "bg-green-100 text-green-800 border-green-200";
-      if (ta.workloadStatus === "Overloaded") {
-        colorClass = "bg-red-100 text-red-800 border-red-200";
-      } else if (ta.workloadStatus === "Balanced") {
-        colorClass = "bg-blue-100 text-blue-800 border-blue-200";
-      }
+      const alertReasons = [
+        "TA overloaded",
+        "TA underloaded",
+        "Inactive TA",
+        "Low conversion rate",
+        "High rejection",
+        "No sourcing logged",
+        "No outreach logged",
+        "Poor feedback submission",
+        "Escalation record",
+        "TA switched mid-req"
+      ];
+      const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
       
       return (
-        <Badge variant="outline" className={colorClass}>
-          {ta.workloadStatus}
-        </Badge>
+        <span className="text-sm text-gray-600 truncate max-w-[150px] inline-block">
+          {randomReason}
+        </span>
       );
     },
   },
   {
-    id: "contactInfo",
-    header: "Contact Info",
-    accessorKey: "id",
+    id: "cta",
+    header: "CTA",
+    accessorKey: "cta",
     enableSorting: false,
     enableFiltering: false,
-    cell: (ta: any) => (
-      <div className="flex">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size="icon" variant="ghost" className="h-6 w-6 p-1">
-                <Phone className="h-3 w-3" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Call via operator</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size="icon" variant="ghost" className="h-6 w-6 p-1">
-                <Mail className="h-3 w-3" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Send email</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-    ),
+    cell: (ta: any) => {
+      const ctas = [
+        "Reassign Load",
+        "Assign New Roles",
+        "Follow Up",
+        "Schedule Performance Review",
+        "Review Screening Strategy",
+        "Activate TA Sourcing",
+        "Nudge TA",
+        "Remind Feedback",
+        "Open Investigation",
+        "Assign Transition Support"
+      ];
+      const randomCta = ctas[Math.floor(Math.random() * ctas.length)];
+      
+      return (
+        <Button 
+          size="sm" 
+          variant="outline" 
+          className="text-xs h-7 px-2 bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300"
+        >
+          {randomCta}
+        </Button>
+      );
+    },
   },
 ];

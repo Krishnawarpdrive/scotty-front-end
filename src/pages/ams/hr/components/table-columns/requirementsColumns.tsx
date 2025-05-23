@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { 
   Tooltip, 
   TooltipContent, 
@@ -17,92 +18,33 @@ export const getRequirementsColumns = (): DataTableColumn<any>[] => [
     enableSorting: true,
     enableFiltering: true,
     cell: (req: any) => (
-      <span className="font-medium hover:text-primary cursor-pointer">
+      <span className="font-medium hover:text-primary cursor-pointer min-w-[80px] inline-block">
         #{req.id.substring(0, 8)}
       </span>
     ),
   },
   {
-    id: "requirementName",
-    header: "Requirement Name",
-    accessorKey: "name",
-    enableSorting: true,
-    enableFiltering: true,
-  },
-  {
     id: "linkedRole",
-    header: "Linked Role",
+    header: "Role",
     accessorKey: "linkedRole",
     enableSorting: true,
     enableFiltering: true,
     cell: (req: any) => (
-      <span className="hover:text-primary cursor-pointer">
+      <span className="hover:text-primary cursor-pointer min-w-[100px] inline-block truncate">
         {req.linkedRole}
       </span>
     ),
   },
   {
     id: "clientName",
-    header: "Client Name",
+    header: "Client",
     accessorKey: "clientName",
     enableSorting: true,
     enableFiltering: true,
-  },
-  {
-    id: "taAssigned",
-    header: "TA(s) Assigned",
-    accessorKey: "taAssigned",
-    enableSorting: true,
-    enableFiltering: true,
     cell: (req: any) => (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="cursor-help">
-              {req.taAssigned.length}
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{req.taAssigned.join(', ')}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    ),
-  },
-  {
-    id: "status",
-    header: "Status",
-    accessorKey: "status",
-    enableSorting: true,
-    enableFiltering: true,
-    cell: (req: any) => {
-      let badgeVariant = "default";
-      if (req.status === "Closed") badgeVariant = "outline";
-      else if (req.status === "Pending Approval") badgeVariant = "secondary";
-      
-      return (
-        <Badge variant={badgeVariant as any}>
-          {req.status}
-        </Badge>
-      );
-    },
-  },
-  {
-    id: "priority",
-    header: "Priority",
-    accessorKey: "priority",
-    enableSorting: true,
-    enableFiltering: true,
-    cell: (req: any) => (
-      <Badge variant="outline" className={
-        req.priority === "High" 
-          ? "bg-red-100 text-red-800 border-red-200" 
-          : req.priority === "Medium" 
-            ? "bg-amber-100 text-amber-800 border-amber-200"
-            : "bg-green-100 text-green-800 border-green-200"
-      }>
-        {req.priority}
-      </Badge>
+      <span className="min-w-[100px] inline-block truncate">
+        {req.clientName}
+      </span>
     ),
   },
   {
@@ -117,62 +59,121 @@ export const getRequirementsColumns = (): DataTableColumn<any>[] => [
       const isOverdue = dueDate < today;
       
       return (
-        <span className={isOverdue ? "text-red-500 font-medium" : ""}>
-          {dueDate.toLocaleDateString()}
+        <span className={`min-w-[90px] inline-block ${isOverdue ? "text-red-500 font-medium" : ""}`}>
+          {dueDate.toLocaleDateString('en-GB', { 
+            day: '2-digit', 
+            month: 'short', 
+            year: 'numeric'
+          })}
         </span>
       );
     },
   },
   {
-    id: "candidatesSourced",
-    header: "Candidates Sourced",
-    accessorKey: "candidatesSourced",
+    id: "taAssigned",
+    header: "TA Assigned",
+    accessorKey: "taAssigned",
     enableSorting: true,
-    enableFiltering: false,
-  },
-  {
-    id: "interviewRatio",
-    header: "Interview-to-Offer Ratio",
-    accessorKey: "interviewRatio",
-    enableSorting: true,
-    enableFiltering: false,
+    enableFiltering: true,
     cell: (req: any) => (
-      <span>{req.interviewRatio}%</span>
-    ),
-  },
-  {
-    id: "candidateProgress",
-    header: "Candidate Stage Progress",
-    accessorKey: "candidateStageProgress",
-    enableSorting: true,
-    enableFiltering: false,
-    cell: (req: any) => (
-      <div className="flex items-center w-full">
-        <div className="w-full bg-gray-200 rounded-full h-1.5 mr-2">
-          <div 
-            className={`h-1.5 rounded-full ${
-              req.candidateStageProgress < 30 ? "bg-red-500" : 
-              req.candidateStageProgress < 70 ? "bg-amber-500" : "bg-green-500"
-            }`} 
-            style={{ width: `${req.candidateStageProgress}%` }}
-          />
-        </div>
-        <span className="text-xs">{req.candidateStageProgress}%</span>
+      <div className="min-w-[60px]">
+        {req.taAssigned.length > 0 ? (
+          <Badge variant="outline" className="bg-gray-200 text-gray-700 border-gray-300">
+            Yes
+          </Badge>
+        ) : (
+          <Badge variant="outline" className="bg-gray-200 text-gray-700 border-gray-300">
+            No
+          </Badge>
+        )}
       </div>
     ),
   },
   {
-    id: "modifiedPipeline",
-    header: "Modified Pipeline Flag",
-    accessorKey: "modifiedPipeline",
+    id: "candidateStageProgress",
+    header: "Progress",
+    accessorKey: "candidateStageProgress",
+    enableSorting: true,
+    enableFiltering: false,
+    cell: (req: any) => {
+      let status = "Stalled";
+      if (req.candidateStageProgress > 70) status = "Active";
+      else if (req.candidateStageProgress > 30) status = "In Progress";
+      
+      return (
+        <Badge variant="outline" className="bg-gray-200 text-gray-700 border-gray-300 min-w-[80px]">
+          {status}
+        </Badge>
+      );
+    },
+  },
+  {
+    id: "alertReason",
+    header: "Alert Reason",
+    accessorKey: "alertReason",
     enableSorting: true,
     enableFiltering: true,
-    cell: (req: any) => (
-      req.modifiedPipeline ? (
-        <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-200">
-          Modified
-        </Badge>
-      ) : null
-    ),
+    cell: (req: any) => {
+      const alertReasons = [
+        "TA not assigned",
+        "Requirement not approved",
+        "No candidates sourced",
+        "High rejection rate",
+        "Due soon",
+        "TA slow response",
+        "No interview feedback",
+        "Multiple edits",
+        "Pipeline mismatch",
+        "Pending for 7+ days"
+      ];
+      const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
+      
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-sm text-gray-600 truncate max-w-[150px] inline-block">
+                {randomReason}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{randomReason}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
+  },
+  {
+    id: "cta",
+    header: "CTA",
+    accessorKey: "cta",
+    enableSorting: false,
+    enableFiltering: false,
+    cell: (req: any) => {
+      const ctas = [
+        "Assign TA",
+        "Send for Approval",
+        "Start Sourcing",
+        "Revise Criteria",
+        "Notify TA",
+        "Follow Up TA",
+        "Request Feedback",
+        "Audit Changes",
+        "Fix Hiring Flow",
+        "Confirm Requirement"
+      ];
+      const randomCta = ctas[Math.floor(Math.random() * ctas.length)];
+      
+      return (
+        <Button 
+          size="sm" 
+          variant="outline" 
+          className="text-xs h-7 px-2 bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300"
+        >
+          {randomCta}
+        </Button>
+      );
+    },
   },
 ];

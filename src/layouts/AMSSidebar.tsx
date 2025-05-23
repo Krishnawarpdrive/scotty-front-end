@@ -63,14 +63,13 @@ export const AMSSidebar = () => {
   return (
     <Sidebar 
       className="border-r transition-all duration-300 ease-in-out"
-      style={{ width: isCollapsed ? '64px' : '240px' }} 
       collapsible="icon" 
       variant="sidebar"
     >
-      <SidebarHeader>
+      <SidebarHeader className="border-b">
         <div className="p-2 flex justify-between items-center">
           {!isCollapsed && <h2 className="text-xl font-semibold px-2">AMS</h2>}
-          <SidebarTrigger />
+          <SidebarTrigger className="ml-auto" />
         </div>
         {!isCollapsed && (
           <div className="px-2 pb-2">

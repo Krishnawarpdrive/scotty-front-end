@@ -38,22 +38,22 @@ const PageHeader = ({ activeTab, setActiveTab, tabCounts }: PageHeaderProps) => 
           <TabsTrigger value="clients" className="flex items-center gap-1">
             <Users className="h-4 w-4" />
             <span className="hidden sm:inline">Clients</span>
-            <Badge className="ml-1 h-5 text-[10px]">{tabCounts.clients}</Badge>
+            <Badge className="ml-1 h-5 text-[10px] bg-gray-200 text-gray-700 hover:bg-gray-300">{tabCounts.clients}</Badge>
           </TabsTrigger>
           <TabsTrigger value="roles" className="flex items-center gap-1">
             <Briefcase className="h-4 w-4" />
             <span className="hidden sm:inline">Roles</span>
-            <Badge className="ml-1 h-5 text-[10px]">{tabCounts.roles}</Badge>
+            <Badge className="ml-1 h-5 text-[10px] bg-gray-200 text-gray-700 hover:bg-gray-300">{tabCounts.roles}</Badge>
           </TabsTrigger>
           <TabsTrigger value="requirements" className="flex items-center gap-1">
             <ClipboardList className="h-4 w-4" />
             <span className="hidden sm:inline">Requirements</span>
-            <Badge className="ml-1 h-5 text-[10px]">{tabCounts.requirements}</Badge>
+            <Badge className="ml-1 h-5 text-[10px] bg-gray-200 text-gray-700 hover:bg-gray-300">{tabCounts.requirements}</Badge>
           </TabsTrigger>
           <TabsTrigger value="tas" className="flex items-center gap-1">
             <GraduationCap className="h-4 w-4" />
             <span className="hidden sm:inline">TAs</span>
-            <Badge className="ml-1 h-5 text-[10px]">{tabCounts.tas}</Badge>
+            <Badge className="ml-1 h-5 text-[10px] bg-gray-200 text-gray-700 hover:bg-gray-300">{tabCounts.tas}</Badge>
           </TabsTrigger>
         </TabsList>
       </div>
