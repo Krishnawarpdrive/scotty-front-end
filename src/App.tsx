@@ -17,6 +17,7 @@ import SkillsLibraryPage from "./pages/ams/skills/SkillsLibraryPage";
 import ChecklistsPage from "./pages/ams/ChecklistsPage";
 import CertificationsPage from "./pages/ams/CertificationsPage";
 import CommissionsPage from "./pages/ams/CommissionsPage";
+import RoleManagementPage from "./pages/ams/hr/RoleManagementPage";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="checklists" element={<ChecklistsPage />} />
             <Route path="certifications" element={<CertificationsPage />} />
             <Route path="commissions" element={<CommissionsPage />} />
+            <Route path="hr/role-management" element={<RoleManagementPage />} />
           </Route>
           
           {/* Catch-all route */}

@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow } from '@/components/ui/table';
 import { Plus, Users, Briefcase, ClipboardList } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface ActivityItem {
   id: string;
@@ -82,6 +83,11 @@ const AMSDashboard: React.FC = () => {
         <Button size="sm" variant="outline" className="gap-1">
           <ClipboardList className="h-4 w-4" /> View Approvals
         </Button>
+        <Link to="/ams/hr/role-management">
+          <Button size="sm" variant="outline" className="gap-1">
+            <Briefcase className="h-4 w-4" /> Role Management
+          </Button>
+        </Link>
       </div>
 
       {/* Content Grid */}

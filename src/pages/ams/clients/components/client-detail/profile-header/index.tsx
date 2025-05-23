@@ -11,6 +11,7 @@ import ClientNameEditor from './ClientNameEditor';
 import ClientBadges from './ClientBadges';
 import ClientContactInfo from './ClientContactInfo';
 import ClientAdditionalInfo from './ClientAdditionalInfo';
+import ClientContactForm from './ClientContactForm';
 
 interface ClientProfileHeaderProps {
   client: Client;
