@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
   Tooltip, 
@@ -8,8 +7,19 @@ import {
   TooltipProvider, 
   TooltipTrigger 
 } from "@/components/ui/tooltip";
-import { Phone, Mail } from "lucide-react";
 import { DataTableColumn } from "@/components/ui/data-table/types";
+
+const getCTAColor = (alertReason: string) => {
+  const highPriority = ["No roles created", "Overdue roles for priority client", "Agreement not uploaded"];
+  const mediumPriority = ["Multiple roles pending TA", "Client uncontacted for 14+ days", "Unapproved items pending"];
+  
+  if (highPriority.some(reason => alertReason.includes(reason))) {
+    return "bg-red-500 hover:bg-red-600 text-white";
+  } else if (mediumPriority.some(reason => alertReason.includes(reason))) {
+    return "bg-orange-500 hover:bg-orange-600 text-white";
+  }
+  return "bg-blue-500 hover:bg-blue-600 text-white";
+};
 
 export const getClientsColumns = (handleClientClick: (clientName: string) => void): DataTableColumn<any>[] => [
   {
@@ -20,12 +30,25 @@ export const getClientsColumns = (handleClientClick: (clientName: string) => voi
     enableFiltering: true,
     cell: (client: any) => (
       <div className="flex flex-col min-w-[140px]">
-        <span 
-          className="font-medium hover:text-primary cursor-pointer truncate"
-          onClick={() => handleClientClick(client.name)}
-        >
-          {client.name}
-        </span>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span 
+                className="font-medium hover:text-primary cursor-pointer truncate"
+                onClick={() => handleClientClick(client.name)}
+              >
+                {client.name}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="space-y-1">
+                <p className="font-semibold">{client.name}</p>
+                <p className="text-xs">Client ID: #{client.id.substring(0, 8)}</p>
+                <p className="text-xs">Account Type: {client.accountType || 'Standard'}</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <span className="text-[10px] text-muted-foreground truncate">
           #{client.id.substring(0, 8)}
         </span>
@@ -39,9 +62,22 @@ export const getClientsColumns = (handleClientClick: (clientName: string) => voi
     enableSorting: true,
     enableFiltering: false,
     cell: (client: any) => (
-      <div className="flex items-center min-w-[100px]">
-        <span>{client.rolesHired} / {client.rolesNeeded}</span>
-      </div>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center min-w-[100px] cursor-help">
+              <span>{client.rolesHired} / {client.rolesNeeded}</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <div className="space-y-1">
+              <p>Roles Hired: {client.rolesHired}</p>
+              <p>Roles Needed: {client.rolesNeeded}</p>
+              <p>Progress: {Math.round((client.rolesHired / client.rolesNeeded) * 100)}%</p>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     ),
   },
   {
@@ -51,11 +87,26 @@ export const getClientsColumns = (handleClientClick: (clientName: string) => voi
     enableSorting: true,
     enableFiltering: false,
     cell: (client: any) => (
-      <div className="flex items-center min-w-[80px]">
-        <span className={client.unassignedRoles > 0 ? "text-amber-600" : ""}>
-          {client.unassignedRoles} / {client.totalRoles}
-        </span>
-      </div>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center min-w-[80px] cursor-help">
+              <span className={client.unassignedRoles > 0 ? "text-amber-600 font-medium" : ""}>
+                {client.unassignedRoles} / {client.totalRoles}
+              </span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <div className="space-y-1">
+              <p>Unassigned: {client.unassignedRoles}</p>
+              <p>Total Roles: {client.totalRoles}</p>
+              {client.unassignedRoles > 0 && (
+                <p className="text-amber-600">⚠️ Needs attention</p>
+              )}
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     ),
   },
   {
@@ -68,15 +119,32 @@ export const getClientsColumns = (handleClientClick: (clientName: string) => voi
       const dueDate = new Date(client.nextDueDate);
       const today = new Date();
       const isOverdue = dueDate < today;
+      const daysUntilDue = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
       
       return (
-        <span className={`min-w-[90px] inline-block ${isOverdue ? "text-red-500 font-medium" : ""}`}>
-          {dueDate.toLocaleDateString('en-GB', { 
-            day: '2-digit', 
-            month: 'short', 
-            year: 'numeric'
-          })}
-        </span>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className={`min-w-[90px] inline-block cursor-help ${isOverdue ? "text-red-500 font-medium" : ""}`}>
+                {dueDate.toLocaleDateString('en-GB', { 
+                  day: '2-digit', 
+                  month: 'short', 
+                  year: 'numeric'
+                })}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="space-y-1">
+                <p>Due Date: {dueDate.toLocaleDateString()}</p>
+                {isOverdue ? (
+                  <p className="text-red-500">Overdue by {Math.abs(daysUntilDue)} days</p>
+                ) : (
+                  <p>Due in {daysUntilDue} days</p>
+                )}
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       );
     },
   },
@@ -88,9 +156,9 @@ export const getClientsColumns = (handleClientClick: (clientName: string) => voi
     enableFiltering: true,
     cell: (client: any) => (
       <div className="min-w-[70px]">
-        <Badge variant="outline" className="bg-gray-200 text-gray-700 border-gray-300">
+        <span className="text-gray-600 text-sm">
           {client.priority}
-        </Badge>
+        </span>
       </div>
     ),
   },
@@ -102,9 +170,9 @@ export const getClientsColumns = (handleClientClick: (clientName: string) => voi
     enableFiltering: true,
     cell: (client: any) => (
       <div className="min-w-[70px]">
-        <Badge variant="outline" className="bg-gray-200 text-gray-700 border-gray-300">
+        <span className="text-gray-600 text-sm">
           {client.status}
-        </Badge>
+        </span>
       </div>
     ),
   },
@@ -133,12 +201,16 @@ export const getClientsColumns = (handleClientClick: (clientName: string) => voi
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="text-sm text-gray-600 truncate max-w-[150px] inline-block">
+              <span className="text-sm text-gray-600 truncate max-w-[150px] inline-block cursor-help">
                 {randomReason}
               </span>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{randomReason}</p>
+              <div className="space-y-1 max-w-xs">
+                <p className="font-semibold">Alert Details</p>
+                <p>{randomReason}</p>
+                <p className="text-xs text-gray-500">Click CTA to resolve</p>
+              </div>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -164,16 +236,43 @@ export const getClientsColumns = (handleClientClick: (clientName: string) => voi
         "Request JD from Client",
         "Notify Client of Rework"
       ];
+      const alertReasons = [
+        "No roles created",
+        "Multiple roles pending TA",
+        "Client uncontacted for 14+ days",
+        "Unapproved items pending",
+        "Agreement not uploaded",
+        "Overdue roles for priority client",
+        "Stalled progress on roles",
+        "TA overload/mismatch",
+        "Missing JD",
+        "Frequent rejections"
+      ];
+      
       const randomCta = ctas[Math.floor(Math.random() * ctas.length)];
+      const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
       
       return (
-        <Button 
-          size="sm" 
-          variant="outline" 
-          className="text-xs h-7 px-2 bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300"
-        >
-          {randomCta}
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                size="sm" 
+                className={`text-xs h-7 px-2 ${getCTAColor(randomReason)}`}
+                onClick={() => console.log(`Executing: ${randomCta} for client: ${client.name}`)}
+              >
+                {randomCta}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="space-y-1">
+                <p className="font-semibold">Action Required</p>
+                <p>{randomCta}</p>
+                <p className="text-xs text-gray-500">Click to execute</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       );
     },
   },

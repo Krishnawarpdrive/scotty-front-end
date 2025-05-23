@@ -2,7 +2,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { UserPlus, Plus, Users, Briefcase, ClipboardList, GraduationCap } from "lucide-react";
 
 interface PageHeaderProps {
@@ -38,22 +37,22 @@ const PageHeader = ({ activeTab, setActiveTab, tabCounts }: PageHeaderProps) => 
           <TabsTrigger value="clients" className="flex items-center gap-1">
             <Users className="h-4 w-4" />
             <span className="hidden sm:inline">Clients</span>
-            <Badge className="ml-1 h-5 text-[10px] bg-gray-200 text-gray-700 hover:bg-gray-300">{tabCounts.clients}</Badge>
+            <span className="ml-1 text-xs text-gray-600">({tabCounts.clients})</span>
           </TabsTrigger>
           <TabsTrigger value="roles" className="flex items-center gap-1">
             <Briefcase className="h-4 w-4" />
             <span className="hidden sm:inline">Roles</span>
-            <Badge className="ml-1 h-5 text-[10px] bg-gray-200 text-gray-700 hover:bg-gray-300">{tabCounts.roles}</Badge>
+            <span className="ml-1 text-xs text-gray-600">({tabCounts.roles})</span>
           </TabsTrigger>
           <TabsTrigger value="requirements" className="flex items-center gap-1">
             <ClipboardList className="h-4 w-4" />
             <span className="hidden sm:inline">Requirements</span>
-            <Badge className="ml-1 h-5 text-[10px] bg-gray-200 text-gray-700 hover:bg-gray-300">{tabCounts.requirements}</Badge>
+            <span className="ml-1 text-xs text-gray-600">({tabCounts.requirements})</span>
           </TabsTrigger>
           <TabsTrigger value="tas" className="flex items-center gap-1">
             <GraduationCap className="h-4 w-4" />
             <span className="hidden sm:inline">TAs</span>
-            <Badge className="ml-1 h-5 text-[10px] bg-gray-200 text-gray-700 hover:bg-gray-300">{tabCounts.tas}</Badge>
+            <span className="ml-1 text-xs text-gray-600">({tabCounts.tas})</span>
           </TabsTrigger>
         </TabsList>
       </div>

@@ -1,9 +1,26 @@
 
 import React from 'react';
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from "@/components/ui/tooltip";
 import { DataTableColumn } from "@/components/ui/data-table/types";
+
+const getCTAColor = (alertReason: string) => {
+  const highPriority = ["TA overloaded", "Inactive TA", "Escalation record"];
+  const mediumPriority = ["TA underloaded", "Low conversion rate", "High rejection"];
+  
+  if (highPriority.some(reason => alertReason.includes(reason))) {
+    return "bg-red-500 hover:bg-red-600 text-white";
+  } else if (mediumPriority.some(reason => alertReason.includes(reason))) {
+    return "bg-orange-500 hover:bg-orange-600 text-white";
+  }
+  return "bg-blue-500 hover:bg-blue-600 text-white";
+};
 
 export const getTasColumns = (): DataTableColumn<any>[] => [
   {
@@ -13,16 +30,30 @@ export const getTasColumns = (): DataTableColumn<any>[] => [
     enableSorting: true,
     enableFiltering: true,
     cell: (ta: any) => (
-      <div className="flex items-center gap-2 min-w-[120px]">
-        <Avatar className="h-6 w-6">
-          <div className="flex h-full w-full items-center justify-center bg-muted text-xs">
-            {ta.name.charAt(0)}
-          </div>
-        </Avatar>
-        <span className="font-medium hover:text-primary cursor-pointer truncate">
-          {ta.name}
-        </span>
-      </div>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center gap-2 min-w-[120px] cursor-help">
+              <Avatar className="h-6 w-6">
+                <div className="flex h-full w-full items-center justify-center bg-gray-200 text-xs font-medium">
+                  {ta.name.charAt(0)}
+                </div>
+              </Avatar>
+              <span className="font-medium hover:text-primary cursor-pointer truncate">
+                {ta.name}
+              </span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <div className="space-y-1">
+              <p className="font-semibold">{ta.name}</p>
+              <p className="text-xs">TA ID: #{ta.id?.substring(0, 8) || 'N/A'}</p>
+              <p className="text-xs">Department: {ta.department || 'Engineering'}</p>
+              <p className="text-xs">Experience: {ta.experience || '3+ years'}</p>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     ),
   },
   {
@@ -32,7 +63,19 @@ export const getTasColumns = (): DataTableColumn<any>[] => [
     enableSorting: true,
     enableFiltering: false,
     cell: (ta: any) => (
-      <span className="min-w-[60px] inline-block">5</span>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="min-w-[60px] inline-block cursor-help">5</span>
+          </TooltipTrigger>
+          <TooltipContent>
+            <div className="space-y-1">
+              <p>Currently assigned: 5 roles</p>
+              <p className="text-xs">Capacity utilization: 83%</p>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     ),
   },
   {
@@ -42,7 +85,20 @@ export const getTasColumns = (): DataTableColumn<any>[] => [
     enableSorting: true,
     enableFiltering: false,
     cell: (ta: any) => (
-      <span className="min-w-[80px] inline-block">10</span>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="min-w-[80px] inline-block cursor-help">10</span>
+          </TooltipTrigger>
+          <TooltipContent>
+            <div className="space-y-1">
+              <p>Open requirements: 10</p>
+              <p className="text-xs">Active sourcing: 8</p>
+              <p className="text-xs">On hold: 2</p>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     ),
   },
   {
@@ -52,9 +108,23 @@ export const getTasColumns = (): DataTableColumn<any>[] => [
     enableSorting: true,
     enableFiltering: true,
     cell: (ta: any) => (
-      <Badge variant="outline" className="bg-gray-200 text-gray-700 border-gray-300 min-w-[70px]">
-        Medium
-      </Badge>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="text-gray-600 text-sm min-w-[70px] inline-block cursor-help">
+              Medium
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>
+            <div className="space-y-1">
+              <p>Efficiency Rating: Medium</p>
+              <p className="text-xs">Conversion rate: 65%</p>
+              <p className="text-xs">Avg. time to fill: 28 days</p>
+              <p className="text-xs">Client satisfaction: 4.2/5</p>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     ),
   },
   {
@@ -79,9 +149,22 @@ export const getTasColumns = (): DataTableColumn<any>[] => [
       const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
       
       return (
-        <span className="text-sm text-gray-600 truncate max-w-[150px] inline-block">
-          {randomReason}
-        </span>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-sm text-gray-600 truncate max-w-[150px] inline-block cursor-help">
+                {randomReason}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="space-y-1 max-w-xs">
+                <p className="font-semibold">Alert Details</p>
+                <p>{randomReason}</p>
+                <p className="text-xs text-gray-500">Click CTA to resolve</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       );
     },
   },
@@ -104,16 +187,43 @@ export const getTasColumns = (): DataTableColumn<any>[] => [
         "Open Investigation",
         "Assign Transition Support"
       ];
+      const alertReasons = [
+        "TA overloaded",
+        "TA underloaded",
+        "Inactive TA",
+        "Low conversion rate",
+        "High rejection",
+        "No sourcing logged",
+        "No outreach logged",
+        "Poor feedback submission",
+        "Escalation record",
+        "TA switched mid-req"
+      ];
+      
       const randomCta = ctas[Math.floor(Math.random() * ctas.length)];
+      const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
       
       return (
-        <Button 
-          size="sm" 
-          variant="outline" 
-          className="text-xs h-7 px-2 bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300"
-        >
-          {randomCta}
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                size="sm" 
+                className={`text-xs h-7 px-2 ${getCTAColor(randomReason)}`}
+                onClick={() => console.log(`Executing: ${randomCta} for TA: ${ta.name}`)}
+              >
+                {randomCta}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="space-y-1">
+                <p className="font-semibold">Action Required</p>
+                <p>{randomCta}</p>
+                <p className="text-xs text-gray-500">Click to execute</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       );
     },
   },

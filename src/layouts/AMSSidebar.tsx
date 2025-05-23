@@ -69,7 +69,7 @@ export const AMSSidebar = () => {
       <SidebarHeader className="border-b">
         <div className="p-2 flex justify-between items-center">
           {!isCollapsed && <h2 className="text-xl font-semibold px-2">AMS</h2>}
-          <SidebarTrigger className="ml-auto" />
+          <SidebarTrigger className="ml-auto h-8 w-8" />
         </div>
         {!isCollapsed && (
           <div className="px-2 pb-2">

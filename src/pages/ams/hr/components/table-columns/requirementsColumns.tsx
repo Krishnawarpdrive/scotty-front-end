@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
   Tooltip, 
@@ -10,6 +9,18 @@ import {
 } from "@/components/ui/tooltip";
 import { DataTableColumn } from "@/components/ui/data-table/types";
 
+const getCTAColor = (alertReason: string) => {
+  const highPriority = ["TA not assigned", "Due soon", "Pending for 7+ days"];
+  const mediumPriority = ["Requirement not approved", "No candidates sourced", "High rejection rate"];
+  
+  if (highPriority.some(reason => alertReason.includes(reason))) {
+    return "bg-red-500 hover:bg-red-600 text-white";
+  } else if (mediumPriority.some(reason => alertReason.includes(reason))) {
+    return "bg-orange-500 hover:bg-orange-600 text-white";
+  }
+  return "bg-blue-500 hover:bg-blue-600 text-white";
+};
+
 export const getRequirementsColumns = (): DataTableColumn<any>[] => [
   {
     id: "requirementId",
@@ -18,9 +29,21 @@ export const getRequirementsColumns = (): DataTableColumn<any>[] => [
     enableSorting: true,
     enableFiltering: true,
     cell: (req: any) => (
-      <span className="font-medium hover:text-primary cursor-pointer min-w-[80px] inline-block">
-        #{req.id.substring(0, 8)}
-      </span>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="font-medium hover:text-primary cursor-pointer min-w-[80px] inline-block">
+              #{req.id.substring(0, 8)}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>
+            <div className="space-y-1">
+              <p>Full ID: {req.id}</p>
+              <p className="text-xs">Click to view details</p>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     ),
   },
   {
@@ -30,9 +53,21 @@ export const getRequirementsColumns = (): DataTableColumn<any>[] => [
     enableSorting: true,
     enableFiltering: true,
     cell: (req: any) => (
-      <span className="hover:text-primary cursor-pointer min-w-[100px] inline-block truncate">
-        {req.linkedRole}
-      </span>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="hover:text-primary cursor-pointer min-w-[100px] inline-block truncate">
+              {req.linkedRole}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>
+            <div className="space-y-1">
+              <p className="font-semibold">{req.linkedRole}</p>
+              <p className="text-xs">Click to view role details</p>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     ),
   },
   {
@@ -42,9 +77,21 @@ export const getRequirementsColumns = (): DataTableColumn<any>[] => [
     enableSorting: true,
     enableFiltering: true,
     cell: (req: any) => (
-      <span className="min-w-[100px] inline-block truncate">
-        {req.clientName}
-      </span>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="min-w-[100px] inline-block truncate cursor-help">
+              {req.clientName}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>
+            <div className="space-y-1">
+              <p className="font-semibold">{req.clientName}</p>
+              <p className="text-xs">Client details</p>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     ),
   },
   {
@@ -57,15 +104,32 @@ export const getRequirementsColumns = (): DataTableColumn<any>[] => [
       const dueDate = new Date(req.dueDate);
       const today = new Date();
       const isOverdue = dueDate < today;
+      const daysUntilDue = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
       
       return (
-        <span className={`min-w-[90px] inline-block ${isOverdue ? "text-red-500 font-medium" : ""}`}>
-          {dueDate.toLocaleDateString('en-GB', { 
-            day: '2-digit', 
-            month: 'short', 
-            year: 'numeric'
-          })}
-        </span>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className={`min-w-[90px] inline-block cursor-help ${isOverdue ? "text-red-500 font-medium" : ""}`}>
+                {dueDate.toLocaleDateString('en-GB', { 
+                  day: '2-digit', 
+                  month: 'short', 
+                  year: 'numeric'
+                })}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="space-y-1">
+                <p>Due: {dueDate.toLocaleDateString()}</p>
+                {isOverdue ? (
+                  <p className="text-red-500">⚠️ Overdue by {Math.abs(daysUntilDue)} days</p>
+                ) : (
+                  <p>Due in {daysUntilDue} days</p>
+                )}
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       );
     },
   },
@@ -77,15 +141,9 @@ export const getRequirementsColumns = (): DataTableColumn<any>[] => [
     enableFiltering: true,
     cell: (req: any) => (
       <div className="min-w-[60px]">
-        {req.taAssigned.length > 0 ? (
-          <Badge variant="outline" className="bg-gray-200 text-gray-700 border-gray-300">
-            Yes
-          </Badge>
-        ) : (
-          <Badge variant="outline" className="bg-gray-200 text-gray-700 border-gray-300">
-            No
-          </Badge>
-        )}
+        <span className="text-gray-600 text-sm">
+          {req.taAssigned.length > 0 ? "Yes" : "No"}
+        </span>
       </div>
     ),
   },
@@ -97,13 +155,38 @@ export const getRequirementsColumns = (): DataTableColumn<any>[] => [
     enableFiltering: false,
     cell: (req: any) => {
       let status = "Stalled";
-      if (req.candidateStageProgress > 70) status = "Active";
-      else if (req.candidateStageProgress > 30) status = "In Progress";
+      let colorClass = "text-red-500";
+      
+      if (req.candidateStageProgress > 70) {
+        status = "Active";
+        colorClass = "text-green-500";
+      } else if (req.candidateStageProgress > 30) {
+        status = "In Progress";
+        colorClass = "text-amber-500";
+      }
       
       return (
-        <Badge variant="outline" className="bg-gray-200 text-gray-700 border-gray-300 min-w-[80px]">
-          {status}
-        </Badge>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className={`${colorClass} min-w-[80px] inline-block cursor-help`}>
+                {status}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="space-y-1">
+                <p>Status: {status}</p>
+                <p>Progress: {req.candidateStageProgress}%</p>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                  <div 
+                    className={`h-2 rounded-full ${req.candidateStageProgress > 70 ? 'bg-green-500' : req.candidateStageProgress > 30 ? 'bg-amber-500' : 'bg-red-500'}`}
+                    style={{ width: `${req.candidateStageProgress}%` }}
+                  ></div>
+                </div>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       );
     },
   },
@@ -132,12 +215,16 @@ export const getRequirementsColumns = (): DataTableColumn<any>[] => [
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="text-sm text-gray-600 truncate max-w-[150px] inline-block">
+              <span className="text-sm text-gray-600 truncate max-w-[150px] inline-block cursor-help">
                 {randomReason}
               </span>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{randomReason}</p>
+              <div className="space-y-1 max-w-xs">
+                <p className="font-semibold">Alert Details</p>
+                <p>{randomReason}</p>
+                <p className="text-xs text-gray-500">Click CTA to resolve</p>
+              </div>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -163,16 +250,43 @@ export const getRequirementsColumns = (): DataTableColumn<any>[] => [
         "Fix Hiring Flow",
         "Confirm Requirement"
       ];
+      const alertReasons = [
+        "TA not assigned",
+        "Requirement not approved",
+        "No candidates sourced",
+        "High rejection rate",
+        "Due soon",
+        "TA slow response",
+        "No interview feedback",
+        "Multiple edits",
+        "Pipeline mismatch",
+        "Pending for 7+ days"
+      ];
+      
       const randomCta = ctas[Math.floor(Math.random() * ctas.length)];
+      const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
       
       return (
-        <Button 
-          size="sm" 
-          variant="outline" 
-          className="text-xs h-7 px-2 bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300"
-        >
-          {randomCta}
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                size="sm" 
+                className={`text-xs h-7 px-2 ${getCTAColor(randomReason)}`}
+                onClick={() => console.log(`Executing: ${randomCta} for requirement: ${req.id}`)}
+              >
+                {randomCta}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="space-y-1">
+                <p className="font-semibold">Action Required</p>
+                <p>{randomCta}</p>
+                <p className="text-xs text-gray-500">Click to execute</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       );
     },
   },
