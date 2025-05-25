@@ -13,7 +13,8 @@ const RolesLibraryPage = () => {
 
   const handleRoleCreated = (role: any) => {
     console.log('Global role created:', role);
-    // Here you could refresh a roles list or show a success message
+    // Refresh any role lists or show success message
+    setDrawerOpen(false);
   };
 
   return (

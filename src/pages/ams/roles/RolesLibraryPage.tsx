@@ -17,6 +17,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import RoleCreationDrawer from './components/RoleCreationDrawer';
+import EnhancedGlobalRoleCreationDrawer from './components/drawer/EnhancedGlobalRoleCreationDrawer';
 import { supabase } from "@/integrations/supabase/client";
 
 interface Role {
@@ -29,14 +30,19 @@ interface Role {
   created_by: string | null;
   updated_at: string | null;
   usage_count: number | null;
+  is_template: boolean | null;
+  employment_type: string;
+  department?: string;
 }
 
 const RoleLibraryPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterOpen, setFilterOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [globalDrawerOpen, setGlobalDrawerOpen] = useState(false);
   const [sortOption, setSortOption] = useState('updated');
   const [roles, setRoles] = useState<Role[]>([]);
+  const [globalRoles, setGlobalRoles] = useState<any[]>([]);
   const [popularTags, setPopularTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -48,15 +54,30 @@ const RoleLibraryPage: React.FC = () => {
     const fetchRoles = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase
+        // Fetch roles table (templates)
+        const { data: rolesData, error: rolesError } = await supabase
           .from('roles')
-          .select('*');
+          .select('*')
+          .eq('is_template', true);
         
-        if (error) {
-          throw error;
+        if (rolesError) {
+          throw rolesError;
         }
         
-        setRoles(data || []);
+        // Fetch global_roles table
+        const { data: globalRolesData, error: globalRolesError } = await supabase
+          .from('global_roles')
+          .select('*');
+        
+        if (globalRolesError) {
+          throw globalRolesError;
+        }
+        
+        console.log('Fetched roles:', rolesData?.length || 0);
+        console.log('Fetched global roles:', globalRolesData?.length || 0);
+        
+        setRoles(rolesData || []);
+        setGlobalRoles(globalRolesData || []);
       } catch (error) {
         console.error('Error fetching roles:', error);
         toast({
@@ -88,6 +109,31 @@ const RoleLibraryPage: React.FC = () => {
 
     fetchRoles();
     fetchPopularTags();
+
+    // Set up real-time subscription for roles
+    const rolesChannel = supabase
+      .channel('roles-page-realtime')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'roles'
+      }, () => {
+        console.log('Roles changed, refetching...');
+        fetchRoles();
+      })
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'global_roles'
+      }, () => {
+        console.log('Global roles changed, refetching...');
+        fetchRoles();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(rolesChannel);
+    };
   }, [toast]);
 
   // Open drawer if navigated from create role page
@@ -99,10 +145,21 @@ const RoleLibraryPage: React.FC = () => {
     }
   }, [location, navigate]);
 
-  // Filter roles based on search term
-  const filteredRoles = roles.filter((role) => 
+  // Combine and filter roles based on search term
+  const combinedRoles = [
+    ...roles.map(role => ({ ...role, source: 'template' as const })),
+    ...globalRoles.map(role => ({ 
+      ...role, 
+      source: 'global' as const,
+      category: role.department,
+      min_experience: role.experience_range.split('-')[0]?.trim() || '0',
+      max_experience: role.experience_range.split('-')[1]?.trim() || '10'
+    }))
+  ];
+
+  const filteredRoles = combinedRoles.filter((role) => 
     role.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    role.category.toLowerCase().includes(searchTerm.toLowerCase())
+    role.category?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Format experience range
@@ -129,44 +186,36 @@ const RoleLibraryPage: React.FC = () => {
     setSearchTerm(tag);
   };
 
-  // Handle create role button click - open the drawer instead of navigating
-  const handleCreateRole = () => {
-    setDrawerOpen(true);
+  // Handle create role button click - open the global drawer
+  const handleCreateGlobalRole = () => {
+    setGlobalDrawerOpen(true);
   };
 
   // Handle role creation success
   const handleRoleCreated = () => {
-    // Refresh the roles list
-    const fetchRoles = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('roles')
-          .select('*');
-        
-        if (error) {
-          throw error;
-        }
-        
-        setRoles(data || []);
-        toast({
-          title: "Success",
-          description: "Role has been created successfully.",
-        });
-      } catch (error) {
-        console.error('Error fetching roles:', error);
-      }
-    };
+    toast({
+      title: "Success",
+      description: "Role has been created successfully and added to all relevant libraries.",
+    });
+  };
 
-    fetchRoles();
+  const handleGlobalRoleCreated = () => {
+    toast({
+      title: "Success",
+      description: "Global role has been created successfully and added to all relevant libraries.",
+    });
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Global Role Library</h1>
-        <Button onClick={handleCreateRole} className="bg-primary text-white flex items-center gap-2">
+        <Button 
+          onClick={handleCreateGlobalRole} 
+          className="bg-primary text-white flex items-center gap-2 hover:bg-primary/90"
+        >
           <Plus className="h-4 w-4" />
-          Create Role
+          Create Global Role
         </Button>
       </div>
 
@@ -203,7 +252,7 @@ const RoleLibraryPage: React.FC = () => {
               <Button
                 variant="outline"
                 onClick={() => setFilterOpen(true)}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 hover:bg-gray-100"
               >
                 <SlidersHorizontal className="h-4 w-4" />
                 Filters
@@ -216,7 +265,7 @@ const RoleLibraryPage: React.FC = () => {
                 {popularTags.map((tag) => (
                   <Badge 
                     key={tag} 
-                    className="cursor-pointer hover:bg-primary/70" 
+                    className="cursor-pointer hover:bg-gray-200" 
                     onClick={() => handleTagClick(tag)}
                   >
                     {tag}
@@ -224,6 +273,28 @@ const RoleLibraryPage: React.FC = () => {
                 ))}
               </div>
             )}
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-2xl font-bold">{globalRoles.length}</div>
+                  <p className="text-xs text-muted-foreground">Global Roles</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-2xl font-bold">{roles.length}</div>
+                  <p className="text-xs text-muted-foreground">Role Templates</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-2xl font-bold">{combinedRoles.length}</div>
+                  <p className="text-xs text-muted-foreground">Total Roles</p>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Table or Empty State */}
             {loading ? (
@@ -239,6 +310,7 @@ const RoleLibraryPage: React.FC = () => {
                       <TableHead>Category</TableHead>
                       <TableHead>Work Mode</TableHead>
                       <TableHead>Experience Range</TableHead>
+                      <TableHead>Type</TableHead>
                       <TableHead>Created By</TableHead>
                       <TableHead>Usage Count</TableHead>
                       <TableHead>Actions</TableHead>
@@ -246,15 +318,27 @@ const RoleLibraryPage: React.FC = () => {
                   </TableHeader>
                   <TableBody>
                     {sortedRoles.map((role) => (
-                      <TableRow key={role.id}>
+                      <TableRow key={`${role.source}-${role.id}`}>
                         <TableCell className="font-medium">{role.name}</TableCell>
                         <TableCell>{role.category}</TableCell>
                         <TableCell>{role.work_mode}</TableCell>
                         <TableCell>{formatExperienceRange(role.min_experience, role.max_experience)}</TableCell>
+                        <TableCell>
+                          <Badge variant={role.source === 'global' ? 'default' : 'secondary'}>
+                            {role.source === 'global' ? 'Global' : 'Template'}
+                          </Badge>
+                        </TableCell>
                         <TableCell>{role.created_by || 'System'}</TableCell>
                         <TableCell>{role.usage_count || 0}</TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="sm" onClick={() => navigate(`/ams/roles/${role.id}`)}>View</Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => navigate(`/ams/roles/${role.id}`)}
+                            className="hover:bg-gray-100"
+                          >
+                            View
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -268,8 +352,8 @@ const RoleLibraryPage: React.FC = () => {
                 <p className="text-muted-foreground mb-4">
                   You haven't created any global roles yet. Start by creating your first role template.
                 </p>
-                <Button onClick={handleCreateRole}>
-                  Create Your First Role
+                <Button onClick={handleCreateGlobalRole} className="hover:bg-primary/90">
+                  Create Your First Global Role
                 </Button>
               </div>
             )}
@@ -338,14 +422,21 @@ const RoleLibraryPage: React.FC = () => {
               </div>
             </div>
             <div className="pt-4 flex gap-2 justify-end">
-              <Button variant="outline" onClick={() => setFilterOpen(false)}>Cancel</Button>
-              <Button onClick={() => setFilterOpen(false)}>Apply Filters</Button>
+              <Button variant="outline" onClick={() => setFilterOpen(false)} className="hover:bg-gray-100">Cancel</Button>
+              <Button onClick={() => setFilterOpen(false)} className="hover:bg-primary/90">Apply Filters</Button>
             </div>
           </div>
         </SheetContent>
       </Sheet>
 
-      {/* Role Creation Drawer */}
+      {/* Enhanced Global Role Creation Drawer */}
+      <EnhancedGlobalRoleCreationDrawer 
+        open={globalDrawerOpen} 
+        onOpenChange={setGlobalDrawerOpen}
+        onRoleCreated={handleGlobalRoleCreated}
+      />
+
+      {/* Regular Role Creation Drawer */}
       <RoleCreationDrawer 
         open={drawerOpen} 
         onOpenChange={setDrawerOpen}

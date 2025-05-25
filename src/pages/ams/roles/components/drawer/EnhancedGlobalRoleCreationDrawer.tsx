@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -92,48 +91,93 @@ export const EnhancedGlobalRoleCreationDrawer: React.FC<EnhancedGlobalRoleCreati
   };
 
   const onSubmit = async (data: GlobalRoleCreationFormValues) => {
+    console.log('Starting global role creation with data:', data);
+    
     try {
       setIsSubmitting(true);
 
-      // First, ensure all skills exist in skills_library
+      // Step 1: Create skills in skills_library if they don't exist
+      console.log('Creating skills in library...');
       for (const skillName of data.skills) {
-        const { data: existingSkill } = await supabase
+        const { data: existingSkill, error: skillCheckError } = await supabase
           .from('skills_library')
           .select('id')
           .eq('name', skillName)
-          .single();
+          .maybeSingle();
+
+        if (skillCheckError) {
+          console.error('Error checking skill:', skillCheckError);
+          continue;
+        }
 
         if (!existingSkill) {
-          await supabase
+          console.log(`Creating new skill: ${skillName}`);
+          const { error: skillCreateError } = await supabase
             .from('skills_library')
             .insert({
               name: skillName,
               category: 'technical',
               role_relevance: [data.roleName]
             });
+
+          if (skillCreateError) {
+            console.error('Error creating skill:', skillCreateError);
+          }
+        } else {
+          // Update role_relevance if skill exists
+          const { data: skillData } = await supabase
+            .from('skills_library')
+            .select('role_relevance')
+            .eq('id', existingSkill.id)
+            .single();
+
+          if (skillData) {
+            const currentRelevance = skillData.role_relevance || [];
+            if (!currentRelevance.includes(data.roleName)) {
+              await supabase
+                .from('skills_library')
+                .update({
+                  role_relevance: [...currentRelevance, data.roleName]
+                })
+                .eq('id', existingSkill.id);
+            }
+          }
         }
       }
 
-      // Ensure all certifications exist in certification_library
+      // Step 2: Create certifications in certification_library if they don't exist
+      console.log('Creating certifications in library...');
       for (const certName of data.certifications) {
-        const { data: existingCert } = await supabase
+        const { data: existingCert, error: certCheckError } = await supabase
           .from('certification_library')
           .select('id')
           .eq('title', certName)
-          .single();
+          .maybeSingle();
+
+        if (certCheckError) {
+          console.error('Error checking certification:', certCheckError);
+          continue;
+        }
 
         if (!existingCert) {
-          await supabase
+          console.log(`Creating new certification: ${certName}`);
+          const { error: certCreateError } = await supabase
             .from('certification_library')
             .insert({
               title: certName,
               domain: data.department,
-              description: `Certification for ${data.roleName}`
+              description: `Certification for ${data.roleName}`,
+              validity_period: '3 years'
             });
+
+          if (certCreateError) {
+            console.error('Error creating certification:', certCreateError);
+          }
         }
       }
 
-      // Ensure all checklists exist in checklist_library
+      // Step 3: Create checklists in checklist_library if they don't exist
+      console.log('Creating checklists in library...');
       const allChecklists = [
         ...data.generalChecklists.map(item => ({ title: item, type: 'general' as const })),
         ...data.roleChecklists.map(item => ({ title: item, type: 'role_based' as const })),
@@ -141,14 +185,20 @@ export const EnhancedGlobalRoleCreationDrawer: React.FC<EnhancedGlobalRoleCreati
       ];
 
       for (const checklist of allChecklists) {
-        const { data: existingChecklist } = await supabase
+        const { data: existingChecklist, error: checklistCheckError } = await supabase
           .from('checklist_library')
           .select('id')
           .eq('title', checklist.title)
-          .single();
+          .maybeSingle();
+
+        if (checklistCheckError) {
+          console.error('Error checking checklist:', checklistCheckError);
+          continue;
+        }
 
         if (!existingChecklist) {
-          await supabase
+          console.log(`Creating new checklist: ${checklist.title}`);
+          const { error: checklistCreateError } = await supabase
             .from('checklist_library')
             .insert({
               title: checklist.title,
@@ -156,10 +206,15 @@ export const EnhancedGlobalRoleCreationDrawer: React.FC<EnhancedGlobalRoleCreati
               role_relevance: checklist.type === 'role_based' ? [data.roleName] : null,
               description: `Checklist item for ${data.roleName}`
             });
+
+          if (checklistCreateError) {
+            console.error('Error creating checklist:', checklistCreateError);
+          }
         }
       }
 
-      // Create the global role entry
+      // Step 4: Create the global role entry
+      console.log('Creating global role...');
       const { data: globalRoleData, error: globalRoleError } = await supabase
         .from('global_roles')
         .insert({
@@ -175,9 +230,15 @@ export const EnhancedGlobalRoleCreationDrawer: React.FC<EnhancedGlobalRoleCreati
         .select()
         .single();
 
-      if (globalRoleError) throw globalRoleError;
+      if (globalRoleError) {
+        console.error('Error creating global role:', globalRoleError);
+        throw new Error(`Failed to create global role: ${globalRoleError.message}`);
+      }
 
-      // Also create in roles table as template
+      console.log('Global role created successfully:', globalRoleData);
+
+      // Step 5: Also create in roles table as template
+      console.log('Creating role template...');
       const { data: roleData, error: roleError } = await supabase
         .from('roles')
         .insert({
@@ -196,45 +257,78 @@ export const EnhancedGlobalRoleCreationDrawer: React.FC<EnhancedGlobalRoleCreati
         .select()
         .single();
 
-      if (roleError) throw roleError;
+      if (roleError) {
+        console.error('Error creating role template:', roleError);
+        throw new Error(`Failed to create role template: ${roleError.message}`);
+      }
 
-      // Handle skills for the role
+      console.log('Role template created successfully:', roleData);
+
+      // Step 6: Handle skills for the role template
       if (data.skills.length > 0) {
+        console.log('Linking skills to role...');
         for (const skillName of data.skills) {
-          let { data: skill } = await supabase
+          let { data: skill, error: skillFindError } = await supabase
             .from('skills')
             .select('id')
             .eq('name', skillName)
-            .single();
+            .maybeSingle();
+
+          if (skillFindError) {
+            console.error('Error finding skill:', skillFindError);
+            continue;
+          }
 
           if (!skill) {
-            const { data: newSkill } = await supabase
+            console.log(`Creating skill in skills table: ${skillName}`);
+            const { data: newSkill, error: skillCreateError } = await supabase
               .from('skills')
-              .insert({ name: skillName, category: 'technical' })
+              .insert({ 
+                name: skillName, 
+                category: 'technical',
+                popularity: 1
+              })
               .select()
               .single();
+
+            if (skillCreateError) {
+              console.error('Error creating skill in skills table:', skillCreateError);
+              continue;
+            }
             skill = newSkill;
           }
 
           if (skill) {
-            await supabase
+            const { error: linkError } = await supabase
               .from('role_skills')
-              .insert({ role_id: roleData.id, skill_id: skill.id });
+              .insert({ 
+                role_id: roleData.id, 
+                skill_id: skill.id 
+              });
+
+            if (linkError) {
+              console.error('Error linking skill to role:', linkError);
+            }
           }
         }
       }
 
-      // Handle custom fields
+      // Step 7: Handle custom fields
       if (data.customFields.length > 0) {
+        console.log('Creating custom fields...');
         const customFieldsData = data.customFields.map(field => ({
           role_id: roleData.id,
           label: field.label,
           value: field.value || ''
         }));
         
-        await supabase
+        const { error: customFieldsError } = await supabase
           .from('custom_fields')
           .insert(customFieldsData);
+
+        if (customFieldsError) {
+          console.error('Error creating custom fields:', customFieldsError);
+        }
       }
 
       toast({
@@ -250,10 +344,10 @@ export const EnhancedGlobalRoleCreationDrawer: React.FC<EnhancedGlobalRoleCreati
       form.reset();
       setCurrentStep(0);
     } catch (error) {
-      console.error('Error creating global role:', error);
+      console.error('Detailed error in global role creation:', error);
       toast({
         title: 'Error',
-        description: 'Failed to create global role. Please try again.',
+        description: error instanceof Error ? error.message : 'Failed to create global role. Please try again.',
         variant: 'destructive',
       });
     } finally {
