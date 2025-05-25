@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import StageCard from './StageCard';
+import RefactoredStageCard from './RefactoredStageCard';
 
 interface Stage {
   id: string;
@@ -75,7 +75,7 @@ const PipelineFlow: React.FC<PipelineFlowProps> = ({
     >
       {stages.map((stage, index) => (
         <React.Fragment key={stage.id}>
-          <StageCard
+          <RefactoredStageCard
             stage={stage}
             index={index}
             onRemove={() => onRemoveStage(stage.id)}
