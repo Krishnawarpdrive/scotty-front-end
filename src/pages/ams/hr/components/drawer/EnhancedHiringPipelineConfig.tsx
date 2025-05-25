@@ -97,7 +97,7 @@ const EnhancedHiringPipelineConfig: React.FC<EnhancedHiringPipelineConfigProps> 
       name: stageTemplate.name,
       category: stageTemplate.category,
       order: pipelineStages.length + 1,
-      status: 'not-configured',
+      status: 'not-configured' as const,
       interviewers: [],
       scheduling: { isScheduled: false },
       missingItems: ['Interviewers', 'Format', 'Timeline'],
@@ -139,16 +139,18 @@ const EnhancedHiringPipelineConfig: React.FC<EnhancedHiringPipelineConfigProps> 
         const hasFormat = config.interviewFormat;
         const isFullyConfigured = hasInterviewers && hasFormat;
         
-        return {
+        const updatedStage: EnhancedStage = {
           ...stage,
           config,
-          status: isFullyConfigured ? 'configured' : 'partially-configured',
+          status: isFullyConfigured ? 'configured' as const : 'partially-configured' as const,
           interviewers: config.interviewers || [],
           missingItems: isFullyConfigured ? [] : [
             ...(hasInterviewers ? [] : ['Interviewers']),
             ...(hasFormat ? [] : ['Interview Format']),
           ],
         };
+        
+        return updatedStage;
       }
       return stage;
     });
