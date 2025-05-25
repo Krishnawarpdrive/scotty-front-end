@@ -59,6 +59,7 @@ const EnhancedPipelineFlow: React.FC<EnhancedPipelineFlowProps> = ({
         pb: 2,
         minHeight: '280px',
         alignItems: 'flex-start',
+        scrollSnapType: 'x mandatory',
         '&::-webkit-scrollbar': {
           height: '6px',
         },
@@ -74,28 +75,31 @@ const EnhancedPipelineFlow: React.FC<EnhancedPipelineFlowProps> = ({
     >
       {stages.map((stage, index) => (
         <React.Fragment key={stage.id}>
-          <EnhancedStageCard
-            stage={stage}
-            index={index}
-            onRemove={() => onRemoveStage(stage.id)}
-            onReorder={onReorderStages}
-            onConfigure={() => onConfigureStage(stage)}
-            onEdit={onEditStage ? () => onEditStage(stage) : undefined}
-            onDuplicate={onDuplicateStage ? () => onDuplicateStage(stage) : undefined}
-            onView={onViewStage ? () => onViewStage(stage) : undefined}
-          />
+          <Box sx={{ scrollSnapAlign: 'start' }}>
+            <EnhancedStageCard
+              stage={stage}
+              index={index}
+              onRemove={() => onRemoveStage(stage.id)}
+              onReorder={onReorderStages}
+              onConfigure={() => onConfigureStage(stage)}
+              onEdit={onEditStage ? () => onEditStage(stage) : undefined}
+              onDuplicate={onDuplicateStage ? () => onDuplicateStage(stage) : undefined}
+              onView={onViewStage ? () => onViewStage(stage) : undefined}
+            />
+          </Box>
           {index < stages.length - 1 && (
             <Box
               sx={{
                 display: 'flex',
                 alignItems: 'center',
                 height: '240px',
-                minWidth: '32px',
+                minWidth: '48px',
+                justifyContent: 'center',
               }}
             >
               <Box
                 sx={{
-                  width: '32px',
+                  width: '40px',
                   height: '3px',
                   backgroundColor: '#009933',
                   position: 'relative',
@@ -113,6 +117,38 @@ const EnhancedPipelineFlow: React.FC<EnhancedPipelineFlowProps> = ({
                   },
                 }}
               />
+            </Box>
+          )}
+          {/* Final Stage Indicator */}
+          {index === stages.length - 1 && (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                height: '240px',
+                minWidth: '60px',
+                justifyContent: 'center',
+              }}
+            >
+              <Box
+                sx={{
+                  padding: '8px 12px',
+                  backgroundColor: '#f3f4f6',
+                  borderRadius: '8px',
+                  border: '1px solid #e5e7eb',
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: 'Rubik, sans-serif',
+                    fontSize: '11px',
+                    color: '#6b7280',
+                    fontWeight: 500,
+                  }}
+                >
+                  Final Stage
+                </Typography>
+              </Box>
             </Box>
           )}
         </React.Fragment>
