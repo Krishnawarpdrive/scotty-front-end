@@ -120,7 +120,12 @@ export const useRoleLibraries = () => {
       if (error) {
         console.error('Error fetching checklists library:', error);
       } else {
-        setChecklistsLibrary(data || []);
+        // Cast the data to match our interface type
+        const typedData = (data || []).map(item => ({
+          ...item,
+          type: item.type as 'general' | 'role_based' | 'client_specific'
+        }));
+        setChecklistsLibrary(typedData);
       }
     } catch (error) {
       console.error('Error fetching checklists library:', error);
