@@ -1,219 +1,102 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Plus } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
+import React, { useState } from 'react';
+import { Search, Filter } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
-import { Skill } from './types/SkillTypes';
-import { SkillFormDrawer } from './components/SkillFormDrawer';
-import { initialSkills } from './data/mockSkills';
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+
+const mockSkills = [
+  { id: 1, name: 'React', category: 'Technical', level: 'Advanced', usageCount: 45 },
+  { id: 2, name: 'TypeScript', category: 'Technical', level: 'Intermediate', usageCount: 38 },
+  { id: 3, name: 'Project Management', category: 'Soft Skills', level: 'Expert', usageCount: 52 },
+  { id: 4, name: 'Python', category: 'Technical', level: 'Advanced', usageCount: 29 },
+  { id: 5, name: 'UI/UX Design', category: 'Design', level: 'Intermediate', usageCount: 31 },
+];
 
 const SkillsLibraryPage = () => {
-  const { toast } = useToast();
-  const [skillsData, setSkillsData] = useState<Skill[]>(initialSkills);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedSkillIds, setSelectedSkillIds] = useState<string[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  
+  const filteredSkills = mockSkills.filter(skill => 
+    skill.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    skill.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  useEffect(() => {
-    // Extract unique categories from skills data
-    const uniqueCategories = ['All', ...new Set(skillsData.map(skill => skill.category || 'Uncategorized'))];
-    setCategories(uniqueCategories);
-  }, [skillsData]);
-
-  const filteredSkills = skillsData.filter(skill => {
-    const searchRegex = new RegExp(searchTerm, 'i');
-    const categoryMatch = selectedCategory === 'All' || skill.category === selectedCategory;
-    return searchRegex.test(skill.name) && categoryMatch;
-  });
-
-  // Update these lines to properly map the data to the expected types
-  const skills: Skill[] = skillsData.map(skill => ({
-    ...skill,
-    aliases: skill.aliases || [],
-    usageCount: skill.usageCount || 0,
-    dateAdded: skill.created_at || new Date().toISOString()
-  }));
-
-  const selectedSkills = selectedSkillIds.map(id => parseInt(id, 10));
-
-  const handleSkillCreated = useCallback(async (skillData: { name: string; category: string }) => {
-    const newSkill: Skill = {
-      id: String(skillsData.length + 1),
-      name: skillData.name,
-      category: skillData.category,
-      aliases: [],
-      usageCount: 0,
-      dateAdded: new Date().toISOString(),
-    };
-
-    setSkillsData(prevSkills => [...prevSkills, newSkill]);
-    toast({
-      title: "Skill Created",
-      description: `The skill "${skillData.name}" has been successfully created.`,
-    });
-  }, [skillsData, toast]);
-
-  const handleSkillDelete = () => {
-    const filteredSkills = skillsData.filter(skill => !selectedSkillIds.includes(skill.id));
-    setSkillsData(filteredSkills);
-    setSelectedSkillIds([]);
-    setIsDeleteDialogOpen(false);
-    toast({
-      title: "Skills Deleted",
-      description: "The selected skills have been successfully deleted.",
-    });
+  const getLevelColor = (level: string) => {
+    switch (level) {
+      case 'Beginner': return 'bg-gray-100 text-gray-800';
+      case 'Intermediate': return 'bg-blue-100 text-blue-800';
+      case 'Advanced': return 'bg-green-100 text-green-800';
+      case 'Expert': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
-
-  const toggleSkillSelection = (skillId: string) => {
-    setSelectedSkillIds(prevSelected => {
-      if (prevSelected.includes(skillId)) {
-        return prevSelected.filter(id => id !== skillId);
-      } else {
-        return [...prevSelected, skillId];
-      }
-    });
-  };
-
-  const isSkillSelected = (skillId: string) => selectedSkillIds.includes(skillId);
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-semibold">Skills Library</h1>
-        <div className="flex items-center space-x-2">
-          <Input
-            type="text"
-            placeholder="Search skills..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-xs"
-          />
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select a category" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map(category => (
-                <SelectItem key={category} value={category}>{category}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <SkillFormDrawer
-            open={isDrawerOpen}
-            onOpenChange={setIsDrawerOpen}
-            onSkillCreated={handleSkillCreated}
-            categories={categories}
-          />
-          <Button onClick={() => setIsDrawerOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Skill
-          </Button>
-        </div>
-      </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Skills Library</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-2 items-center">
+            <div className="relative flex-1">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search skills by name or category..."
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <Button variant="outline" className="flex items-center gap-2">
+              <Filter className="h-4 w-4" />
+              Filters
+            </Button>
+          </div>
 
-      <Table>
-        <TableCaption>A list of your skills.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[50px]">Select</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Usage Count</TableHead>
-            <TableHead>Date Added</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredSkills.map((skill) => (
-            <TableRow key={skill.id}>
-              <TableCell>
-                <Input
-                  type="checkbox"
-                  checked={isSkillSelected(skill.id)}
-                  onChange={() => toggleSkillSelection(skill.id)}
-                />
-              </TableCell>
-              <TableCell>{skill.name}</TableCell>
-              <TableCell>{skill.category}</TableCell>
-              <TableCell>{skill.usageCount}</TableCell>
-              <TableCell>{skill.dateAdded}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={5} className="text-right">
-              {selectedSkillIds.length > 0 && (
-                <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="destructive">Delete Selected</Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-                      <DialogDescription>
-                        This action cannot be undone. This will permanently delete the selected skills from our
-                        servers.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="name" className="text-right">
-                          Name
-                        </Label>
-                      </div>
-                    </div>
-                    <DrawerFooter>
-                      <Button type="button" variant="secondary" onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
-                      <Button type="submit" onClick={handleSkillDelete}>Delete Skills</Button>
-                    </DrawerFooter>
-                  </DialogContent>
-                </Dialog>
-              )}
-            </TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </div>
+          {filteredSkills.length > 0 ? (
+            <div className="border rounded-md overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Skill Name</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Level</TableHead>
+                    <TableHead>Usage Count</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredSkills.map((skill) => (
+                    <TableRow key={skill.id}>
+                      <TableCell className="font-medium">{skill.name}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{skill.category}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getLevelColor(skill.level)}>
+                          {skill.level}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{skill.usageCount}</TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm">Edit</Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">No skills found matching your search.</p>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -6,7 +6,7 @@ import { Form } from '@/components/ui/form';
 import { SideDrawer } from '@/components/ui/side-drawer';
 import { useToast } from '@/hooks/use-toast';
 import { RoleFormValues } from '../types/roleTypes';
-import { roleFormSchema } from '../roleFormSchema';
+import { roleFormSchema } from '../types/roleTypes';
 import RoleFormProgress from './RoleFormProgress';
 import RoleStepNavigation from './RoleStepNavigation';
 import BasicInfoStep from '../steps/BasicInfoStep';
@@ -43,13 +43,20 @@ const SteppedRoleCreationDrawer: React.FC<SteppedRoleCreationDrawerProps> = ({
     resolver: zodResolver(roleFormSchema),
     defaultValues: {
       roleName: '',
-      externalName: '',
-      roleCategory: '',
+      jobTitle: '',
+      department: '',
       workMode: '',
       employmentType: '',
-      minExperience: 0,
-      maxExperience: 10,
-      jobDescription: '',
+      experienceLevel: '',
+      location: '',
+      salaryRange: '',
+      responsibilities: '',
+      requirements: '',
+      primarySkills: [],
+      secondarySkills: [],
+      certifications: [],
+      tags: [],
+      customFields: [],
       saveAsTemplate: false
     },
     mode: 'onChange'
@@ -59,7 +66,7 @@ const SteppedRoleCreationDrawer: React.FC<SteppedRoleCreationDrawerProps> = ({
 
   // Calculate form progress
   const calculateProgress = () => {
-    const requiredFields = ['roleName', 'roleCategory', 'workMode', 'employmentType'];
+    const requiredFields = ['roleName', 'department', 'workMode', 'employmentType'];
     const completedFields = requiredFields.filter(field => watchedFields[field as keyof RoleFormValues]);
     
     let stepProgress = 0;
@@ -89,7 +96,7 @@ const SteppedRoleCreationDrawer: React.FC<SteppedRoleCreationDrawerProps> = ({
   const canProceed = () => {
     switch (currentStep) {
       case 0:
-        return watchedFields.roleName && watchedFields.roleCategory;
+        return watchedFields.roleName && watchedFields.department;
       case 1:
         return watchedFields.workMode && watchedFields.employmentType;
       case 2:
