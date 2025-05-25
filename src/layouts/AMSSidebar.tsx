@@ -57,7 +57,8 @@ const navigationItems: NavigationItem[] = [
 
 export const AMSSidebar = () => {
   const location = useLocation();
-  const { open, toggleSidebar } = useSidebar();
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
   
   // Helper to check if a path is active
   const isActive = (path: string) => {
@@ -71,18 +72,11 @@ export const AMSSidebar = () => {
       variant="sidebar"
     >
       <SidebarHeader className="border-b p-2">
-        <div className="flex items-center justify-between">
-          {open && <h2 className="text-xl font-semibold px-2">AMS</h2>}
-          <button
-            onClick={toggleSidebar}
-            className="p-2 rounded-md hover:bg-gray-100 transition-colors"
-            aria-label="Toggle Sidebar"
-          >
-            <Menu className="h-4 w-4" />
-          </button>
+          <h2 className="text-xl font-semibold px-2">AMS</h2>
+        <div className="p-2 flex justify-between items-center">
         </div>
-        {open && (
-          <div className="mt-2">
+        {!isCollapsed && (
+          <div className="px-2 pb-2">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -96,9 +90,14 @@ export const AMSSidebar = () => {
       
       <SidebarContent>
         <SidebarGroup>
-          {open && <SidebarGroupLabel>Navigation</SidebarGroupLabel>}
+          <div className="flex items-center justify-between">
+            {!isCollapsed && <SidebarGroupLabel>Navigation</SidebarGroupLabel>}
+            <SidebarTrigger />
+          </div>
+          
           <SidebarGroupContent>
             <SidebarMenu>
+              
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.path}>
                   <TooltipProvider>
@@ -111,11 +110,11 @@ export const AMSSidebar = () => {
                         >
                           <NavLink to={item.path} className="flex items-center">
                             <item.icon className="h-4 w-4 min-w-4" />
-                            {open && <span className="ml-2 truncate">{item.title}</span>}
+                            {!isCollapsed && <span className="ml-2 truncate">{item.title}</span>}
                           </NavLink>
                         </SidebarMenuButton>
                       </TooltipTrigger>
-                      {!open && (
+                      {!isCollapsed && (
                         <TooltipContent side="right">
                           <p>{item.title}</p>
                         </TooltipContent>

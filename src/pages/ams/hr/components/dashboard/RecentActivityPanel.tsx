@@ -32,12 +32,6 @@ export const RecentActivityPanel: React.FC<RecentActivityPanelProps> = ({
         <Button variant="ghost" size="icon" onClick={onToggle} className="mb-4">
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <div 
-          className="transform -rotate-90 text-gray-500 text-sm font-medium whitespace-nowrap origin-center"
-          style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
-        >
-          Recent Activity
-        </div>
       </div>
     );
   }

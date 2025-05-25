@@ -71,23 +71,7 @@ const HRDashboardPage: React.FC = () => {
   return <div className="h-full flex flex-col bg-gray-50">
       {/* Header with Breadcrumbs */}
       <div className="bg-white border-b px-6 py-4 sticky top-0 z-10 shadow-sm">
-        <div className="mb-2">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/ams">AMS</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/ams/hr">HR</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Dashboard</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
+
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold">Hiring Analytics Dashboard</h1>

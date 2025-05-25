@@ -112,7 +112,7 @@ const ChecklistCreationDrawer: React.FC<ChecklistCreationDrawerProps> = ({
   
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-[70vw] sm:max-w-[70vw] overflow-hidden p-0 flex flex-col">
+      <SheetContent side="right" className="w-[80vw] md:w-[50vw] overflow-hidden p-0 flex flex-col">
         <SheetHeader className="p-6 border-b">
           <SheetTitle>
             {editingChecklist ? 'Edit Checklist' : 'Create New Checklist'}
@@ -155,7 +155,7 @@ const ChecklistCreationDrawer: React.FC<ChecklistCreationDrawerProps> = ({
           </div>
         </ScrollArea>
         
-        <SheetFooter className="p-6 border-t">
+        <SheetFooter className="p-6 border-t flex justify-end gap-2">
           <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
             {editingChecklist ? 'Update Checklist' : 'Create Checklist'}
           </Button>
