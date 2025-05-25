@@ -26,6 +26,9 @@ import ClientAccountCreationPage from "./pages/ams/clients/ClientAccountCreation
 import RoleManagementPage from "./pages/ams/hr/RoleManagementPage";
 import HRDashboardPage from "./pages/ams/hr/HRDashboardPage";
 
+// TA pages
+import TAMissionControlPage from "./pages/ams/ta/TAMissionControlPage";
+
 // Create / Edit role page
 import CreateRolePage from "./pages/ams/roles/CreateRolePage";
 
