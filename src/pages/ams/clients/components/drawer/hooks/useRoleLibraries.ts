@@ -73,7 +73,7 @@ export const useRoleLibraries = () => {
     }
   };
 
-  // Fetch skills library
+  // Fetch skills library with real-time updates
   const fetchSkillsLibrary = async (roleId?: string) => {
     try {
       const { data, error } = await supabase
@@ -91,7 +91,7 @@ export const useRoleLibraries = () => {
     }
   };
 
-  // Fetch certifications library
+  // Fetch certifications library with real-time updates
   const fetchCertificationsLibrary = async () => {
     try {
       const { data, error } = await supabase
@@ -109,7 +109,7 @@ export const useRoleLibraries = () => {
     }
   };
 
-  // Fetch checklists library
+  // Fetch checklists library with real-time updates
   const fetchChecklistsLibrary = async () => {
     try {
       const { data, error } = await supabase
@@ -132,10 +132,68 @@ export const useRoleLibraries = () => {
     }
   };
 
+  // Set up real-time subscriptions for all libraries
   useEffect(() => {
     fetchSkillsLibrary();
     fetchCertificationsLibrary();
     fetchChecklistsLibrary();
+
+    // Subscribe to skills_library changes
+    const skillsChannel = supabase
+      .channel('skills-library-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'skills_library'
+      }, () => {
+        fetchSkillsLibrary();
+      })
+      .subscribe();
+
+    // Subscribe to certification_library changes
+    const certificationsChannel = supabase
+      .channel('certifications-library-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'certification_library'
+      }, () => {
+        fetchCertificationsLibrary();
+      })
+      .subscribe();
+
+    // Subscribe to checklist_library changes
+    const checklistsChannel = supabase
+      .channel('checklists-library-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'checklist_library'
+      }, () => {
+        fetchChecklistsLibrary();
+      })
+      .subscribe();
+
+    // Subscribe to global_roles changes
+    const globalRolesChannel = supabase
+      .channel('global-roles-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'global_roles'
+      }, () => {
+        // Refetch if there's an active search
+        // You might want to maintain search state here
+      })
+      .subscribe();
+
+    // Cleanup subscriptions
+    return () => {
+      supabase.removeChannel(skillsChannel);
+      supabase.removeChannel(certificationsChannel);
+      supabase.removeChannel(checklistsChannel);
+      supabase.removeChannel(globalRolesChannel);
+    };
   }, []);
 
   return {
@@ -145,6 +203,11 @@ export const useRoleLibraries = () => {
     checklistsLibrary,
     loading,
     searchGlobalRoles,
-    fetchSkillsLibrary
+    fetchSkillsLibrary,
+    refetchLibraries: () => {
+      fetchSkillsLibrary();
+      fetchCertificationsLibrary();
+      fetchChecklistsLibrary();
+    }
   };
 };

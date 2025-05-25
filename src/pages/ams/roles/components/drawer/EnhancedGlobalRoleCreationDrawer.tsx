@@ -95,7 +95,89 @@ export const EnhancedGlobalRoleCreationDrawer: React.FC<EnhancedGlobalRoleCreati
     try {
       setIsSubmitting(true);
 
-      // Create the global role (template)
+      // First, ensure all skills exist in skills_library
+      for (const skillName of data.skills) {
+        const { data: existingSkill } = await supabase
+          .from('skills_library')
+          .select('id')
+          .eq('name', skillName)
+          .single();
+
+        if (!existingSkill) {
+          await supabase
+            .from('skills_library')
+            .insert({
+              name: skillName,
+              category: 'technical',
+              role_relevance: [data.roleName]
+            });
+        }
+      }
+
+      // Ensure all certifications exist in certification_library
+      for (const certName of data.certifications) {
+        const { data: existingCert } = await supabase
+          .from('certification_library')
+          .select('id')
+          .eq('title', certName)
+          .single();
+
+        if (!existingCert) {
+          await supabase
+            .from('certification_library')
+            .insert({
+              title: certName,
+              domain: data.department,
+              description: `Certification for ${data.roleName}`
+            });
+        }
+      }
+
+      // Ensure all checklists exist in checklist_library
+      const allChecklists = [
+        ...data.generalChecklists.map(item => ({ title: item, type: 'general' as const })),
+        ...data.roleChecklists.map(item => ({ title: item, type: 'role_based' as const })),
+        ...data.clientChecklists.map(item => ({ title: item, type: 'client_specific' as const }))
+      ];
+
+      for (const checklist of allChecklists) {
+        const { data: existingChecklist } = await supabase
+          .from('checklist_library')
+          .select('id')
+          .eq('title', checklist.title)
+          .single();
+
+        if (!existingChecklist) {
+          await supabase
+            .from('checklist_library')
+            .insert({
+              title: checklist.title,
+              type: checklist.type,
+              role_relevance: checklist.type === 'role_based' ? [data.roleName] : null,
+              description: `Checklist item for ${data.roleName}`
+            });
+        }
+      }
+
+      // Create the global role entry
+      const { data: globalRoleData, error: globalRoleError } = await supabase
+        .from('global_roles')
+        .insert({
+          name: data.roleName,
+          employment_type: data.employmentType,
+          work_mode: data.workMode,
+          experience_range: data.experienceRange,
+          department: data.department,
+          description: data.roleDescription,
+          recommended_skills: data.skills,
+          recommended_certifications: data.certifications
+        })
+        .select()
+        .single();
+
+      if (globalRoleError) throw globalRoleError;
+
+      // Also create in roles table as template
       const { data: roleData, error: roleError } = await supabase
         .from('roles')
         .insert({
@@ -116,7 +198,7 @@ export const EnhancedGlobalRoleCreationDrawer: React.FC<EnhancedGlobalRoleCreati
 
       if (roleError) throw roleError;
 
-      // Handle skills
+      // Handle skills for the role
       if (data.skills.length > 0) {
         for (const skillName of data.skills) {
           let { data: skill } = await supabase
@@ -157,11 +239,11 @@ export const EnhancedGlobalRoleCreationDrawer: React.FC<EnhancedGlobalRoleCreati
 
       toast({
         title: "Success!",
-        description: `Global role "${data.roleName}" has been created successfully.`,
+        description: `Global role "${data.roleName}" has been created and added to all libraries successfully.`,
       });
 
       if (onRoleCreated) {
-        onRoleCreated(roleData);
+        onRoleCreated(globalRoleData);
       }
 
       onOpenChange(false);
@@ -203,7 +285,7 @@ export const EnhancedGlobalRoleCreationDrawer: React.FC<EnhancedGlobalRoleCreati
         variant="outline" 
         onClick={handlePrevious}
         disabled={currentStep === 0}
-        className="flex items-center gap-1"
+        className="flex items-center gap-1 hover:bg-gray-100"
       >
         <ChevronLeft className="h-4 w-4" />
         Previous
@@ -214,6 +296,7 @@ export const EnhancedGlobalRoleCreationDrawer: React.FC<EnhancedGlobalRoleCreati
           type="button" 
           variant="outline" 
           onClick={() => onOpenChange(false)}
+          className="hover:bg-gray-100"
         >
           Cancel
         </Button>
