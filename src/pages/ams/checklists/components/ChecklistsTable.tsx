@@ -19,16 +19,18 @@ export const ChecklistsTable: React.FC<ChecklistsTableProps> = ({
 }) => {
   const columns = [
     {
-      key: 'name',
-      label: 'Name',
-      render: (checklist: Checklist) => (
-        <div className="font-medium">{checklist.name}</div>
+      id: 'name',
+      header: 'Name',
+      accessorKey: 'name',
+      cell: ({ row }: { row: { original: Checklist } }) => (
+        <div className="font-medium">{row.original.name}</div>
       )
     },
     {
-      key: 'type',
-      label: 'Type',
-      render: (checklist: Checklist) => {
+      id: 'type',
+      header: 'Type',
+      accessorKey: 'type',
+      cell: ({ row }: { row: { original: Checklist } }) => {
         const typeLabels = {
           general: 'General',
           role: 'Role-based',
@@ -36,35 +38,48 @@ export const ChecklistsTable: React.FC<ChecklistsTableProps> = ({
         };
         return (
           <Badge variant="outline">
-            {typeLabels[checklist.type as keyof typeof typeLabels] || checklist.type}
+            {typeLabels[row.original.type as keyof typeof typeLabels] || row.original.type}
           </Badge>
         );
       }
     },
     {
-      key: 'items',
-      label: 'Items',
-      render: (checklist: Checklist) => {
-        const itemCount = Array.isArray(checklist.items) ? checklist.items.length : 0;
+      id: 'items',
+      header: 'Items',
+      accessorKey: 'items',
+      cell: ({ row }: { row: { original: Checklist } }) => {
+        const items = row.original.items;
+        let itemCount = 0;
+        
+        if (Array.isArray(items)) {
+          itemCount = items.filter(item => 
+            item && 
+            typeof item === 'object' && 
+            typeof item.text === 'string' && 
+            item.text.trim() !== ''
+          ).length;
+        }
+        
         return <span className="text-muted-foreground">{itemCount} items</span>;
       }
     },
     {
-      key: 'actions',
-      label: 'Actions',
-      render: (checklist: Checklist) => (
+      id: 'actions',
+      header: 'Actions',
+      accessorKey: 'actions',
+      cell: ({ row }: { row: { original: Checklist } }) => (
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => onEdit(checklist)}
+            onClick={() => onEdit(row.original)}
           >
             <Edit className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => onDelete(checklist.id)}
+            onClick={() => onDelete(row.original.id)}
             className="text-red-600 hover:text-red-700"
           >
             <Trash2 className="h-4 w-4" />
