@@ -21,7 +21,7 @@ export const ChecklistsTable: React.FC<ChecklistsTableProps> = ({
     {
       id: 'name',
       header: 'Name',
-      accessorKey: 'name',
+      accessorKey: 'name' as keyof Checklist,
       cell: ({ row }: { row: { original: Checklist } }) => (
         <div className="font-medium">{row.original.name}</div>
       )
@@ -29,7 +29,7 @@ export const ChecklistsTable: React.FC<ChecklistsTableProps> = ({
     {
       id: 'type',
       header: 'Type',
-      accessorKey: 'type',
+      accessorKey: 'type' as keyof Checklist,
       cell: ({ row }: { row: { original: Checklist } }) => {
         const typeLabels = {
           general: 'General',
@@ -46,7 +46,7 @@ export const ChecklistsTable: React.FC<ChecklistsTableProps> = ({
     {
       id: 'items',
       header: 'Items',
-      accessorKey: 'items',
+      accessorKey: (data: Checklist) => data.items,
       cell: ({ row }: { row: { original: Checklist } }) => {
         const items = row.original.items;
         let itemCount = 0;
@@ -66,7 +66,7 @@ export const ChecklistsTable: React.FC<ChecklistsTableProps> = ({
     {
       id: 'actions',
       header: 'Actions',
-      accessorKey: 'actions',
+      accessorKey: (data: Checklist) => data.id,
       cell: ({ row }: { row: { original: Checklist } }) => (
         <div className="flex items-center gap-2">
           <Button
