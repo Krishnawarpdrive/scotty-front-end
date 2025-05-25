@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
-import { Table, TableBody } from "@/components/ui/table";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Table, TableBody } from "@/components/ui-mui/Table";
+import { Drawer, DrawerContent } from "@/components/ui-mui/Drawer";
 import { CandidateDetails } from "./CandidateDetails";
 import { CandidateRow } from "./table/CandidateRow";
 import { CandidateTableHeader } from "./table/TableHeader";
@@ -59,11 +59,11 @@ export const ApplicationTable: React.FC = () => {
         </div>
       </div>
 
-      <Sheet open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-        <SheetContent side="right" className="p-0 overflow-y-auto">
+      <Drawer open={isDetailsOpen} onClose={() => setIsDetailsOpen(false)} side="right">
+        <DrawerContent onClose={() => setIsDetailsOpen(false)}>
           <CandidateDetails onClose={() => setIsDetailsOpen(false)} />
-        </SheetContent>
-      </Sheet>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { Theme } from '@mui/material/styles';
 
 // Properly define typography options
 export const typography = {
-  fontFamily: 'Rubik, sans-serif',
+  fontFamily: 'Rubik',
   fontSize: 13,
   h1: {
     fontSize: '2rem',

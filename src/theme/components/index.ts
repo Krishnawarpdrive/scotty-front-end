@@ -8,6 +8,7 @@ import { tabsComponents, tabComponents } from './tabs';
 import { accordionComponents, accordionSummaryComponents } from './accordion';
 import { tableCellComponents } from './table';
 import { drawerComponents } from './drawer';
+import { dialogComponents } from './dialog';
 
 export const components: Components<Theme> = {
   MuiButton: buttonComponents,
@@ -20,4 +21,5 @@ export const components: Components<Theme> = {
   MuiAccordionSummary: accordionSummaryComponents,
   MuiTableCell: tableCellComponents,
   MuiDrawer: drawerComponents,
+  MuiDialog: dialogComponents,
 };
