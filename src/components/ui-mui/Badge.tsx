@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import { cn } from '@/lib/utils';
 
-export interface BadgeProps extends Omit<MuiChipProps, 'variant'> {
+export interface BadgeProps extends Omit<MuiChipProps, 'variant' | 'label'> {
   className?: string;
   variant?: 'default' | 'secondary' | 'destructive' | 'outline';
   children: React.ReactNode;

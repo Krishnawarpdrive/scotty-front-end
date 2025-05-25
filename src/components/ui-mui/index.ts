@@ -11,3 +11,4 @@ export { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
 export { Badge } from './Badge';
 export { Skeleton } from './Skeleton';
 export { Checkbox } from './Checkbox';
+export { SelectableTable } from './SelectableTable';

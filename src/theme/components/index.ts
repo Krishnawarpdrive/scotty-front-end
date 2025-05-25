@@ -6,7 +6,7 @@ import { textFieldComponents } from './textField';
 import { outlinedInputComponents } from './outlinedInput';
 import { tabsComponents, tabComponents } from './tabs';
 import { accordionComponents, accordionSummaryComponents } from './accordion';
-import { tableCellComponents } from './table';
+import { tableCellComponents, tableComponents, tableHeadComponents, tableBodyComponents, tableRowComponents } from './table';
 import { drawerComponents } from './drawer';
 import { dialogComponents } from './dialog';
 import { checkboxComponents } from './checkbox';
@@ -21,6 +21,10 @@ export const components: Components<Theme> = {
   MuiTab: tabComponents,
   MuiAccordion: accordionComponents,
   MuiAccordionSummary: accordionSummaryComponents,
+  MuiTable: tableComponents,
+  MuiTableHead: tableHeadComponents,
+  MuiTableBody: tableBodyComponents,
+  MuiTableRow: tableRowComponents,
   MuiTableCell: tableCellComponents,
   MuiDrawer: drawerComponents,
   MuiDialog: dialogComponents,

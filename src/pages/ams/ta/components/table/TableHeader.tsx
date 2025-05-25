@@ -1,6 +1,7 @@
 
 import React from "react";
 import { TableHead, TableHeader, TableRow } from "@/components/ui-mui/Table";
+import { Checkbox } from "@/components/ui-mui/Checkbox";
 
 interface TableHeaderProps {
   selectedCount: number;
@@ -14,25 +15,24 @@ export const CandidateTableHeader: React.FC<TableHeaderProps> = ({
   onToggleSelectAll,
 }) => {
   return (
-    <TableHeader className="bg-gray-50">
+    <TableHeader>
       <TableRow>
-        <TableHead className="w-10 py-2">
-          <input 
-            type="checkbox" 
+        <TableHead className="w-10">
+          <Checkbox 
             checked={selectedCount === totalCount && totalCount > 0}
+            indeterminate={selectedCount > 0 && selectedCount < totalCount}
             onChange={onToggleSelectAll}
-            className="rounded border-gray-300"
           />
         </TableHead>
-        <TableHead className="w-10 py-2 text-[12px] font-normal text-[#262626]">ACTIONS</TableHead>
-        <TableHead className="py-2 text-[12px] font-normal text-[#262626]">CANDIDATE</TableHead>
-        <TableHead className="py-2 text-[12px] font-normal text-[#262626]">HIRING FOR</TableHead>
-        <TableHead className="py-2 text-[12px] font-normal text-[#262626]">INTERVIEWING FOR</TableHead>
-        <TableHead className="py-2 text-[12px] font-normal text-[#262626]">STAGES</TableHead>
-        <TableHead className="py-2 text-[12px] font-normal text-[#262626]">RESPONSIBLE PERSON</TableHead>
-        <TableHead className="py-2 text-[12px] font-normal text-[#262626]">ACTION STATUS</TableHead>
-        <TableHead className="py-2 text-[12px] font-normal text-[#262626]">TIME SPENT</TableHead>
-        <TableHead className="py-2 text-[12px] font-normal text-[#262626]">TARGET DATE</TableHead>
+        <TableHead className="w-10">ACTIONS</TableHead>
+        <TableHead>CANDIDATE</TableHead>
+        <TableHead>HIRING FOR</TableHead>
+        <TableHead>INTERVIEWING FOR</TableHead>
+        <TableHead>STAGES</TableHead>
+        <TableHead>RESPONSIBLE PERSON</TableHead>
+        <TableHead>ACTION STATUS</TableHead>
+        <TableHead>TIME SPENT</TableHead>
+        <TableHead>TARGET DATE</TableHead>
       </TableRow>
     </TableHeader>
   );

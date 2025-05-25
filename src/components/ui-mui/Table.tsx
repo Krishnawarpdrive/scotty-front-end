@@ -46,7 +46,18 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps>(
       <div className="relative w-full overflow-auto">
         <MuiTable
           ref={ref}
-          className={cn('w-full caption-bottom text-sm', className)}
+          className={cn('w-full caption-bottom', className)}
+          sx={{
+            fontFamily: 'Rubik, sans-serif',
+            fontSize: '12px',
+            '& .MuiTableCell-root': {
+              fontFamily: 'Rubik, sans-serif',
+              fontSize: '12px',
+              color: '#262626',
+              padding: '8px 16px',
+              borderBottom: '1px solid #e5e7eb',
+            }
+          }}
           {...props}
         >
           {children}
@@ -61,7 +72,20 @@ export const TableHeader = React.forwardRef<HTMLTableSectionElement, TableHeader
     return (
       <MuiTableHead
         ref={ref}
-        className={cn('[&_tr]:border-b', className)}
+        className={cn('bg-gray-50', className)}
+        sx={{
+          backgroundColor: '#f9fafb',
+          '& .MuiTableCell-root': {
+            backgroundColor: '#f9fafb',
+            fontWeight: 500,
+            fontSize: '12px',
+            color: '#262626',
+            textTransform: 'uppercase',
+            letterSpacing: '0.025em',
+            height: '48px',
+            borderBottom: '1px solid #e5e7eb',
+          }
+        }}
         {...props}
       >
         {children}
@@ -76,6 +100,14 @@ export const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProp
       <MuiTableBody
         ref={ref}
         className={cn('[&_tr:last-child]:border-0', className)}
+        sx={{
+          '& .MuiTableRow-root:hover': {
+            backgroundColor: '#f9fafb',
+          },
+          '& .MuiTableRow-root:last-child .MuiTableCell-root': {
+            borderBottom: 'none',
+          }
+        }}
         {...props}
       >
         {children}
@@ -93,6 +125,14 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
           'border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted',
           className
         )}
+        sx={{
+          '&:hover': {
+            backgroundColor: '#f9fafb',
+          },
+          '&[data-state=selected]': {
+            backgroundColor: '#eff6ff',
+          }
+        }}
         {...props}
       >
         {children}
@@ -111,6 +151,17 @@ export const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
           'h-12 px-4 text-left align-middle font-medium text-[12px] text-[#262626] [&:has([role=checkbox])]:pr-0',
           className
         )}
+        sx={{
+          fontFamily: 'Rubik, sans-serif',
+          fontWeight: 500,
+          fontSize: '12px',
+          color: '#262626',
+          textTransform: 'uppercase',
+          letterSpacing: '0.025em',
+          backgroundColor: '#f9fafb',
+          height: '48px',
+          padding: '8px 16px',
+        }}
         {...props}
       >
         {children}
@@ -128,6 +179,12 @@ export const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
           'p-4 align-middle text-[12px] text-[#262626] [&:has([role=checkbox])]:pr-0',
           className
         )}
+        sx={{
+          fontFamily: 'Rubik, sans-serif',
+          fontSize: '12px',
+          color: '#262626',
+          padding: '8px 16px',
+        }}
         {...props}
       >
         {children}

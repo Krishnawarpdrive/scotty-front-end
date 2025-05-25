@@ -1,7 +1,8 @@
 
 import React from "react";
-import { TableRow, TableCell } from "@/components/ui/table";
+import { TableRow, TableCell } from "@/components/ui-mui/Table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Checkbox } from "@/components/ui-mui/Checkbox";
 import { cn } from "@/lib/utils";
 import { Candidate } from "../types/CandidateTypes";
 import { StatusBadge } from "./StatusBadge";
@@ -25,32 +26,31 @@ export const CandidateRow: React.FC<CandidateRowProps> = ({
     <TableRow 
       className={cn(
         isSelected ? "bg-blue-50" : "",
-        "h-12 hover:bg-gray-50"
+        "hover:bg-gray-50"
       )}
+      data-state={isSelected ? 'selected' : undefined}
     >
-      <TableCell className="text-center py-2">
-        <input 
-          type="checkbox" 
+      <TableCell className="text-center">
+        <Checkbox 
           checked={isSelected} 
           onChange={() => onToggleSelect(candidate.id)}
-          className="rounded border-gray-300"
         />
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <ActionButtons />
       </TableCell>
       <TableCell 
-        className="py-2 text-[12px] text-[#262626] cursor-pointer hover:text-blue-600 hover:underline"
+        className="cursor-pointer hover:text-blue-600 hover:underline"
         onClick={() => onCandidateClick(candidate)}
       >
         {candidate.name}
       </TableCell>
-      <TableCell className="py-2 text-[12px] text-[#262626]">{candidate.hiring}</TableCell>
-      <TableCell className="py-2 text-[12px] text-[#262626]">{candidate.interviewing}</TableCell>
-      <TableCell className="py-2">
+      <TableCell>{candidate.hiring}</TableCell>
+      <TableCell>{candidate.interviewing}</TableCell>
+      <TableCell>
         <StageDots stage={candidate.stage} />
       </TableCell>
-      <TableCell className="py-2 text-[12px] text-[#262626]">
+      <TableCell>
         <div className="flex items-center">
           <Avatar className="h-5 w-5 mr-2">
             <AvatarImage src={candidate.responsible.avatar} />
@@ -61,11 +61,11 @@ export const CandidateRow: React.FC<CandidateRowProps> = ({
           {candidate.responsible.name}
         </div>
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <StatusBadge status={candidate.status} />
       </TableCell>
-      <TableCell className="py-2 text-[12px] text-[#262626]">{candidate.timeSpent}</TableCell>
-      <TableCell className="py-2 text-[12px] text-[#262626]">{candidate.targetDate}</TableCell>
+      <TableCell>{candidate.timeSpent}</TableCell>
+      <TableCell>{candidate.targetDate}</TableCell>
     </TableRow>
   );
 };
