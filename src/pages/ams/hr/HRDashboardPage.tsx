@@ -1,18 +1,29 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Filter, ChevronDown, Download } from 'lucide-react';
 import { MetricCard } from './components/dashboard/MetricCard';
 import { EnhancedFilters } from './components/dashboard/EnhancedFilters';
-import { MetricDetailsDrawer } from './components/dashboard/metric-details/MetricDetailsDrawer';
-import { RecentActivityPanel, CollapsedActivityPanel } from './components/dashboard/RecentActivityPanel';
-import { GamificationBadges } from './components/dashboard/GamificationBadges';
-import { ProgressBar } from './components/dashboard/ProgressBar';
+import { MetricDetailsDrawer } from './components/dashboard/MetricDetailsDrawer';
+import { RecentActivityPanel } from './components/dashboard/RecentActivityPanel';
 import { CandidatePipelineChart } from './components/dashboard/CandidatePipelineChart';
 import { SecondaryMetrics } from './components/dashboard/SecondaryMetrics';
 import { PipelineDetailSidebar } from './components/dashboard/PipelineDetailSidebar';
+import { PersonDetailDrawer } from './components/dashboard/PersonDetailDrawer';
+import { RoleDetailDrawer } from './components/dashboard/RoleDetailDrawer';
+import { WeeklyGoalsSection } from './components/dashboard/WeeklyGoalsSection';
+import { AdvancedFiltersDrawer } from './components/dashboard/AdvancedFiltersDrawer';
 import { useDashboardData, MetricData } from './hooks/useDashboardData';
 import { useFilterOptions } from './hooks/useFilterOptions';
 import { motion } from 'framer-motion';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const HRDashboardPage: React.FC = () => {
   const [dateRange, setDateRange] = useState('30');
@@ -24,6 +35,11 @@ const HRDashboardPage: React.FC = () => {
   const [activityPanelCollapsed, setActivityPanelCollapsed] = useState(false);
   const [pipelineDrawerOpen, setPipelineDrawerOpen] = useState(false);
   const [selectedPipelineStage, setSelectedPipelineStage] = useState<{ stage: string; data: any } | null>(null);
+  const [personDrawerOpen, setPersonDrawerOpen] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<string | null>(null);
+  const [roleDrawerOpen, setRoleDrawerOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
   
   const { metrics, isLoading } = useDashboardData(dateRange, taFilter, roleFilter, clientFilter);
   const { dateRangeOptions, taOptions, roleOptions, clientOptions } = useFilterOptions();
@@ -38,24 +54,62 @@ const HRDashboardPage: React.FC = () => {
     setPipelineDrawerOpen(true);
   };
 
+  const handlePersonClick = (person: string) => {
+    setSelectedPerson(person);
+    setPersonDrawerOpen(true);
+  };
+
+  const handleRoleClick = (role: string) => {
+    setSelectedRole(role);
+    setRoleDrawerOpen(true);
+  };
+
+  const handleAdvancedFiltersApply = (filters: any) => {
+    console.log('Advanced filters applied:', filters);
+    // Apply filters to dashboard data
+  };
+
   return (
     <div className="h-full flex flex-col bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-10 shadow-sm">
-        <div>
-          <div className="text-sm text-gray-500 mb-1">HR / Hiring Dashboard</div>
-          <h1 className="text-2xl font-bold">Hiring Analytics Dashboard</h1>
+      {/* Header with Breadcrumbs */}
+      <div className="bg-white border-b px-6 py-4 sticky top-0 z-10 shadow-sm">
+        <div className="mb-2">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/ams">AMS</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/ams/hr">HR</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Dashboard</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
-        <div className="flex space-x-2">
-          <Button variant="outline" size="sm" className="flex items-center gap-1">
-            <Filter className="h-4 w-4" />
-            <span>Advanced Filters</span>
-            <ChevronDown className="h-4 w-4 ml-1" />
-          </Button>
-          <Button size="sm" className="flex items-center gap-1">
-            <Download className="h-4 w-4" />
-            Export Report
-          </Button>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold">Hiring Analytics Dashboard</h1>
+          </div>
+          <div className="flex space-x-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-1"
+              onClick={() => setAdvancedFiltersOpen(true)}
+            >
+              <Filter className="h-4 w-4" />
+              <span>Advanced Filters</span>
+              <ChevronDown className="h-4 w-4 ml-1" />
+            </Button>
+            <Button size="sm" className="flex items-center gap-1">
+              <Download className="h-4 w-4" />
+              Export Report
+            </Button>
+          </div>
         </div>
       </div>
       
@@ -76,76 +130,29 @@ const HRDashboardPage: React.FC = () => {
       />
       
       <div className="flex-1 flex overflow-hidden">
-        <div className="flex-1 p-6 overflow-y-auto">
+        <div className="flex-1 p-4 md:p-6 overflow-y-auto">
           {/* Candidate Pipeline Overview */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
+            className="mb-4 md:mb-6"
           >
             <CandidatePipelineChart onStageClick={handlePipelineStageClick} />
           </motion.div>
           
           {/* Weekly Goals Progress */}
-          <motion.div 
-            className="mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-bold text-xl">Weekly Goals</h2>
-              <span className="text-sm text-gray-500 bg-amber-100 text-amber-800 px-3 py-1 rounded-full">
-                3 days remaining
-              </span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white p-5 rounded-xl border shadow-sm">
-                <ProgressBar 
-                  value={18} 
-                  max={25} 
-                  label="Interviews Scheduled" 
-                  color="#4C51BF"
-                />
-              </div>
-              <div className="bg-white p-5 rounded-xl border shadow-sm">
-                <ProgressBar 
-                  value={7} 
-                  max={10} 
-                  label="Roles Filled" 
-                  color="#38A169" 
-                />
-              </div>
-              <div className="bg-white p-5 rounded-xl border shadow-sm">
-                <ProgressBar 
-                  value={15} 
-                  max={20} 
-                  label="Candidate Feedback" 
-                  color="#D69E2E" 
-                />
-              </div>
-            </div>
-          </motion.div>
+          <WeeklyGoalsSection className="mb-4 md:mb-6" />
           
-          {/* Gamification Badges */}
-          <motion.div 
-            className="mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <GamificationBadges />
-          </motion.div>
-          
-          {/* Primary Metrics Pentagrid */}
+          {/* Primary Metrics */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="mb-8"
+            className="mb-6 md:mb-8"
           >
             <h2 className="font-bold text-xl mb-4">Primary Hiring Metrics</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6">
               {isLoading ? (
                 Array(5).fill(null).map((_, i) => (
                   <div 
@@ -177,29 +184,46 @@ const HRDashboardPage: React.FC = () => {
         </div>
         
         {/* Activity Feed Sidebar */}
-        {activityPanelCollapsed ? (
-          <CollapsedActivityPanel onToggle={() => setActivityPanelCollapsed(false)} />
-        ) : (
+        <div className="hidden lg:block">
           <RecentActivityPanel 
             collapsed={activityPanelCollapsed} 
-            onToggle={() => setActivityPanelCollapsed(true)} 
+            onToggle={() => setActivityPanelCollapsed(!activityPanelCollapsed)}
+            onPersonClick={handlePersonClick}
+            onRoleClick={handleRoleClick}
           />
-        )}
+        </div>
       </div>
       
-      {/* Metric Details Drawer */}
+      {/* Drawers */}
       <MetricDetailsDrawer
         open={detailsDrawerOpen}
         onOpenChange={setDetailsDrawerOpen}
         metric={currentMetric}
       />
 
-      {/* Pipeline Detail Sidebar */}
       <PipelineDetailSidebar
         open={pipelineDrawerOpen}
         onOpenChange={setPipelineDrawerOpen}
         stage={selectedPipelineStage?.stage || null}
         data={selectedPipelineStage?.data || null}
+      />
+
+      <PersonDetailDrawer
+        open={personDrawerOpen}
+        onOpenChange={setPersonDrawerOpen}
+        personName={selectedPerson}
+      />
+
+      <RoleDetailDrawer
+        open={roleDrawerOpen}
+        onOpenChange={setRoleDrawerOpen}
+        roleName={selectedRole}
+      />
+
+      <AdvancedFiltersDrawer
+        open={advancedFiltersOpen}
+        onOpenChange={setAdvancedFiltersOpen}
+        onFiltersApply={handleAdvancedFiltersApply}
       />
     </div>
   );
