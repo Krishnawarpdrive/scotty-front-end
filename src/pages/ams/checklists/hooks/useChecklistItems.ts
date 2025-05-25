@@ -6,11 +6,13 @@ export const useChecklistItems = (
   initialItems: ChecklistItem[] = [{ id: '1', text: '', completed: false }],
   onChange?: (items: ChecklistItem[]) => void
 ) => {
-  const [items, setItems] = useState<ChecklistItem[]>(initialItems);
+  // Ensure initialItems is always a valid array
+  const sanitizedInitialItems = Array.isArray(initialItems) ? initialItems : [{ id: '1', text: '', completed: false }];
+  const [items, setItems] = useState<ChecklistItem[]>(sanitizedInitialItems);
   
   // Update external state when items change
   useEffect(() => {
-    if (onChange) {
+    if (onChange && Array.isArray(items)) {
       onChange(items);
     }
   }, [items, onChange]);
@@ -18,22 +20,31 @@ export const useChecklistItems = (
   // Add a new item
   const addItem = () => {
     const newItem: ChecklistItem = { 
-      id: Date.now().toString(), // Use timestamp for unique ID
+      id: Date.now().toString(), 
       text: '', 
       completed: false 
     };
-    setItems(prevItems => [...prevItems, newItem]);
+    setItems(prevItems => {
+      const currentItems = Array.isArray(prevItems) ? prevItems : [];
+      return [...currentItems, newItem];
+    });
   };
   
   // Remove an item
   const removeItem = (index: number) => {
-    setItems(prevItems => prevItems.filter((_, i) => i !== index));
+    setItems(prevItems => {
+      const currentItems = Array.isArray(prevItems) ? prevItems : [];
+      return currentItems.filter((_, i) => i !== index);
+    });
   };
   
   // Update item text
   const updateItemText = (index: number, text: string) => {
     setItems(prevItems => {
-      const updatedItems = [...prevItems];
+      const currentItems = Array.isArray(prevItems) ? prevItems : [];
+      if (index < 0 || index >= currentItems.length) return currentItems;
+      
+      const updatedItems = [...currentItems];
       updatedItems[index] = { ...updatedItems[index], text };
       return updatedItems;
     });
@@ -42,8 +53,13 @@ export const useChecklistItems = (
   // Move item (for drag and drop)
   const moveItem = (dragIndex: number, hoverIndex: number) => {
     setItems(prevItems => {
-      const dragItem = prevItems[dragIndex];
-      const newItems = [...prevItems];
+      const currentItems = Array.isArray(prevItems) ? prevItems : [];
+      if (dragIndex < 0 || dragIndex >= currentItems.length || hoverIndex < 0 || hoverIndex >= currentItems.length) {
+        return currentItems;
+      }
+      
+      const dragItem = currentItems[dragIndex];
+      const newItems = [...currentItems];
       newItems.splice(dragIndex, 1);
       newItems.splice(hoverIndex, 0, dragItem);
       return newItems;
@@ -52,7 +68,8 @@ export const useChecklistItems = (
   
   // Get valid items (non-empty)
   const getValidItems = () => {
-    return items.filter(item => item.text.trim() !== '');
+    const currentItems = Array.isArray(items) ? items : [];
+    return currentItems.filter(item => item && item.text && item.text.trim() !== '');
   };
   
   // Reset to initial state
@@ -61,7 +78,7 @@ export const useChecklistItems = (
   };
   
   return {
-    items,
+    items: Array.isArray(items) ? items : [],
     setItems,
     addItem,
     removeItem,

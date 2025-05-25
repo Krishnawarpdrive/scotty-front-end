@@ -23,6 +23,15 @@ export const ChecklistItemsSection: React.FC<ChecklistItemsSectionProps> = ({ in
     moveItem
   } = useChecklistItems(initialItems, onChange);
   
+  // Ensure items is always an array and filter out any invalid items
+  const validItems = Array.isArray(items) ? items.filter(item => 
+    item && 
+    typeof item === 'object' && 
+    typeof item.id === 'string' && 
+    typeof item.text === 'string' && 
+    typeof item.completed === 'boolean'
+  ) : [];
+  
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
@@ -31,7 +40,7 @@ export const ChecklistItemsSection: React.FC<ChecklistItemsSectionProps> = ({ in
       
       <div className="space-y-2 max-h-[300px] overflow-y-auto p-2">
         <DndProvider backend={HTML5Backend}>
-          {items.map((item, index) => (
+          {validItems.map((item, index) => (
             <DraggableItem
               key={item.id}
               id={item.id}
