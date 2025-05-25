@@ -9,6 +9,8 @@ import { accordionComponents, accordionSummaryComponents } from './accordion';
 import { tableCellComponents } from './table';
 import { drawerComponents } from './drawer';
 import { dialogComponents } from './dialog';
+import { checkboxComponents } from './checkbox';
+import { chipComponents } from './chip';
 
 export const components: Components<Theme> = {
   MuiButton: buttonComponents,
@@ -22,4 +24,6 @@ export const components: Components<Theme> = {
   MuiTableCell: tableCellComponents,
   MuiDrawer: drawerComponents,
   MuiDialog: dialogComponents,
+  MuiCheckbox: checkboxComponents,
+  MuiChip: chipComponents,
 };

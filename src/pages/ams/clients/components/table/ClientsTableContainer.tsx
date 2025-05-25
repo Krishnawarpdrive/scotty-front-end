@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { Skeleton } from '@/components/ui/skeleton';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui-mui/Table";
+import { Skeleton } from '@/components/ui-mui/Skeleton';
 
 interface ClientsTableContainerProps {
   clients: any[];

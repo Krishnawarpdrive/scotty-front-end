@@ -3,6 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import ClientsTableContainer from './ClientsTableContainer';
 import useClientTableColumns from './useClientTableColumns';
+import { Drawer, DrawerContent } from '@/components/ui-mui/Drawer';
 import ClientDetailDrawer from '../ClientDetailDrawer';
 import { useClientDetails } from './hooks/useClientDetails';
 
@@ -62,11 +63,15 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
       />
       
       {selectedClient && (
-        <ClientDetailDrawer 
-          client={selectedClient} 
-          open={isDetailOpen}
-          onOpenChange={handleCloseDetail}
-        />
+        <Drawer open={isDetailOpen} onClose={handleCloseDetail} side="right">
+          <DrawerContent onClose={handleCloseDetail}>
+            <ClientDetailDrawer 
+              client={selectedClient} 
+              open={isDetailOpen}
+              onOpenChange={handleCloseDetail}
+            />
+          </DrawerContent>
+        </Drawer>
       )}
     </>
   );
