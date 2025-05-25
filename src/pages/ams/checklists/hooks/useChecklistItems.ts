@@ -3,12 +3,18 @@ import { useState, useEffect } from 'react';
 import { ChecklistItem } from '../types';
 
 export const useChecklistItems = (
-  initialItems: ChecklistItem[] = [{ id: '1', text: '', completed: false }],
+  initialItems: ChecklistItem[] = [],
   onChange?: (items: ChecklistItem[]) => void
 ) => {
-  // Ensure initialItems is always a valid array
+  // Ensure initialItems is always a valid array with proper structure
   const sanitizedInitialItems = Array.isArray(initialItems) && initialItems.length > 0 
-    ? initialItems 
+    ? initialItems.filter(item => 
+        item && 
+        typeof item === 'object' && 
+        typeof item.id === 'string' && 
+        typeof item.text === 'string' && 
+        typeof item.completed === 'boolean'
+      )
     : [{ id: '1', text: '', completed: false }];
     
   const [items, setItems] = useState<ChecklistItem[]>(sanitizedInitialItems);
@@ -16,8 +22,16 @@ export const useChecklistItems = (
   // Update external state when items change
   useEffect(() => {
     if (onChange && Array.isArray(items)) {
-      console.log('useChecklistItems - onChange called with:', items);
-      onChange(items);
+      // Filter out any invalid items before calling onChange
+      const validItems = items.filter(item => 
+        item && 
+        typeof item === 'object' && 
+        typeof item.id === 'string' && 
+        typeof item.text === 'string' && 
+        typeof item.completed === 'boolean'
+      );
+      console.log('useChecklistItems - onChange called with:', validItems);
+      onChange(validItems);
     }
   }, [items, onChange]);
   
@@ -102,12 +116,19 @@ export const useChecklistItems = (
     setItems(resetItems);
   };
   
-  console.log('useChecklistItems - current items:', items);
-  console.log('useChecklistItems - items type:', typeof items);
-  console.log('useChecklistItems - is items array:', Array.isArray(items));
+  // Ensure we always return a valid array
+  const validItems = Array.isArray(items) ? items.filter(item => 
+    item && 
+    typeof item === 'object' && 
+    typeof item.id === 'string' && 
+    typeof item.text === 'string' && 
+    typeof item.completed === 'boolean'
+  ) : [];
+  
+  console.log('useChecklistItems - returning valid items:', validItems);
   
   return {
-    items: Array.isArray(items) ? items : [],
+    items: validItems,
     setItems,
     addItem,
     removeItem,
