@@ -8,16 +8,19 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { roleFormSchema, type RoleFormValues } from '../roleFormSchema';
-import { BasicInfoStep } from '../steps/BasicInfoStep';
-import { DetailsStep } from '../steps/DetailsStep';
-import { SkillsTagsStep } from '../steps/SkillsTagsStep';
-import { CustomFieldsStep } from '../steps/CustomFieldsStep';
+import BasicInfoStep from '../steps/BasicInfoStep';
+import DetailsStep from '../steps/DetailsStep';
+import SkillsTagsStep from '../steps/SkillsTagsStep';
+import CustomFieldsStep from '../steps/CustomFieldsStep';
 import { useToast } from '@/hooks/use-toast';
 
 interface SteppedRoleCreationDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   editingRole?: any;
+  clientId?: string;
+  clientName?: string;
+  onRoleCreated?: (values: RoleFormValues) => void;
 }
 
 const steps = [
@@ -30,7 +33,10 @@ const steps = [
 export const SteppedRoleCreationDrawer: React.FC<SteppedRoleCreationDrawerProps> = ({
   open,
   onOpenChange,
-  editingRole
+  editingRole,
+  clientId,
+  clientName,
+  onRoleCreated
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [skills, setSkills] = useState<string[]>([]);
@@ -100,13 +106,19 @@ export const SteppedRoleCreationDrawer: React.FC<SteppedRoleCreationDrawerProps>
       ...data,
       primarySkills: skills,
       tags: tags,
-      customFields: customFields
+      customFields: customFields,
+      clientId,
+      clientName
     });
     
     toast({
       title: "Success!",
       description: "Role has been created successfully.",
     });
+    
+    if (onRoleCreated) {
+      onRoleCreated(data);
+    }
     
     onOpenChange(false);
     form.reset();
@@ -193,7 +205,7 @@ export const SteppedRoleCreationDrawer: React.FC<SteppedRoleCreationDrawerProps>
     <SideDrawer
       open={open}
       onOpenChange={onOpenChange}
-      title={editingRole ? "Edit Role" : "Create New Role"}
+      title={editingRole ? "Edit Role" : `Create New Role${clientName ? ` for ${clientName}` : ''}`}
       description={steps[currentStep].description}
       size="xl"
       footer={footerContent}

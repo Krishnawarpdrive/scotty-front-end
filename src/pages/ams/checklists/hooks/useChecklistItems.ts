@@ -40,6 +40,10 @@ export const useChecklistItems = (
   const removeItem = (index: number) => {
     setItems(prevItems => {
       const currentItems = Array.isArray(prevItems) ? prevItems : [];
+      if (index < 0 || index >= currentItems.length) {
+        console.log('useChecklistItems - removeItem, invalid index:', index);
+        return currentItems;
+      }
       const newItems = currentItems.filter((_, i) => i !== index);
       console.log('useChecklistItems - removeItem, new items:', newItems);
       return newItems;
@@ -83,7 +87,12 @@ export const useChecklistItems = (
   // Get valid items (non-empty)
   const getValidItems = () => {
     const currentItems = Array.isArray(items) ? items : [];
-    return currentItems.filter(item => item && item.text && item.text.trim() !== '');
+    return currentItems.filter(item => 
+      item && 
+      typeof item === 'object' && 
+      item.text && 
+      item.text.trim() !== ''
+    );
   };
   
   // Reset to initial state
@@ -94,6 +103,8 @@ export const useChecklistItems = (
   };
   
   console.log('useChecklistItems - current items:', items);
+  console.log('useChecklistItems - items type:', typeof items);
+  console.log('useChecklistItems - is items array:', Array.isArray(items));
   
   return {
     items: Array.isArray(items) ? items : [],
