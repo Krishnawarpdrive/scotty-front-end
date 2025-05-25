@@ -14,14 +14,14 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  Checkbox,
-  Divider,
+  Autocomplete,
+  Chip,
 } from '@mui/material';
 
 interface Stage {
   id: string;
   name: string;
-  type: 'internal' | 'external';
+  category: 'internal' | 'external' | 'partner' | 'client' | 'verification';
   order: number;
   config?: any;
 }
@@ -33,53 +33,14 @@ interface StageConfigModalProps {
   onSave: (stageId: string, config: any) => void;
 }
 
-const getStageConfigFields = (stageName: string) => {
-  const lowerName = stageName.toLowerCase();
-  
-  if (lowerName.includes('phone') || lowerName.includes('screening')) {
-    return {
-      duration: { label: 'Duration (minutes)', type: 'number', default: 30 },
-      questions: { label: 'Key Questions', type: 'textarea', default: '' },
-      criteria: { label: 'Evaluation Criteria', type: 'checkbox', options: [
-        'Communication Skills',
-        'Technical Knowledge',
-        'Experience Relevance',
-        'Cultural Fit'
-      ]},
-      passingScore: { label: 'Passing Score (%)', type: 'number', default: 70 }
-    };
-  }
-  
-  if (lowerName.includes('technical')) {
-    return {
-      duration: { label: 'Duration (minutes)', type: 'number', default: 60 },
-      difficulty: { label: 'Difficulty Level', type: 'radio', options: ['Easy', 'Medium', 'Hard'] },
-      topics: { label: 'Technical Topics', type: 'textarea', default: '' },
-      codingRequired: { label: 'Coding Required', type: 'checkbox', options: ['Live Coding', 'Take Home Assignment'] }
-    };
-  }
-  
-  if (lowerName.includes('group')) {
-    return {
-      duration: { label: 'Duration (minutes)', type: 'number', default: 45 },
-      maxParticipants: { label: 'Max Participants', type: 'number', default: 8 },
-      scenario: { label: 'Discussion Scenario', type: 'textarea', default: '' },
-      evaluation: { label: 'Evaluation Points', type: 'checkbox', options: [
-        'Leadership',
-        'Team Collaboration',
-        'Problem Solving',
-        'Communication'
-      ]}
-    };
-  }
-  
-  // Default configuration for other stages
-  return {
-    duration: { label: 'Duration (minutes)', type: 'number', default: 30 },
-    requirements: { label: 'Requirements', type: 'textarea', default: '' },
-    criteria: { label: 'Evaluation Criteria', type: 'textarea', default: '' }
-  };
-};
+// Mock data for interviewers
+const mockInterviewers = [
+  { id: '1', name: 'Sarah Johnson', email: 'sarah.johnson@company.com' },
+  { id: '2', name: 'Mike Chen', email: 'mike.chen@company.com' },
+  { id: '3', name: 'Emily Davis', email: 'emily.davis@company.com' },
+  { id: '4', name: 'Alex Kumar', email: 'alex.kumar@company.com' },
+  { id: '5', name: 'Lisa Wilson', email: 'lisa.wilson@company.com' },
+];
 
 const StageConfigModal: React.FC<StageConfigModalProps> = ({
   open,
@@ -87,122 +48,39 @@ const StageConfigModal: React.FC<StageConfigModalProps> = ({
   stage,
   onSave,
 }) => {
-  const [config, setConfig] = useState<any>({});
+  const [config, setConfig] = useState<any>({
+    interviewFormat: 'one-to-one',
+    interviewers: [],
+    notes: '',
+    maxCandidatesPerRound: 8,
+    candidateInstructions: '',
+  });
 
   useEffect(() => {
     if (stage) {
-      setConfig(stage.config || {});
+      setConfig({
+        interviewFormat: stage.config?.interviewFormat || 'one-to-one',
+        interviewers: stage.config?.interviewers || [],
+        notes: stage.config?.notes || '',
+        maxCandidatesPerRound: stage.config?.maxCandidatesPerRound || 8,
+        candidateInstructions: stage.config?.candidateInstructions || '',
+      });
     }
   }, [stage]);
 
   if (!stage) return null;
 
-  const configFields = getStageConfigFields(stage.name);
-
-  const handleFieldChange = (fieldName: string, value: any) => {
-    setConfig((prev: any) => ({
-      ...prev,
-      [fieldName]: value,
-    }));
-  };
+  const isGroupDiscussion = stage.name.toLowerCase().includes('group');
 
   const handleSave = () => {
     onSave(stage.id, config);
   };
 
-  const renderField = (fieldName: string, field: any) => {
-    switch (field.type) {
-      case 'number':
-        return (
-          <TextField
-            fullWidth
-            type="number"
-            label={field.label}
-            value={config[fieldName] || field.default || ''}
-            onChange={(e) => handleFieldChange(fieldName, parseInt(e.target.value) || 0)}
-            size="small"
-            sx={{ mb: 2 }}
-          />
-        );
-      
-      case 'textarea':
-        return (
-          <TextField
-            fullWidth
-            multiline
-            rows={3}
-            label={field.label}
-            value={config[fieldName] || field.default || ''}
-            onChange={(e) => handleFieldChange(fieldName, e.target.value)}
-            size="small"
-            sx={{ mb: 2 }}
-          />
-        );
-      
-      case 'radio':
-        return (
-          <FormControl component="fieldset" sx={{ mb: 2 }}>
-            <FormLabel component="legend" sx={{ fontSize: '14px', mb: 1 }}>
-              {field.label}
-            </FormLabel>
-            <RadioGroup
-              value={config[fieldName] || ''}
-              onChange={(e) => handleFieldChange(fieldName, e.target.value)}
-            >
-              {field.options.map((option: string) => (
-                <FormControlLabel
-                  key={option}
-                  value={option}
-                  control={<Radio size="small" />}
-                  label={option}
-                  sx={{ '& .MuiFormControlLabel-label': { fontSize: '13px' } }}
-                />
-              ))}
-            </RadioGroup>
-          </FormControl>
-        );
-      
-      case 'checkbox':
-        return (
-          <FormControl component="fieldset" sx={{ mb: 2 }}>
-            <FormLabel component="legend" sx={{ fontSize: '14px', mb: 1 }}>
-              {field.label}
-            </FormLabel>
-            {field.options.map((option: string) => (
-              <FormControlLabel
-                key={option}
-                control={
-                  <Checkbox
-                    size="small"
-                    checked={config[fieldName]?.includes(option) || false}
-                    onChange={(e) => {
-                      const currentValues = config[fieldName] || [];
-                      const newValues = e.target.checked
-                        ? [...currentValues, option]
-                        : currentValues.filter((v: string) => v !== option);
-                      handleFieldChange(fieldName, newValues);
-                    }}
-                  />
-                }
-                label={option}
-                sx={{ '& .MuiFormControlLabel-label': { fontSize: '13px' } }}
-              />
-            ))}
-          </FormControl>
-        );
-      
-      default:
-        return (
-          <TextField
-            fullWidth
-            label={field.label}
-            value={config[fieldName] || field.default || ''}
-            onChange={(e) => handleFieldChange(fieldName, e.target.value)}
-            size="small"
-            sx={{ mb: 2 }}
-          />
-        );
-    }
+  const handleInterviewersChange = (event: any, newValue: any[]) => {
+    setConfig((prev: any) => ({
+      ...prev,
+      interviewers: newValue,
+    }));
   };
 
   return (
@@ -212,7 +90,10 @@ const StageConfigModal: React.FC<StageConfigModalProps> = ({
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: { fontFamily: 'Rubik, sans-serif' }
+        sx: { 
+          fontFamily: 'Rubik, sans-serif',
+          borderRadius: '16px',
+        }
       }}
     >
       <DialogTitle>
@@ -220,8 +101,9 @@ const StageConfigModal: React.FC<StageConfigModalProps> = ({
           variant="h6"
           sx={{
             fontFamily: 'Rubik, sans-serif',
-            fontSize: '16px',
+            fontSize: '18px',
             fontWeight: 500,
+            color: '#262626',
           }}
         >
           Configure {stage.name}
@@ -230,29 +112,189 @@ const StageConfigModal: React.FC<StageConfigModalProps> = ({
           variant="body2"
           sx={{
             fontFamily: 'Rubik, sans-serif',
-            fontSize: '12px',
-            color: '#666',
+            fontSize: '13px',
+            color: '#6b7280',
             mt: 0.5,
           }}
         >
-          Set up the requirements and evaluation criteria for this stage
+          Set up the interview format and assign interviewers
         </Typography>
       </DialogTitle>
       
-      <DialogContent>
-        <Box sx={{ mt: 1 }}>
-          {Object.entries(configFields).map(([fieldName, field]) => (
-            <Box key={fieldName}>
-              {renderField(fieldName, field)}
-              {fieldName !== Object.keys(configFields)[Object.keys(configFields).length - 1] && (
-                <Divider sx={{ my: 2 }} />
+      <DialogContent sx={{ pt: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          
+          {/* Interview Format */}
+          <FormControl component="fieldset">
+            <FormLabel 
+              component="legend" 
+              sx={{ 
+                fontFamily: 'Rubik, sans-serif',
+                fontSize: '14px', 
+                fontWeight: 500,
+                color: '#262626',
+                mb: 1,
+              }}
+            >
+              Interview Format
+            </FormLabel>
+            <RadioGroup
+              value={config.interviewFormat}
+              onChange={(e) => setConfig((prev: any) => ({ ...prev, interviewFormat: e.target.value }))}
+            >
+              <FormControlLabel
+                value="one-to-one"
+                control={<Radio size="small" />}
+                label="One-to-One"
+                disabled={isGroupDiscussion}
+                sx={{ '& .MuiFormControlLabel-label': { fontFamily: 'Rubik, sans-serif', fontSize: '13px' } }}
+              />
+              <FormControlLabel
+                value="panel"
+                control={<Radio size="small" />}
+                label="Panel"
+                disabled={isGroupDiscussion}
+                sx={{ '& .MuiFormControlLabel-label': { fontFamily: 'Rubik, sans-serif', fontSize: '13px' } }}
+              />
+              <FormControlLabel
+                value="group"
+                control={<Radio size="small" />}
+                label="Group"
+                disabled={!isGroupDiscussion}
+                sx={{ '& .MuiFormControlLabel-label': { fontFamily: 'Rubik, sans-serif', fontSize: '13px' } }}
+              />
+            </RadioGroup>
+            {isGroupDiscussion && (
+              <Typography
+                sx={{
+                  fontFamily: 'Rubik, sans-serif',
+                  fontSize: '12px',
+                  color: '#6b7280',
+                  mt: 1,
+                  fontStyle: 'italic',
+                }}
+              >
+                Group format is automatically selected for Group Discussion stages
+              </Typography>
+            )}
+          </FormControl>
+
+          {/* Interviewers */}
+          <FormControl>
+            <FormLabel 
+              sx={{ 
+                fontFamily: 'Rubik, sans-serif',
+                fontSize: '14px', 
+                fontWeight: 500,
+                color: '#262626',
+                mb: 1,
+              }}
+            >
+              Interviewers
+            </FormLabel>
+            <Autocomplete
+              multiple
+              options={mockInterviewers}
+              getOptionLabel={(option) => `${option.name} (${option.email})`}
+              value={config.interviewers}
+              onChange={handleInterviewersChange}
+              renderTags={(tagValue, getTagProps) =>
+                tagValue.map((option, index) => (
+                  <Chip
+                    label={option.name}
+                    {...getTagProps({ index })}
+                    key={option.id}
+                    size="small"
+                    sx={{ fontFamily: 'Rubik, sans-serif', fontSize: '12px' }}
+                  />
+                ))
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder="Select interviewers"
+                  size="small"
+                  sx={{
+                    '& .MuiInputBase-input': {
+                      fontFamily: 'Rubik, sans-serif',
+                      fontSize: '13px',
+                    },
+                  }}
+                />
               )}
-            </Box>
-          ))}
+            />
+          </FormControl>
+
+          {/* Group Discussion Specific Fields */}
+          {isGroupDiscussion && (
+            <TextField
+              label="Max Candidates per Round"
+              type="number"
+              value={config.maxCandidatesPerRound}
+              onChange={(e) => setConfig((prev: any) => ({ ...prev, maxCandidatesPerRound: parseInt(e.target.value) || 8 }))}
+              size="small"
+              inputProps={{ min: 1, max: 20 }}
+              sx={{
+                '& .MuiInputLabel-root': {
+                  fontFamily: 'Rubik, sans-serif',
+                  fontSize: '14px',
+                },
+                '& .MuiInputBase-input': {
+                  fontFamily: 'Rubik, sans-serif',
+                  fontSize: '13px',
+                },
+              }}
+            />
+          )}
+
+          {/* Notes */}
+          <TextField
+            label="Notes (Optional)"
+            multiline
+            rows={3}
+            value={config.notes}
+            onChange={(e) => setConfig((prev: any) => ({ ...prev, notes: e.target.value }))}
+            placeholder="Add any specific interviewer instructions or reminders..."
+            size="small"
+            sx={{
+              '& .MuiInputLabel-root': {
+                fontFamily: 'Rubik, sans-serif',
+                fontSize: '14px',
+              },
+              '& .MuiInputBase-input': {
+                fontFamily: 'Rubik, sans-serif',
+                fontSize: '13px',
+              },
+            }}
+          />
+
+          {/* Group Discussion Candidate Instructions */}
+          {isGroupDiscussion && (
+            <TextField
+              label="Candidate Instructions (Optional)"
+              multiline
+              rows={3}
+              value={config.candidateInstructions}
+              onChange={(e) => setConfig((prev: any) => ({ ...prev, candidateInstructions: e.target.value }))}
+              placeholder="Instructions to be shared with candidates before the group discussion..."
+              size="small"
+              sx={{
+                '& .MuiInputLabel-root': {
+                  fontFamily: 'Rubik, sans-serif',
+                  fontSize: '14px',
+                },
+                '& .MuiInputBase-input': {
+                  fontFamily: 'Rubik, sans-serif',
+                  fontSize: '13px',
+                },
+              }}
+            />
+          )}
+
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ p: 2, pt: 1 }}>
+      <DialogActions sx={{ p: 3, pt: 2 }}>
         <Button
           onClick={onClose}
           variant="outlined"
@@ -260,6 +302,8 @@ const StageConfigModal: React.FC<StageConfigModalProps> = ({
             fontFamily: 'Rubik, sans-serif',
             fontSize: '13px',
             textTransform: 'none',
+            borderColor: '#e5e7eb',
+            color: '#666',
           }}
         >
           Cancel

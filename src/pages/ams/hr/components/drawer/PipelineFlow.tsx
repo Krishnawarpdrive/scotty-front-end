@@ -6,7 +6,7 @@ import StageCard from './StageCard';
 interface Stage {
   id: string;
   name: string;
-  type: 'internal' | 'external';
+  category: 'internal' | 'external' | 'partner' | 'client' | 'verification';
   order: number;
   config?: any;
 }
@@ -15,7 +15,6 @@ interface PipelineFlowProps {
   stages: Stage[];
   onRemoveStage: (stageId: string) => void;
   onReorderStages: (dragIndex: number, hoverIndex: number) => void;
-  onToggleStageType: (stageId: string) => void;
   onConfigureStage: (stage: Stage) => void;
 }
 
@@ -23,7 +22,6 @@ const PipelineFlow: React.FC<PipelineFlowProps> = ({
   stages,
   onRemoveStage,
   onReorderStages,
-  onToggleStageType,
   onConfigureStage,
 }) => {
   if (stages.length === 0) {
@@ -32,7 +30,7 @@ const PipelineFlow: React.FC<PipelineFlowProps> = ({
         sx={{
           height: '200px',
           border: '2px dashed #e5e7eb',
-          borderRadius: '8px',
+          borderRadius: '16px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -47,7 +45,7 @@ const PipelineFlow: React.FC<PipelineFlowProps> = ({
             textAlign: 'center',
           }}
         >
-          Drop stages here to build your hiring pipeline
+          Drag stages from above to build your hiring pipeline
         </Typography>
       </Box>
     );
@@ -57,7 +55,7 @@ const PipelineFlow: React.FC<PipelineFlowProps> = ({
     <Box
       sx={{
         display: 'flex',
-        gap: 2,
+        gap: 3,
         overflowX: 'auto',
         pb: 2,
         minHeight: '200px',
@@ -82,7 +80,6 @@ const PipelineFlow: React.FC<PipelineFlowProps> = ({
             index={index}
             onRemove={() => onRemoveStage(stage.id)}
             onReorder={onReorderStages}
-            onToggleType={() => onToggleStageType(stage.id)}
             onConfigure={() => onConfigureStage(stage)}
           />
           {index < stages.length - 1 && (
@@ -90,26 +87,27 @@ const PipelineFlow: React.FC<PipelineFlowProps> = ({
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                height: '140px',
-                minWidth: '24px',
+                height: '160px',
+                minWidth: '32px',
               }}
             >
               <Box
                 sx={{
-                  width: '24px',
-                  height: '2px',
+                  width: '32px',
+                  height: '3px',
                   backgroundColor: '#009933',
                   position: 'relative',
+                  borderRadius: '2px',
                   '&::after': {
                     content: '""',
                     position: 'absolute',
-                    right: '-4px',
-                    top: '-3px',
+                    right: '-6px',
+                    top: '-4px',
                     width: 0,
                     height: 0,
-                    borderLeft: '8px solid #009933',
-                    borderTop: '4px solid transparent',
-                    borderBottom: '4px solid transparent',
+                    borderLeft: '10px solid #009933',
+                    borderTop: '5px solid transparent',
+                    borderBottom: '5px solid transparent',
                   },
                 }}
               />
