@@ -24,7 +24,8 @@ import {
   Award,
   TrendingUp,
   Search,
-  BarChart
+  BarChart,
+  Menu
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { 
@@ -55,7 +56,7 @@ const navigationItems: NavigationItem[] = [
 
 export const AMSSidebar = () => {
   const location = useLocation();
-  const { open } = useSidebar();
+  const { open, toggleSidebar } = useSidebar();
   
   // Helper to check if a path is active
   const isActive = (path: string) => {
@@ -71,7 +72,13 @@ export const AMSSidebar = () => {
       <SidebarHeader className="border-b p-2">
         <div className="flex items-center justify-between">
           {open && <h2 className="text-xl font-semibold px-2">AMS</h2>}
-          <SidebarTrigger className="ml-auto h-8 w-8" />
+          <button
+            onClick={toggleSidebar}
+            className="p-2 rounded-md hover:bg-gray-100 transition-colors"
+            aria-label="Toggle Sidebar"
+          >
+            <Menu className="h-4 w-4" />
+          </button>
         </div>
         {open && (
           <div className="mt-2">
