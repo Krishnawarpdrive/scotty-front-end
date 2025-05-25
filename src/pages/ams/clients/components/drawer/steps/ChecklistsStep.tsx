@@ -82,9 +82,9 @@ const ChecklistsStep: React.FC<ChecklistsStepProps> = ({ form }) => {
 
   const addChecklistItem = (item: string, type: 'general' | 'role' | 'client') => {
     const fieldMap = {
-      general: 'generalChecklists',
-      role: 'roleChecklists',
-      client: 'clientChecklists'
+      general: 'generalChecklists' as const,
+      role: 'roleChecklists' as const,
+      client: 'clientChecklists' as const
     };
     
     const currentItems = form.watch(fieldMap[type]) || [];
@@ -95,9 +95,9 @@ const ChecklistsStep: React.FC<ChecklistsStepProps> = ({ form }) => {
 
   const removeChecklistItem = (item: string, type: 'general' | 'role' | 'client') => {
     const fieldMap = {
-      general: 'generalChecklists',
-      role: 'roleChecklists',
-      client: 'clientChecklists'
+      general: 'generalChecklists' as const,
+      role: 'roleChecklists' as const,
+      client: 'clientChecklists' as const
     };
     
     const currentItems = form.watch(fieldMap[type]) || [];

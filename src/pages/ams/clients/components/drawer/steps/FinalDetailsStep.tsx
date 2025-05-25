@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, DollarSign, Users, Target, FileText, Template } from 'lucide-react';
+import { CalendarIcon, DollarSign, Users, Target, FileText, File } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { RoleCreationFormValues } from '../schemas/roleCreationSchema';
@@ -168,7 +168,7 @@ const FinalDetailsStep: React.FC<FinalDetailsStepProps> = ({ form, clientName })
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
                 <FormLabel className="flex items-center gap-2 text-base">
-                  <Template className="h-4 w-4" />
+                  <File className="h-4 w-4" />
                   Save as Template
                 </FormLabel>
                 <div className="text-sm text-muted-foreground">

@@ -6,7 +6,7 @@ import { Form } from '@/components/ui/form';
 import { SideDrawer } from '@/components/ui/side-drawer';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { ChevronLeft, ChevronRight, Save, FileTemplate } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Save, File } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { roleCreationSchema, type RoleCreationFormValues } from './schemas/roleCreationSchema';
@@ -229,7 +229,7 @@ export const ClientRoleCreationDrawer: React.FC<ClientRoleCreationDrawerProps> =
                 disabled={!canProceed() || isSubmitting}
                 className="flex items-center gap-1"
               >
-                <FileTemplate className="h-4 w-4" />
+                <File className="h-4 w-4" />
                 Save as Template
               </Button>
             )}
