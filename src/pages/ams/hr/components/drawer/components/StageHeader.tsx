@@ -5,6 +5,7 @@ import {
   Delete as DeleteIcon,
   DragIndicator as DragIcon,
 } from '@mui/icons-material';
+import { ConnectDragSource } from 'react-dnd';
 import { getCategoryColor } from '../utils/stageUtils';
 
 interface Stage {
@@ -19,7 +20,7 @@ interface StageHeaderProps {
   stage: Stage;
   isHovered: boolean;
   onRemove: () => void;
-  dragRef: React.RefObject<HTMLDivElement>;
+  dragRef: ConnectDragSource;
 }
 
 const StageHeader: React.FC<StageHeaderProps> = ({
