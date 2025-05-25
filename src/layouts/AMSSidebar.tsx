@@ -55,7 +55,7 @@ const navigationItems: NavigationItem[] = [
 
 export const AMSSidebar = () => {
   const location = useLocation();
-  const { open, toggleSidebar } = useSidebar();
+  const { open } = useSidebar();
   
   // Helper to check if a path is active
   const isActive = (path: string) => {
@@ -68,13 +68,13 @@ export const AMSSidebar = () => {
       collapsible="icon"
       variant="sidebar"
     >
-      <SidebarHeader className="border-b">
-        <div className="p-2 flex justify-between items-center">
+      <SidebarHeader className="border-b p-2">
+        <div className="flex items-center justify-between">
           {open && <h2 className="text-xl font-semibold px-2">AMS</h2>}
           <SidebarTrigger className="ml-auto h-8 w-8" />
         </div>
         {open && (
-          <div className="px-2 pb-2">
+          <div className="mt-2">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
