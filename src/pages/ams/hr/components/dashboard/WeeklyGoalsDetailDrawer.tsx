@@ -154,39 +154,71 @@ export const WeeklyGoalsDetailDrawer: React.FC<WeeklyGoalsDetailDrawerProps> = (
     
     if (ta.status === 'behind' || ta.status === 'at-risk') {
       actions.push(
-        <Button key="reassign" variant="outline" size="sm" className="h-6 text-xs px-2">
-          <UserPlus className="h-3 w-3 mr-1" />
-          Reassign
-        </Button>
+        <Tooltip key="reassign">
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <UserPlus className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Reassign</p>
+          </TooltipContent>
+        </Tooltip>
       );
     }
     
     actions.push(
-      <Button key="message" variant="outline" size="sm" className="h-6 text-xs px-2">
-        <MessageSquare className="h-3 w-3 mr-1" />
-        Message
-      </Button>
+      <Tooltip key="message">
+        <TooltipTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <MessageSquare className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Message</p>
+        </TooltipContent>
+      </Tooltip>
     );
 
     if (ta.status === 'feedback-pending') {
       actions.push(
-        <Button key="follow-up" variant="outline" size="sm" className="h-6 text-xs px-2">
-          Follow Up
-        </Button>
+        <Tooltip key="follow-up">
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <Clock className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Follow Up</p>
+          </TooltipContent>
+        </Tooltip>
       );
     } else if (ta.status === 'on-track') {
       actions.push(
-        <Button key="nudge" variant="outline" size="sm" className="h-6 text-xs px-2">
-          Nudge
-        </Button>
+        <Tooltip key="nudge">
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <AlertTriangle className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Nudge</p>
+          </TooltipContent>
+        </Tooltip>
       );
     }
 
     actions.push(
-      <Button key="view" variant="outline" size="sm" className="h-6 text-xs px-2">
-        <Eye className="h-3 w-3 mr-1" />
-        View
-      </Button>
+      <Tooltip key="view">
+        <TooltipTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Eye className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>View</p>
+        </TooltipContent>
+      </Tooltip>
     );
 
     return <div className="flex gap-1">{actions}</div>;
