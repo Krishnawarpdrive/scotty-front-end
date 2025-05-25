@@ -197,6 +197,78 @@ export type Database = {
         }
         Relationships: []
       }
+      requirements: {
+        Row: {
+          assigned_to: string | null
+          budget_variance: string | null
+          client_id: string
+          created_at: string
+          custom_jd: string | null
+          description: string | null
+          due_date: string | null
+          experience_variance: string | null
+          hiring_manager: string | null
+          id: string
+          name: string
+          priority: string
+          role_id: string
+          status: string
+          updated_at: string
+          vacancies: number
+        }
+        Insert: {
+          assigned_to?: string | null
+          budget_variance?: string | null
+          client_id: string
+          created_at?: string
+          custom_jd?: string | null
+          description?: string | null
+          due_date?: string | null
+          experience_variance?: string | null
+          hiring_manager?: string | null
+          id?: string
+          name: string
+          priority?: string
+          role_id: string
+          status?: string
+          updated_at?: string
+          vacancies?: number
+        }
+        Update: {
+          assigned_to?: string | null
+          budget_variance?: string | null
+          client_id?: string
+          created_at?: string
+          custom_jd?: string | null
+          description?: string | null
+          due_date?: string | null
+          experience_variance?: string | null
+          hiring_manager?: string | null
+          id?: string
+          name?: string
+          priority?: string
+          role_id?: string
+          status?: string
+          updated_at?: string
+          vacancies?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "requirements_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requirements_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       role_skills: {
         Row: {
           id: string
@@ -277,6 +349,8 @@ export type Database = {
           max_experience: string
           min_experience: string
           name: string
+          source_type: string | null
+          template_id: string | null
           updated_at: string | null
           usage_count: number | null
           work_mode: string
@@ -294,6 +368,8 @@ export type Database = {
           max_experience: string
           min_experience: string
           name: string
+          source_type?: string | null
+          template_id?: string | null
           updated_at?: string | null
           usage_count?: number | null
           work_mode: string
@@ -311,6 +387,8 @@ export type Database = {
           max_experience?: string
           min_experience?: string
           name?: string
+          source_type?: string | null
+          template_id?: string | null
           updated_at?: string | null
           usage_count?: number | null
           work_mode?: string
@@ -321,6 +399,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "roles_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "global_roles"
             referencedColumns: ["id"]
           },
         ]
