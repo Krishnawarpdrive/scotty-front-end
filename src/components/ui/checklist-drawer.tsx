@@ -56,13 +56,13 @@ export function ChecklistDrawer({
   
   const updateChecklistItemText = (index: number, text: string) => {
     const updatedItems = [...checklistItems];
-    updatedItems[index].text = text;
+    updatedItems[index] = { ...updatedItems[index], text };
     setChecklistItems(updatedItems);
   };
   
   const toggleItemCompletion = (index: number) => {
     const updatedItems = [...checklistItems];
-    updatedItems[index].completed = !updatedItems[index].completed;
+    updatedItems[index] = { ...updatedItems[index], completed: !updatedItems[index].completed };
     setChecklistItems(updatedItems);
   };
   
@@ -116,14 +116,20 @@ export function ChecklistDrawer({
               {checklistItems.map((item, index) => (
                 <div key={item.id} className="flex items-center gap-3">
                   {viewOnly ? (
-                    <Checkbox
-                      id={`item-${item.id}`}
-                      checked={item.completed}
-                      onCheckedChange={() => toggleItemCompletion(index)}
-                    />
-                  ) : null}
-                  
-                  {!viewOnly ? (
+                    <>
+                      <Checkbox
+                        id={`item-${item.id}`}
+                        checked={item.completed}
+                        onCheckedChange={() => toggleItemCompletion(index)}
+                      />
+                      <label
+                        htmlFor={`item-${item.id}`}
+                        className={`flex-1 text-sm cursor-pointer ${item.completed ? 'line-through opacity-70' : ''}`}
+                      >
+                        {item.text}
+                      </label>
+                    </>
+                  ) : (
                     <DraggableItem
                       id={item.id}
                       index={index}
@@ -132,13 +138,6 @@ export function ChecklistDrawer({
                       onRemove={() => removeChecklistItem(index)}
                       moveItem={moveItem}
                     />
-                  ) : (
-                    <label
-                      htmlFor={`item-${item.id}`}
-                      className={`flex-1 text-sm ${item.completed ? 'line-through opacity-70' : ''}`}
-                    >
-                      {item.text}
-                    </label>
                   )}
                 </div>
               ))}

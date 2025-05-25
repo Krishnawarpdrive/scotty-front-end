@@ -17,35 +17,37 @@ export const useChecklistItems = (
   
   // Add a new item
   const addItem = () => {
-    setItems([
-      ...items, 
-      { 
-        id: (items.length + 1).toString(), 
-        text: '', 
-        completed: false 
-      }
-    ]);
+    const newItem: ChecklistItem = { 
+      id: Date.now().toString(), // Use timestamp for unique ID
+      text: '', 
+      completed: false 
+    };
+    setItems(prevItems => [...prevItems, newItem]);
   };
   
   // Remove an item
   const removeItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
+    setItems(prevItems => prevItems.filter((_, i) => i !== index));
   };
   
   // Update item text
   const updateItemText = (index: number, text: string) => {
-    const updatedItems = [...items];
-    updatedItems[index].text = text;
-    setItems(updatedItems);
+    setItems(prevItems => {
+      const updatedItems = [...prevItems];
+      updatedItems[index] = { ...updatedItems[index], text };
+      return updatedItems;
+    });
   };
   
   // Move item (for drag and drop)
   const moveItem = (dragIndex: number, hoverIndex: number) => {
-    const dragItem = items[dragIndex];
-    const newItems = [...items];
-    newItems.splice(dragIndex, 1);
-    newItems.splice(hoverIndex, 0, dragItem);
-    setItems(newItems);
+    setItems(prevItems => {
+      const dragItem = prevItems[dragIndex];
+      const newItems = [...prevItems];
+      newItems.splice(dragIndex, 1);
+      newItems.splice(hoverIndex, 0, dragItem);
+      return newItems;
+    });
   };
   
   // Get valid items (non-empty)
@@ -55,7 +57,7 @@ export const useChecklistItems = (
   
   // Reset to initial state
   const resetItems = () => {
-    setItems([{ id: '1', text: '', completed: false }]);
+    setItems([{ id: Date.now().toString(), text: '', completed: false }]);
   };
   
   return {
