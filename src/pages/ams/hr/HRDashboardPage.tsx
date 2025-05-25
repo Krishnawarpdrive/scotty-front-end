@@ -16,6 +16,7 @@ import { useDashboardData, MetricData } from './hooks/useDashboardData';
 import { useFilterOptions } from './hooks/useFilterOptions';
 import { motion } from 'framer-motion';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+
 const HRDashboardPage: React.FC = () => {
   const [dateRange, setDateRange] = useState('30');
   const [taFilter, setTaFilter] = useState('all');
@@ -138,7 +139,7 @@ const HRDashboardPage: React.FC = () => {
           delay: 0.3
         }} className="mb-6 md:mb-8">
             <h2 className="font-bold text-xl mb-4">Primary Hiring Metrics</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {isLoading ? Array(5).fill(null).map((_, i) => <div key={i} className="h-[280px] bg-white animate-pulse rounded-xl border"></div>) : metrics.map((metric, index) => <MetricCard key={index} metric={metric} onClick={() => handleShowDetails(metric)} />)}
             </div>
           </motion.div>
@@ -165,4 +166,5 @@ const HRDashboardPage: React.FC = () => {
       <AdvancedFiltersDrawer open={advancedFiltersOpen} onOpenChange={setAdvancedFiltersOpen} onFiltersApply={handleAdvancedFiltersApply} />
     </div>;
 };
+
 export default HRDashboardPage;
