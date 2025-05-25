@@ -69,6 +69,14 @@ const ClientsPage = () => {
     navigate(`/ams/clients/${newClient.id}`);
   };
 
+  // Fix the client selection handler to match expected signature
+  const handleClientSelect = (clientId: string) => {
+    const client = clients.find(c => c.id === clientId);
+    if (client) {
+      handleSelectClient(client);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <ClientsPageHeader onCreateClient={handleCreateClient} />
@@ -83,7 +91,7 @@ const ClientsPage = () => {
         onEditClient={handleEditClient}
         onDeleteClient={deleteClient}
         onViewClientDetails={handleViewClientDetails}
-        onSelectClient={handleSelectClient}
+        onSelectClient={handleClientSelect}
         onSelectAll={handleSelectAll}
         onSort={handleSort}
       />
