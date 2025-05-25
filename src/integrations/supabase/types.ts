@@ -9,6 +9,60 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      certification_library: {
+        Row: {
+          created_at: string
+          description: string | null
+          domain: string
+          id: string
+          title: string
+          validity_period: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          domain: string
+          id?: string
+          title: string
+          validity_period?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          domain?: string
+          id?: string
+          title?: string
+          validity_period?: string | null
+        }
+        Relationships: []
+      }
+      checklist_library: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          role_relevance: string[] | null
+          title: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          role_relevance?: string[] | null
+          title: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          role_relevance?: string[] | null
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           account_type: string | null
@@ -100,6 +154,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      global_roles: {
+        Row: {
+          created_at: string
+          department: string
+          description: string | null
+          employment_type: string
+          experience_range: string
+          id: string
+          name: string
+          recommended_certifications: string[] | null
+          recommended_skills: string[] | null
+          updated_at: string
+          work_mode: string
+        }
+        Insert: {
+          created_at?: string
+          department: string
+          description?: string | null
+          employment_type: string
+          experience_range: string
+          id?: string
+          name: string
+          recommended_certifications?: string[] | null
+          recommended_skills?: string[] | null
+          updated_at?: string
+          work_mode: string
+        }
+        Update: {
+          created_at?: string
+          department?: string
+          description?: string | null
+          employment_type?: string
+          experience_range?: string
+          id?: string
+          name?: string
+          recommended_certifications?: string[] | null
+          recommended_skills?: string[] | null
+          updated_at?: string
+          work_mode?: string
+        }
+        Relationships: []
       }
       role_skills: {
         Row: {
@@ -250,6 +346,30 @@ export type Database = {
           id?: string
           name?: string
           popularity?: number | null
+        }
+        Relationships: []
+      }
+      skills_library: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          name: string
+          role_relevance: string[] | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          name: string
+          role_relevance?: string[] | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          name?: string
+          role_relevance?: string[] | null
         }
         Relationships: []
       }
