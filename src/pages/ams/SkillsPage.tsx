@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import SkillsLibraryPage from './skills/SkillsLibraryPage';
 import { SideDrawer } from '@/components/ui/side-drawer';
@@ -63,7 +62,7 @@ const SkillsPage = () => {
         onOpenChange={setDrawerOpen}
         title="Add New Skill"
         description="Enter the details of the skill you want to add to the library"
-        size="md"
+        size="lg"
       >
         <form onSubmit={handleSaveSkill} className="space-y-6 p-6">
           <div className="space-y-4">

@@ -16,6 +16,12 @@ export const roleFormSchema = z.object({
   secondarySkills: z.array(z.string()).default([]),
   certifications: z.array(z.string()).default([]),
   tags: z.array(z.string()).default([]),
+  // Add missing fields
+  externalName: z.string().optional(),
+  jobDescription: z.string().optional(),
+  roleCategory: z.string().optional(),
+  minExperience: z.string().optional(),
+  maxExperience: z.string().optional(),
   customFields: z.array(z.object({
     id: z.string(),
     label: z.string(),

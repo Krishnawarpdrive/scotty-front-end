@@ -1,43 +1,42 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { SideDrawer } from '@/components/ui/side-drawer';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { roleFormSchema, type RoleFormValues } from '../roleFormSchema';
+import { BasicInfoStep } from '../steps/BasicInfoStep';
+import { DetailsStep } from '../steps/DetailsStep';
+import { SkillsTagsStep } from '../steps/SkillsTagsStep';
+import { CustomFieldsStep } from '../steps/CustomFieldsStep';
 import { useToast } from '@/hooks/use-toast';
-import { RoleFormValues } from '../types/roleTypes';
-import { roleFormSchema } from '../types/roleTypes';
-import RoleFormProgress from './RoleFormProgress';
-import RoleStepNavigation from './RoleStepNavigation';
-import BasicInfoStep from '../steps/BasicInfoStep';
-import DetailsStep from '../steps/DetailsStep';
-import SkillsTagsStep from '../steps/SkillsTagsStep';
-import CustomFieldsStep from '../steps/CustomFieldsStep';
 
 interface SteppedRoleCreationDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onRoleCreated?: (values: RoleFormValues) => void;
-  clientId?: string;
-  clientName?: string;
+  editingRole?: any;
 }
 
-const SteppedRoleCreationDrawer: React.FC<SteppedRoleCreationDrawerProps> = ({
+const steps = [
+  { id: 'basic', title: 'Basic Information', description: 'Role name, department, and basic details' },
+  { id: 'details', title: 'Details', description: 'Job description, requirements, and specifications' },
+  { id: 'skills', title: 'Skills & Tags', description: 'Required skills and relevant tags' },
+  { id: 'final', title: 'Final Options', description: 'Review and template options' }
+];
+
+export const SteppedRoleCreationDrawer: React.FC<SteppedRoleCreationDrawerProps> = ({
   open,
   onOpenChange,
-  onRoleCreated,
-  clientId,
-  clientName
+  editingRole
 }) => {
-  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [skills, setSkills] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
   const [customFields, setCustomFields] = useState<any[]>([]);
-
-  const formSections = ['Basic Info', 'Details', 'Skills & Tags', 'Custom Fields'];
-  const totalSteps = formSections.length;
+  const { toast } = useToast();
 
   const form = useForm<RoleFormValues>({
     resolver: zodResolver(roleFormSchema),
@@ -52,64 +51,40 @@ const SteppedRoleCreationDrawer: React.FC<SteppedRoleCreationDrawerProps> = ({
       salaryRange: '',
       responsibilities: '',
       requirements: '',
+      externalName: '',
+      jobDescription: '',
+      roleCategory: '',
+      minExperience: '',
+      maxExperience: '',
       primarySkills: [],
       secondarySkills: [],
       certifications: [],
       tags: [],
       customFields: [],
       saveAsTemplate: false
-    },
-    mode: 'onChange'
+    }
   });
 
-  const watchedFields = form.watch();
+  const progress = ((currentStep + 1) / steps.length) * 100;
 
-  // Calculate form progress
-  const calculateProgress = () => {
-    const requiredFields = ['roleName', 'department', 'workMode', 'employmentType'];
-    const completedFields = requiredFields.filter(field => watchedFields[field as keyof RoleFormValues]);
-    
-    let stepProgress = 0;
+  const canProceed = () => {
+    const values = form.getValues();
     switch (currentStep) {
       case 0: // Basic Info
-        stepProgress = requiredFields.slice(0, 2).filter(field => watchedFields[field as keyof RoleFormValues]).length / 2;
-        break;
+        return values.roleName && values.department && values.workMode && values.employmentType && values.experienceLevel;
       case 1: // Details
-        stepProgress = requiredFields.slice(2).filter(field => watchedFields[field as keyof RoleFormValues]).length / 2;
-        break;
-      case 2: // Skills & Tags
-        stepProgress = selectedSkills.length > 0 ? 1 : 0;
-        break;
-      case 3: // Custom Fields
-        stepProgress = 1; // Always complete
-        break;
-    }
-    
-    const baseProgress = (currentStep / totalSteps) * 100;
-    const currentStepProgress = (stepProgress / totalSteps) * 100;
-    return Math.min(baseProgress + currentStepProgress, 100);
-  };
-
-  const progress = calculateProgress();
-
-  // Check if current step is valid
-  const canProceed = () => {
-    switch (currentStep) {
-      case 0:
-        return watchedFields.roleName && watchedFields.department;
-      case 1:
-        return watchedFields.workMode && watchedFields.employmentType;
-      case 2:
+        return true; // Details are optional
+      case 2: // Skills
         return true; // Skills are optional
-      case 3:
-        return true; // Custom fields are optional
+      case 3: // Final
+        return true;
       default:
         return false;
     }
   };
 
   const handleNext = () => {
-    if (currentStep < totalSteps - 1) {
+    if (currentStep < steps.length - 1 && canProceed()) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -120,59 +95,28 @@ const SteppedRoleCreationDrawer: React.FC<SteppedRoleCreationDrawerProps> = ({
     }
   };
 
-  const handleSubmit = async () => {
-    try {
-      setIsSubmitting(true);
-      
-      const formData = form.getValues();
-      const roleData = {
-        ...formData,
-        skills: selectedSkills,
-        tags: selectedTags,
-        customFields,
-        clientId
-      };
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "Role Created Successfully",
-        description: `The role "${roleData.roleName}" has been created.`
-      });
-
-      if (onRoleCreated) {
-        onRoleCreated(roleData);
-      }
-
-      onOpenChange(false);
-      handleReset();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create role. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleReset = () => {
-    setCurrentStep(0);
-    setSelectedSkills([]);
-    setSelectedTags([]);
-    setCustomFields([]);
+  const onSubmit = (data: RoleFormValues) => {
+    console.log('Role creation data:', {
+      ...data,
+      primarySkills: skills,
+      tags: tags,
+      customFields: customFields
+    });
+    
+    toast({
+      title: "Success!",
+      description: "Role has been created successfully.",
+    });
+    
+    onOpenChange(false);
     form.reset();
+    setCurrentStep(0);
+    setSkills([]);
+    setTags([]);
+    setCustomFields([]);
   };
 
-  useEffect(() => {
-    if (open) {
-      handleReset();
-    }
-  }, [open]);
-
-  const renderCurrentStep = () => {
+  const renderStepContent = () => {
     switch (currentStep) {
       case 0:
         return <BasicInfoStep form={form} />;
@@ -180,16 +124,16 @@ const SteppedRoleCreationDrawer: React.FC<SteppedRoleCreationDrawerProps> = ({
         return <DetailsStep form={form} />;
       case 2:
         return (
-          <SkillsTagsStep
-            skills={selectedSkills}
-            setSkills={setSelectedSkills}
-            tags={selectedTags}
-            setTags={setSelectedTags}
+          <SkillsTagsStep 
+            skills={skills}
+            setSkills={setSkills}
+            tags={tags}
+            setTags={setTags}
           />
         );
       case 3:
         return (
-          <CustomFieldsStep
+          <CustomFieldsStep 
             form={form}
             customFields={customFields}
             setCustomFields={setCustomFields}
@@ -200,38 +144,100 @@ const SteppedRoleCreationDrawer: React.FC<SteppedRoleCreationDrawerProps> = ({
     }
   };
 
+  const footerContent = (
+    <div className="flex justify-between items-center w-full">
+      <Button 
+        type="button" 
+        variant="outline" 
+        onClick={handlePrevious}
+        disabled={currentStep === 0}
+        className="flex items-center gap-1"
+      >
+        <ChevronLeft className="h-4 w-4" />
+        Previous
+      </Button>
+      
+      <div className="flex gap-2">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={() => onOpenChange(false)}
+        >
+          Cancel
+        </Button>
+        
+        {currentStep === steps.length - 1 ? (
+          <Button 
+            type="submit"
+            onClick={form.handleSubmit(onSubmit)}
+            disabled={!canProceed()}
+          >
+            Create Role
+          </Button>
+        ) : (
+          <Button 
+            type="button"
+            onClick={handleNext}
+            disabled={!canProceed()}
+            className="flex items-center gap-1"
+          >
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <SideDrawer
       open={open}
       onOpenChange={onOpenChange}
-      title="Create New Role"
-      description={clientName ? `Creating a new role for ${clientName}` : 'Fill in the details to create a new role'}
-      size="lg"
+      title={editingRole ? "Edit Role" : "Create New Role"}
+      description={steps[currentStep].description}
+      size="xl"
+      footer={footerContent}
     >
-      <div className="p-6">
-        <RoleFormProgress
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          formSections={formSections}
-          progress={progress}
-        />
-
-        <Form {...form}>
-          <div className="min-h-[400px]">
-            {renderCurrentStep()}
+      <div className="p-6 space-y-6">
+        {/* Progress Section */}
+        <div className="space-y-4">
+          <div className="flex justify-between text-sm">
+            <span className="font-medium">Step {currentStep + 1} of {steps.length}</span>
+            <span className="text-muted-foreground">{Math.round(progress)}% Complete</span>
           </div>
-        </Form>
-
-        <RoleStepNavigation
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          onPrevious={handlePrevious}
-          onNext={handleNext}
-          onCancel={() => onOpenChange(false)}
-          onSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
-          canProceed={canProceed()}
-        />
+          <Progress value={progress} className="h-2" />
+          
+          {/* Step Indicators */}
+          <div className="flex justify-between">
+            {steps.map((step, index) => (
+              <div 
+                key={step.id} 
+                className={`flex flex-col items-center text-center max-w-[120px] ${
+                  index <= currentStep ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium border-2 mb-2 ${
+                  index < currentStep 
+                    ? 'bg-primary text-primary-foreground border-primary' 
+                    : index === currentStep
+                      ? 'border-primary text-primary bg-background'
+                      : 'border-muted-foreground/30 text-muted-foreground'
+                }`}>
+                  {index < currentStep ? '✓' : index + 1}
+                </div>
+                <span className="text-xs font-medium">{step.title}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="border-t pt-6">
+          <Form {...form}>
+            <form className="space-y-6">
+              {renderStepContent()}
+            </form>
+          </Form>
+        </div>
       </div>
     </SideDrawer>
   );

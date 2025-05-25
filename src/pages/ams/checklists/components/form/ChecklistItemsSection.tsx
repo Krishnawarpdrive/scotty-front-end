@@ -32,6 +32,8 @@ export const ChecklistItemsSection: React.FC<ChecklistItemsSectionProps> = ({ in
     typeof item.completed === 'boolean'
   ) : [];
   
+  console.log('ChecklistItemsSection - validItems:', validItems);
+  
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
@@ -40,17 +42,20 @@ export const ChecklistItemsSection: React.FC<ChecklistItemsSectionProps> = ({ in
       
       <div className="space-y-2 max-h-[300px] overflow-y-auto p-2">
         <DndProvider backend={HTML5Backend}>
-          {validItems.map((item, index) => (
-            <DraggableItem
-              key={item.id}
-              id={item.id}
-              index={index}
-              text={item.text}
-              onTextChange={(text) => updateItemText(index, text)}
-              onRemove={() => removeItem(index)}
-              moveItem={moveItem}
-            />
-          ))}
+          {validItems.map((item, index) => {
+            console.log('Rendering item:', item, 'at index:', index);
+            return (
+              <DraggableItem
+                key={item.id}
+                id={item.id}
+                index={index}
+                text={item.text}
+                onTextChange={(text) => updateItemText(index, text)}
+                onRemove={() => removeItem(index)}
+                moveItem={moveItem}
+              />
+            );
+          })}
         </DndProvider>
       </div>
       
