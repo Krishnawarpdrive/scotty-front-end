@@ -22,15 +22,15 @@ export const ChecklistsTable: React.FC<ChecklistsTableProps> = ({
       id: 'name',
       header: 'Name',
       accessorKey: 'name' as keyof Checklist,
-      cell: ({ row }: { row: { original: Checklist } }) => (
-        <div className="font-medium">{row.original.name}</div>
+      cell: (data: Checklist) => (
+        <div className="font-medium">{data.name}</div>
       )
     },
     {
       id: 'type',
       header: 'Type',
       accessorKey: 'type' as keyof Checklist,
-      cell: ({ row }: { row: { original: Checklist } }) => {
+      cell: (data: Checklist) => {
         const typeLabels = {
           general: 'General',
           role: 'Role-based',
@@ -38,7 +38,7 @@ export const ChecklistsTable: React.FC<ChecklistsTableProps> = ({
         };
         return (
           <Badge variant="outline">
-            {typeLabels[row.original.type as keyof typeof typeLabels] || row.original.type}
+            {typeLabels[data.type as keyof typeof typeLabels] || data.type}
           </Badge>
         );
       }
@@ -47,8 +47,8 @@ export const ChecklistsTable: React.FC<ChecklistsTableProps> = ({
       id: 'items',
       header: 'Items',
       accessorKey: (data: Checklist) => data.items,
-      cell: ({ row }: { row: { original: Checklist } }) => {
-        const items = row.original.items;
+      cell: (data: Checklist) => {
+        const items = data.items;
         let itemCount = 0;
         
         if (Array.isArray(items)) {
@@ -67,19 +67,19 @@ export const ChecklistsTable: React.FC<ChecklistsTableProps> = ({
       id: 'actions',
       header: 'Actions',
       accessorKey: (data: Checklist) => data.id,
-      cell: ({ row }: { row: { original: Checklist } }) => (
+      cell: (data: Checklist) => (
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => onEdit(row.original)}
+            onClick={() => onEdit(data)}
           >
             <Edit className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => onDelete(row.original.id)}
+            onClick={() => onDelete(data.id)}
             className="text-red-600 hover:text-red-700"
           >
             <Trash2 className="h-4 w-4" />
