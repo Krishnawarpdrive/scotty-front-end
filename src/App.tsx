@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "./theme/ThemeProvider";
@@ -48,6 +47,9 @@ function App() {
             {/* HR Section */}
             <Route path="hr/role-management" element={<RoleManagementPage />} />
             <Route path="hr/dashboard" element={<HRDashboardPage />} />
+
+            {/* TA Section */}
+            <Route path="ta/mission-control" element={<TAMissionControlPage />} />
 
             {/* Client Routes */}
             <Route path="clients" element={<ClientsPage />} />
