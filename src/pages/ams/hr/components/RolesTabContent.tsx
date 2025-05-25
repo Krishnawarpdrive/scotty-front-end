@@ -26,16 +26,16 @@ const RolesTabContent = ({ rolesData, handleClientClick, handleRowClick }: Roles
     
     // Find the role name column and enhance it with click handler
     return baseColumns.map(column => {
-      if (column.accessorKey === 'name' || column.header === 'Role Name') {
+      if (column.id === 'roleName' || column.accessorKey === 'name') {
         return {
           ...column,
-          cell: ({ row }: any) => (
+          cell: (role: any) => (
             <button
-              onClick={() => handleRoleClick(row.original)}
+              onClick={() => handleRoleClick(role)}
               className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer text-left font-medium"
               style={{ fontFamily: 'Rubik, sans-serif', fontSize: '12px' }}
             >
-              {row.getValue('name') || row.original.name}
+              {role.name || role.roleName}
             </button>
           ),
         };
