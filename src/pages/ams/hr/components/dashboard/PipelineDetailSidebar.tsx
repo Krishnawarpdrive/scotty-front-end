@@ -4,7 +4,9 @@ import { SideDrawer } from '@/components/ui/side-drawer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { MessageSquare, UserPlus, Calendar, Phone } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { MessageSquare, UserPlus, Calendar, Phone, Clock, FileText, Star, MoreVertical, Building } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface PipelineDetailSidebarProps {
@@ -50,11 +52,86 @@ export const PipelineDetailSidebar: React.FC<PipelineDetailSidebarProps> = ({
   };
 
   const mockCandidates = [
-    { name: 'John Doe', role: 'Software Engineer', ta: 'Sarah Johnson', client: 'Acme Corp', status: 'In Progress', daysInStage: 3 },
-    { name: 'Jane Smith', role: 'UX Designer', ta: 'Mike Peterson', client: 'Tech Innovations', status: 'Pending', daysInStage: 7 },
-    { name: 'Alice Brown', role: 'Product Manager', ta: 'Emma Wilson', client: 'Global Solutions', status: 'Scheduled', daysInStage: 2 },
-    { name: 'Bob Chen', role: 'Data Scientist', ta: 'John Taylor', client: 'Future Systems', status: 'In Progress', daysInStage: 5 }
+    { 
+      name: 'John Doe', 
+      role: 'Software Engineer', 
+      requirementId: 'REQ-001',
+      ta: 'Sarah Johnson', 
+      taInitials: 'SJ',
+      client: 'Acme Corp', 
+      clientInitials: 'AC',
+      status: 'In Progress', 
+      daysInStage: 3,
+      source: 'LinkedIn',
+      statusType: 'success',
+      hasResume: true,
+      isStarred: false,
+      riskStatus: null
+    },
+    { 
+      name: 'Jane Smith', 
+      role: 'UX Designer', 
+      requirementId: 'REQ-002',
+      ta: 'Mike Peterson', 
+      taInitials: 'MP',
+      client: 'Tech Innovations', 
+      clientInitials: 'TI',
+      status: 'Pending Feedback', 
+      daysInStage: 7,
+      source: 'Referral',
+      statusType: 'warning',
+      hasResume: true,
+      isStarred: true,
+      riskStatus: 'At Risk'
+    },
+    { 
+      name: 'Alice Brown', 
+      role: 'Product Manager', 
+      requirementId: 'REQ-003',
+      ta: null, 
+      taInitials: null,
+      client: 'Global Solutions', 
+      clientInitials: 'GS',
+      status: 'Scheduled', 
+      daysInStage: 2,
+      source: 'Direct',
+      statusType: 'info',
+      hasResume: true,
+      isStarred: false,
+      riskStatus: null
+    },
+    { 
+      name: 'Bob Chen', 
+      role: 'Data Scientist', 
+      requirementId: 'REQ-004',
+      ta: 'John Taylor', 
+      taInitials: 'JT',
+      client: 'Future Systems', 
+      clientInitials: 'FS',
+      status: 'In Progress', 
+      daysInStage: 5,
+      source: 'Agency',
+      statusType: 'success',
+      hasResume: true,
+      isStarred: false,
+      riskStatus: null
+    }
   ];
+
+  const getStatusColor = (statusType: string) => {
+    switch (statusType) {
+      case 'success': return 'bg-green-100 text-green-800';
+      case 'warning': return 'bg-yellow-100 text-yellow-800';
+      case 'info': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getDaysColor = (days: number) => {
+    if (days > 5) return 'bg-red-100 text-red-800';
+    if (days > 3) return 'bg-yellow-100 text-yellow-800';
+    return 'bg-green-100 text-green-800';
+  };
 
   return (
     <SideDrawer
@@ -64,98 +141,182 @@ export const PipelineDetailSidebar: React.FC<PipelineDetailSidebarProps> = ({
       subtitle={`${data.count} candidates in this stage`}
       size="lg"
     >
-      <div className="p-6 space-y-6">
-        {/* Stage Summary */}
-        <div className="bg-gray-50 rounded-lg p-4">
-          <h3 className="font-semibold mb-2">Stage Summary</h3>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="text-gray-500">Total Candidates:</span>
-              <span className="font-medium ml-2">{data.count}</span>
-            </div>
-            <div>
-              <span className="text-gray-500">Avg. Time in Stage:</span>
-              <span className="font-medium ml-2">4.2 days</span>
+      <TooltipProvider>
+        <div className="p-6 space-y-6">
+          {/* Stage Summary */}
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Stage Summary</h3>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-gray-500">Total Candidates:</span>
+                <span className="font-medium ml-2">{data.count}</span>
+              </div>
+              <div>
+                <span className="text-gray-500">Avg. Time in Stage:</span>
+                <span className="font-medium ml-2">4.2 days</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Bulk Actions */}
-        <div>
-          <h3 className="font-semibold mb-3">Bulk Actions</h3>
-          <div className="flex flex-wrap gap-2">
-            {getBulkActions().map((action, index) => (
-              <Button
-                key={index}
-                size="sm"
-                variant={action.variant}
-                className="flex items-center gap-2"
-              >
-                <action.icon className="h-4 w-4" />
-                {action.label}
-              </Button>
-            ))}
+          {/* Bulk Actions */}
+          <div>
+            <h3 className="font-semibold mb-3">Bulk Actions</h3>
+            <div className="flex flex-wrap gap-2">
+              {getBulkActions().map((action, index) => (
+                <Button
+                  key={index}
+                  size="sm"
+                  variant={action.variant}
+                  className="flex items-center gap-2"
+                >
+                  <action.icon className="h-4 w-4" />
+                  {action.label}
+                </Button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Candidate List */}
-        <div>
-          <h3 className="font-semibold mb-3">Candidates ({mockCandidates.length})</h3>
-          <div className="space-y-3">
-            {mockCandidates.map((candidate, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="border rounded-lg p-4 hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10">
-                      <AvatarFallback>
-                        {candidate.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h4 className="font-medium">{candidate.name}</h4>
-                      <p className="text-sm text-gray-500">{candidate.role}</p>
+          {/* Candidate List */}
+          <div>
+            <h3 className="font-semibold mb-3">Candidates ({mockCandidates.length})</h3>
+            <div className="space-y-2">
+              {mockCandidates.map((candidate, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="border rounded-lg p-3 hover:shadow-md transition-shadow bg-white"
+                >
+                  {/* Top Row - Client Logo and TA Chip */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Avatar className="h-6 w-6">
+                            <AvatarFallback className="text-xs bg-blue-100 text-blue-800">
+                              <Building className="h-3 w-3" />
+                            </AvatarFallback>
+                          </Avatar>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{candidate.client}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      {candidate.isStarred && (
+                        <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      {candidate.ta ? (
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Badge variant="secondary" className="bg-green-100 text-green-800 px-2 py-1 text-xs">
+                              {candidate.taInitials}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>TA: {candidate.ta}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <Badge variant="secondary" className="bg-gray-100 text-gray-500 px-2 py-1 text-xs">
+                          Unassigned
+                        </Badge>
+                      )}
                     </div>
                   </div>
-                  <Badge 
-                    variant={candidate.status === 'In Progress' ? 'default' : 'secondary'}
-                  >
-                    {candidate.status}
-                  </Badge>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-2 text-sm mb-3">
-                  <div>
-                    <span className="text-gray-500">TA:</span>
-                    <span className="ml-1">{candidate.ta}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Client:</span>
-                    <span className="ml-1">{candidate.client}</span>
-                  </div>
-                  <div className="col-span-2">
-                    <span className="text-gray-500">Days in stage:</span>
-                    <span className={`ml-1 ${candidate.daysInStage > 5 ? 'text-amber-600 font-medium' : ''}`}>
-                      {candidate.daysInStage}
-                    </span>
-                  </div>
-                </div>
 
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline">View Profile</Button>
-                  <Button size="sm" variant="outline">Message TA</Button>
-                  <Button size="sm" variant="outline">Take Action</Button>
-                </div>
-              </motion.div>
-            ))}
+                  {/* Main Candidate Info */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-sm truncate">{candidate.name}</h4>
+                      <p className="text-xs text-gray-600 truncate">{candidate.role}</p>
+                    </div>
+                    <div className="flex items-center gap-1 ml-2">
+                      <Badge variant="outline" className="text-xs px-1 py-0.5">
+                        {candidate.requirementId}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs px-1 py-0.5">
+                        {candidate.source}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {/* Metadata Row */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Badge className={`text-xs px-2 py-0.5 ${getDaysColor(candidate.daysInStage)}`}>
+                        <Clock className="h-3 w-3 mr-1" />
+                        {candidate.daysInStage}d
+                      </Badge>
+                      
+                      <Badge className={`text-xs px-2 py-0.5 ${getStatusColor(candidate.statusType)}`}>
+                        {candidate.status}
+                      </Badge>
+
+                      {candidate.riskStatus && (
+                        <Badge className="text-xs px-2 py-0.5 bg-red-100 text-red-800">
+                          ⚠️ {candidate.riskStatus}
+                        </Badge>
+                      )}
+
+                      {candidate.hasResume && (
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                              <FileText className="h-3 w-3" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>View Resume</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">
+                        View Profile
+                      </Button>
+                      <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">
+                        Message TA
+                      </Button>
+                      
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                            <MoreVertical className="h-3 w-3" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuItem>
+                            <UserPlus className="h-4 w-4 mr-2" />
+                            Reassign TA
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Calendar className="h-4 w-4 mr-2" />
+                            Schedule Interview
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="text-red-600">
+                            <MessageSquare className="h-4 w-4 mr-2" />
+                            Reject Candidate
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <MessageSquare className="h-4 w-4 mr-2" />
+                            Add Comment
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      </TooltipProvider>
     </SideDrawer>
   );
 };
