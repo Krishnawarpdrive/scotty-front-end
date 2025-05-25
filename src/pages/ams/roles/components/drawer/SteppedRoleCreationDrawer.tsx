@@ -371,23 +371,34 @@ export const SteppedRoleCreationDrawer: React.FC<SteppedRoleCreationDrawerProps>
     </div>
   );
 
+  const getDescriptionContent = () => {
+    const descriptionParts = [
+      <p key="main">{steps[currentStep].description}</p>
+    ];
+    
+    if (globalRoleTemplate) {
+      descriptionParts.push(
+        <div key="template" className="flex items-center gap-2">
+          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+            Template: {globalRoleTemplate.name}
+          </Badge>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="space-y-2">
+        {descriptionParts}
+      </div>
+    );
+  };
+
   return (
     <SideDrawer
       open={open}
       onOpenChange={onOpenChange}
       title={editingRole ? "Edit Role" : `Create New Role${clientName ? ` for ${clientName}` : ''}`}
-      description={
-        <div className="space-y-2">
-          <p>{steps[currentStep].description}</p>
-          {globalRoleTemplate && (
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                Template: {globalRoleTemplate.name}
-              </Badge>
-            </div>
-          )}
-        </div>
-      }
+      description={getDescriptionContent()}
       size="xl"
       footer={footerContent}
     >

@@ -69,10 +69,18 @@ const EnhancedClientRolesTab: React.FC<EnhancedClientRolesTabProps> = ({ client 
 
       if (requirementsError) throw requirementsError;
 
-      // Group requirements by role_id
+      // Group requirements by role_id and ensure proper typing
       const requirementsByRole = requirementsData?.reduce((acc, req) => {
         if (!acc[req.role_id]) acc[req.role_id] = [];
-        acc[req.role_id].push(req);
+        
+        // Ensure priority is properly typed
+        const typedRequirement: Requirement = {
+          ...req,
+          priority: req.priority as 'High' | 'Medium' | 'Low',
+          status: req.status as 'Open' | 'In Progress' | 'Closed' | 'On Hold'
+        };
+        
+        acc[req.role_id].push(typedRequirement);
         return acc;
       }, {} as Record<string, Requirement[]>) || {};
 

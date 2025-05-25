@@ -5,19 +5,19 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { SideDrawer } from '@/components/ui/side-drawer';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
-import { CalendarIcon, Save, AlertTriangle } from 'lucide-react';
+import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { RequirementFormValues } from '../../types/RequirementTypes';
+import { RequirementFormValues, Requirement } from '../../types/RequirementTypes';
 
 const requirementSchema = z.object({
   name: z.string().min(1, 'Requirement name is required'),
@@ -38,7 +38,7 @@ interface RequirementCreationDrawerProps {
   role: any;
   clientId: string;
   clientName: string;
-  onRequirementCreated?: (requirement: any) => void;
+  onRequirementCreated: (requirement: Requirement) => void;
 }
 
 const RequirementCreationDrawer: React.FC<RequirementCreationDrawerProps> = ({
@@ -50,64 +50,24 @@ const RequirementCreationDrawer: React.FC<RequirementCreationDrawerProps> = ({
   onRequirementCreated
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [vacancyWarning, setVacancyWarning] = useState<string | null>(null);
   const { toast } = useToast();
 
   const form = useForm<RequirementFormValues>({
     resolver: zodResolver(requirementSchema),
     defaultValues: {
-      name: `${role?.name} Developer`,
-      description: role?.job_description || '',
+      name: `${role?.name} - Requirement`,
+      description: '',
       vacancies: 1,
       priority: 'Medium',
-      hired_manager: role?.hiring_manager || '',
-      custom_jd: role?.job_description || ''
+      assigned_to: '',
+      hiring_manager: '',
+      budget_variance: '',
+      experience_variance: '',
+      custom_jd: role?.job_description || '',
     }
   });
 
-  const watchedVacancies = form.watch('vacancies');
-
-  // Check vacancy constraints
-  React.useEffect(() => {
-    const checkVacancyLimit = async () => {
-      if (!watchedVacancies || !role?.id) return;
-
-      try {
-        // Get current requirements for this role
-        const { data: existingRequirements } = await supabase
-          .from('requirements')
-          .select('vacancies')
-          .eq('role_id', role.id);
-
-        const currentTotal = existingRequirements?.reduce((sum, req) => sum + req.vacancies, 0) || 0;
-        const roleMaxVacancies = role.vacancies || 10; // Default max
-        const newTotal = currentTotal + watchedVacancies;
-
-        if (newTotal > roleMaxVacancies) {
-          setVacancyWarning(
-            `Vacancy limit exceeded. Total vacancies (${newTotal}) cannot exceed role maximum (${roleMaxVacancies})`
-          );
-        } else {
-          setVacancyWarning(null);
-        }
-      } catch (error) {
-        console.error('Error checking vacancy limit:', error);
-      }
-    };
-
-    checkVacancyLimit();
-  }, [watchedVacancies, role?.id]);
-
   const onSubmit = async (data: RequirementFormValues) => {
-    if (vacancyWarning) {
-      toast({
-        title: 'Error',
-        description: vacancyWarning,
-        variant: 'destructive',
-      });
-      return;
-    }
-
     try {
       setIsSubmitting(true);
 
@@ -124,10 +84,10 @@ const RequirementCreationDrawer: React.FC<RequirementCreationDrawerProps> = ({
         budget_variance: data.budget_variance,
         experience_variance: data.experience_variance,
         custom_jd: data.custom_jd,
-        status: 'Open'
+        status: 'Open' as const,
       };
 
-      const { data: requirement, error } = await supabase
+      const { data: insertedRequirement, error } = await supabase
         .from('requirements')
         .insert(requirementData)
         .select()
@@ -135,35 +95,24 @@ const RequirementCreationDrawer: React.FC<RequirementCreationDrawerProps> = ({
 
       if (error) throw error;
 
+      onRequirementCreated(insertedRequirement);
+      
       toast({
-        title: 'Success!',
+        title: "Success!",
         description: `Requirement "${data.name}" has been created successfully.`,
       });
 
-      if (onRequirementCreated) {
-        onRequirementCreated(requirement);
-      }
-
-      onOpenChange(false);
       form.reset();
-    } catch (error: any) {
+      onOpenChange(false);
+    } catch (error) {
       console.error('Error creating requirement:', error);
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to create requirement. Please try again.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to create requirement. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'High': return 'bg-red-50 text-red-700 border-red-200';
-      case 'Medium': return 'bg-yellow-50 text-yellow-700 border-yellow-200';
-      case 'Low': return 'bg-green-50 text-green-700 border-green-200';
-      default: return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
 
@@ -171,288 +120,182 @@ const RequirementCreationDrawer: React.FC<RequirementCreationDrawerProps> = ({
     <SideDrawer
       open={open}
       onOpenChange={onOpenChange}
-      title="Create New Requirement"
-      description={`Add a new requirement for ${role?.name} role at ${clientName}`}
-      size="xl"
+      title={`Create Requirement for ${role?.name || 'Role'}`}
+      description={`Add a new requirement under ${role?.name} for ${clientName}`}
+      size="lg"
     >
       <div className="p-6 space-y-6">
-        {/* Role Information Summary */}
-        <div className="bg-muted/20 p-4 rounded-lg border">
-          <h4 className="font-medium mb-3 flex items-center gap-2">
-            Role Information
-            <Badge variant="outline">From Role Template</Badge>
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div><span className="font-medium">Role:</span> {role?.name}</div>
-            <div><span className="font-medium">Max Vacancies:</span> {role?.vacancies || 10}</div>
-            <div><span className="font-medium">Employment Type:</span> {role?.employment_type}</div>
-            <div><span className="font-medium">Work Mode:</span> {role?.work_mode}</div>
-            <div><span className="font-medium">Experience:</span> {role?.min_experience}-{role?.max_experience} years</div>
-            <div><span className="font-medium">Category:</span> {role?.category}</div>
+        {/* Role Information */}
+        <div className="bg-muted/30 p-4 rounded-lg">
+          <h4 className="font-medium mb-2">Role: {role?.name}</h4>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline">{role?.employment_type}</Badge>
+            <Badge variant="outline">{role?.work_mode}</Badge>
+            <Badge variant="outline">{role?.min_experience}-{role?.max_experience} years</Badge>
           </div>
         </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Basic Information */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Requirement Details</h3>
-              
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Requirement Name *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Senior React Developer" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {/* Basic Information */}
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="name">Requirement Name *</Label>
+              <Input
+                id="name"
+                {...form.register('name')}
+                placeholder="Enter requirement name"
               />
+              {form.formState.errors.name && (
+                <p className="text-sm text-destructive mt-1">
+                  {form.formState.errors.name.message}
+                </p>
+              )}
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="vacancies"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Number of Vacancies *</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min="1"
-                          {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
-                        />
-                      </FormControl>
-                      {vacancyWarning && (
-                        <div className="flex items-center gap-2 text-red-600 text-sm">
-                          <AlertTriangle className="h-4 w-4" />
-                          {vacancyWarning}
-                        </div>
-                      )}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="priority"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Priority *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select priority" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="High">
-                            <Badge variant="outline" className={getPriorityColor('High')}>High</Badge>
-                          </SelectItem>
-                          <SelectItem value="Medium">
-                            <Badge variant="outline" className={getPriorityColor('Medium')}>Medium</Badge>
-                          </SelectItem>
-                          <SelectItem value="Low">
-                            <Badge variant="outline" className={getPriorityColor('Low')}>Low</Badge>
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="due_date"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Due Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) => date < new Date()}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="assigned_to"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Assigned TA</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. John Doe" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={form.control}
-                name="hiring_manager"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Hiring Manager</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Jane Smith" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                {...form.register('description')}
+                placeholder="Enter requirement description"
+                rows={3}
               />
             </div>
 
-            {/* Variances */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Requirement Variances</h3>
-              <p className="text-sm text-muted-foreground">
-                Override specific aspects of the role for this requirement
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="budget_variance"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Budget Variance</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. +20%, -10%" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="vacancies">Vacancies *</Label>
+                <Input
+                  id="vacancies"
+                  type="number"
+                  min="1"
+                  {...form.register('vacancies', { valueAsNumber: true })}
                 />
+                {form.formState.errors.vacancies && (
+                  <p className="text-sm text-destructive mt-1">
+                    {form.formState.errors.vacancies.message}
+                  </p>
+                )}
+              </div>
 
-                <FormField
-                  control={form.control}
-                  name="experience_variance"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Experience Variance</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. 5-8 years instead of 3-5" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+              <div>
+                <Label htmlFor="priority">Priority *</Label>
+                <Select
+                  value={form.watch('priority')}
+                  onValueChange={(value: 'High' | 'Medium' | 'Low') => 
+                    form.setValue('priority', value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="High">High</SelectItem>
+                    <SelectItem value="Medium">Medium</SelectItem>
+                    <SelectItem value="Low">Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="assigned_to">Assigned To</Label>
+                <Input
+                  id="assigned_to"
+                  {...form.register('assigned_to')}
+                  placeholder="TA name"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="hiring_manager">Hiring Manager</Label>
+                <Input
+                  id="hiring_manager"
+                  {...form.register('hiring_manager')}
+                  placeholder="Hiring manager name"
                 />
               </div>
             </div>
 
-            {/* Custom JD */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg font-medium">Job Description</h3>
-                <Badge variant="outline">
-                  {form.watch('custom_jd') !== role?.job_description ? 'Custom' : 'From Role'}
-                </Badge>
+            <div>
+              <Label>Due Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !form.watch('due_date') && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {form.watch('due_date') ? (
+                      format(form.watch('due_date')!, "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={form.watch('due_date')}
+                    onSelect={(date) => form.setValue('due_date', date)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="budget_variance">Budget Variance</Label>
+                <Input
+                  id="budget_variance"
+                  {...form.register('budget_variance')}
+                  placeholder="e.g., +20%, -10%"
+                />
               </div>
 
-              <FormField
-                control={form.control}
-                name="custom_jd"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Job Description</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Enter custom job description or modify the existing one..."
-                        className="min-h-[120px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Additional Notes</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Any additional notes or requirements specific to this position..."
-                        className="min-h-[80px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div>
+                <Label htmlFor="experience_variance">Experience Variance</Label>
+                <Input
+                  id="experience_variance"
+                  {...form.register('experience_variance')}
+                  placeholder="e.g., +2 years, -1 year"
+                />
+              </div>
             </div>
 
-            {/* Footer Actions */}
-            <div className="flex justify-between items-center pt-6 border-t">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
-                Cancel
-              </Button>
-
-              <Button
-                type="submit"
-                disabled={isSubmitting || !!vacancyWarning}
-                className="flex items-center gap-2"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
-                    Creating...
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4" />
-                    Create Requirement
-                  </>
-                )}
-              </Button>
+            <div>
+              <Label htmlFor="custom_jd">Custom Job Description</Label>
+              <Textarea
+                id="custom_jd"
+                {...form.register('custom_jd')}
+                placeholder="Custom JD or modifications from role template"
+                rows={4}
+              />
             </div>
-          </form>
-        </Form>
+          </div>
+
+          {/* Footer */}
+          <div className="flex justify-between items-center pt-4 border-t">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Creating...' : 'Create Requirement'}
+            </Button>
+          </div>
+        </form>
       </div>
     </SideDrawer>
   );
