@@ -1,22 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Typography,
-  Box,
-  TextField,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Autocomplete,
-  Chip,
-} from '@mui/material';
+import { Dialog, DialogContent, Box } from '@mui/material';
+import StageConfigModalHeader from './components/StageConfigModalHeader';
+import InterviewFormatSection from './components/InterviewFormatSection';
+import InterviewersSection from './components/InterviewersSection';
+import StageConfigFields from './components/StageConfigFields';
+import StageConfigModalActions from './components/StageConfigModalActions';
 
 interface Stage {
   id: string;
@@ -76,10 +65,10 @@ const StageConfigModal: React.FC<StageConfigModalProps> = ({
     onSave(stage.id, config);
   };
 
-  const handleInterviewersChange = (event: any, newValue: any[]) => {
+  const updateConfig = (field: string, value: any) => {
     setConfig((prev: any) => ({
       ...prev,
-      interviewers: newValue,
+      [field]: value,
     }));
   };
 
@@ -96,232 +85,38 @@ const StageConfigModal: React.FC<StageConfigModalProps> = ({
         }
       }}
     >
-      <DialogTitle>
-        <Typography
-          variant="h6"
-          sx={{
-            fontFamily: 'Rubik, sans-serif',
-            fontSize: '18px',
-            fontWeight: 500,
-            color: '#262626',
-          }}
-        >
-          Configure {stage.name}
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            fontFamily: 'Rubik, sans-serif',
-            fontSize: '13px',
-            color: '#6b7280',
-            mt: 0.5,
-          }}
-        >
-          Set up the interview format and assign interviewers
-        </Typography>
-      </DialogTitle>
+      <StageConfigModalHeader stageName={stage.name} />
       
       <DialogContent sx={{ pt: 2 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          
-          {/* Interview Format */}
-          <FormControl component="fieldset">
-            <FormLabel 
-              component="legend" 
-              sx={{ 
-                fontFamily: 'Rubik, sans-serif',
-                fontSize: '14px', 
-                fontWeight: 500,
-                color: '#262626',
-                mb: 1,
-              }}
-            >
-              Interview Format
-            </FormLabel>
-            <RadioGroup
-              value={config.interviewFormat}
-              onChange={(e) => setConfig((prev: any) => ({ ...prev, interviewFormat: e.target.value }))}
-            >
-              <FormControlLabel
-                value="one-to-one"
-                control={<Radio size="small" />}
-                label="One-to-One"
-                disabled={isGroupDiscussion}
-                sx={{ '& .MuiFormControlLabel-label': { fontFamily: 'Rubik, sans-serif', fontSize: '13px' } }}
-              />
-              <FormControlLabel
-                value="panel"
-                control={<Radio size="small" />}
-                label="Panel"
-                disabled={isGroupDiscussion}
-                sx={{ '& .MuiFormControlLabel-label': { fontFamily: 'Rubik, sans-serif', fontSize: '13px' } }}
-              />
-              <FormControlLabel
-                value="group"
-                control={<Radio size="small" />}
-                label="Group"
-                disabled={!isGroupDiscussion}
-                sx={{ '& .MuiFormControlLabel-label': { fontFamily: 'Rubik, sans-serif', fontSize: '13px' } }}
-              />
-            </RadioGroup>
-            {isGroupDiscussion && (
-              <Typography
-                sx={{
-                  fontFamily: 'Rubik, sans-serif',
-                  fontSize: '12px',
-                  color: '#6b7280',
-                  mt: 1,
-                  fontStyle: 'italic',
-                }}
-              >
-                Group format is automatically selected for Group Discussion stages
-              </Typography>
-            )}
-          </FormControl>
-
-          {/* Interviewers */}
-          <FormControl>
-            <FormLabel 
-              sx={{ 
-                fontFamily: 'Rubik, sans-serif',
-                fontSize: '14px', 
-                fontWeight: 500,
-                color: '#262626',
-                mb: 1,
-              }}
-            >
-              Interviewers
-            </FormLabel>
-            <Autocomplete
-              multiple
-              options={mockInterviewers}
-              getOptionLabel={(option) => `${option.name} (${option.email})`}
-              value={config.interviewers}
-              onChange={handleInterviewersChange}
-              renderTags={(tagValue, getTagProps) =>
-                tagValue.map((option, index) => (
-                  <Chip
-                    label={option.name}
-                    {...getTagProps({ index })}
-                    key={option.id}
-                    size="small"
-                    sx={{ fontFamily: 'Rubik, sans-serif', fontSize: '12px' }}
-                  />
-                ))
-              }
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder="Select interviewers"
-                  size="small"
-                  sx={{
-                    '& .MuiInputBase-input': {
-                      fontFamily: 'Rubik, sans-serif',
-                      fontSize: '13px',
-                    },
-                  }}
-                />
-              )}
-            />
-          </FormControl>
-
-          {/* Group Discussion Specific Fields */}
-          {isGroupDiscussion && (
-            <TextField
-              label="Max Candidates per Round"
-              type="number"
-              value={config.maxCandidatesPerRound}
-              onChange={(e) => setConfig((prev: any) => ({ ...prev, maxCandidatesPerRound: parseInt(e.target.value) || 8 }))}
-              size="small"
-              inputProps={{ min: 1, max: 20 }}
-              sx={{
-                '& .MuiInputLabel-root': {
-                  fontFamily: 'Rubik, sans-serif',
-                  fontSize: '14px',
-                },
-                '& .MuiInputBase-input': {
-                  fontFamily: 'Rubik, sans-serif',
-                  fontSize: '13px',
-                },
-              }}
-            />
-          )}
-
-          {/* Notes */}
-          <TextField
-            label="Notes (Optional)"
-            multiline
-            rows={3}
-            value={config.notes}
-            onChange={(e) => setConfig((prev: any) => ({ ...prev, notes: e.target.value }))}
-            placeholder="Add any specific interviewer instructions or reminders..."
-            size="small"
-            sx={{
-              '& .MuiInputLabel-root': {
-                fontFamily: 'Rubik, sans-serif',
-                fontSize: '14px',
-              },
-              '& .MuiInputBase-input': {
-                fontFamily: 'Rubik, sans-serif',
-                fontSize: '13px',
-              },
-            }}
+          <InterviewFormatSection
+            interviewFormat={config.interviewFormat}
+            isGroupDiscussion={isGroupDiscussion}
+            onChange={(format) => updateConfig('interviewFormat', format)}
           />
 
-          {/* Group Discussion Candidate Instructions */}
-          {isGroupDiscussion && (
-            <TextField
-              label="Candidate Instructions (Optional)"
-              multiline
-              rows={3}
-              value={config.candidateInstructions}
-              onChange={(e) => setConfig((prev: any) => ({ ...prev, candidateInstructions: e.target.value }))}
-              placeholder="Instructions to be shared with candidates before the group discussion..."
-              size="small"
-              sx={{
-                '& .MuiInputLabel-root': {
-                  fontFamily: 'Rubik, sans-serif',
-                  fontSize: '14px',
-                },
-                '& .MuiInputBase-input': {
-                  fontFamily: 'Rubik, sans-serif',
-                  fontSize: '13px',
-                },
-              }}
-            />
-          )}
+          <InterviewersSection
+            interviewers={config.interviewers}
+            availableInterviewers={mockInterviewers}
+            onChange={(interviewers) => updateConfig('interviewers', interviewers)}
+          />
 
+          <StageConfigFields
+            isGroupDiscussion={isGroupDiscussion}
+            maxCandidatesPerRound={config.maxCandidatesPerRound}
+            notes={config.notes}
+            candidateInstructions={config.candidateInstructions}
+            onMaxCandidatesChange={(value) => updateConfig('maxCandidatesPerRound', value)}
+            onNotesChange={(value) => updateConfig('notes', value)}
+            onCandidateInstructionsChange={(value) => updateConfig('candidateInstructions', value)}
+          />
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ p: 3, pt: 2 }}>
-        <Button
-          onClick={onClose}
-          variant="outlined"
-          sx={{
-            fontFamily: 'Rubik, sans-serif',
-            fontSize: '13px',
-            textTransform: 'none',
-            borderColor: '#e5e7eb',
-            color: '#666',
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSave}
-          variant="contained"
-          sx={{
-            fontFamily: 'Rubik, sans-serif',
-            fontSize: '13px',
-            textTransform: 'none',
-            backgroundColor: '#009933',
-            '&:hover': { backgroundColor: '#007a2b' },
-          }}
-        >
-          Save Configuration
-        </Button>
-      </DialogActions>
+      <StageConfigModalActions
+        onCancel={onClose}
+        onSave={handleSave}
+      />
     </Dialog>
   );
 };
