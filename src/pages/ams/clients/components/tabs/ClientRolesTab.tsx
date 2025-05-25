@@ -1,30 +1,38 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { Client } from '../../types/ClientTypes';
+import ClientRoleCreationDrawer from '../drawer/ClientRoleCreationDrawer';
 
 interface ClientRolesTabProps {
   client: Client;
-  onCreateRole: (clientId: string) => void;
 }
 
-const ClientRolesTab: React.FC<ClientRolesTabProps> = ({ client, onCreateRole }) => {
-  const [loading, setLoading] = useState(false);
+const ClientRolesTab: React.FC<ClientRolesTabProps> = ({ client }) => {
+  const [isRoleCreationOpen, setIsRoleCreationOpen] = useState(false);
+
+  const handleCreateRole = () => {
+    setIsRoleCreationOpen(true);
+  };
+
+  const handleRoleCreated = (role: any) => {
+    console.log('Role created:', role);
+    // Refresh client data or update local state
+  };
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-semibold">Client Roles</h3>
         <Button 
-          onClick={() => onCreateRole(client.id)}
+          onClick={handleCreateRole}
           className="flex items-center gap-2"
         >
           <Plus className="h-4 w-4" />
-          Add Role
+          Create Role
         </Button>
       </div>
       
@@ -63,7 +71,7 @@ const ClientRolesTab: React.FC<ClientRolesTabProps> = ({ client, onCreateRole })
           <h3 className="font-medium mb-2">No roles found</h3>
           <p className="text-muted-foreground mb-4">This client doesn't have any roles yet.</p>
           <Button 
-            onClick={() => onCreateRole(client.id)}
+            onClick={handleCreateRole}
             className="flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
@@ -71,6 +79,14 @@ const ClientRolesTab: React.FC<ClientRolesTabProps> = ({ client, onCreateRole })
           </Button>
         </div>
       )}
+
+      <ClientRoleCreationDrawer
+        open={isRoleCreationOpen}
+        onOpenChange={setIsRoleCreationOpen}
+        clientId={client.id}
+        clientName={client.name}
+        onRoleCreated={handleRoleCreated}
+      />
     </div>
   );
 };

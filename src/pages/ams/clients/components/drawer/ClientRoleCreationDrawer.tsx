@@ -10,10 +10,10 @@ import { ChevronLeft, ChevronRight, Save, File } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { roleCreationSchema, type RoleCreationFormValues } from './schemas/roleCreationSchema';
-import RoleNameStep from './steps/RoleNameStep';
-import SkillsStep from './steps/SkillsStep';
-import CertificationsStep from './steps/CertificationsStep';
-import ChecklistsStep from './steps/ChecklistsStep';
+import EnhancedRoleNameStep from './steps/EnhancedRoleNameStep';
+import EnhancedSkillsStep from './steps/EnhancedSkillsStep';
+import EnhancedCertificationsStep from './steps/EnhancedCertificationsStep';
+import EnhancedChecklistsStep from './steps/EnhancedChecklistsStep';
 import FinalDetailsStep from './steps/FinalDetailsStep';
 
 interface ClientRoleCreationDrawerProps {
@@ -25,11 +25,11 @@ interface ClientRoleCreationDrawerProps {
 }
 
 const steps = [
-  { id: 'roleName', title: 'Role Name', description: 'Select or suggest a role name' },
-  { id: 'skills', title: 'Skills', description: 'Add required skills' },
-  { id: 'certifications', title: 'Certifications', description: 'Select relevant certifications' },
-  { id: 'checklists', title: 'Checklists', description: 'Configure evaluation criteria' },
-  { id: 'finalDetails', title: 'Final Details', description: 'Complete role configuration' }
+  { id: 'roleName', title: 'Role Name', description: 'Select or suggest a role name from our global library' },
+  { id: 'skills', title: 'Skills', description: 'Add required skills with auto-suggestions' },
+  { id: 'certifications', title: 'Certifications', description: 'Select relevant certifications from library' },
+  { id: 'checklists', title: 'Checklists', description: 'Configure evaluation criteria and process' },
+  { id: 'finalDetails', title: 'Final Details', description: 'Complete role configuration and review' }
 ];
 
 export const ClientRoleCreationDrawer: React.FC<ClientRoleCreationDrawerProps> = ({
@@ -111,10 +111,10 @@ export const ClientRoleCreationDrawer: React.FC<ClientRoleCreationDrawerProps> =
           external_name: data.roleName,
           client_id: clientId,
           employment_type: data.employmentType,
-          category: data.department,
+          category: data.department || 'General',
           work_mode: data.workMode,
-          min_experience: data.experienceRange.split('-')[0] || '0',
-          max_experience: data.experienceRange.split('-')[1] || '10',
+          min_experience: data.experienceRange.split('-')[0]?.trim() || '0',
+          max_experience: data.experienceRange.split('-')[1]?.trim() || '10',
           job_description: data.roleDescription,
           is_template: data.saveAsTemplate,
           created_by: 'current_user' // Replace with actual user ID
@@ -180,13 +180,13 @@ export const ClientRoleCreationDrawer: React.FC<ClientRoleCreationDrawerProps> =
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
-        return <RoleNameStep form={form} />;
+        return <EnhancedRoleNameStep form={form} />;
       case 1:
-        return <SkillsStep form={form} />;
+        return <EnhancedSkillsStep form={form} />;
       case 2:
-        return <CertificationsStep form={form} />;
+        return <EnhancedCertificationsStep form={form} />;
       case 3:
-        return <ChecklistsStep form={form} />;
+        return <EnhancedChecklistsStep form={form} />;
       case 4:
         return <FinalDetailsStep form={form} clientName={clientName} />;
       default:
