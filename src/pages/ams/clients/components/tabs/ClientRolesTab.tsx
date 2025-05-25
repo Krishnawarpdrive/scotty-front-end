@@ -9,13 +9,17 @@ import ClientRoleCreationDrawer from '../drawer/ClientRoleCreationDrawer';
 
 interface ClientRolesTabProps {
   client: Client;
+  onCreateRole?: () => void;
 }
 
-const ClientRolesTab: React.FC<ClientRolesTabProps> = ({ client }) => {
+const ClientRolesTab: React.FC<ClientRolesTabProps> = ({ client, onCreateRole }) => {
   const [isRoleCreationOpen, setIsRoleCreationOpen] = useState(false);
 
   const handleCreateRole = () => {
     setIsRoleCreationOpen(true);
+    if (onCreateRole) {
+      onCreateRole();
+    }
   };
 
   const handleRoleCreated = (role: any) => {
