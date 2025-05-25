@@ -77,7 +77,7 @@ const RequirementCreationDrawer: React.FC<RequirementCreationDrawerProps> = ({
         name: data.name,
         description: data.description,
         vacancies: data.vacancies,
-        priority: data.priority,
+        priority: data.priority as 'High' | 'Medium' | 'Low', // Explicitly type the priority
         due_date: data.due_date ? format(data.due_date, 'yyyy-MM-dd') : null,
         assigned_to: data.assigned_to,
         hiring_manager: data.hiring_manager,
@@ -95,7 +95,14 @@ const RequirementCreationDrawer: React.FC<RequirementCreationDrawerProps> = ({
 
       if (error) throw error;
 
-      onRequirementCreated(insertedRequirement);
+      // Type the inserted requirement properly
+      const typedRequirement: Requirement = {
+        ...insertedRequirement,
+        priority: insertedRequirement.priority as 'High' | 'Medium' | 'Low',
+        status: insertedRequirement.status as 'Open' | 'In Progress' | 'Closed' | 'On Hold'
+      };
+
+      onRequirementCreated(typedRequirement);
       
       toast({
         title: "Success!",

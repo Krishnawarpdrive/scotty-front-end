@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -372,25 +371,13 @@ export const SteppedRoleCreationDrawer: React.FC<SteppedRoleCreationDrawerProps>
   );
 
   const getDescriptionContent = () => {
-    const descriptionParts = [
-      <p key="main">{steps[currentStep].description}</p>
-    ];
+    let description = steps[currentStep].description;
     
     if (globalRoleTemplate) {
-      descriptionParts.push(
-        <div key="template" className="flex items-center gap-2">
-          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-            Template: {globalRoleTemplate.name}
-          </Badge>
-        </div>
-      );
+      description += ` • Template: ${globalRoleTemplate.name}`;
     }
     
-    return (
-      <div className="space-y-2">
-        {descriptionParts}
-      </div>
-    );
+    return description;
   };
 
   return (
