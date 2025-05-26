@@ -25,7 +25,8 @@ import {
   TrendingUp,
   Search,
   BarChart,
-  Menu
+  Menu,
+  UserCheck
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { 
@@ -45,6 +46,7 @@ const navigationItems: NavigationItem[] = [
   { title: 'Dashboard', path: '/ams/dashboard', icon: LayoutDashboard },
   { title: 'HR Dashboard', path: '/ams/hr/dashboard', icon: BarChart },
   { title: 'Role Management', path: '/ams/hr/role-management', icon: Briefcase },
+  { title: 'Candidate Pool', path: '/ams/hr/candidate-pool', icon: UserCheck },
   { title: 'TA Mission Control', path: '/ams/ta/mission-control', icon: LayoutDashboard },
   { title: 'Clients', path: '/ams/clients', icon: Users },
   { title: 'Global Role Library', path: '/ams/roles', icon: Briefcase },

@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "./theme/ThemeProvider";
@@ -24,6 +25,7 @@ import ClientAccountCreationPage from "./pages/ams/clients/ClientAccountCreation
 // HR pages
 import RoleManagementPage from "./pages/ams/hr/RoleManagementPage";
 import HRDashboardPage from "./pages/ams/hr/HRDashboardPage";
+import CandidatePoolPage from "./pages/ams/hr/CandidatePoolPage";
 
 // TA pages
 import TAMissionControlPage from "./pages/ams/ta/TAMissionControlPage";
@@ -47,6 +49,7 @@ function App() {
             {/* HR Section */}
             <Route path="hr/role-management" element={<RoleManagementPage />} />
             <Route path="hr/dashboard" element={<HRDashboardPage />} />
+            <Route path="hr/candidate-pool" element={<CandidatePoolPage />} />
 
             {/* TA Section */}
             <Route path="ta/mission-control" element={<TAMissionControlPage />} />
