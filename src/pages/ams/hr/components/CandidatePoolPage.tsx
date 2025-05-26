@@ -1,413 +1,116 @@
 
 import React, { useState } from 'react';
-import { Box, Typography, TextField, Button, Chip, Avatar, IconButton, Checkbox, Menu, MenuItem } from '@mui/material';
-import { Search as SearchIcon, FilterList as FilterIcon, Download as DownloadIcon, Archive as ArchiveIcon } from '@mui/icons-material';
-import { DataTable } from '@/components/ui/data-table/DataTable';
-import { DataTableColumn } from '@/components/ui/data-table/types';
+import { CandidatePoolHeader } from './candidate-pool/CandidatePoolHeader';
+import { CandidateMetrics } from './candidate-pool/CandidateMetrics';
+import { CandidateFilters } from './candidate-pool/CandidateFilters';
+import { BulkActions } from './candidate-pool/BulkActions';
+import { CandidateTable, Candidate } from './candidate-pool/CandidateTable';
+import { useCandidatePool } from './candidate-pool/useCandidatePool';
 import CandidateDetailDrawer from './drawer/CandidateDetailDrawer';
 
-interface Candidate {
-  id: string;
-  name: string;
-  candidateId: string;
-  avatar?: string;
-  type: 'Fresher' | 'Experienced';
-  source: string;
-  appliedRoles: string[];
-  currentStage: string;
-  score: number;
-  status: 'Active' | 'On Hold' | 'Rejected' | 'Hired';
-  assignedTA: {
-    name: string;
-    avatar?: string;
-  };
-  lastUpdated: string;
-  email?: string;
-  phone?: string;
-}
-
-const CandidatePoolPage: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
-  const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
+export const CandidatePoolPage: React.FC = () => {
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [filterMenuAnchor, setFilterMenuAnchor] = useState<null | HTMLElement>(null);
 
-  // Mock data
-  const candidates: Candidate[] = [
-    {
-      id: '1',
-      name: 'Nithin Chandarika',
-      candidateId: 'CID-NC001',
-      type: 'Fresher',
-      source: 'LinkedIn',
-      appliedRoles: ['UI/UX Designer', 'Product Designer'],
-      currentStage: 'Internal Interview',
-      score: 4.2,
-      status: 'Active',
-      assignedTA: {
-        name: 'Sarah Johnson',
-        avatar: '/placeholder.svg'
-      },
-      lastUpdated: '2 hours ago',
-      email: 'nithin@example.com',
-      phone: '+91 9876543210'
-    },
-    {
-      id: '2',
-      name: 'Priya Sharma',
-      candidateId: 'CID-PS002',
-      type: 'Experienced',
-      source: 'Referral',
-      appliedRoles: ['Senior Developer'],
-      currentStage: 'Client Interview',
-      score: 4.5,
-      status: 'Active',
-      assignedTA: {
-        name: 'Mike Chen',
-        avatar: '/placeholder.svg'
-      },
-      lastUpdated: '1 day ago',
-      email: 'priya@example.com',
-      phone: '+91 9876543211'
-    }
-  ];
+  const {
+    candidates,
+    totalCandidates,
+    metrics,
+    searchTerm,
+    selectedCandidates,
+    showFilters,
+    filters,
+    activeFilterCount,
+    setSearchTerm,
+    setShowFilters,
+    handleCandidateSelect,
+    handleSelectAll,
+    handleFilterChange,
+    handleClearFilter,
+    handleClearAllFilters,
+    handleBulkAction,
+    handleQuickAction,
+    setSelectedCandidates,
+  } = useCandidatePool();
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Active': return 'success';
-      case 'On Hold': return 'warning';
-      case 'Rejected': return 'error';
-      case 'Hired': return 'info';
-      default: return 'default';
-    }
-  };
-
-  const columns: DataTableColumn<Candidate>[] = [
-    {
-      id: 'select',
-      header: '',
-      accessorKey: 'id',
-      cell: (candidate) => (
-        <Checkbox
-          checked={selectedCandidates.includes(candidate.id)}
-          onChange={(e) => {
-            if (e.target.checked) {
-              setSelectedCandidates([...selectedCandidates, candidate.id]);
-            } else {
-              setSelectedCandidates(selectedCandidates.filter(id => id !== candidate.id));
-            }
-          }}
-          size="small"
-        />
-      ),
-      width: '40px'
-    },
-    {
-      id: 'candidate',
-      header: 'Candidate',
-      accessorKey: 'name',
-      cell: (candidate) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Avatar src={candidate.avatar} sx={{ width: 32, height: 32 }}>
-            {candidate.name.charAt(0)}
-          </Avatar>
-          <Box>
-            <Typography sx={{ fontWeight: 600, fontSize: '13px', fontFamily: 'Rubik, sans-serif' }}>
-              {candidate.name}
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography sx={{ fontSize: '11px', color: '#666', fontFamily: 'Rubik, sans-serif' }}>
-                {candidate.candidateId}
-              </Typography>
-              <Chip
-                label={candidate.type}
-                size="small"
-                color={candidate.type === 'Fresher' ? 'primary' : 'secondary'}
-                sx={{ fontSize: '9px', height: '16px' }}
-              />
-            </Box>
-          </Box>
-        </Box>
-      ),
-      sortable: true,
-      filterable: true
-    },
-    {
-      id: 'source',
-      header: 'Source',
-      accessorKey: 'source',
-      cell: (candidate) => (
-        <Typography sx={{ fontSize: '12px', fontFamily: 'Rubik, sans-serif' }}>
-          {candidate.source}
-        </Typography>
-      ),
-      sortable: true,
-      filterable: true
-    },
-    {
-      id: 'appliedRoles',
-      header: 'Applied Roles',
-      accessorKey: 'appliedRoles',
-      cell: (candidate) => (
-        <Box sx={{ maxWidth: '150px' }}>
-          {candidate.appliedRoles.slice(0, 2).map((role, index) => (
-            <Typography
-              key={index}
-              sx={{
-                fontSize: '11px',
-                fontFamily: 'Rubik, sans-serif',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {role}
-            </Typography>
-          ))}
-          {candidate.appliedRoles.length > 2 && (
-            <Typography sx={{ fontSize: '10px', color: '#666', fontFamily: 'Rubik, sans-serif' }}>
-              +{candidate.appliedRoles.length - 2} more
-            </Typography>
-          )}
-        </Box>
-      ),
-      filterable: true
-    },
-    {
-      id: 'currentStage',
-      header: 'Current Stage',
-      accessorKey: 'currentStage',
-      cell: (candidate) => (
-        <Chip
-          label={candidate.currentStage}
-          size="small"
-          variant="outlined"
-          sx={{ fontSize: '10px' }}
-        />
-      ),
-      sortable: true,
-      filterable: true
-    },
-    {
-      id: 'score',
-      header: 'Score',
-      accessorKey: 'score',
-      cell: (candidate) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Typography sx={{ fontWeight: 600, fontSize: '12px', fontFamily: 'Rubik, sans-serif' }}>
-            {candidate.score}
-          </Typography>
-          <Typography sx={{ fontSize: '10px', color: '#FFC107' }}>★</Typography>
-        </Box>
-      ),
-      sortable: true
-    },
-    {
-      id: 'status',
-      header: 'Status',
-      accessorKey: 'status',
-      cell: (candidate) => (
-        <Chip
-          label={candidate.status}
-          size="small"
-          color={getStatusColor(candidate.status) as any}
-          sx={{ fontSize: '10px' }}
-        />
-      ),
-      sortable: true,
-      filterable: true
-    },
-    {
-      id: 'assignedTA',
-      header: 'Assigned TA',
-      accessorKey: 'assignedTA',
-      cell: (candidate) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Avatar src={candidate.assignedTA.avatar} sx={{ width: 24, height: 24 }}>
-            {candidate.assignedTA.name.charAt(0)}
-          </Avatar>
-          <Typography sx={{ fontSize: '11px', fontFamily: 'Rubik, sans-serif' }}>
-            {candidate.assignedTA.name}
-          </Typography>
-        </Box>
-      ),
-      filterable: true
-    },
-    {
-      id: 'lastUpdated',
-      header: 'Last Updated',
-      accessorKey: 'lastUpdated',
-      cell: (candidate) => (
-        <Typography sx={{ fontSize: '11px', color: '#666', fontFamily: 'Rubik, sans-serif' }}>
-          {candidate.lastUpdated}
-        </Typography>
-      ),
-      sortable: true
-    },
-    {
-      id: 'actions',
-      header: 'Actions',
-      accessorKey: 'id',
-      cell: (candidate) => (
-        <Box sx={{ display: 'flex', gap: 0.5 }}>
-          <IconButton
-            size="small"
-            onClick={() => handleViewCandidate(candidate)}
-            sx={{ fontSize: '12px' }}
-          >
-            👁️
-          </IconButton>
-          <IconButton size="small" sx={{ fontSize: '12px' }}>
-            ✏️
-          </IconButton>
-          <IconButton size="small" sx={{ fontSize: '12px' }}>
-            📧
-          </IconButton>
-        </Box>
-      )
-    }
-  ];
-
-  const handleViewCandidate = (candidate: Candidate) => {
+  const handleCandidateClick = (candidate: Candidate) => {
     setSelectedCandidate(candidate);
     setDrawerOpen(true);
   };
 
-  const handleBulkAction = (action: string) => {
-    console.log(`Bulk action ${action} for candidates:`, selectedCandidates);
-    // Implement bulk actions
+  const handleCloseDrawer = () => {
+    setDrawerOpen(false);
+    setSelectedCandidate(null);
+  };
+
+  const handleAdvancedFilters = () => {
+    setShowFilters(!showFilters);
+  };
+
+  const handleExport = () => {
+    console.log('Exporting candidates...');
+    // Implement export logic
+  };
+
+  const handleImport = () => {
+    console.log('Importing candidates...');
+    // Implement import logic
+  };
+
+  const handleAddCandidate = () => {
+    console.log('Adding new candidate...');
+    // Implement add candidate logic
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      {/* Header */}
-      <Box sx={{ mb: 3 }}>
-        <Typography
-          variant="h5"
-          sx={{
-            fontFamily: 'Rubik, sans-serif',
-            fontWeight: 600,
-            color: '#262626',
-            mb: 1
-          }}
-        >
-          Candidate Pool
-        </Typography>
-        <Typography
-          sx={{
-            fontSize: '14px',
-            color: '#666',
-            fontFamily: 'Rubik, sans-serif'
-          }}
-        >
-          Manage and track candidates across all roles and requirements
-        </Typography>
-      </Box>
-
-      {/* Daily Metrics Summary */}
-      <Box sx={{ display: 'flex', gap: 3, mb: 3 }}>
-        <Box sx={{ backgroundColor: '#f8f9fa', borderRadius: '8px', p: 2, minWidth: '120px' }}>
-          <Typography sx={{ fontSize: '11px', color: '#666', fontFamily: 'Rubik, sans-serif' }}>
-            Today's Calls
-          </Typography>
-          <Typography sx={{ fontSize: '20px', fontWeight: 600, color: '#262626', fontFamily: 'Rubik, sans-serif' }}>
-            12
-          </Typography>
-        </Box>
-        <Box sx={{ backgroundColor: '#f8f9fa', borderRadius: '8px', p: 2, minWidth: '120px' }}>
-          <Typography sx={{ fontSize: '11px', color: '#666', fontFamily: 'Rubik, sans-serif' }}>
-            Interviews
-          </Typography>
-          <Typography sx={{ fontSize: '20px', fontWeight: 600, color: '#262626', fontFamily: 'Rubik, sans-serif' }}>
-            8
-          </Typography>
-        </Box>
-        <Box sx={{ backgroundColor: '#f8f9fa', borderRadius: '8px', p: 2, minWidth: '120px' }}>
-          <Typography sx={{ fontSize: '11px', color: '#666', fontFamily: 'Rubik, sans-serif' }}>
-            New Candidates
-          </Typography>
-          <Typography sx={{ fontSize: '20px', fontWeight: 600, color: '#262626', fontFamily: 'Rubik, sans-serif' }}>
-            5
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* Search and Filter Bar */}
-      <Box sx={{ display: 'flex', gap: 2, mb: 3, alignItems: 'center' }}>
-        <TextField
-          placeholder="Search candidates by name, email, phone, or ID..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          size="small"
-          sx={{ flexGrow: 1, maxWidth: '400px' }}
-          InputProps={{
-            startAdornment: <SearchIcon sx={{ color: '#666', mr: 1 }} />
-          }}
-        />
-
-        <Button
-          startIcon={<FilterIcon />}
-          onClick={(e) => setFilterMenuAnchor(e.currentTarget)}
-          variant="outlined"
-          size="small"
-          sx={{ fontSize: '12px' }}
-        >
-          Filters
-        </Button>
-
-        {selectedCandidates.length > 0 && (
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Typography sx={{ fontSize: '12px', color: '#666', alignSelf: 'center', fontFamily: 'Rubik, sans-serif' }}>
-              {selectedCandidates.length} selected
-            </Typography>
-            <Button
-              size="small"
-              startIcon={<ArchiveIcon />}
-              onClick={() => handleBulkAction('archive')}
-              sx={{ fontSize: '11px' }}
-            >
-              Archive
-            </Button>
-            <Button
-              size="small"
-              startIcon={<DownloadIcon />}
-              onClick={() => handleBulkAction('export')}
-              sx={{ fontSize: '11px' }}
-            >
-              Export
-            </Button>
-          </Box>
-        )}
-      </Box>
-
-      {/* Candidate Table */}
-      <DataTable
-        data={candidates}
-        columns={columns}
-        onRowClick={handleViewCandidate}
+    <div className="h-full flex flex-col bg-gray-50">
+      <CandidatePoolHeader
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        totalCandidates={totalCandidates}
+        filteredCount={candidates.length}
+        activeFilters={activeFilterCount}
+        onAdvancedFilters={handleAdvancedFilters}
+        onExport={handleExport}
+        onImport={handleImport}
+        onAddCandidate={handleAddCandidate}
       />
 
-      {/* Filter Menu */}
-      <Menu
-        anchorEl={filterMenuAnchor}
-        open={Boolean(filterMenuAnchor)}
-        onClose={() => setFilterMenuAnchor(null)}
-      >
-        <MenuItem onClick={() => setFilterMenuAnchor(null)}>Role Filter</MenuItem>
-        <MenuItem onClick={() => setFilterMenuAnchor(null)}>Stage Filter</MenuItem>
-        <MenuItem onClick={() => setFilterMenuAnchor(null)}>TA Filter</MenuItem>
-        <MenuItem onClick={() => setFilterMenuAnchor(null)}>Date Filter</MenuItem>
-      </Menu>
+      <CandidateMetrics metrics={metrics} />
 
-      {/* Candidate Detail Drawer */}
+      <div className="flex-1 overflow-auto">
+        <div className="p-6 space-y-6">
+          {showFilters && (
+            <CandidateFilters
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onClearFilter={handleClearFilter}
+              onClearAll={handleClearAllFilters}
+            />
+          )}
+
+          <BulkActions
+            selectedCount={selectedCandidates.length}
+            onAction={handleBulkAction}
+            onClearSelection={() => setSelectedCandidates([])}
+          />
+
+          <CandidateTable
+            candidates={candidates}
+            selectedCandidates={selectedCandidates}
+            onCandidateSelect={handleCandidateSelect}
+            onSelectAll={handleSelectAll}
+            onCandidateClick={handleCandidateClick}
+            onQuickAction={handleQuickAction}
+          />
+        </div>
+      </div>
+
       <CandidateDetailDrawer
         open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
+        onClose={handleCloseDrawer}
         candidateData={selectedCandidate}
       />
-    </Box>
+    </div>
   );
 };
-
-export default CandidatePoolPage;
