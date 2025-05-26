@@ -57,6 +57,7 @@ const HiringPipelineConfig: React.FC<HiringPipelineConfigProps> = ({ roleData })
         interviewFormat: 'one-to-one',
         interviewMode: 'virtual',
         notes: '',
+        interviewers: [],
       },
       status,
       interviewers: stage.config?.interviewers || [],

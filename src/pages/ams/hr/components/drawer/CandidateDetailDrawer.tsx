@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Drawer, 
@@ -32,6 +31,7 @@ import {
   AccessTime as TimeIcon,
   Person as PersonIcon
 } from '@mui/icons-material';
+import { FileText } from 'lucide-react';
 
 interface CandidateDetailDrawerProps {
   open: boolean;
@@ -285,7 +285,7 @@ const CandidateDetailDrawer: React.FC<CandidateDetailDrawerProps> = ({
                     <LinkedInIcon sx={{ fontSize: '16px' }} />
                   </IconButton>
                   <IconButton size="small" color="primary">
-                    <ResumeIcon sx={{ fontSize: '16px' }} />
+                    <FileText size={16} />
                   </IconButton>
                   <IconButton size="small" color="primary">
                     <PortfolioIcon sx={{ fontSize: '16px' }} />

@@ -87,6 +87,7 @@ const CandidatePoolPage: React.FC = () => {
     {
       id: 'select',
       header: '',
+      accessorKey: 'id',
       cell: (candidate) => (
         <Checkbox
           checked={selectedCandidates.includes(candidate.id)}
@@ -105,6 +106,7 @@ const CandidatePoolPage: React.FC = () => {
     {
       id: 'candidate',
       header: 'Candidate',
+      accessorKey: 'name',
       cell: (candidate) => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Avatar src={candidate.avatar} sx={{ width: 32, height: 32 }}>
@@ -134,6 +136,7 @@ const CandidatePoolPage: React.FC = () => {
     {
       id: 'source',
       header: 'Source',
+      accessorKey: 'source',
       cell: (candidate) => (
         <Typography sx={{ fontSize: '12px', fontFamily: 'Rubik, sans-serif' }}>
           {candidate.source}
@@ -145,6 +148,7 @@ const CandidatePoolPage: React.FC = () => {
     {
       id: 'appliedRoles',
       header: 'Applied Roles',
+      accessorKey: 'appliedRoles',
       cell: (candidate) => (
         <Box sx={{ maxWidth: '150px' }}>
           {candidate.appliedRoles.slice(0, 2).map((role, index) => (
@@ -173,6 +177,7 @@ const CandidatePoolPage: React.FC = () => {
     {
       id: 'currentStage',
       header: 'Current Stage',
+      accessorKey: 'currentStage',
       cell: (candidate) => (
         <Chip
           label={candidate.currentStage}
@@ -187,6 +192,7 @@ const CandidatePoolPage: React.FC = () => {
     {
       id: 'score',
       header: 'Score',
+      accessorKey: 'score',
       cell: (candidate) => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <Typography sx={{ fontWeight: 600, fontSize: '12px', fontFamily: 'Rubik, sans-serif' }}>
@@ -200,6 +206,7 @@ const CandidatePoolPage: React.FC = () => {
     {
       id: 'status',
       header: 'Status',
+      accessorKey: 'status',
       cell: (candidate) => (
         <Chip
           label={candidate.status}
@@ -214,6 +221,7 @@ const CandidatePoolPage: React.FC = () => {
     {
       id: 'assignedTA',
       header: 'Assigned TA',
+      accessorKey: 'assignedTA',
       cell: (candidate) => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Avatar src={candidate.assignedTA.avatar} sx={{ width: 24, height: 24 }}>
@@ -229,6 +237,7 @@ const CandidatePoolPage: React.FC = () => {
     {
       id: 'lastUpdated',
       header: 'Last Updated',
+      accessorKey: 'lastUpdated',
       cell: (candidate) => (
         <Typography sx={{ fontSize: '11px', color: '#666', fontFamily: 'Rubik, sans-serif' }}>
           {candidate.lastUpdated}
@@ -239,6 +248,7 @@ const CandidatePoolPage: React.FC = () => {
     {
       id: 'actions',
       header: 'Actions',
+      accessorKey: 'id',
       cell: (candidate) => (
         <Box sx={{ display: 'flex', gap: 0.5 }}>
           <IconButton
