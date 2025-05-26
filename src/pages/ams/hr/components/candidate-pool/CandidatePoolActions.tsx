@@ -7,11 +7,7 @@ interface CandidatePoolActionsProps {
   onAddCandidate: () => void;
 }
 
-export const CandidatePoolActions: React.FC<CandidatePoolActionsProps> = ({
-  onExport,
-  onImport,
-  onAddCandidate,
-}) => {
+export const useCandidatePoolActions = ({ onExport, onImport, onAddCandidate }: CandidatePoolActionsProps) => {
   const handleExport = () => {
     console.log('Exporting candidates...');
     onExport();
