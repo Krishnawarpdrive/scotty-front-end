@@ -9,6 +9,53 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      candidate_journey_configs: {
+        Row: {
+          auto_proceed: boolean | null
+          created_at: string | null
+          id: string
+          items: Json | null
+          proceed_conditions: Json | null
+          role_id: string | null
+          stage_id: string
+          stage_order: number
+          stage_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          auto_proceed?: boolean | null
+          created_at?: string | null
+          id?: string
+          items?: Json | null
+          proceed_conditions?: Json | null
+          role_id?: string | null
+          stage_id: string
+          stage_order: number
+          stage_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          auto_proceed?: boolean | null
+          created_at?: string | null
+          id?: string
+          items?: Json | null
+          proceed_conditions?: Json | null
+          role_id?: string | null
+          stage_id?: string
+          stage_order?: number
+          stage_type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_journey_configs_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       certification_library: {
         Row: {
           created_at: string
@@ -119,6 +166,39 @@ export type Database = {
           notes?: string | null
           status?: string | null
           total_requirements?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      content_repository: {
+        Row: {
+          content_url: string | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          stage_relevance: string[] | null
+          title: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          content_url?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          stage_relevance?: string[] | null
+          title: string
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          content_url?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          stage_relevance?: string[] | null
+          title?: string
+          type?: string
           updated_at?: string | null
         }
         Relationships: []
