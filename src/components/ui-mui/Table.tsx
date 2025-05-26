@@ -85,6 +85,7 @@ export const TableHeader = React.forwardRef<HTMLTableSectionElement, TableHeader
             letterSpacing: '0.025em',
             height: '48px',
             borderBottom: '1px solid #e5e7eb',
+            fontFamily: 'Rubik, sans-serif',
           }
         }}
         {...props}
@@ -114,6 +115,7 @@ export const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProp
           '& .MuiTableCell-root': {
             height: '60px',
             padding: '12px 16px',
+            fontFamily: 'Rubik, sans-serif',
           }
         }}
         {...props}
@@ -130,7 +132,7 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
       <MuiTableRow
         ref={ref}
         className={cn(
-          'border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted',
+          'border-b transition-colors hover:bg-gray-50 data-[state=selected]:bg-blue-50',
           className
         )}
         sx={{

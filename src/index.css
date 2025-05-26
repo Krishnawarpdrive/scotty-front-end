@@ -99,15 +99,27 @@
   }
 
   label {
-    @apply text-label text-gray-500;
+    @apply text-label text-gray-500 font-rubik;
   }
 
   input, textarea, select {
-    @apply h-[32px] text-[#333333];
+    @apply h-[32px] text-[#333333] font-rubik;
   }
 
   button {
-    @apply h-[36px];
+    @apply h-[36px] font-rubik;
+  }
+
+  table {
+    @apply font-rubik;
+  }
+
+  th, td {
+    @apply font-rubik text-[12px] text-[#262626];
+  }
+
+  th {
+    @apply font-medium uppercase tracking-wider;
   }
 }
 
@@ -117,10 +129,10 @@
   }
   
   .section-heading {
-    @apply text-section text-[#666666] font-medium;
+    @apply text-section text-[#666666] font-medium font-rubik;
   }
   
   .table-text {
-    @apply text-table;
+    @apply text-table font-rubik;
   }
 }

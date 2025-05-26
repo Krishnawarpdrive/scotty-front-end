@@ -19,7 +19,7 @@ export function DataTableRow<T extends Record<string, any>>({
     <TableRow
       className={cn(
         "group h-[60px]",
-        onRowClick && "cursor-pointer hover:bg-muted/60"
+        onRowClick && "cursor-pointer hover:bg-gray-50"
       )}
       onClick={() => onRowClick && onRowClick(item)}
     >
@@ -88,7 +88,7 @@ export function DataTableRow<T extends Record<string, any>>({
           <TableCell 
             key={column.id}
             className={cn(
-              "text-[12px] text-[#262626] transition-colors h-[60px] py-3",
+              "text-[12px] text-[#262626] font-rubik transition-colors h-[60px] py-3",
               getColumnWidth(column.id),
               "overflow-hidden"
             )}

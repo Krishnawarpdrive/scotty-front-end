@@ -18,18 +18,18 @@ export const TATableView: React.FC<TATableViewProps> = ({ taContributions }) => 
     <Card className="p-0">
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead className="w-[200px]">TA Name</TableHead>
-            <TableHead className="w-[80px]">Done</TableHead>
-            <TableHead className="w-[100px]">Progress</TableHead>
-            <TableHead className="w-[140px]">Status</TableHead>
-            <TableHead>Actions</TableHead>
+          <TableRow className="h-[48px]">
+            <TableHead className="w-[200px] text-[12px] text-[#262626] font-rubik font-medium uppercase">TA Name</TableHead>
+            <TableHead className="w-[80px] text-[12px] text-[#262626] font-rubik font-medium uppercase">Done</TableHead>
+            <TableHead className="w-[100px] text-[12px] text-[#262626] font-rubik font-medium uppercase">Progress</TableHead>
+            <TableHead className="w-[140px] text-[12px] text-[#262626] font-rubik font-medium uppercase">Status</TableHead>
+            <TableHead className="text-[12px] text-[#262626] font-rubik font-medium uppercase">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {taContributions.map((ta, index) => (
-            <TableRow key={index} className="hover:bg-gray-50">
-              <TableCell>
+            <TableRow key={index} className="hover:bg-gray-50 h-[60px]">
+              <TableCell className="text-[12px] text-[#262626] font-rubik">
                 <div className="flex items-center gap-2">
                   <Avatar className="h-6 w-6">
                     <AvatarFallback className="text-xs">
@@ -38,7 +38,7 @@ export const TATableView: React.FC<TATableViewProps> = ({ taContributions }) => 
                   </Avatar>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="font-medium cursor-pointer">
+                      <span className="font-medium cursor-pointer text-[12px] text-[#262626] font-rubik">
                         {ta.name}
                       </span>
                     </TooltipTrigger>
@@ -53,21 +53,21 @@ export const TATableView: React.FC<TATableViewProps> = ({ taContributions }) => 
                   </Tooltip>
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="text-[12px] text-[#262626] font-rubik">
                 <span className="font-medium">
                   {ta.contribution}/{ta.target}
                 </span>
               </TableCell>
-              <TableCell>
+              <TableCell className="text-[12px] text-[#262626] font-rubik">
                 <div className="flex items-center gap-2">
                   <Progress value={ta.progress} className="h-2 w-12" />
                   <span className="text-xs font-medium">{ta.progress}%</span>
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="text-[12px] text-[#262626] font-rubik">
                 <StatusBadge status={ta.status} />
               </TableCell>
-              <TableCell>
+              <TableCell className="text-[12px] text-[#262626] font-rubik">
                 <ActionButtons ta={ta} />
               </TableCell>
             </TableRow>

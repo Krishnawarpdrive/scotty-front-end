@@ -26,27 +26,27 @@ export const CandidateRow: React.FC<CandidateRowProps> = ({
     <TableRow 
       className={cn(
         isSelected ? "bg-blue-50" : "",
-        "hover:bg-gray-50"
+        "hover:bg-gray-50 h-[60px]"
       )}
       data-state={isSelected ? 'selected' : undefined}
     >
-      <TableCell className="text-center">
+      <TableCell className="text-center w-10">
         <Checkbox 
           checked={isSelected} 
           onChange={() => onToggleSelect(candidate.id)}
         />
       </TableCell>
-      <TableCell>
+      <TableCell className="w-10">
         <ActionButtons />
       </TableCell>
       <TableCell 
-        className="cursor-pointer hover:text-blue-600 hover:underline"
+        className="cursor-pointer hover:text-blue-600 hover:underline text-[12px] text-[#262626] font-rubik"
         onClick={() => onCandidateClick(candidate)}
       >
         {candidate.name}
       </TableCell>
-      <TableCell>{candidate.hiring}</TableCell>
-      <TableCell>{candidate.interviewing}</TableCell>
+      <TableCell className="text-[12px] text-[#262626] font-rubik">{candidate.hiring}</TableCell>
+      <TableCell className="text-[12px] text-[#262626] font-rubik">{candidate.interviewing}</TableCell>
       <TableCell>
         <StageDots stage={candidate.stage} />
       </TableCell>
@@ -58,14 +58,14 @@ export const CandidateRow: React.FC<CandidateRowProps> = ({
               {candidate.responsible.name.split(' ').map(n => n[0]).join('')}
             </AvatarFallback>
           </Avatar>
-          {candidate.responsible.name}
+          <span className="text-[12px] text-[#262626] font-rubik">{candidate.responsible.name}</span>
         </div>
       </TableCell>
       <TableCell>
         <StatusBadge status={candidate.status} />
       </TableCell>
-      <TableCell>{candidate.timeSpent}</TableCell>
-      <TableCell>{candidate.targetDate}</TableCell>
+      <TableCell className="text-[12px] text-[#262626] font-rubik">{candidate.timeSpent}</TableCell>
+      <TableCell className="text-[12px] text-[#262626] font-rubik">{candidate.targetDate}</TableCell>
     </TableRow>
   );
 };

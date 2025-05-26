@@ -10,7 +10,7 @@ const Table = React.forwardRef<
   <div className="relative w-full overflow-auto">
     <table
       ref={ref}
-      className={cn("w-full caption-bottom text-sm", className)}
+      className={cn("w-full caption-bottom text-sm font-rubik", className)}
       {...props}
     />
   </div>
@@ -21,7 +21,7 @@ const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
+  <thead ref={ref} className={cn("[&_tr]:border-b bg-gray-50", className)} {...props} />
 ))
 TableHeader.displayName = "TableHeader"
 
@@ -59,7 +59,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted h-[60px]",
+      "border-b transition-colors hover:bg-gray-50 data-[state=selected]:bg-blue-50 h-[60px]",
       className
     )}
     {...props}
@@ -74,7 +74,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-12 px-4 text-left align-middle font-medium text-[12px] text-[#262626] [&:has([role=checkbox])]:pr-0",
+      "h-12 px-4 text-left align-middle font-medium text-[12px] text-[#262626] font-rubik uppercase tracking-wider [&:has([role=checkbox])]:pr-0 bg-gray-50",
       className
     )}
     {...props}
@@ -88,7 +88,7 @@ const TableCell = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <td
     ref={ref}
-    className={cn("px-4 align-middle text-[12px] text-[#262626] [&:has([role=checkbox])]:pr-0 h-[60px] py-3", className)}
+    className={cn("px-4 align-middle text-[12px] text-[#262626] font-rubik [&:has([role=checkbox])]:pr-0 h-[60px] py-3", className)}
     {...props}
   />
 ))
@@ -100,7 +100,7 @@ const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn("mt-4 text-[12px] text-muted-foreground", className)}
+    className={cn("mt-4 text-[12px] text-muted-foreground font-rubik", className)}
     {...props}
   />
 ))
