@@ -2,20 +2,13 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import RefactoredStageCard from './RefactoredStageCard';
-
-interface Stage {
-  id: string;
-  name: string;
-  category: 'internal' | 'external' | 'partner' | 'client' | 'verification';
-  order: number;
-  config?: any;
-}
+import { EnhancedStage } from './types/StageTypes';
 
 interface PipelineFlowProps {
-  stages: Stage[];
+  stages: EnhancedStage[];
   onRemoveStage: (stageId: string) => void;
   onReorderStages: (dragIndex: number, hoverIndex: number) => void;
-  onConfigureStage: (stage: Stage) => void;
+  onConfigureStage: (stage: EnhancedStage) => void;
 }
 
 const PipelineFlow: React.FC<PipelineFlowProps> = ({
