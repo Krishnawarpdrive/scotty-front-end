@@ -1,21 +1,17 @@
 
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import PipelineFlow from '../PipelineFlow';
-
-interface Stage {
-  id: string;
-  name: string;
-  category: 'internal' | 'external' | 'partner' | 'client' | 'verification';
-  order: number;
-  config?: any;
-}
+import EnhancedPipelineFlow from '../EnhancedPipelineFlow';
+import { EnhancedStage } from '../types/StageTypes';
 
 interface PipelineFlowSectionProps {
-  stages: Stage[];
+  stages: EnhancedStage[];
   onRemoveStage: (stageId: string) => void;
   onReorderStages: (dragIndex: number, hoverIndex: number) => void;
-  onConfigureStage: (stage: Stage) => void;
+  onConfigureStage: (stage: EnhancedStage) => void;
+  onEditStage?: (stage: EnhancedStage) => void;
+  onDuplicateStage?: (stage: EnhancedStage) => void;
+  onViewStage?: (stage: EnhancedStage) => void;
 }
 
 const PipelineFlowSection: React.FC<PipelineFlowSectionProps> = ({
@@ -23,6 +19,9 @@ const PipelineFlowSection: React.FC<PipelineFlowSectionProps> = ({
   onRemoveStage,
   onReorderStages,
   onConfigureStage,
+  onEditStage,
+  onDuplicateStage,
+  onViewStage,
 }) => {
   return (
     <Box sx={{ flexGrow: 1, mb: 4 }}>
@@ -37,11 +36,14 @@ const PipelineFlowSection: React.FC<PipelineFlowSectionProps> = ({
       >
         Hiring Pipeline ({stages.length} stages)
       </Typography>
-      <PipelineFlow
+      <EnhancedPipelineFlow
         stages={stages}
         onRemoveStage={onRemoveStage}
         onReorderStages={onReorderStages}
         onConfigureStage={onConfigureStage}
+        onEditStage={onEditStage}
+        onDuplicateStage={onDuplicateStage}
+        onViewStage={onViewStage}
       />
     </Box>
   );
