@@ -10,12 +10,12 @@ interface AvailableStage {
 }
 
 interface AvailableStagesSectionProps {
-  stages: AvailableStage[];
-  onAddStage: (stage: any) => void;
+  availableStages: AvailableStage[];
+  onAddStage: (stageId: string) => void;
 }
 
 const AvailableStagesSection: React.FC<AvailableStagesSectionProps> = ({
-  stages,
+  availableStages,
   onAddStage,
 }) => {
   return (
@@ -32,7 +32,7 @@ const AvailableStagesSection: React.FC<AvailableStagesSectionProps> = ({
         Available Stage Types
       </Typography>
       <StageScroller
-        stages={stages}
+        stages={availableStages}
         onAddStage={onAddStage}
       />
     </Box>

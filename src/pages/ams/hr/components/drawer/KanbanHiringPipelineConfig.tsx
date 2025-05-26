@@ -22,13 +22,6 @@ const AVAILABLE_STAGES = [
 
 // Helper function to convert stage config to proper format
 const createStageConfig = (stageId: string, config?: any) => {
-  const baseConfig = {
-    stageType: stageId,
-    notes: '',
-    isConfigured: false,
-  };
-
-  // Return base config without stageType since StageConfig doesn't include it
   return {
     interviewFormat: config?.interviewFormat || 'one-to-one',
     interviewMode: config?.interviewMode || 'virtual',
@@ -127,7 +120,7 @@ const KanbanHiringPipelineConfig: React.FC = () => {
     setConfigModalOpen(true);
   }, []);
 
-  const handleSaveStageConfig = useCallback((config: StageConfigUnion) => {
+  const handleSaveStageConfig = useCallback((stageId: string, config: StageConfigUnion) => {
     if (!currentStage) return;
 
     setSelectedStages(prev => prev.map(stage => {
@@ -143,7 +136,7 @@ const KanbanHiringPipelineConfig: React.FC = () => {
             interviewFormat: config.interviewType === 'one-on-one' ? 'one-to-one' : 
                            config.interviewType === 'panel' ? 'panel' : 'group',
             interviewMode: config.mode,
-            interviewers: config.interviewers?.map((name: string): Interviewer => ({
+            interviewers: (config as any).interviewers?.map((name: string): Interviewer => ({
               id: `interviewer-${Date.now()}-${Math.random()}`,
               name,
               email: `${name.toLowerCase().replace(' ', '.')}@company.com`,

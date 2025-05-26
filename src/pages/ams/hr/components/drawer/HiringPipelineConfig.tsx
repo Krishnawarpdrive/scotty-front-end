@@ -20,7 +20,11 @@ const AVAILABLE_STAGES = [
   { id: 'vendor-interview', name: 'Vendor Interview', category: 'partner' as const },
 ];
 
-const HiringPipelineConfig: React.FC = () => {
+interface HiringPipelineConfigProps {
+  roleData?: any;
+}
+
+const HiringPipelineConfig: React.FC<HiringPipelineConfigProps> = ({ roleData }) => {
   const [selectedStages, setSelectedStages] = useState<EnhancedStage[]>([]);
   const [configModalOpen, setConfigModalOpen] = useState(false);
   const [currentStage, setCurrentStage] = useState<EnhancedStage | null>(null);
@@ -68,14 +72,31 @@ const HiringPipelineConfig: React.FC = () => {
     setConfigModalOpen(true);
   }, []);
 
-  const handleSaveStageConfig = useCallback((config: StageConfigUnion) => {
+  const handleSaveStageConfig = useCallback((stageId: string, config: StageConfigUnion) => {
     if (!currentStage) return;
 
     setSelectedStages(prev => prev.map(stage => {
       if (stage.id === currentStage.id) {
         return {
           ...stage,
-          config,
+          config: {
+            interviewFormat: 'interviewType' in config ? 
+              (config.interviewType === 'one-on-one' ? 'one-to-one' : 
+               config.interviewType === 'panel' ? 'panel' : 'group') : 'one-to-one',
+            interviewMode: 'mode' in config ? config.mode : 'virtual',
+            interviewers: 'interviewers' in config ? 
+              (Array.isArray(config.interviewers) ? 
+                config.interviewers.map((interviewer: any) => 
+                  typeof interviewer === 'string' ? {
+                    id: `interviewer-${Date.now()}-${Math.random()}`,
+                    name: interviewer,
+                    email: `${interviewer.toLowerCase().replace(' ', '.')}@company.com`,
+                  } : interviewer
+                ) : []
+              ) : [],
+            notes: config.notes || '',
+            ...config
+          },
           status: 'configured',
         };
       }

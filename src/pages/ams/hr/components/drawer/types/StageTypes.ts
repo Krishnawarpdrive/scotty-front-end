@@ -34,6 +34,8 @@ export interface StageConfig {
   notes?: string;
   maxCandidatesPerRound?: number;
   candidateInstructions?: string;
+  // Allow any additional properties for flexibility with different stage types
+  [key: string]: any;
 }
 
 export interface EnhancedStage extends Stage {
