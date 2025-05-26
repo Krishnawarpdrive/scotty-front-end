@@ -8,6 +8,7 @@ import AvailableStagesSection from './components/AvailableStagesSection';
 import PipelineFlowSection from './components/PipelineFlowSection';
 import StageConfigModal from './components/StageConfigModal';
 import { StageConfigUnion } from './types/StageConfigTypes';
+import { transformConfigToStageConfig } from './utils/configTransforms';
 
 // Predefined stages
 const AVAILABLE_STAGES = [
@@ -77,27 +78,13 @@ const HiringPipelineConfig: React.FC<HiringPipelineConfigProps> = ({ roleData })
 
     setSelectedStages(prev => prev.map(stage => {
       if (stage.id === currentStage.id) {
+        const transformedConfig = transformConfigToStageConfig(config);
+        
         return {
           ...stage,
-          config: {
-            interviewFormat: 'interviewType' in config ? 
-              (config.interviewType === 'one-on-one' ? 'one-to-one' : 
-               config.interviewType === 'panel' ? 'panel' : 'group') : 'one-to-one',
-            interviewMode: 'mode' in config ? config.mode : 'virtual',
-            interviewers: 'interviewers' in config ? 
-              (Array.isArray(config.interviewers) ? 
-                config.interviewers.map((interviewer: any) => 
-                  typeof interviewer === 'string' ? {
-                    id: `interviewer-${Date.now()}-${Math.random()}`,
-                    name: interviewer,
-                    email: `${interviewer.toLowerCase().replace(' ', '.')}@company.com`,
-                  } : interviewer
-                ) : []
-              ) : [],
-            notes: config.notes || '',
-            ...config
-          },
-          status: 'configured',
+          config: transformedConfig,
+          status: 'configured' as const,
+          interviewers: transformedConfig.interviewers || [],
         };
       }
       return stage;

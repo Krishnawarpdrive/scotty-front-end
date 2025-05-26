@@ -1,13 +1,13 @@
-
 import React, { useState, useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Box, Typography, Divider, Button } from '@mui/material';
-import { EnhancedStage, Interviewer } from './types/StageTypes';
+import { EnhancedStage } from './types/StageTypes';
 import { StageConfigUnion } from './types/StageConfigTypes';
 import AvailableStagesSection from './components/AvailableStagesSection';
 import KanbanPipelineFlow from './KanbanPipelineFlow';
 import StageConfigModal from './components/StageConfigModal';
+import { transformConfigToStageConfig } from './utils/configTransforms';
 
 // Available stages that can be added to the pipeline
 const AVAILABLE_STAGES = [
@@ -125,29 +125,14 @@ const KanbanHiringPipelineConfig: React.FC = () => {
 
     setSelectedStages(prev => prev.map(stage => {
       if (stage.id === currentStage.id) {
-        const updatedStage: EnhancedStage = {
+        const transformedConfig = transformConfigToStageConfig(config);
+        
+        return {
           ...stage,
-          status: 'configured',
+          config: transformedConfig,
+          status: 'configured' as const,
+          interviewers: transformedConfig.interviewers || [],
         };
-
-        // Convert config to StageConfig format
-        if ('interviewType' in config) {
-          updatedStage.config = {
-            interviewFormat: config.interviewType === 'one-on-one' ? 'one-to-one' : 
-                           config.interviewType === 'panel' ? 'panel' : 'group',
-            interviewMode: config.mode,
-            interviewers: (config as any).interviewers?.map((name: string): Interviewer => ({
-              id: `interviewer-${Date.now()}-${Math.random()}`,
-              name,
-              email: `${name.toLowerCase().replace(' ', '.')}@company.com`,
-            })) || [],
-            notes: config.notes || '',
-          };
-        } else {
-          updatedStage.config = createStageConfig(stage.id, config);
-        }
-
-        return updatedStage;
       }
       return stage;
     }));
