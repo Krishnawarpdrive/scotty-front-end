@@ -5,8 +5,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Candidate } from '../CandidateTable';
 import { CandidateCell } from './CandidateCell';
-import { ContactCell } from './ContactCell';
 import { AppliedRolesCell } from './AppliedRolesCell';
+import { ExperienceCell } from './ExperienceCell';
 import { ScoreCell } from './ScoreCell';
 import { StatusCell } from './StatusCell';
 import { AssignedTACell } from './AssignedTACell';
@@ -46,9 +46,10 @@ export const useTableColumns = ({
       enableFiltering: true,
     },
     {
-      id: 'contact',
-      header: 'Contact',
-      cell: (candidate) => <ContactCell candidate={candidate} />,
+      id: 'appliedRoles',
+      header: 'Applied Roles',
+      cell: (candidate) => <AppliedRolesCell candidate={candidate} />,
+      enableFiltering: true,
     },
     {
       id: 'source',
@@ -58,14 +59,15 @@ export const useTableColumns = ({
       enableFiltering: true,
     },
     {
-      id: 'appliedRoles',
-      header: 'Applied Roles',
-      cell: (candidate) => <AppliedRolesCell candidate={candidate} />,
+      id: 'experience',
+      header: 'Experience',
+      cell: (candidate) => <ExperienceCell candidate={candidate} />,
+      enableSorting: true,
       enableFiltering: true,
     },
     {
-      id: 'currentStage',
-      header: 'Current Stage',
+      id: 'lastStage',
+      header: 'Last Stage',
       cell: (candidate) => (
         <Badge variant="outline" className="text-xs">
           {candidate.currentStage}

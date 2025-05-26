@@ -57,7 +57,7 @@ export function SelectableTable<T = any>({
           </TableHeader>
           <TableBody>
             {Array(5).fill(0).map((_, i) => (
-              <TableRow key={i}>
+              <TableRow key={i} sx={{ height: '60px' }}>
                 {hasSelection && (
                   <TableCell>
                     <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
@@ -91,7 +91,7 @@ export function SelectableTable<T = any>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
+            <TableRow sx={{ height: '60px' }}>
               <TableCell colSpan={columns.length + (hasSelection ? 1 : 0)} className="text-center py-8 text-gray-500">
                 {emptyMessage}
               </TableCell>
@@ -138,6 +138,7 @@ export function SelectableTable<T = any>({
                 )}
                 onClick={() => onRowClick?.(item)}
                 data-state={isSelected ? 'selected' : undefined}
+                sx={{ height: '60px' }}
               >
                 {hasSelection && (
                   <TableCell>

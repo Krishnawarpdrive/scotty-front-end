@@ -54,8 +54,9 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps>(
               fontFamily: 'Rubik, sans-serif',
               fontSize: '12px',
               color: '#262626',
-              padding: '8px 16px',
+              padding: '12px 16px',
               borderBottom: '1px solid #e5e7eb',
+              height: '60px',
             }
           }}
           {...props}
@@ -106,6 +107,13 @@ export const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProp
           },
           '& .MuiTableRow-root:last-child .MuiTableCell-root': {
             borderBottom: 'none',
+          },
+          '& .MuiTableRow-root': {
+            height: '60px',
+          },
+          '& .MuiTableCell-root': {
+            height: '60px',
+            padding: '12px 16px',
           }
         }}
         {...props}
@@ -131,7 +139,8 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
           },
           '&[data-state=selected]': {
             backgroundColor: '#eff6ff',
-          }
+          },
+          height: '60px',
         }}
         {...props}
       >
@@ -176,14 +185,15 @@ export const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
       <MuiTableCell
         ref={ref}
         className={cn(
-          'p-4 align-middle text-[12px] text-[#262626] [&:has([role=checkbox])]:pr-0',
+          'align-middle text-[12px] text-[#262626] [&:has([role=checkbox])]:pr-0',
           className
         )}
         sx={{
           fontFamily: 'Rubik, sans-serif',
           fontSize: '12px',
           color: '#262626',
-          padding: '8px 16px',
+          padding: '12px 16px',
+          height: '60px',
         }}
         {...props}
       >

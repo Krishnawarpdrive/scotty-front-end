@@ -25,6 +25,10 @@ export interface Candidate {
   priority: 'High' | 'Medium' | 'Low';
   nextAction?: string;
   actionDueDate?: string;
+  experience: {
+    years: number;
+    months: number;
+  };
 }
 
 interface CandidateTableProps {

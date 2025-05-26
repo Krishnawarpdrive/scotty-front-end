@@ -18,7 +18,7 @@ export function DataTableRow<T extends Record<string, any>>({
   return (
     <TableRow
       className={cn(
-        "group",
+        "group h-[60px]",
         onRowClick && "cursor-pointer hover:bg-muted/60"
       )}
       onClick={() => onRowClick && onRowClick(item)}
@@ -27,6 +27,30 @@ export function DataTableRow<T extends Record<string, any>>({
         // Define static widths for each column to prevent hover width changes
         const getColumnWidth = (columnId: string) => {
           switch (columnId) {
+            case 'select':
+              return 'w-[50px]';
+            case 'candidate':
+              return 'w-[200px]';
+            case 'appliedRoles':
+              return 'w-[180px]';
+            case 'source':
+              return 'w-[120px]';
+            case 'experience':
+              return 'w-[100px]';
+            case 'lastStage':
+              return 'w-[140px]';
+            case 'score':
+              return 'w-[80px]';
+            case 'status':
+              return 'w-[100px]';
+            case 'assignedTA':
+              return 'w-[80px]';
+            case 'nextAction':
+              return 'w-[150px]';
+            case 'lastUpdated':
+              return 'w-[120px]';
+            case 'actions':
+              return 'w-[120px]';
             case 'clientName':
             case 'roleName':
             case 'requirementId':
@@ -45,14 +69,12 @@ export function DataTableRow<T extends Record<string, any>>({
             case 'dueDate':
               return 'w-[110px]';
             case 'priority':
-            case 'status':
             case 'candidateStageProgress':
               return 'w-[90px]';
             case 'alertReason':
               return 'w-[180px]';
             case 'cta':
               return 'w-[140px]';
-            case 'clientName':
             case 'linkedRole':
               return 'w-[120px]';
             case 'candidateProgress':
@@ -66,7 +88,7 @@ export function DataTableRow<T extends Record<string, any>>({
           <TableCell 
             key={column.id}
             className={cn(
-              "text-[12px] text-[#262626] transition-colors",
+              "text-[12px] text-[#262626] transition-colors h-[60px] py-3",
               getColumnWidth(column.id),
               "overflow-hidden"
             )}
