@@ -37,20 +37,33 @@ const HiringPipelineConfig: React.FC<HiringPipelineConfigProps> = ({ roleData })
   } = usePipelineConfig(roleData?.id);
 
   // Convert pipelineStages to EnhancedStage[] with proper defaults
-  const enhancedPipelineStages: EnhancedStage[] = pipelineStages.map(stage => ({
-    id: stage.id,
-    name: stage.name,
-    category: stage.category,
-    order: stage.order,
-    config: stage.config || {
-      interviewFormat: 'one-to-one',
-      interviewMode: 'virtual',
-      notes: '',
-    },
-    status: 'not-configured' as const,
-    interviewers: [],
-    scheduling: { isScheduled: false },
-  }));
+  const enhancedPipelineStages: EnhancedStage[] = pipelineStages.map(stage => {
+    const hasConfig = stage.config && Object.keys(stage.config).length > 0;
+    const hasInterviewers = stage.config?.interviewers && stage.config.interviewers.length > 0;
+    
+    let status: 'configured' | 'partially-configured' | 'not-configured' = 'not-configured';
+    if (hasConfig && hasInterviewers) {
+      status = 'configured';
+    } else if (hasConfig || hasInterviewers) {
+      status = 'partially-configured';
+    }
+
+    return {
+      id: stage.id,
+      name: stage.name,
+      category: stage.category,
+      order: stage.order,
+      config: stage.config || {
+        interviewFormat: 'one-to-one',
+        interviewMode: 'virtual',
+        notes: '',
+      },
+      status,
+      interviewers: stage.config?.interviewers || [],
+      scheduling: { isScheduled: false },
+      missingItems: !hasConfig ? ['Configuration'] : !hasInterviewers ? ['Interviewers'] : undefined,
+    };
+  });
 
   if (loading) {
     return (

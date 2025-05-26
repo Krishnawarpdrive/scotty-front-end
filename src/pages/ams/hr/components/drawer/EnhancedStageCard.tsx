@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { EnhancedStage } from './types/StageTypes';
-import InterviewStageCard from './components/InterviewStageCard';
+import EnhancedStageCard from './components/EnhancedStageCard';
 
 interface EnhancedStageCardProps {
   stage: EnhancedStage;
@@ -12,30 +12,11 @@ interface EnhancedStageCardProps {
   onEdit?: () => void;
   onDuplicate?: () => void;
   onView?: () => void;
+  viewMode?: 'detailed' | 'compact';
 }
 
-const EnhancedStageCard: React.FC<EnhancedStageCardProps> = ({
-  stage,
-  index,
-  onRemove,
-  onReorder,
-  onConfigure,
-  onEdit,
-  onDuplicate,
-  onView,
-}) => {
-  return (
-    <InterviewStageCard
-      stage={stage}
-      index={index}
-      onRemove={onRemove}
-      onReorder={onReorder}
-      onConfigure={onConfigure}
-      onEdit={onEdit}
-      onDuplicate={onDuplicate}
-      onView={onView}
-    />
-  );
+const EnhancedStageCardWrapper: React.FC<EnhancedStageCardProps> = (props) => {
+  return <EnhancedStageCard {...props} />;
 };
 
-export default EnhancedStageCard;
+export default EnhancedStageCardWrapper;

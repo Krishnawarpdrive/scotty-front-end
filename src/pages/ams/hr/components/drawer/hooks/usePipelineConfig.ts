@@ -70,9 +70,15 @@ export const usePipelineConfig = (roleId?: string) => {
       if (existingPipeline) {
         console.log('Found existing pipeline:', existingPipeline);
         setPipelineId(existingPipeline.id);
-        // Parse the stages from JSONB
+        // Parse the stages from JSONB with proper type handling
         const stages = Array.isArray(existingPipeline.stages) 
-          ? existingPipeline.stages as Stage[]
+          ? (existingPipeline.stages as any[]).map((stage: any) => ({
+              id: stage.id || `stage-${Date.now()}`,
+              name: stage.name || 'Unnamed Stage',
+              category: stage.category || 'internal',
+              order: stage.order || 1,
+              config: stage.config || {}
+            } as Stage))
           : [];
         setPipelineStages(stages);
       } else {
@@ -152,12 +158,21 @@ export const usePipelineConfig = (roleId?: string) => {
     try {
       console.log('Saving pipeline for role:', roleId);
       
+      // Convert stages to plain objects for JSONB storage
+      const stagesToSave = pipelineStages.map(stage => ({
+        id: stage.id,
+        name: stage.name,
+        category: stage.category,
+        order: stage.order,
+        config: stage.config || {}
+      }));
+      
       if (pipelineId) {
         // Update existing pipeline
         const { error } = await supabase
           .from('hiring_pipelines')
           .update({ 
-            stages: pipelineStages,
+            stages: stagesToSave as any,
             updated_at: new Date().toISOString()
           })
           .eq('id', pipelineId);
@@ -170,7 +185,7 @@ export const usePipelineConfig = (roleId?: string) => {
           .from('hiring_pipelines')
           .insert({ 
             role_id: roleId, 
-            stages: pipelineStages
+            stages: stagesToSave as any
           })
           .select()
           .single();
@@ -186,7 +201,7 @@ export const usePipelineConfig = (roleId?: string) => {
           .from('pipeline_templates')
           .insert({
             name: `${roleId}-pipeline-template`,
-            stages: pipelineStages,
+            stages: stagesToSave as any,
             created_from_role: roleId,
           });
 
