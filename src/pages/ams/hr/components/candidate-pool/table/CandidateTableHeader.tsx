@@ -21,9 +21,9 @@ export const CandidateTableHeader: React.FC<CandidateTableHeaderProps> = ({
       <div className="flex items-center gap-3">
         <Checkbox
           checked={isAllSelected}
-          ref={(el) => {
-            if (el) el.indeterminate = isIndeterminate;
-          }}
+          // For Radix UI checkbox, we use the checked prop with indeterminate state
+          // The indeterminate state is handled by passing "indeterminate" as the checked value
+          {...(isIndeterminate && { checked: "indeterminate" })}
           onCheckedChange={(checked) => onSelectAll(!!checked)}
         />
         <span className="text-sm text-gray-600">
