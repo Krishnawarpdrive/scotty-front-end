@@ -4,7 +4,7 @@ export { Card } from './Card';
 export { TextField } from './TextField';
 export { Input } from './Input';
 export { Select } from './Select';
-export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from './Table';
+export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from './table';
 export { Dialog, DialogTitle, DialogContent, DialogActions } from './Dialog';
 export { Drawer, DrawerContent } from './Drawer';
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
