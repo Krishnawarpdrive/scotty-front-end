@@ -148,16 +148,17 @@ const InterviewStageCard: React.FC<InterviewStageCardProps> = ({
       ref={ref}
       data-handler-id={handlerId}
       sx={{
-        width: '344px',
-        height: '214px',
-        borderRadius: '12px',
+        width: '280px',
+        height: '180px',
+        borderRadius: '16px',
         position: 'relative',
-        boxShadow: '0px 4px 14px rgba(0, 0, 0, 0.09)',
+        boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)',
         opacity: isDragging ? 0.5 : 1,
         cursor: isDragging ? 'grabbing' : 'default',
         border: 'none',
+        transition: 'all 0.2s ease',
         '&:hover': {
-          boxShadow: '0px 6px 18px rgba(0, 0, 0, 0.12)',
+          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.12)',
           transform: 'translateY(-1px)',
         },
       }}
@@ -166,18 +167,18 @@ const InterviewStageCard: React.FC<InterviewStageCardProps> = ({
       <Box
         sx={{
           position: 'absolute',
-          top: '16px',
-          left: '18px',
+          top: '12px',
+          left: '16px',
           display: 'flex',
           alignItems: 'center',
-          gap: '16px',
+          gap: '12px',
         }}
       >
         <Typography
           sx={{
             fontFamily: 'Rubik, sans-serif',
             color: '#a2a4b2',
-            fontSize: '14px',
+            fontSize: '12px',
             fontWeight: 'normal',
           }}
         >
@@ -188,7 +189,7 @@ const InterviewStageCard: React.FC<InterviewStageCardProps> = ({
           sx={{
             fontFamily: 'Rubik, sans-serif',
             color: priorityColor,
-            fontSize: '14px',
+            fontSize: '12px',
             fontWeight: 'normal',
           }}
         >
@@ -197,9 +198,9 @@ const InterviewStageCard: React.FC<InterviewStageCardProps> = ({
 
         <Avatar
           sx={{
-            width: '20px',
-            height: '20px',
-            fontSize: '10px',
+            width: '18px',
+            height: '18px',
+            fontSize: '9px',
             bgcolor: categoryColor,
           }}
         >
@@ -210,8 +211,8 @@ const InterviewStageCard: React.FC<InterviewStageCardProps> = ({
           sx={{
             fontFamily: 'Roboto, sans-serif',
             color: '#a2a4b2',
-            fontSize: '14px',
-            lineHeight: '24px',
+            fontSize: '12px',
+            lineHeight: '18px',
           }}
         >
           {stage.dueDate || '2 days ago'}
@@ -222,29 +223,29 @@ const InterviewStageCard: React.FC<InterviewStageCardProps> = ({
       <Box
         sx={{
           position: 'absolute',
-          top: '16px',
-          right: '18px',
+          top: '12px',
+          right: '16px',
           display: 'flex',
           alignItems: 'center',
-          gap: '5px',
+          gap: '4px',
         }}
       >
-        <CheckIcon sx={{ width: '16px', height: '16px', color: '#000' }} />
+        <CheckIcon sx={{ width: '14px', height: '14px', color: '#000' }} />
         <IconButton size="small" sx={{ padding: 0 }} onClick={handleMenuClick}>
-          <MoreHorizIcon sx={{ width: '20px', height: '20px' }} />
+          <MoreHorizIcon sx={{ width: '18px', height: '18px' }} />
         </IconButton>
       </Box>
 
-      {/* Description text */}
+      {/* Description text - more compact */}
       <Typography
         sx={{
           position: 'absolute',
-          top: '51px',
-          left: '18px',
-          width: '308px',
+          top: '40px',
+          left: '16px',
+          width: '248px',
           fontFamily: 'Rubik, sans-serif',
-          fontSize: '15px',
-          lineHeight: '22.5px',
+          fontSize: '13px',
+          lineHeight: '18px',
           color: '#656566',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -258,15 +259,15 @@ const InterviewStageCard: React.FC<InterviewStageCardProps> = ({
         {stage.interviewers.length > 0 ? ` Assigned to ${stage.interviewers.length} interviewer(s).` : ' No interviewers assigned.'}
       </Typography>
 
-      {/* Tags section */}
+      {/* Tags section - more compact */}
       <Box
         sx={{
           position: 'absolute',
-          top: '109px',
-          left: '18px',
+          top: '84px',
+          left: '16px',
           display: 'flex',
           alignItems: 'center',
-          gap: '7px',
+          gap: '6px',
         }}
       >
         <Chip
@@ -278,9 +279,9 @@ const InterviewStageCard: React.FC<InterviewStageCardProps> = ({
             '& .MuiChip-label': {
               fontFamily: 'Poppins, sans-serif',
               fontWeight: 'normal',
-              fontSize: '12px',
+              fontSize: '11px',
               color: '#898989',
-              padding: '2px 6px',
+              padding: '1px 4px',
             },
           }}
         />
@@ -294,19 +295,19 @@ const InterviewStageCard: React.FC<InterviewStageCardProps> = ({
             '& .MuiChip-label': {
               fontFamily: 'Poppins, sans-serif',
               fontWeight: 'normal',
-              fontSize: '12px',
+              fontSize: '11px',
               color: '#898989',
-              padding: '2px 6px',
+              padding: '1px 4px',
             },
           }}
         />
 
         <LocalOfferIcon
           sx={{ 
-            width: '16px', 
-            height: '16px', 
+            width: '14px', 
+            height: '14px', 
             color: '#898989',
-            margin: '2px',
+            margin: '1px',
           }}
         />
       </Box>
@@ -315,21 +316,21 @@ const InterviewStageCard: React.FC<InterviewStageCardProps> = ({
       <Divider
         sx={{
           position: 'absolute',
-          top: '141px',
-          left: '18px',
-          width: '312px',
+          top: '108px',
+          left: '16px',
+          width: '248px',
         }}
       />
 
-      {/* Bottom section with avatars */}
+      {/* Bottom section with avatars - more compact */}
       <Box
         sx={{
           position: 'absolute',
-          top: '154px',
-          left: '18px',
+          top: '120px',
+          left: '16px',
           display: 'flex',
           alignItems: 'center',
-          gap: '16px',
+          gap: '12px',
         }}
       >
         {/* TA Assignment */}
@@ -337,10 +338,10 @@ const InterviewStageCard: React.FC<InterviewStageCardProps> = ({
           <Avatar
             src={stage.taAssigned.avatar}
             sx={{
-              width: '20px',
-              height: '20px',
+              width: '18px',
+              height: '18px',
               border: 'none',
-              fontSize: '10px',
+              fontSize: '9px',
               bgcolor: '#009933',
             }}
           >
@@ -349,12 +350,12 @@ const InterviewStageCard: React.FC<InterviewStageCardProps> = ({
         ) : (
           <Avatar
             sx={{
-              width: '20px',
-              height: '20px',
+              width: '18px',
+              height: '18px',
               border: 'none',
               bgcolor: '#f2f2f2',
               color: '#898989',
-              fontSize: '10px',
+              fontSize: '9px',
             }}
           >
             ?
@@ -364,46 +365,46 @@ const InterviewStageCard: React.FC<InterviewStageCardProps> = ({
         {/* Calendar/Scheduling */}
         <Avatar
           sx={{
-            width: '24px',
-            height: '24px',
+            width: '20px',
+            height: '20px',
             border: '1px dashed #d2ccccb2',
             backgroundColor: 'transparent',
           }}
         >
-          <CalendarIcon sx={{ width: '16px', height: '16px', color: '#898989' }} />
+          <CalendarIcon sx={{ width: '14px', height: '14px', color: '#898989' }} />
         </Avatar>
 
         {/* Time/Schedule */}
         <Avatar
           sx={{
-            width: '24px',
-            height: '24px',
+            width: '20px',
+            height: '20px',
             border: '1px dashed #d2ccccb2',
             backgroundColor: 'transparent',
           }}
         >
-          <ScheduleIcon sx={{ width: '16px', height: '16px', color: '#898989' }} />
+          <ScheduleIcon sx={{ width: '14px', height: '14px', color: '#898989' }} />
         </Avatar>
       </Box>
 
-      {/* Arrow button in bottom right */}
+      {/* Arrow button in bottom right - more compact */}
       <Box
         sx={{
           position: 'absolute',
-          bottom: '2px',
-          right: '6px',
-          width: '73px',
-          height: '38px',
+          bottom: '8px',
+          right: '8px',
+          width: '48px',
+          height: '28px',
           backgroundColor: 'white',
-          borderRadius: '12px',
+          borderRadius: '8px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+          boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.1)',
         }}
       >
-        <IconButton size="small" onClick={onConfigure}>
-          <ArrowUpwardIcon sx={{ width: '24px', height: '24px' }} />
+        <IconButton size="small" onClick={onConfigure} sx={{ padding: '2px' }}>
+          <ArrowUpwardIcon sx={{ width: '18px', height: '18px' }} />
         </IconButton>
       </Box>
 
