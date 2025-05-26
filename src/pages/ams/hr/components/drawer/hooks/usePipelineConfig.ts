@@ -54,14 +54,15 @@ export const usePipelineConfig = (roleId?: string) => {
       setLoading(true);
       console.log('Loading pipeline data for role:', roleId);
 
-      // Query using raw SQL since the table isn't in types yet
+      // Query the hiring_pipelines table directly
       const { data: existingPipeline, error } = await supabase
-        .rpc('get_hiring_pipeline', { p_role_id: roleId })
-        .single();
+        .from('hiring_pipelines')
+        .select('*')
+        .eq('role_id', roleId)
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error('Error loading pipeline:', error);
-        // Set default stages if no pipeline exists
         setDefaultPipeline();
         return;
       }
@@ -69,7 +70,11 @@ export const usePipelineConfig = (roleId?: string) => {
       if (existingPipeline) {
         console.log('Found existing pipeline:', existingPipeline);
         setPipelineId(existingPipeline.id);
-        setPipelineStages(existingPipeline.stages || []);
+        // Parse the stages from JSONB
+        const stages = Array.isArray(existingPipeline.stages) 
+          ? existingPipeline.stages as Stage[]
+          : [];
+        setPipelineStages(stages);
       } else {
         console.log('No existing pipeline found, setting defaults');
         setDefaultPipeline();
@@ -147,41 +152,42 @@ export const usePipelineConfig = (roleId?: string) => {
     try {
       console.log('Saving pipeline for role:', roleId);
       
-      const pipelineData = {
-        role_id: roleId,
-        stages: JSON.stringify(pipelineStages),
-      };
-
-      // Use raw SQL until types are updated
       if (pipelineId) {
         // Update existing pipeline
-        const { data, error } = await supabase
-          .rpc('update_hiring_pipeline', { 
-            p_id: pipelineId, 
-            p_stages: JSON.stringify(pipelineStages) 
-          });
+        const { error } = await supabase
+          .from('hiring_pipelines')
+          .update({ 
+            stages: pipelineStages,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', pipelineId);
 
         if (error) throw error;
         console.log('Pipeline updated successfully');
       } else {
         // Create new pipeline
         const { data, error } = await supabase
-          .rpc('create_hiring_pipeline', { 
-            p_role_id: roleId, 
-            p_stages: JSON.stringify(pipelineStages) 
-          });
+          .from('hiring_pipelines')
+          .insert({ 
+            role_id: roleId, 
+            stages: pipelineStages
+          })
+          .select()
+          .single();
 
         if (error) throw error;
+        setPipelineId(data.id);
         console.log('Pipeline created successfully');
       }
 
       // Handle template saving
       if (saveAsTemplate) {
         const { error: templateError } = await supabase
-          .rpc('create_pipeline_template', {
-            p_name: `${roleId}-pipeline-template`,
-            p_stages: JSON.stringify(pipelineStages),
-            p_created_from_role: roleId,
+          .from('pipeline_templates')
+          .insert({
+            name: `${roleId}-pipeline-template`,
+            stages: pipelineStages,
+            created_from_role: roleId,
           });
 
         if (templateError) {
