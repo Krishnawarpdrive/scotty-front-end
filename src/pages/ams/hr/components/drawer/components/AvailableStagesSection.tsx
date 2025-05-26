@@ -22,7 +22,7 @@ const AvailableStagesSection: React.FC<AvailableStagesSectionProps> = ({
       fontSize: '13px',
       color: '#666',
       mb: 2
-    }}>j</Typography>
+    }}>Stage Library</Typography>
       <StageScroller stages={stages} onAddStage={onAddStage} />
     </Box>;
 };
