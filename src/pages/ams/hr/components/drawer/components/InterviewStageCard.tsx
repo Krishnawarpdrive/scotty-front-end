@@ -143,6 +143,10 @@ const InterviewStageCard: React.FC<InterviewStageCardProps> = ({
   const statusText = stage.status === 'configured' ? 'Configured' : 
                    stage.status === 'partially-configured' ? 'Partial' : 'Not Set';
 
+  // Safely access interviewers array with fallback
+  const interviewers = stage.interviewers || [];
+  const interviewerCount = interviewers.length;
+
   return (
     <Card
       ref={ref}
@@ -256,7 +260,7 @@ const InterviewStageCard: React.FC<InterviewStageCardProps> = ({
       >
         {stage.name} - {stage.config?.interviewFormat || 'Format not set'}. 
         Interview mode: {stage.config?.interviewMode || 'Not specified'}.
-        {stage.interviewers.length > 0 ? ` Assigned to ${stage.interviewers.length} interviewer(s).` : ' No interviewers assigned.'}
+        {interviewerCount > 0 ? ` Assigned to ${interviewerCount} interviewer(s).` : ' No interviewers assigned.'}
       </Typography>
 
       {/* Tags section - more compact */}
