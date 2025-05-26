@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import PipelineConfigHeader from './components/PipelineConfigHeader';

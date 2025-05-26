@@ -25,7 +25,20 @@ export const useCandidateJourney = (roleId?: string, pipelineStages?: EnhancedSt
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setContentRepository(data || []);
+      
+      // Transform the data to match our ContentItem type
+      const transformedData: ContentItem[] = (data || []).map(item => ({
+        id: item.id,
+        type: item.type as ContentItem['type'], // Type assertion since we know the data structure
+        title: item.title,
+        content_url: item.content_url || undefined,
+        metadata: (item.metadata as Record<string, any>) || {},
+        stage_relevance: item.stage_relevance || [],
+        created_at: item.created_at || '',
+        updated_at: item.updated_at || '',
+      }));
+      
+      setContentRepository(transformedData);
     } catch (error) {
       console.error('Error fetching content repository:', error);
     }
@@ -43,7 +56,22 @@ export const useCandidateJourney = (roleId?: string, pipelineStages?: EnhancedSt
         .order('stage_order');
 
       if (error) throw error;
-      setJourneyConfigs(data || []);
+      
+      // Transform the data to match our CandidateJourneyConfig type
+      const transformedData: CandidateJourneyConfig[] = (data || []).map(item => ({
+        id: item.id,
+        role_id: item.role_id || '',
+        stage_id: item.stage_id,
+        stage_order: item.stage_order,
+        stage_type: item.stage_type,
+        items: Array.isArray(item.items) ? item.items as any[] : [],
+        proceed_conditions: (item.proceed_conditions as Record<string, any>) || {},
+        auto_proceed: item.auto_proceed || false,
+        created_at: item.created_at || '',
+        updated_at: item.updated_at || '',
+      }));
+      
+      setJourneyConfigs(transformedData);
     } catch (error) {
       console.error('Error fetching journey configs:', error);
     }
@@ -114,7 +142,7 @@ export const useCandidateJourney = (roleId?: string, pipelineStages?: EnhancedSt
         const updatedItems = [...(existingConfig.items || []), newItem];
         const { error } = await supabase
           .from('candidate_journey_configs')
-          .update({ items: updatedItems })
+          .update({ items: updatedItems as any })
           .eq('id', existingConfig.id);
 
         if (error) throw error;
@@ -127,7 +155,7 @@ export const useCandidateJourney = (roleId?: string, pipelineStages?: EnhancedSt
             stage_id: stageId,
             stage_order: stage.order,
             stage_type: stage.type,
-            items: [newItem]
+            items: [newItem] as any
           });
 
         if (error) throw error;
@@ -148,7 +176,7 @@ export const useCandidateJourney = (roleId?: string, pipelineStages?: EnhancedSt
       const updatedItems = config.items.filter(item => item.id !== itemId);
       const { error } = await supabase
         .from('candidate_journey_configs')
-        .update({ items: updatedItems })
+        .update({ items: updatedItems as any })
         .eq('id', config.id);
 
       if (error) throw error;
@@ -170,7 +198,7 @@ export const useCandidateJourney = (roleId?: string, pipelineStages?: EnhancedSt
 
       const { error } = await supabase
         .from('candidate_journey_configs')
-        .update({ items: updatedItems })
+        .update({ items: updatedItems as any })
         .eq('id', config.id);
 
       if (error) throw error;

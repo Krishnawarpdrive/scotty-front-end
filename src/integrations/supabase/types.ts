@@ -277,6 +277,57 @@ export type Database = {
         }
         Relationships: []
       }
+      hiring_pipelines: {
+        Row: {
+          created_at: string
+          id: string
+          role_id: string
+          stages: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role_id: string
+          stages?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role_id?: string
+          stages?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pipeline_templates: {
+        Row: {
+          created_at: string
+          created_from_role: string | null
+          id: string
+          name: string
+          stages: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_from_role?: string | null
+          id?: string
+          name: string
+          stages?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_from_role?: string | null
+          id?: string
+          name?: string
+          stages?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       requirements: {
         Row: {
           assigned_to: string | null

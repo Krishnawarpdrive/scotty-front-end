@@ -7,6 +7,7 @@ import { usePipelineConfig } from './hooks/usePipelineConfig';
 import ContentRepository from './components/ContentRepository';
 import JourneyTimeline from './components/JourneyTimeline';
 import { ContentItem } from './types/CandidateJourneyTypes';
+import { EnhancedStage } from './types/StageTypes';
 
 interface CandidateJourneyTabProps {
   roleData: any;
@@ -18,6 +19,15 @@ const CandidateJourneyTab: React.FC<CandidateJourneyTabProps> = ({
   onSwitchToPipeline 
 }) => {
   const { pipelineStages, loading: pipelineLoading, refreshPipeline } = usePipelineConfig(roleData?.id);
+  
+  // Convert pipelineStages to EnhancedStage[] for the journey hook
+  const enhancedPipelineStages: EnhancedStage[] = pipelineStages.map(stage => ({
+    ...stage,
+    status: 'not-configured' as const,
+    interviewers: [],
+    scheduling: { isScheduled: false },
+  }));
+
   const {
     contentRepository,
     journeyStages,
@@ -27,7 +37,7 @@ const CandidateJourneyTab: React.FC<CandidateJourneyTabProps> = ({
     removeItemFromStage,
     toggleItemMandatory,
     refreshData
-  } = useCandidateJourney(roleData?.id, pipelineStages);
+  } = useCandidateJourney(roleData?.id, enhancedPipelineStages);
 
   const [draggedItem, setDraggedItem] = useState<ContentItem | null>(null);
 
