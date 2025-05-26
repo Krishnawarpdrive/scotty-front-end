@@ -1,16 +1,27 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { CandidatePoolHeader } from './candidate-pool/CandidatePoolHeader';
 import { CandidateMetrics } from './candidate-pool/CandidateMetrics';
-import { CandidateFilters } from './candidate-pool/CandidateFilters';
-import { BulkActions } from './candidate-pool/BulkActions';
-import { CandidateTable, Candidate } from './candidate-pool/CandidateTable';
+import { CandidatePoolContent } from './candidate-pool/CandidatePoolContent';
 import { useCandidatePool } from './candidate-pool/useCandidatePool';
+import { useCandidateDetailDrawer } from './candidate-pool/useCandidateDetailDrawer';
+import { useCandidatePoolHeaderActions } from './candidate-pool/CandidatePoolHeaderActions';
 import CandidateDetailDrawer from './drawer/CandidateDetailDrawer';
 
 export const CandidatePoolPage: React.FC = () => {
-  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const {
+    selectedCandidate,
+    drawerOpen,
+    handleCandidateClick,
+    handleCloseDrawer,
+  } = useCandidateDetailDrawer();
+
+  const {
+    handleAdvancedFilters,
+    handleExport,
+    handleImport,
+    handleAddCandidate,
+  } = useCandidatePoolHeaderActions();
 
   const {
     candidates,
@@ -33,35 +44,6 @@ export const CandidatePoolPage: React.FC = () => {
     setSelectedCandidates,
   } = useCandidatePool();
 
-  const handleCandidateClick = (candidate: Candidate) => {
-    setSelectedCandidate(candidate);
-    setDrawerOpen(true);
-  };
-
-  const handleCloseDrawer = () => {
-    setDrawerOpen(false);
-    setSelectedCandidate(null);
-  };
-
-  const handleAdvancedFilters = () => {
-    setShowFilters(!showFilters);
-  };
-
-  const handleExport = () => {
-    console.log('Exporting candidates...');
-    // Implement export logic
-  };
-
-  const handleImport = () => {
-    console.log('Importing candidates...');
-    // Implement import logic
-  };
-
-  const handleAddCandidate = () => {
-    console.log('Adding new candidate...');
-    // Implement add candidate logic
-  };
-
   return (
     <div className="h-full flex flex-col bg-gray-50">
       <CandidatePoolHeader
@@ -70,7 +52,7 @@ export const CandidatePoolPage: React.FC = () => {
         totalCandidates={totalCandidates}
         filteredCount={candidates.length}
         activeFilters={activeFilterCount}
-        onAdvancedFilters={handleAdvancedFilters}
+        onAdvancedFilters={() => handleAdvancedFilters(showFilters, setShowFilters)}
         onExport={handleExport}
         onImport={handleImport}
         onAddCandidate={handleAddCandidate}
@@ -78,33 +60,21 @@ export const CandidatePoolPage: React.FC = () => {
 
       <CandidateMetrics metrics={metrics} />
 
-      <div className="flex-1 overflow-auto">
-        <div className="p-6 space-y-6">
-          {showFilters && (
-            <CandidateFilters
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              onClearFilter={handleClearFilter}
-              onClearAll={handleClearAllFilters}
-            />
-          )}
-
-          <BulkActions
-            selectedCount={selectedCandidates.length}
-            onAction={handleBulkAction}
-            onClearSelection={() => setSelectedCandidates([])}
-          />
-
-          <CandidateTable
-            candidates={candidates}
-            selectedCandidates={selectedCandidates}
-            onCandidateSelect={handleCandidateSelect}
-            onSelectAll={handleSelectAll}
-            onCandidateClick={handleCandidateClick}
-            onQuickAction={handleQuickAction}
-          />
-        </div>
-      </div>
+      <CandidatePoolContent
+        candidates={candidates}
+        selectedCandidates={selectedCandidates}
+        showFilters={showFilters}
+        filters={filters}
+        onCandidateSelect={handleCandidateSelect}
+        onSelectAll={handleSelectAll}
+        onCandidateClick={handleCandidateClick}
+        onQuickAction={handleQuickAction}
+        onFilterChange={handleFilterChange}
+        onClearFilter={handleClearFilter}
+        onClearAllFilters={handleClearAllFilters}
+        onBulkAction={handleBulkAction}
+        setSelectedCandidates={setSelectedCandidates}
+      />
 
       <CandidateDetailDrawer
         open={drawerOpen}
