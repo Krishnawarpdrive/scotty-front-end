@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from './Table';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from './table';
 import { Checkbox } from './Checkbox';
 import { cn } from '@/lib/utils';
 

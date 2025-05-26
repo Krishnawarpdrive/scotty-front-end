@@ -1,6 +1,6 @@
 
 import React from "react";
-import { TableHead, TableHeader, TableRow } from "@/components/ui-mui/Table";
+import { TableHead, TableHeader, TableRow } from "@/components/ui-mui/table";
 import { Checkbox } from "@/components/ui-mui/Checkbox";
 
 interface TableHeaderProps {

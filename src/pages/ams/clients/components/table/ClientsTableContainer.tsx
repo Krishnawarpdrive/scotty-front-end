@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui-mui/Table";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui-mui/table";
 import { Skeleton } from '@/components/ui-mui/Skeleton';
 
 interface ClientsTableContainerProps {

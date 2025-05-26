@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Table, TableBody } from "@/components/ui-mui/Table";
+import { Table, TableBody } from "@/components/ui-mui/table";
 import { Drawer, DrawerContent } from "@/components/ui-mui/Drawer";
 import { CandidateDetails } from "./CandidateDetails";
 import { CandidateRow } from "./table/CandidateRow";

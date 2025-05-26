@@ -1,6 +1,6 @@
 
 import React from "react";
-import { TableRow, TableCell } from "@/components/ui-mui/Table";
+import { TableRow, TableCell } from "@/components/ui-mui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui-mui/Checkbox";
 import { cn } from "@/lib/utils";
