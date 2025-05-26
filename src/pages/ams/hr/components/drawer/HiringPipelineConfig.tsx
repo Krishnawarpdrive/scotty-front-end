@@ -66,6 +66,15 @@ const HiringPipelineConfig: React.FC<HiringPipelineConfigProps> = ({ roleData })
     } as EnhancedStage;
   });
 
+  // Create a function to handle stage configuration that maps back to the basic stage
+  const handleStageConfig = (enhancedStage: EnhancedStage) => {
+    // Find the corresponding basic stage and call the original function
+    const basicStage = pipelineStages.find(stage => stage.id === enhancedStage.id);
+    if (basicStage) {
+      openStageConfig(basicStage);
+    }
+  };
+
   if (loading) {
     return (
       <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -94,7 +103,7 @@ const HiringPipelineConfig: React.FC<HiringPipelineConfigProps> = ({ roleData })
           stages={enhancedPipelineStages}
           onRemoveStage={removeStageFromPipeline}
           onReorderStages={reorderStages}
-          onConfigureStage={openStageConfig}
+          onConfigureStage={handleStageConfig}
         />
 
         <PipelineConfigControls
