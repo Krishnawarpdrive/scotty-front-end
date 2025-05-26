@@ -1,5 +1,6 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Stage {
   id: string;
@@ -7,6 +8,14 @@ interface Stage {
   category: 'internal' | 'external' | 'partner' | 'client' | 'verification';
   order: number;
   config?: any;
+}
+
+interface PipelineData {
+  id?: string;
+  role_id: string;
+  stages: Stage[];
+  created_at?: string;
+  updated_at?: string;
 }
 
 const defaultAvailableStages = [
@@ -21,17 +30,67 @@ const defaultAvailableStages = [
   { id: 'external-interview', name: 'External Interview', category: 'external' as const },
 ];
 
-export const usePipelineConfig = () => {
-  const [pipelineStages, setPipelineStages] = useState<Stage[]>([
-    { id: 'phone', name: 'Phone Screening', category: 'internal', order: 1 },
-    { id: 'internal-interview', name: 'Internal Interview', category: 'internal', order: 2 },
-  ]);
-  
+export const usePipelineConfig = (roleId?: string) => {
+  const [pipelineStages, setPipelineStages] = useState<Stage[]>([]);
   const [availableStages] = useState(defaultAvailableStages);
   const [selectedStage, setSelectedStage] = useState<Stage | null>(null);
   const [configModalOpen, setConfigModalOpen] = useState(false);
   const [saveAsTemplate, setSaveAsTemplate] = useState(false);
   const [applyToAll, setApplyToAll] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [pipelineId, setPipelineId] = useState<string | null>(null);
+
+  // Load existing pipeline data
+  useEffect(() => {
+    if (roleId) {
+      loadPipelineData();
+    }
+  }, [roleId]);
+
+  const loadPipelineData = async () => {
+    if (!roleId) return;
+
+    try {
+      setLoading(true);
+      console.log('Loading pipeline data for role:', roleId);
+
+      // First check if pipeline table exists, if not create default data
+      const { data: existingPipeline, error } = await supabase
+        .from('hiring_pipelines')
+        .select('*')
+        .eq('role_id', roleId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error loading pipeline:', error);
+        // Set default stages if no pipeline exists
+        setDefaultPipeline();
+        return;
+      }
+
+      if (existingPipeline) {
+        console.log('Found existing pipeline:', existingPipeline);
+        setPipelineId(existingPipeline.id);
+        setPipelineStages(existingPipeline.stages || []);
+      } else {
+        console.log('No existing pipeline found, setting defaults');
+        setDefaultPipeline();
+      }
+    } catch (error) {
+      console.error('Error in loadPipelineData:', error);
+      setDefaultPipeline();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const setDefaultPipeline = () => {
+    const defaultStages: Stage[] = [
+      { id: 'phone-default', name: 'Phone Screening', category: 'internal', order: 1 },
+      { id: 'internal-interview-default', name: 'Internal Interview', category: 'internal', order: 2 },
+    ];
+    setPipelineStages(defaultStages);
+  };
 
   const addStageToPipeline = (stage: any) => {
     const newStage: Stage = {
@@ -44,7 +103,12 @@ export const usePipelineConfig = () => {
   };
 
   const removeStageFromPipeline = (stageId: string) => {
-    setPipelineStages(pipelineStages.filter(stage => stage.id !== stageId));
+    const filteredStages = pipelineStages.filter(stage => stage.id !== stageId);
+    const reorderedStages = filteredStages.map((stage, index) => ({
+      ...stage,
+      order: index + 1,
+    }));
+    setPipelineStages(reorderedStages);
   };
 
   const reorderStages = (dragIndex: number, hoverIndex: number) => {
@@ -76,14 +140,81 @@ export const usePipelineConfig = () => {
     setSelectedStage(null);
   };
 
-  const handleSavePipeline = () => {
-    console.log('Saving pipeline:', { pipelineStages, saveAsTemplate, applyToAll });
-    // TODO: Implement save functionality
+  const handleSavePipeline = async () => {
+    if (!roleId) {
+      console.error('No role ID provided for saving pipeline');
+      return;
+    }
+
+    try {
+      console.log('Saving pipeline for role:', roleId);
+      
+      const pipelineData: PipelineData = {
+        role_id: roleId,
+        stages: pipelineStages,
+      };
+
+      if (pipelineId) {
+        // Update existing pipeline
+        const { data, error } = await supabase
+          .from('hiring_pipelines')
+          .update(pipelineData)
+          .eq('id', pipelineId)
+          .select()
+          .single();
+
+        if (error) throw error;
+        console.log('Pipeline updated successfully:', data);
+      } else {
+        // Create new pipeline
+        const { data, error } = await supabase
+          .from('hiring_pipelines')
+          .insert(pipelineData)
+          .select()
+          .single();
+
+        if (error) throw error;
+        setPipelineId(data.id);
+        console.log('Pipeline created successfully:', data);
+      }
+
+      // Handle template saving
+      if (saveAsTemplate) {
+        const templateData = {
+          name: `${roleId}-pipeline-template`,
+          stages: pipelineStages,
+          created_from_role: roleId,
+        };
+
+        const { error: templateError } = await supabase
+          .from('pipeline_templates')
+          .insert(templateData);
+
+        if (templateError) {
+          console.error('Error saving template:', templateError);
+        } else {
+          console.log('Template saved successfully');
+        }
+      }
+
+      // Handle apply to all roles
+      if (applyToAll) {
+        // This would require additional logic to apply to other roles
+        console.log('Apply to all roles functionality would be implemented here');
+      }
+
+    } catch (error) {
+      console.error('Error saving pipeline:', error);
+    }
   };
 
   const handleCancel = () => {
-    console.log('Cancelling pipeline configuration');
-    // TODO: Implement cancel functionality
+    // Reset to last saved state
+    if (roleId) {
+      loadPipelineData();
+    }
+    setSaveAsTemplate(false);
+    setApplyToAll(false);
   };
 
   return {
@@ -93,6 +224,7 @@ export const usePipelineConfig = () => {
     configModalOpen,
     saveAsTemplate,
     applyToAll,
+    loading,
     addStageToPipeline,
     removeStageFromPipeline,
     reorderStages,
@@ -104,5 +236,6 @@ export const usePipelineConfig = () => {
     setApplyToAll,
     setConfigModalOpen,
     setSelectedStage,
+    refreshPipeline: loadPipelineData,
   };
 };

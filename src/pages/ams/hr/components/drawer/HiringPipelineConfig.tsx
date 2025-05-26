@@ -7,7 +7,7 @@ import PipelineConfigHeader from './components/PipelineConfigHeader';
 import AvailableStagesSection from './components/AvailableStagesSection';
 import PipelineFlowSection from './components/PipelineFlowSection';
 import PipelineConfigControls from './components/PipelineConfigControls';
-import StageConfigModal from './StageConfigModal';
+import StageConfigModal from './components/StageConfigModal';
 import { usePipelineConfig } from './hooks/usePipelineConfig';
 import { EnhancedStage } from './types/StageTypes';
 
@@ -23,6 +23,7 @@ const HiringPipelineConfig: React.FC<HiringPipelineConfigProps> = ({ roleData })
     configModalOpen,
     saveAsTemplate,
     applyToAll,
+    loading,
     addStageToPipeline,
     removeStageFromPipeline,
     reorderStages,
@@ -33,7 +34,7 @@ const HiringPipelineConfig: React.FC<HiringPipelineConfigProps> = ({ roleData })
     setSaveAsTemplate,
     setApplyToAll,
     setConfigModalOpen,
-  } = usePipelineConfig();
+  } = usePipelineConfig(roleData?.id);
 
   // Convert pipelineStages to EnhancedStage[] with proper defaults
   const enhancedPipelineStages: EnhancedStage[] = pipelineStages.map(stage => ({
@@ -47,6 +48,20 @@ const HiringPipelineConfig: React.FC<HiringPipelineConfigProps> = ({ roleData })
       notes: '',
     },
   }));
+
+  if (loading) {
+    return (
+      <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography sx={{
+          fontFamily: 'Rubik, sans-serif',
+          fontSize: '14px',
+          color: '#666'
+        }}>
+          Loading pipeline configuration...
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -74,12 +89,14 @@ const HiringPipelineConfig: React.FC<HiringPipelineConfigProps> = ({ roleData })
           onCancel={handleCancel}
         />
 
-        <StageConfigModal
-          open={configModalOpen}
-          onClose={() => setConfigModalOpen(false)}
-          stage={selectedStage}
-          onSave={updateStageConfig}
-        />
+        {selectedStage && (
+          <StageConfigModal
+            open={configModalOpen}
+            onClose={() => setConfigModalOpen(false)}
+            stage={selectedStage}
+            onSave={updateStageConfig}
+          />
+        )}
       </Box>
     </DndProvider>
   );

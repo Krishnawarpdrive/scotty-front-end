@@ -53,6 +53,10 @@ const RoleDetailDrawer: React.FC<RoleDetailDrawerProps> = ({
     setActiveTab(newValue);
   };
 
+  const handleSwitchToPipeline = () => {
+    setActiveTab(0); // Switch to the Configure Hiring Pipeline tab
+  };
+
   return (
     <Drawer
       anchor="right"
@@ -144,7 +148,10 @@ const RoleDetailDrawer: React.FC<RoleDetailDrawerProps> = ({
             <TAMappingTab roleData={roleData} />
           </TabPanel>
           <TabPanel value={activeTab} index={2}>
-            <CandidateJourneyTab roleData={roleData} />
+            <CandidateJourneyTab 
+              roleData={roleData} 
+              onSwitchToPipeline={handleSwitchToPipeline}
+            />
           </TabPanel>
         </Box>
       </Box>
