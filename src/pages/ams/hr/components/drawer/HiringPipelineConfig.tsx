@@ -35,12 +35,17 @@ const HiringPipelineConfig: React.FC<HiringPipelineConfigProps> = ({ roleData })
     setConfigModalOpen,
   } = usePipelineConfig();
 
-  // Ensure pipelineStages are properly typed as EnhancedStage[]
+  // Convert pipelineStages to EnhancedStage[] with proper defaults
   const enhancedPipelineStages: EnhancedStage[] = pipelineStages.map(stage => ({
     ...stage,
-    status: stage.status || 'not-configured',
-    interviewers: stage.interviewers || [],
-    scheduling: stage.scheduling || { isScheduled: false },
+    status: (stage as any).status || 'not-configured',
+    interviewers: (stage as any).interviewers || [],
+    scheduling: (stage as any).scheduling || { isScheduled: false },
+    config: stage.config || {
+      interviewFormat: 'one-to-one',
+      interviewMode: 'virtual',
+      notes: '',
+    },
   }));
 
   return (
