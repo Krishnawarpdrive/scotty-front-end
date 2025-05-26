@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogActions, Box, Button, IconButton } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
-import { EnhancedStage } from '../types/StageTypes';
+import { Stage } from '../types/StageTypes';
 import { StageConfigUnion } from '../types/StageConfigTypes';
 import PhoneScreeningForm from './stage-forms/PhoneScreeningForm';
 import HygieneScreeningForm from './stage-forms/HygieneScreeningForm';
@@ -16,7 +16,7 @@ import CustomStageForm from './stage-forms/CustomStageForm';
 interface StageConfigModalProps {
   open: boolean;
   onClose: () => void;
-  stage: EnhancedStage | null;
+  stage: Stage | null;
   onSave: (stageId: string, config: StageConfigUnion) => void;
 }
 
