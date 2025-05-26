@@ -8,7 +8,7 @@ import AvailableStagesSection from './components/AvailableStagesSection';
 import PipelineConfigControls from './components/PipelineConfigControls';
 import KanbanPipelineFlow from './KanbanPipelineFlow';
 import StageConfigModal from './components/StageConfigModal';
-import { EnhancedStage } from './types/StageTypes';
+import { EnhancedStage, Interviewer } from './types/StageTypes';
 import { StageConfigUnion } from './types/StageConfigTypes';
 
 interface KanbanHiringPipelineConfigProps {
@@ -26,11 +26,9 @@ const mockEnhancedStages: EnhancedStage[] = [
     interviewers: [],
     scheduling: { isScheduled: false },
     config: {
-      stageType: 'phone-screening',
-      callScheduled: false,
-      questionsToAsk: [],
+      interviewFormat: 'one-to-one',
+      interviewMode: 'virtual',
       notes: '',
-      isConfigured: false,
     },
   },
   {
@@ -42,12 +40,10 @@ const mockEnhancedStages: EnhancedStage[] = [
     interviewers: [{ id: '1', name: 'John Doe', email: 'john@company.com' }],
     scheduling: { isScheduled: true, date: '2024-01-15' },
     config: {
-      stageType: 'interview',
-      interviewType: 'one-on-one',
-      mode: 'virtual',
-      interviewers: ['John Doe'],
+      interviewFormat: 'one-to-one',
+      interviewMode: 'virtual',
+      interviewers: [{ id: '1', name: 'John Doe', email: 'john@company.com' }],
       notes: 'Technical assessment',
-      isConfigured: false,
     },
   },
   {
@@ -60,13 +56,10 @@ const mockEnhancedStages: EnhancedStage[] = [
     scheduling: { isScheduled: true, date: '2024-01-20' },
     taAssigned: { id: '1', name: 'TA Manager' },
     config: {
-      stageType: 'client-interview',
-      clientName: 'ABC Corp',
-      interviewType: 'panel',
-      mode: 'in-person',
-      ndaSigned: true,
+      interviewFormat: 'panel',
+      interviewMode: 'in-person',
+      interviewers: [{ id: '2', name: 'Client Rep', email: 'client@client.com' }],
       notes: 'Final client interview',
-      isConfigured: true,
     },
   },
 ];
@@ -99,11 +92,9 @@ const KanbanHiringPipelineConfig: React.FC<KanbanHiringPipelineConfigProps> = ({
       interviewers: [],
       scheduling: { isScheduled: false },
       config: {
-        stageType: 'custom',
-        stageName: stage.name,
-        dynamicFields: [],
+        interviewFormat: 'one-to-one',
+        interviewMode: 'virtual',
         notes: '',
-        isConfigured: false,
       },
     };
     setPipelineStages([...pipelineStages, newStage]);
@@ -137,6 +128,20 @@ const KanbanHiringPipelineConfig: React.FC<KanbanHiringPipelineConfigProps> = ({
     setPipelineStages(stages =>
       stages.map(stage => {
         if (stage.id === stageId) {
+          // Convert StageConfigUnion to compatible format
+          const stageConfig = {
+            interviewFormat: (config as any).interviewType || 'one-to-one',
+            interviewMode: (config as any).mode || 'virtual',
+            interviewers: Array.isArray((config as any).interviewers) 
+              ? (config as any).interviewers.map((interviewer: string | Interviewer) => 
+                  typeof interviewer === 'string' 
+                    ? { id: interviewer, name: interviewer, email: '' }
+                    : interviewer
+                )
+              : [],
+            notes: config.notes || '',
+          };
+
           // Determine configuration status based on filled fields
           const isPartiallyConfigured = Object.values(config).some(value => 
             value !== '' && value !== false && value !== null && value !== undefined
@@ -145,8 +150,9 @@ const KanbanHiringPipelineConfig: React.FC<KanbanHiringPipelineConfigProps> = ({
           
           return {
             ...stage,
-            config,
-            status: isFullyConfigured ? 'configured' : (isPartiallyConfigured ? 'partially-configured' : 'not-configured'),
+            config: stageConfig,
+            status: isFullyConfigured ? 'configured' as const : (isPartiallyConfigured ? 'partially-configured' as const : 'not-configured' as const),
+            interviewers: stageConfig.interviewers,
             scheduling: {
               ...stage.scheduling,
               isScheduled: !!(config as any).dateTime,

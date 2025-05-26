@@ -9,6 +9,7 @@ import PipelineFlowSection from './components/PipelineFlowSection';
 import PipelineConfigControls from './components/PipelineConfigControls';
 import StageConfigModal from './StageConfigModal';
 import { usePipelineConfig } from './hooks/usePipelineConfig';
+import { EnhancedStage } from './types/StageTypes';
 
 interface HiringPipelineConfigProps {
   roleData: any;
@@ -34,6 +35,14 @@ const HiringPipelineConfig: React.FC<HiringPipelineConfigProps> = ({ roleData })
     setConfigModalOpen,
   } = usePipelineConfig();
 
+  // Ensure pipelineStages are properly typed as EnhancedStage[]
+  const enhancedPipelineStages: EnhancedStage[] = pipelineStages.map(stage => ({
+    ...stage,
+    status: stage.status || 'not-configured',
+    interviewers: stage.interviewers || [],
+    scheduling: stage.scheduling || { isScheduled: false },
+  }));
+
   return (
     <DndProvider backend={HTML5Backend}>
       <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -45,7 +54,7 @@ const HiringPipelineConfig: React.FC<HiringPipelineConfigProps> = ({ roleData })
         />
 
         <PipelineFlowSection
-          stages={pipelineStages}
+          stages={enhancedPipelineStages}
           onRemoveStage={removeStageFromPipeline}
           onReorderStages={reorderStages}
           onConfigureStage={openStageConfig}

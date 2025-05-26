@@ -43,7 +43,7 @@ export interface EnhancedStage extends Stage {
   scheduling: SchedulingInfo;
   dueDate?: string;
   missingItems?: string[]; // List of missing configuration items
-  config?: StageConfig;
+  config?: StageConfig | any; // Allow both StageConfig and StageConfigUnion
 }
 
 export const STAGE_CATEGORIES = {
