@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Drawer, 
@@ -22,7 +23,6 @@ import {
 import { 
   Close as CloseIcon,
   LinkedIn as LinkedInIcon,
-  FileText as ResumeIcon,
   Language as PortfolioIcon,
   ExpandMore as ExpandMoreIcon,
   PictureInPicture as PipIcon,

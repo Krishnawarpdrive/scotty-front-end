@@ -63,7 +63,7 @@ const HiringPipelineConfig: React.FC<HiringPipelineConfigProps> = ({ roleData })
       interviewers: stage.config?.interviewers || [],
       scheduling: { isScheduled: false },
       missingItems: !hasConfig ? ['Configuration'] : !hasInterviewers ? ['Interviewers'] : undefined,
-    };
+    } as EnhancedStage;
   });
 
   if (loading) {
