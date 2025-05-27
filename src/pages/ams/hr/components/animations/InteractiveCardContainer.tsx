@@ -7,6 +7,7 @@ interface InteractiveCardContainerProps {
   hoverEffect?: 'lift' | 'scale' | 'glow';
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  onCardClick?: () => void;
   className?: string;
 }
 
@@ -15,6 +16,7 @@ export const InteractiveCardContainer: React.FC<InteractiveCardContainerProps> =
   hoverEffect = 'lift',
   onMouseEnter,
   onMouseLeave,
+  onCardClick,
   className = '',
 }) => {
   const getHoverAnimation = () => {
@@ -37,6 +39,8 @@ export const InteractiveCardContainer: React.FC<InteractiveCardContainerProps> =
       transition={{ duration: 0.2, ease: 'easeOut' }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onClick={onCardClick}
+      style={{ cursor: onCardClick ? 'pointer' : 'default' }}
     >
       {children}
     </motion.div>

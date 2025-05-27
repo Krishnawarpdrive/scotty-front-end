@@ -2,10 +2,16 @@
 export interface Candidate {
   id: number;
   name: string;
+  email: string;
   role: string;
   hiring: string;
   interviewing: string;
   stage: number;
+  score: number;
+  priority: 'high' | 'medium' | 'low';
+  currentStage: number;
+  totalStages: number;
+  timeInStage: string;
   responsible: {
     name: string;
     avatar?: string;

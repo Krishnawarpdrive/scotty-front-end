@@ -114,7 +114,7 @@ export const EnhancedCandidateRow: React.FC<EnhancedCandidateRowProps> = ({
           transition={{ duration: 0.2 }}
         >
           <StageDots 
-            currentStage={candidate.currentStage} 
+            stage={candidate.currentStage} 
             totalStages={candidate.totalStages} 
           />
         </motion.div>
