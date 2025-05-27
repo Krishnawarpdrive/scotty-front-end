@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { Tabs } from "@/components/ui/tabs";
 import ClientDetailDrawer from './components/ClientDetailDrawer';
 import { RoleConfigurationDrawer } from './components/RoleConfigurationDrawer';
-import { StreakCelebration } from './components/animations/StreakCelebration';
 import { FloatingActionButton, defaultRoleManagementActions } from './components/animations/FloatingActionButton';
 import { RoleManagementHeader } from './components/page/RoleManagementHeader';
 import { RoleManagementContent } from './components/page/RoleManagementContent';
@@ -78,11 +77,7 @@ const RoleManagementPage = () => {
         position="bottom-right"
       />
 
-      <StreakCelebration
-        streakCount={streakCount}
-        milestone={streakCount % 7 === 0}
-        onComplete={() => setShowStreakCelebration(false)}
-      />
+
 
       <ClientDetailDrawer
         client={selectedClient}

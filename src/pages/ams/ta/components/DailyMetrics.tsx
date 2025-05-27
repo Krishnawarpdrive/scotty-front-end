@@ -7,13 +7,17 @@ import { EnhancedTimelyTrackCard } from "./enhanced/EnhancedTimelyTrackCard";
 import { EnhancedHiringFunnelCard } from "./enhanced/EnhancedHiringFunnelCard";
 import { CompactView } from "./CompactView";
 import { ChevronUp } from "lucide-react";
+import { StreakCelebration } from "./StreakCelebration";
 
 export const DailyMetrics: React.FC = () => {
   const [activeTab, setActiveTab] = useState("Default");
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [showStreakCelebration, setShowStreakCelebration] = useState(true);
+  const [streakCount, setStreakCount] = useState(7);
   
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
+    setShowStreakCelebration(true);
   };
   
   if (isCollapsed) {
@@ -73,6 +77,15 @@ export const DailyMetrics: React.FC = () => {
           </motion.button>
         </div>
       </div>
+
+      {showStreakCelebration && (
+          <StreakCelebration
+            streakCount={streakCount}
+            milestone={streakCount % 7 === 0}
+            duration={3000}
+            onComplete={() => setShowStreakCelebration(false)}
+          />
+        )}
       
       <motion.div 
         className="flex w-full gap-[11px] flex-wrap mt-[11px] px-5"
@@ -112,6 +125,7 @@ export const DailyMetrics: React.FC = () => {
           <EnhancedHiringFunnelCard />
         </motion.div>
       </motion.div>
+
     </motion.div>
   );
 };

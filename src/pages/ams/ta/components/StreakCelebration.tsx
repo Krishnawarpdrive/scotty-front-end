@@ -8,29 +8,36 @@ interface StreakCelebrationProps {
   streakCount: number;
   milestone?: boolean;
   onComplete?: () => void;
+  duration?: number;
 }
 
 export const StreakCelebration: React.FC<StreakCelebrationProps> = ({
   streakCount,
   milestone = false,
-  onComplete
+  onComplete,
+  duration = 3000
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [showParticles, setShowParticles] = useState(false);
 
   useEffect(() => {
-    if (streakCount > 0) {
+    if (streakCount > 1) {
       setIsVisible(true);
       setShowParticles(true);
       
       const timer = setTimeout(() => {
         setIsVisible(false);
         onComplete?.();
-      }, 3000);
+      }, duration);
 
       return () => clearTimeout(timer);
     }
   }, [streakCount, onComplete]);
+
+  const timer = setTimeout(() => {
+    setIsVisible(false);
+    onComplete?.();
+  }, duration);
 
   const getStreakMessage = () => {
     if (milestone) return `🎉 ${streakCount} Day Milestone!`;
@@ -71,6 +78,7 @@ export const StreakCelebration: React.FC<StreakCelebrationProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }} 
         >
           <motion.div
             className="relative"
