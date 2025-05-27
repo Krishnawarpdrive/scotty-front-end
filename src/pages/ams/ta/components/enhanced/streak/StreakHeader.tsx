@@ -2,6 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { generateStreakData, calculateCurrentStreak } from "./streakUtils";
 
 interface StreakHeaderProps {
   isHovered: boolean;
@@ -14,6 +15,9 @@ export const StreakHeader: React.FC<StreakHeaderProps> = ({
   selectedDate,
   onNavigate
 }) => {
+  const streakData = generateStreakData(90);
+  const currentStreak = calculateCurrentStreak(streakData);
+
   return (
     <div className="flex w-full items-center gap-[40px_100px] justify-between pl-3 py-[3px]">
       <motion.div 
@@ -32,7 +36,7 @@ export const StreakHeader: React.FC<StreakHeaderProps> = ({
           }}
           transition={{ duration: 0.3 }}
         >
-          🔥14
+          🔥{currentStreak}
         </motion.div>
       </motion.div>
       
@@ -48,11 +52,11 @@ export const StreakHeader: React.FC<StreakHeaderProps> = ({
         </motion.button>
         
         <motion.div 
-          className="self-stretch my-auto"
+          className="self-stretch my-auto text-center"
           animate={{ color: isHovered ? "#009933" : "black" }}
           transition={{ duration: 0.2 }}
         >
-          {selectedDate}
+          Last 90 days
         </motion.div>
         
         <motion.button 

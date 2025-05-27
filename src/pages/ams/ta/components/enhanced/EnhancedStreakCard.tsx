@@ -7,7 +7,7 @@ import { StreakLegend } from "./streak/StreakLegend";
 
 export const EnhancedStreakCard: React.FC = () => {
   const [isHovered, setIsHovered] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("12Apr - 19 Apr");
+  const [selectedDate, setSelectedDate] = useState("Last 90 days");
   
   const navigatePeriod = (direction: 'prev' | 'next') => {
     // Navigation logic would go here
@@ -19,9 +19,9 @@ export const EnhancedStreakCard: React.FC = () => {
       hoverEffect="lift"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bg-white border min-w-60 min-h-[198px] grow shrink w-[312px] pt-[11px] pb-[23px] px-1.5 rounded-xl border-[rgba(246,246,246,1)] border-solid hover:border-[#009933]/30 hover:shadow-lg transition-all duration-300"
+      className="bg-white border min-w-80 min-h-[350px] grow shrink w-[450px] pt-[11px] pb-[23px] px-4 rounded-xl border-[rgba(246,246,246,1)] border-solid hover:border-[#009933]/30 hover:shadow-lg transition-all duration-300"
     >
-      <div className="flex w-full max-w-[352px] flex-col items-stretch">
+      <div className="flex w-full max-w-[500px] flex-col items-stretch">
         <StreakHeader 
           isHovered={isHovered}
           selectedDate={selectedDate}
