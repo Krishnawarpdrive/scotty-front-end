@@ -1,106 +1,44 @@
 
-import React, { useState } from 'react';
-import { motion, useMotionValue, useTransform } from 'framer-motion';
-import { Card } from '@/components/ui/card';
+import React from 'react';
+import { motion } from 'framer-motion';
 
 interface InteractiveCardContainerProps {
   children: React.ReactNode;
+  hoverEffect?: 'lift' | 'scale' | 'glow';
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   className?: string;
-  hoverEffect?: 'lift' | 'glow' | 'scale' | 'tilt';
-  clickEffect?: boolean;
-  onCardClick?: () => void;
 }
 
 export const InteractiveCardContainer: React.FC<InteractiveCardContainerProps> = ({
   children,
-  className = '',
   hoverEffect = 'lift',
-  clickEffect = true,
-  onCardClick
+  onMouseEnter,
+  onMouseLeave,
+  className = '',
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useTransform(y, [-100, 100], [30, -30]);
-  const rotateY = useTransform(x, [-100, 100], [-30, 30]);
-
-  const getHoverVariants = () => {
+  const getHoverAnimation = () => {
     switch (hoverEffect) {
       case 'lift':
-        return {
-          hover: { 
-            y: -8, 
-            transition: { duration: 0.2 } 
-          }
-        };
-      case 'glow':
-        return {
-          hover: { 
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(59, 130, 246, 0.5)',
-            transition: { duration: 0.2 }
-          }
-        };
+        return { y: -2, scale: 1.02 };
       case 'scale':
-        return {
-          hover: { 
-            scale: 1.03,
-            transition: { duration: 0.2 }
-          }
-        };
-      case 'tilt':
-        // For tilt effect, we'll handle rotation separately using style prop
-        return {};
+        return { scale: 1.05 };
+      case 'glow':
+        return { boxShadow: '0 0 20px rgba(0, 153, 51, 0.3)' };
       default:
-        return {};
+        return { y: -2, scale: 1.02 };
     }
-  };
-
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (hoverEffect !== 'tilt') return;
-    
-    const rect = event.currentTarget.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    x.set((event.clientX - centerX) / 3);
-    y.set((event.clientY - centerY) / 3);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    if (hoverEffect === 'tilt') {
-      x.set(0);
-      y.set(0);
-    }
-  };
-
-  // For tilt effect, we need to handle the style separately
-  const getMotionStyle = () => {
-    if (hoverEffect === 'tilt') {
-      return {
-        rotateX,
-        rotateY,
-        transformStyle: "preserve-3d" as const
-      };
-    }
-    return {};
   };
 
   return (
     <motion.div
-      className={`cursor-pointer ${className}`}
-      variants={getHoverVariants()}
-      initial="initial"
-      whileHover="hover"
-      whileTap={clickEffect ? { scale: 0.98 } : {}}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={handleMouseLeave}
-      onMouseMove={handleMouseMove}
-      onClick={onCardClick}
-      style={getMotionStyle()}
+      className={className}
+      whileHover={getHoverAnimation()}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
-      <Card className={`transition-all duration-200 ${isHovered ? 'shadow-lg' : 'shadow-sm'}`}>
-        {children}
-      </Card>
+      {children}
     </motion.div>
   );
 };

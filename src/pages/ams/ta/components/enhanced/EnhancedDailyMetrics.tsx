@@ -5,8 +5,7 @@ import { ChevronUp, ChevronDown, Target, TrendingUp, Phone, Eye, Calendar } from
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AnimatedProgressBar } from "../../hr/components/animations/AnimatedProgressBar";
-import { InteractiveCardContainer } from "../../hr/components/animations/InteractiveCardContainer";
+import { Progress } from "@/components/ui/progress";
 
 interface MetricCardProps {
   icon: React.ReactNode;
@@ -18,6 +17,52 @@ interface MetricCardProps {
   actionText?: string;
   onAction?: () => void;
 }
+
+const InteractiveCardContainer: React.FC<{
+  children: React.ReactNode;
+  hoverEffect?: 'lift';
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+}> = ({ children, onMouseEnter, onMouseLeave }) => {
+  return (
+    <motion.div
+      whileHover={{ y: -2, scale: 1.02 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+const AnimatedProgressBar: React.FC<{
+  value: number;
+  max: number;
+  showValue?: boolean;
+  animationDelay?: number;
+}> = ({ value, max, showValue = true, animationDelay = 0 }) => {
+  const percentage = Math.min((value / max) * 100, 100);
+  
+  return (
+    <div className="w-full space-y-2">
+      <div className="relative">
+        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+          <motion.div
+            className="h-full rounded-full bg-[#009933]"
+            initial={{ width: "0%" }}
+            animate={{ width: `${percentage}%` }}
+            transition={{ 
+              duration: 0.8, 
+              ease: "easeOut",
+              delay: animationDelay / 1000
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const MetricCard: React.FC<MetricCardProps> = ({
   icon,
