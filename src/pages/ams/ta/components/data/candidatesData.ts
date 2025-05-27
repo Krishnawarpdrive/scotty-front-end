@@ -12,7 +12,19 @@ export const candidates: Candidate[] = [
     score: 85,
     currentStage: 3,
     totalStages: 5,
-    timeInStage: "2 days"
+    timeInStage: "2 days",
+    hiring: "Frontend Developer",
+    interviewing: "React Developer",
+    stage: {
+      current: 3,
+      total: 5
+    },
+    responsible: {
+      name: "Sarah Wilson",
+      avatar: "/placeholder.svg"
+    },
+    timeSpent: "2 days",
+    targetDate: "2024-01-15"
   },
   {
     id: 2,
@@ -24,7 +36,19 @@ export const candidates: Candidate[] = [
     score: 92,
     currentStage: 2,
     totalStages: 5,
-    timeInStage: "1 day"
+    timeInStage: "1 day",
+    hiring: "Backend Developer",
+    interviewing: "Node.js Developer",
+    stage: {
+      current: 2,
+      total: 5
+    },
+    responsible: {
+      name: "Mike Johnson",
+      avatar: "/placeholder.svg"
+    },
+    timeSpent: "1 day",
+    targetDate: "2024-01-18"
   },
   {
     id: 3,
@@ -36,7 +60,19 @@ export const candidates: Candidate[] = [
     score: 78,
     currentStage: 5,
     totalStages: 5,
-    timeInStage: "0 days"
+    timeInStage: "0 days",
+    hiring: "Full Stack Developer",
+    interviewing: "MERN Stack Developer",
+    stage: {
+      current: 5,
+      total: 5
+    },
+    responsible: {
+      name: "David Brown",
+      avatar: "/placeholder.svg"
+    },
+    timeSpent: "5 days",
+    targetDate: "2024-01-10"
   },
   {
     id: 4,
@@ -48,7 +84,19 @@ export const candidates: Candidate[] = [
     score: 88,
     currentStage: 4,
     totalStages: 5,
-    timeInStage: "3 days"
+    timeInStage: "3 days",
+    hiring: "UI/UX Designer",
+    interviewing: "Product Designer",
+    stage: {
+      current: 4,
+      total: 5
+    },
+    responsible: {
+      name: "Jane Smith",
+      avatar: "/placeholder.svg"
+    },
+    timeSpent: "3 days",
+    targetDate: "2024-01-20"
   },
   {
     id: 5,
@@ -60,6 +108,18 @@ export const candidates: Candidate[] = [
     score: 65,
     currentStage: 1,
     totalStages: 5,
-    timeInStage: "5 days"
+    timeInStage: "5 days",
+    hiring: "DevOps Engineer",
+    interviewing: "Cloud Engineer",
+    stage: {
+      current: 1,
+      total: 5
+    },
+    responsible: {
+      name: "John Doe",
+      avatar: "/placeholder.svg"
+    },
+    timeSpent: "5 days",
+    targetDate: "2024-01-12"
   }
 ];

@@ -48,7 +48,7 @@ export const CandidateRow: React.FC<CandidateRowProps> = ({
       <TableCell className="text-[12px] text-[#262626] font-rubik">{candidate.hiring}</TableCell>
       <TableCell className="text-[12px] text-[#262626] font-rubik">{candidate.interviewing}</TableCell>
       <TableCell>
-        <StageDots stage={candidate.stage} />
+        <StageDots currentStage={candidate.stage.current} totalStages={candidate.stage.total} />
       </TableCell>
       <TableCell>
         <div className="flex items-center">
