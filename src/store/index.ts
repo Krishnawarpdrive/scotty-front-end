@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { TypedUseSelectorHook } from 'react-redux';
 
 // Import slices
-import gamificationSlice from './slices/gamificationSlice';
+import gamificationSlice from './slices/gamification';
 import uiSlice from './slices/uiSlice';
 
 export const store = configureStore({
