@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,16 +21,23 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Vendor } from '../types/VendorTypes';
 import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 interface VendorsTableProps {
   vendors: Vendor[];
-  onVendorSelect: (vendor: Vendor) => void;
+  onVendorSelect?: (vendor: Vendor) => void;
 }
 
 export const VendorsTable: React.FC<VendorsTableProps> = ({ 
   vendors, 
   onVendorSelect 
 }) => {
+  const navigate = useNavigate();
+
+  const handleVendorClick = (vendor: Vendor) => {
+    navigate(`/ams/vendor-management/${vendor.id}`);
+  };
+
   const getStatusBadgeVariant = (status: Vendor['status']) => {
     switch (status) {
       case 'Active':
@@ -67,7 +73,7 @@ export const VendorsTable: React.FC<VendorsTableProps> = ({
       cell: (vendor) => (
         <div className="space-y-1">
           <button
-            onClick={() => onVendorSelect(vendor)}
+            onClick={() => handleVendorClick(vendor)}
             className="text-blue-600 hover:text-blue-800 font-medium text-left"
           >
             {vendor.name}
@@ -176,7 +182,7 @@ export const VendorsTable: React.FC<VendorsTableProps> = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => onVendorSelect(vendor)}>
+            <DropdownMenuItem onClick={() => handleVendorClick(vendor)}>
               <EyeIcon className="h-4 w-4 mr-2" />
               View Details
             </DropdownMenuItem>
@@ -203,7 +209,7 @@ export const VendorsTable: React.FC<VendorsTableProps> = ({
         <DataTable
           data={vendors}
           columns={columns}
-          onRowClick={onVendorSelect}
+          onRowClick={handleVendorClick}
         />
       </CardContent>
     </Card>
