@@ -27,7 +27,8 @@ import {
   BarChart,
   UserCheck,
   Monitor,
-  User
+  User,
+  FolderOpen
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { 
@@ -47,6 +48,7 @@ const navigationItems: NavigationItem[] = [
   { title: 'Dashboard', path: '/ams/dashboard', icon: LayoutDashboard },
   { title: 'Client Dashboard', path: '/ams/client-dashboard', icon: Monitor },
   { title: 'Candidate Dashboard', path: '/ams/candidate-dashboard', icon: User },
+  { title: 'Client Roles & Requirements', path: '/ams/client-roles-requirements', icon: FolderOpen },
   { title: 'HR Dashboard', path: '/ams/hr/dashboard', icon: BarChart },
   { title: 'Role Management', path: '/ams/hr/role-management', icon: Briefcase },
   { title: 'Candidate Pool', path: '/ams/hr/candidate-pool', icon: UserCheck },
