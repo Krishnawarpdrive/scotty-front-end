@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Table, TableBody } from "@/components/ui-mui/table";
@@ -6,7 +5,7 @@ import { Drawer, DrawerContent } from "@/components/ui-mui/Drawer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Phone, MessageCircle, Eye, Clock, TrendingUp, Filter } from "lucide-react";
-import { CandidateDetails } from "../CandidateDetails";
+import { CandidateProfileDrawer } from "../candidate-profile/CandidateProfileDrawer";
 import { EnhancedCandidateRow } from "./EnhancedCandidateRow";
 import { EnhancedTableHeader } from "./EnhancedTableHeader";
 import { candidates } from "../data/candidatesData";
@@ -213,11 +212,11 @@ export const EnhancedApplicationTable: React.FC = () => {
         </div>
       </div>
 
-      <Drawer open={isDetailsOpen} onClose={() => setIsDetailsOpen(false)} side="right">
-        <DrawerContent onClose={() => setIsDetailsOpen(false)}>
-          <CandidateDetails onClose={() => setIsDetailsOpen(false)} />
-        </DrawerContent>
-      </Drawer>
+      <CandidateProfileDrawer 
+        open={isDetailsOpen} 
+        onClose={() => setIsDetailsOpen(false)}
+        candidate={selectedCandidate}
+      />
     </motion.div>
   );
 };

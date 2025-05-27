@@ -1,5 +1,5 @@
 
-import { Candidate } from "../types/CandidateTypes";
+import { Candidate } from '../types/CandidateTypes';
 
 export const candidates: Candidate[] = [
   {
@@ -7,89 +7,86 @@ export const candidates: Candidate[] = [
     name: 'Aditi Sharma',
     email: 'aditi.sharma@email.com',
     role: 'Network Administrator',
-    hiring: 'Innovation Labs',
-    interviewing: 'Network Administrator',
-    stage: 4,
+    status: {
+      text: 'Schedule Interview',
+      type: 'pending'
+    },
+    stage: 'phone-screening',
+    priority: 'High',
+    appliedDate: '2 days ago',
+    experience: '5+ years',
+    location: 'Mumbai, India',
+    skills: ['Network Admin', 'Cisco', 'Linux', 'TCP/IP'],
+    phone: '+91 98765 43210',
     score: 85,
-    priority: 'high',
-    currentStage: 4,
+    currentStage: 2,
     totalStages: 6,
-    timeInStage: '2d 5h',
-    responsible: { name: 'Uma Kunniah' },
-    status: { text: 'Schedule Interview', type: 'scheduled', time: '2d' },
-    timeSpent: '2d 5h',
-    targetDate: '18 Apr 2025'
+    timeInStage: '2 days',
+    hiring: 'Network Admin',
+    interviewing: 'Technical',
+    responsible: {
+      name: 'John Doe',
+      avatar: ''
+    },
+    timeSpent: '4 days',
+    targetDate: '2024-01-15'
   },
   {
     id: 2,
-    name: 'Neha Gupta',
-    email: 'neha.gupta@email.com',
-    role: 'Product Manager',
-    hiring: 'Tech Corp Inc.',
-    interviewing: 'Product Manager',
-    stage: 5,
-    score: 92,
-    priority: 'high',
-    currentStage: 5,
+    name: 'Rajesh Kumar',
+    email: 'rajesh.kumar@email.com',
+    role: 'Software Engineer',
+    status: {
+      text: 'Technical Review',
+      type: 'interview'
+    },
+    stage: 'technical',
+    priority: 'Medium',
+    appliedDate: '5 days ago',
+    experience: '3+ years',
+    location: 'Bangalore, India',
+    skills: ['React', 'Node.js', 'JavaScript', 'Python'],
+    phone: '+91 98765 43211',
+    score: 78,
+    currentStage: 3,
     totalStages: 6,
-    timeInStage: '4d 2h',
-    responsible: { name: 'Neha Gupta' },
-    status: { text: 'Feedback Awaited', type: 'awaited', time: '4h' },
-    timeSpent: '4d 2h',
-    targetDate: '20 Apr 2025'
+    timeInStage: '1 day',
+    hiring: 'Software Engineer',
+    interviewing: 'Client Interview',
+    responsible: {
+      name: 'Jane Smith',
+      avatar: ''
+    },
+    timeSpent: '7 days',
+    targetDate: '2024-01-20'
   },
   {
     id: 3,
-    name: 'Summit Chandhar',
-    email: 'summit.chandhar@email.com',
-    role: 'DevOps Engineer',
-    hiring: 'Tech Corp Inc.',
-    interviewing: 'DevOps Engineer',
-    stage: 4,
-    score: 78,
-    priority: 'medium',
+    name: 'Priya Patel',
+    email: 'priya.patel@email.com',
+    role: 'UI/UX Designer',
+    status: {
+      text: 'Client Interview',
+      type: 'interview'
+    },
+    stage: 'client-interview',
+    priority: 'High',
+    appliedDate: '1 week ago',
+    experience: '4+ years',
+    location: 'Pune, India',
+    skills: ['Figma', 'Adobe XD', 'Sketch', 'Prototyping'],
+    phone: '+91 98765 43212',
+    score: 92,
     currentStage: 4,
     totalStages: 6,
-    timeInStage: '3d 4h',
-    responsible: { name: 'Summit Chandhar' },
-    status: { text: 'Feedback Delay', type: 'delay', time: '1d' },
-    timeSpent: '3d 4h',
-    targetDate: '17 Apr 2025'
-  },
-  {
-    id: 4,
-    name: 'Sneha Patil',
-    email: 'sneha.patil@email.com',
-    role: 'Marketing Executive',
-    hiring: 'Tech Corp Inc.',
-    interviewing: 'Marketing Executive',
-    stage: 6,
-    score: 88,
-    priority: 'high',
-    currentStage: 6,
-    totalStages: 6,
-    timeInStage: '1d 12h',
-    responsible: { name: 'Sneha Patil' },
-    status: { text: 'Need to Send Offer', type: 'needs', time: '4h' },
-    timeSpent: '1d 12h',
-    targetDate: '22 Apr 2025'
-  },
-  {
-    id: 5,
-    name: 'Vikram Singh',
-    email: 'vikram.singh@email.com',
-    role: 'Network Administrator',
-    hiring: 'Innovation Labs',
-    interviewing: 'Network Administrator',
-    stage: 5,
-    score: 76,
-    priority: 'medium',
-    currentStage: 5,
-    totalStages: 6,
-    timeInStage: '3d 1h',
-    responsible: { name: 'Vikram Singh' },
-    status: { text: 'Scheduled', type: 'scheduled', date: '14 Apr' },
-    timeSpent: '3d 1h',
-    targetDate: '23 Apr 2025'
+    timeInStage: '3 days',
+    hiring: 'UI/UX Designer',
+    interviewing: 'Background Check',
+    responsible: {
+      name: 'Mike Johnson',
+      avatar: ''
+    },
+    timeSpent: '10 days',
+    targetDate: '2024-01-18'
   }
 ];
