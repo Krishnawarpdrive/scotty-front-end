@@ -3,6 +3,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Provider } from "react-redux";
+import { store } from "@/store";
 import { ThemeProvider } from "@/theme/ThemeProvider";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -24,7 +26,6 @@ import RolesLibraryPage from "./pages/ams/roles/RolesLibraryPage";
 import SkillsLibraryPage from "./pages/ams/skills/SkillsLibraryPage";
 import ClientAccountCreationPage from "./pages/ams/clients/ClientAccountCreationPage";
 import ClientDetailsPage from "./pages/ams/clients/ClientDetailsPage";
-import ClientDashboardPage from "./pages/ams/ClientDashboardPage";
 import CandidateDashboardPage from "./pages/ams/CandidateDashboardPage";
 import ClientRolesRequirementsPage from "./pages/ams/ClientRolesRequirementsPage";
 import { KeyboardShortcutsProvider } from "@/contexts/KeyboardShortcutsContext";
@@ -43,7 +44,6 @@ function AppContent() {
         <Route path="/" element={<Index />} />
         <Route path="/ams" element={<AMSLayout />}>
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="client-dashboard" element={<ClientDashboardPage />} />
           <Route path="candidate-dashboard" element={<CandidateDashboardPage />} />
           <Route path="client-roles-requirements" element={<ClientRolesRequirementsPage />} />
           <Route path="clients" element={<ClientsPage />} />
@@ -73,18 +73,20 @@ function AppContent() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <KeyboardShortcutsProvider>
-          <TooltipProvider>
-            <Toaster />
-            <BrowserRouter>
-              <AppContent />
-            </BrowserRouter>
-          </TooltipProvider>
-        </KeyboardShortcutsProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <KeyboardShortcutsProvider>
+            <TooltipProvider>
+              <Toaster />
+              <BrowserRouter>
+                <AppContent />
+              </BrowserRouter>
+            </TooltipProvider>
+          </KeyboardShortcutsProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </Provider>
   );
 }
 
