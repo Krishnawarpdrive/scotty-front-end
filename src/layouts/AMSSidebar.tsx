@@ -68,24 +68,24 @@ export const AMSSidebar = () => {
 
   return (
     <Sidebar 
-      className="border-r transition-all duration-300 ease-in-out bg-white shadow-sm"
+      className="border-r border-slate-200 bg-white shadow-sm"
       collapsible="icon"
       variant="sidebar"
     >
-      <SidebarHeader className="border-b p-4 bg-gradient-to-r from-primary/5 to-accent/5">
+      <SidebarHeader className="border-b border-slate-200 p-6 bg-gradient-to-r from-slate-50 to-slate-100">
         <div className="flex items-center justify-between">
-          <h2 className={`text-xl font-semibold text-primary transition-all duration-200 ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
-            AMS
+          <h2 className={`text-xl font-bold text-slate-900 transition-all duration-200 ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
+            ATS Pro
           </h2>
-          <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-200" />
+          <SidebarTrigger className="hover:bg-slate-100 transition-colors duration-200 rounded-lg p-2" />
         </div>
         {!isCollapsed && (
-          <div className="mt-3">
+          <div className="mt-4">
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
               <Input
-                placeholder="Search..."
-                className="w-full bg-white border-gray-200 pl-8 focus:ring-2 focus:ring-primary/20"
+                placeholder="Search navigation..."
+                className="w-full bg-white border-slate-200 pl-10 h-10 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
           </div>
@@ -95,13 +95,13 @@ export const AMSSidebar = () => {
       <SidebarContent className="bg-white">
         <SidebarGroup>
           {!isCollapsed && (
-            <SidebarGroupLabel className="text-xs uppercase tracking-wider text-gray-500 font-medium px-3 py-2">
+            <SidebarGroupLabel className="text-xs uppercase tracking-wider text-slate-500 font-semibold px-4 py-3">
               Navigation
             </SidebarGroupLabel>
           )}
           
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1 p-2">
+            <SidebarMenu className="space-y-1 p-3">
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.path}>
                   <TooltipProvider>
@@ -111,16 +111,14 @@ export const AMSSidebar = () => {
                           asChild 
                           isActive={isActive(item.path)}
                           className={`
-                            sidebar-nav-item rounded-lg mx-1 h-11
-                            ${isActive(item.path) ? 'active' : ''}
-                            hover:bg-slate-50 hover:shadow-sm
-                            ${isActive(item.path) ? 'bg-primary/10 border-r-4 border-primary text-primary font-medium' : ''}
+                            sidebar-nav-item rounded-lg h-12 transition-all duration-200
+                            ${isActive(item.path) ? 'active bg-primary/10 text-primary border-r-4 border-primary font-semibold' : 'hover:bg-slate-50 text-slate-700'}
                           `}
                         >
-                          <NavLink to={item.path} className="flex items-center w-full px-3">
-                            <item.icon className={`h-5 w-5 min-w-5 sidebar-nav-icon ${isActive(item.path) ? 'text-primary' : 'text-gray-600'}`} />
+                          <NavLink to={item.path} className="flex items-center w-full px-4 py-3">
+                            <item.icon className={`h-5 w-5 min-w-5 sidebar-nav-icon ${isActive(item.path) ? 'text-primary' : 'text-slate-500'}`} />
                             {!isCollapsed && (
-                              <span className={`ml-3 truncate sidebar-nav-text transition-colors ${isActive(item.path) ? 'text-primary font-medium' : 'text-gray-700'}`}>
+                              <span className={`ml-3 truncate sidebar-nav-text transition-colors ${isActive(item.path) ? 'text-primary font-semibold' : 'text-slate-700'}`}>
                                 {item.title}
                               </span>
                             )}

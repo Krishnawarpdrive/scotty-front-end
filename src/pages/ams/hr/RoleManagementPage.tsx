@@ -132,7 +132,7 @@ const RoleManagementPage = () => {
   ];
 
   return (
-    <div className="space-y-6 bg-slate-50 min-h-screen">
+    <div className="space-y-0 bg-slate-50 min-h-screen">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         {/* Page Header with Tabs */}
         <PageHeader 
@@ -141,13 +141,16 @@ const RoleManagementPage = () => {
           tabCounts={tabCounts}
         />
 
-        {/* Content Area */}
-        <div className="px-6">
+        {/* Content Area with improved spacing */}
+        <div className="px-8 py-6">
           {/* TA Assignment Dashboard - show on TAs tab */}
           {activeTab === "tas" && (
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">TA Assignment Dashboard</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <div className="mb-8">
+              <div className="mb-6">
+                <h3 className="section-heading text-slate-900 mb-2">TA Assignment Dashboard</h3>
+                <p className="text-slate-500 text-sm">Monitor workload distribution and performance across your talent acquisition team</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {mockTAs.map((ta, index) => (
                   <TAAssignmentCard key={index} ta={ta} />
                 ))}
@@ -155,36 +158,38 @@ const RoleManagementPage = () => {
             </div>
           )}
 
-          <div className="overflow-auto max-h-[calc(100vh-280px)]">
-            {activeTab === "clients" && (
-              <ClientsTabContent 
-                clientsData={clientsData} 
-                handleClientClick={handleClientClick}
-                handleRowClick={handleRowClick}
-              />
-            )}
+          <div className="card overflow-hidden">
+            <div className="overflow-auto max-h-[calc(100vh-320px)]">
+              {activeTab === "clients" && (
+                <ClientsTabContent 
+                  clientsData={clientsData} 
+                  handleClientClick={handleClientClick}
+                  handleRowClick={handleRowClick}
+                />
+              )}
 
-            {activeTab === "roles" && (
-              <RolesTabContent 
-                rolesData={rolesData}
-                handleClientClick={handleClientClick}
-                handleRowClick={handleRowClick}
-              />
-            )}
+              {activeTab === "roles" && (
+                <RolesTabContent 
+                  rolesData={rolesData}
+                  handleClientClick={handleClientClick}
+                  handleRowClick={handleRowClick}
+                />
+              )}
 
-            {activeTab === "requirements" && (
-              <RequirementsTabContent 
-                requirementsData={requirementsData}
-                handleRowClick={handleRowClick}
-              />
-            )}
+              {activeTab === "requirements" && (
+                <RequirementsTabContent 
+                  requirementsData={requirementsData}
+                  handleRowClick={handleRowClick}
+                />
+              )}
 
-            {activeTab === "tas" && (
-              <TasTabContent 
-                tasData={tasData}
-                handleRowClick={handleRowClick}
-              />
-            )}
+              {activeTab === "tas" && (
+                <TasTabContent 
+                  tasData={tasData}
+                  handleRowClick={handleRowClick}
+                />
+              )}
+            </div>
           </div>
         </div>
       </Tabs>

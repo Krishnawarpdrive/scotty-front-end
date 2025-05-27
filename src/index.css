@@ -6,31 +6,31 @@
 @layer base {
   :root {
     --background: 248 250 252;
-    --foreground: 0 0% 20%;
+    --foreground: 15 23 42;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 20%;
+    --card-foreground: 15 23 42;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 20%;
+    --popover-foreground: 15 23 42;
 
     --primary: 144 100% 30%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 241 10% 98%;
+    --secondary-foreground: 71 84% 6%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 241 10% 98%;
+    --muted-foreground: 100 7% 60%;
 
     --accent: 162 100% 22%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
     --ring: 144 100% 30%;
 
     --radius: 0.5rem;
@@ -91,53 +91,98 @@
   }
 
   body {
-    @apply bg-slate-100 text-foreground font-rubik text-body;
+    @apply bg-background text-foreground font-inter antialiased;
+    font-size: 14px;
+    line-height: 1.5;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-rubik font-medium;
+    @apply font-inter font-semibold tracking-tight;
+    line-height: 1.25;
+  }
+
+  h1 {
+    @apply text-3xl;
+  }
+
+  h2 {
+    @apply text-2xl;
+  }
+
+  h3 {
+    @apply text-xl;
+  }
+
+  h4 {
+    @apply text-lg;
+  }
+
+  h5 {
+    @apply text-base;
+  }
+
+  h6 {
+    @apply text-sm;
   }
 
   label {
-    @apply text-label text-gray-500 font-rubik;
+    @apply text-sm font-medium text-slate-700 tracking-normal;
   }
 
   input, textarea, select {
-    @apply h-[32px] text-[#333333] font-rubik;
+    @apply h-10 text-sm text-slate-900 font-inter border-slate-200 focus:border-primary focus:ring-primary/20;
   }
 
   button {
-    @apply h-[36px] font-rubik;
+    @apply h-10 font-inter font-medium;
   }
 
   table {
-    @apply font-rubik;
+    @apply font-inter;
   }
 
   th, td {
-    @apply font-rubik text-[12px] text-[#262626];
+    @apply font-inter text-sm text-slate-700;
   }
 
   th {
-    @apply font-medium uppercase tracking-wider;
+    @apply font-semibold uppercase tracking-wide text-xs text-slate-500;
+  }
+
+  .text-muted {
+    @apply text-slate-500;
+  }
+
+  .text-subtle {
+    @apply text-slate-400;
   }
 }
 
 @layer components {
   .card {
-    @apply p-[16px] rounded-[8px] shadow-card;
+    @apply bg-white border border-slate-200 rounded-xl shadow-sm;
+    padding: 24px;
+  }
+  
+  .card-compact {
+    @apply bg-white border border-slate-200 rounded-lg shadow-sm;
+    padding: 16px;
   }
   
   .section-heading {
-    @apply text-section text-[#666666] font-medium font-rubik;
+    @apply text-lg font-semibold text-slate-900 tracking-tight;
+  }
+  
+  .page-title {
+    @apply text-2xl font-bold text-slate-900 tracking-tight;
   }
   
   .table-text {
-    @apply text-table font-rubik;
+    @apply text-sm font-inter text-slate-700;
   }
 
   .sidebar-nav-item {
-    @apply transition-all duration-200 ease-in-out;
+    @apply transition-all duration-200 ease-in-out rounded-lg;
   }
 
   .sidebar-nav-item:hover {
@@ -149,10 +194,38 @@
   }
 
   .sidebar-nav-item.active .sidebar-nav-text {
-    @apply text-primary font-medium;
+    @apply text-primary font-semibold;
   }
 
   .sidebar-nav-item.active .sidebar-nav-icon {
     @apply text-primary;
+  }
+
+  .metric-card {
+    @apply bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+
+  .data-table-cell {
+    @apply px-4 py-3 text-sm text-slate-700 border-b border-slate-100;
+  }
+
+  .data-table-header {
+    @apply px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide bg-slate-50 border-b border-slate-200;
+  }
+
+  .form-section {
+    @apply space-y-6 bg-white border border-slate-200 rounded-xl p-6;
+  }
+
+  .button-primary {
+    @apply bg-primary text-white hover:bg-primary/90 focus:ring-primary/20 focus:ring-4 font-medium rounded-lg px-4 py-2.5 transition-colors duration-200;
+  }
+
+  .button-secondary {
+    @apply bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 focus:ring-slate-200 focus:ring-4 font-medium rounded-lg px-4 py-2.5 transition-colors duration-200;
+  }
+
+  .input-field {
+    @apply bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors duration-200;
   }
 }
