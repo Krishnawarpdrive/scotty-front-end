@@ -2,6 +2,16 @@
 import { useState, useEffect } from 'react';
 import { UsersIcon, BriefcaseIcon, CheckCircleIcon, ClockIcon } from 'lucide-react';
 
+// Define the Activity interface locally to ensure type safety
+interface Activity {
+  id: string;
+  type: 'placement' | 'interview' | 'application' | 'document';
+  title: string;
+  description: string;
+  timestamp: string;
+  priority: 'high' | 'medium' | 'low';
+}
+
 // Mock data - in a real app, this would come from APIs
 export const useClientDashboardData = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -193,15 +203,15 @@ export const useClientDashboardData = () => {
     }
   ];
 
-  // Mock activity data
-  const activities = [
+  // Mock activity data with explicit typing
+  const activities: Activity[] = [
     {
       id: '1',
       type: 'placement',
       title: 'Candidate placed for Senior Software Engineer',
       description: 'John Doe accepted the offer',
       timestamp: '2024-01-15T10:30:00Z',
-      priority: 'high' as const
+      priority: 'high'
     },
     {
       id: '2',
@@ -209,7 +219,7 @@ export const useClientDashboardData = () => {
       title: 'Interview scheduled',
       description: 'Technical interview for Product Manager role',
       timestamp: '2024-01-15T09:15:00Z',
-      priority: 'medium' as const
+      priority: 'medium'
     },
     {
       id: '3',
@@ -217,7 +227,7 @@ export const useClientDashboardData = () => {
       title: 'New applications received',
       description: '5 new candidates applied for UX Designer',
       timestamp: '2024-01-15T08:45:00Z',
-      priority: 'low' as const
+      priority: 'low'
     },
     {
       id: '4',
@@ -225,7 +235,7 @@ export const useClientDashboardData = () => {
       title: 'Background check completed',
       description: 'Background verification for Data Scientist candidate',
       timestamp: '2024-01-14T16:20:00Z',
-      priority: 'medium' as const
+      priority: 'medium'
     }
   ];
 
