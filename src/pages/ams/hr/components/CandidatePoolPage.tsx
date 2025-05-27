@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { CandidateMetrics } from './CandidateMetrics';
-import { CandidatePoolHeader } from './CandidatePoolHeader';
-import { CandidatePoolContent } from './CandidatePoolContent';
-import { CandidateDetailDrawer } from './drawer/CandidateDetailDrawer';
+import { CandidateMetrics } from './candidate-pool/CandidateMetrics';
+import { CandidatePoolHeader } from './candidate-pool/CandidatePoolHeader';
+import { CandidatePoolContent } from './candidate-pool/CandidatePoolContent';
+import CandidateDetailDrawer from './drawer/CandidateDetailDrawer';
 import { useCandidateData } from './candidate-pool/hooks/useCandidateData';
 import { useCandidateFilters } from './candidate-pool/hooks/useCandidateFilters';
 import { useCandidateSelection } from './candidate-pool/hooks/useCandidateSelection';
@@ -26,28 +26,29 @@ export const CandidatePoolPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
-  const { candidates, isLoading } = useCandidateData();
+  const { allCandidates, filteredCandidates, totalCandidates } = useCandidateData();
   const { 
+    showFilters: filtersVisible,
+    setShowFilters: setFiltersVisible,
     filters, 
-    filteredCandidates, 
-    activeFiltersCount,
+    activeFilterCount,
     handleFilterChange,
     handleClearFilter,
     handleClearAllFilters 
-  } = useCandidateFilters(candidates, searchTerm);
+  } = useCandidateFilters();
   
   const {
     selectedCandidates,
     handleCandidateSelect,
     handleSelectAll,
     setSelectedCandidates
-  } = useCandidateSelection(filteredCandidates);
+  } = useCandidateSelection();
 
   const { handleBulkAction, handleQuickAction } = useCandidateActions();
-  const { metrics } = useCandidateMetrics(candidates);
+  const { metrics } = useCandidateMetrics(allCandidates);
   const {
     selectedCandidate,
-    isDrawerOpen,
+    drawerOpen,
     handleCandidateClick,
     handleCloseDrawer
   } = useCandidateDetailDrawer();
@@ -79,14 +80,6 @@ export const CandidatePoolPage: React.FC = () => {
     onImport: handleImport
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col h-full bg-gray-50">
       <CandidateMetrics metrics={metrics} />
@@ -94,9 +87,9 @@ export const CandidatePoolPage: React.FC = () => {
       <CandidatePoolHeader
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
-        totalCandidates={candidates.length}
+        totalCandidates={totalCandidates}
         filteredCount={filteredCandidates.length}
-        activeFilters={activeFiltersCount}
+        activeFilters={activeFilterCount}
         onAdvancedFilters={handleAdvancedFilters}
         onExport={handleExport}
         onImport={handleImport}
@@ -121,7 +114,7 @@ export const CandidatePoolPage: React.FC = () => {
 
       <CandidateDetailDrawer
         candidate={selectedCandidate}
-        isOpen={isDrawerOpen}
+        isOpen={drawerOpen}
         onClose={handleCloseDrawer}
       />
     </div>

@@ -1,31 +1,32 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Candidate } from '../CandidateTable';
 
-export const useCandidateSelection = () => {
+export const useCandidateSelection = (candidates: Candidate[] = []) => {
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
 
-  const handleCandidateSelect = (candidateId: string, selected: boolean) => {
-    setSelectedCandidates(prev => 
-      selected 
-        ? [...prev, candidateId]
-        : prev.filter(id => id !== candidateId)
-    );
-  };
+  const handleCandidateSelect = useCallback((candidateId: string, selected: boolean) => {
+    setSelectedCandidates(prev => {
+      if (selected) {
+        return [...prev, candidateId];
+      } else {
+        return prev.filter(id => id !== candidateId);
+      }
+    });
+  }, []);
 
-  const handleSelectAll = (candidates: Candidate[], selected: boolean) => {
-    setSelectedCandidates(selected ? candidates.map(c => c.id) : []);
-  };
-
-  const clearSelection = () => {
-    setSelectedCandidates([]);
-  };
+  const handleSelectAll = useCallback((selected: boolean) => {
+    if (selected) {
+      setSelectedCandidates(candidates.map(c => c.id));
+    } else {
+      setSelectedCandidates([]);
+    }
+  }, [candidates]);
 
   return {
     selectedCandidates,
-    setSelectedCandidates,
     handleCandidateSelect,
     handleSelectAll,
-    clearSelection
+    setSelectedCandidates
   };
 };

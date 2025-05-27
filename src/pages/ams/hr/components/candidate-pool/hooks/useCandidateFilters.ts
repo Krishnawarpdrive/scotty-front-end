@@ -1,8 +1,9 @@
 
 import { useState, useMemo } from 'react';
 import { FilterState } from '../CandidateFilters';
+import { Candidate } from '../CandidateTable';
 
-export const useCandidateFilters = () => {
+export const useCandidateFilters = (candidates: Candidate[] = [], searchTerm: string = '') => {
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     status: [],
@@ -13,6 +14,58 @@ export const useCandidateFilters = () => {
     dateRange: '',
     roleType: []
   });
+
+  // Filter candidates based on search term and filters
+  const filteredCandidates = useMemo(() => {
+    let filtered = candidates;
+
+    // Apply search term filter
+    if (searchTerm) {
+      filtered = filtered.filter(candidate => 
+        candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        candidate.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        candidate.phone.includes(searchTerm) ||
+        candidate.candidateId.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply status filter
+    if (filters.status.length > 0) {
+      filtered = filtered.filter(candidate => 
+        filters.status.includes(candidate.status)
+      );
+    }
+
+    // Apply source filter
+    if (filters.source.length > 0) {
+      filtered = filtered.filter(candidate => 
+        filters.source.includes(candidate.source)
+      );
+    }
+
+    // Apply experience filter
+    if (filters.experience.length > 0) {
+      filtered = filtered.filter(candidate => 
+        filters.experience.includes(candidate.type)
+      );
+    }
+
+    // Apply stage filter
+    if (filters.stage.length > 0) {
+      filtered = filtered.filter(candidate => 
+        filters.stage.includes(candidate.currentStage)
+      );
+    }
+
+    // Apply assigned TA filter
+    if (filters.assignedTA.length > 0) {
+      filtered = filtered.filter(candidate => 
+        filters.assignedTA.includes(candidate.assignedTA.name)
+      );
+    }
+
+    return filtered;
+  }, [candidates, searchTerm, filters]);
 
   // Get active filter count
   const activeFilterCount = useMemo(() => {
@@ -51,6 +104,7 @@ export const useCandidateFilters = () => {
     showFilters,
     setShowFilters,
     filters,
+    filteredCandidates,
     activeFilterCount,
     handleFilterChange,
     handleClearFilter,
