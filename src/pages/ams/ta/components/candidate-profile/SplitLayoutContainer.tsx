@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Box } from '@mui/material';
-import { CandidateTimeline } from './timeline/CandidateTimeline';
+import { InterviewStagesTimeline } from './timeline/InterviewStagesTimeline';
 import { StageFormRenderer } from './forms/StageFormRenderer';
 import { Candidate } from '../types/CandidateTypes';
 
@@ -29,7 +29,7 @@ export const SplitLayoutContainer: React.FC<SplitLayoutContainerProps> = ({
         overflow: 'auto',
         backgroundColor: '#fafafa'
       }}>
-        <CandidateTimeline 
+        <InterviewStagesTimeline 
           candidate={candidate}
           currentStage={stageId}
         />

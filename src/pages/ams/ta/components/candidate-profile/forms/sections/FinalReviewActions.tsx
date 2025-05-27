@@ -1,29 +1,26 @@
 
 import React from 'react';
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
 import { Save, Send } from '@mui/icons-material';
+import { DesignSystemButton } from '@/components/ui-mui/DesignSystemButton';
 
 export const FinalReviewActions: React.FC = () => {
   return (
     <Box sx={{ display: 'flex', gap: 2, mt: 4 }}>
-      <Button
+      <DesignSystemButton
         variant="contained"
         startIcon={<Save />}
-        sx={{ 
-          bgcolor: '#009933', 
-          '&:hover': { bgcolor: '#00a341' },
-          flex: 1
-        }}
+        sx={{ flex: 1 }}
       >
         Save Review
-      </Button>
-      <Button
+      </DesignSystemButton>
+      <DesignSystemButton
         variant="outlined"
         startIcon={<Send />}
         sx={{ flex: 1 }}
       >
         Send Offer Letter
-      </Button>
+      </DesignSystemButton>
     </Box>
   );
 };

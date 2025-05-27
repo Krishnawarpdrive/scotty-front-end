@@ -2,13 +2,10 @@
 import React from 'react';
 import { 
   Box, 
-  Typography, 
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
+  Typography,
   Rating
 } from '@mui/material';
+import { DesignSystemSelect } from '@/components/ui-mui/DesignSystemSelect';
 
 interface OverallAssessmentData {
   overallRating: number;
@@ -20,41 +17,59 @@ interface OverallAssessmentSectionProps {
   onFieldChange: (field: string, value: any) => void;
 }
 
+const decisionOptions = [
+  { value: 'pending', label: 'Pending' },
+  { value: 'selected', label: 'Selected' },
+  { value: 'rejected', label: 'Rejected' },
+  { value: 'hold', label: 'On Hold' },
+  { value: 'waitlist', label: 'Waitlist' }
+];
+
 export const OverallAssessmentSection: React.FC<OverallAssessmentSectionProps> = ({
   formData,
   onFieldChange
 }) => {
   return (
     <Box sx={{ mb: 3 }}>
-      <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
+      <Typography variant="h6" sx={{ 
+        mb: 2, 
+        fontFamily: 'Rubik, sans-serif', 
+        fontWeight: 600,
+        fontSize: '14px',
+        color: '#374151'
+      }}>
         Overall Assessment
       </Typography>
       
       <Box sx={{ mb: 2 }}>
-        <Typography variant="caption" sx={{ mb: 1, display: 'block', fontFamily: 'Rubik, sans-serif' }}>
+        <Typography variant="body2" sx={{ 
+          mb: 1, 
+          display: 'block', 
+          fontFamily: 'Rubik, sans-serif',
+          fontSize: '13px',
+          color: '#6b7280'
+        }}>
           Overall Rating
         </Typography>
         <Rating
           value={formData.overallRating}
           onChange={(event, newValue) => onFieldChange('overallRating', newValue)}
-          size="large"
+          size="medium"
+          sx={{
+            '& .MuiRating-iconFilled': {
+              color: '#009933',
+            },
+          }}
         />
       </Box>
 
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel>Final Decision</InputLabel>
-        <Select
-          value={formData.finalDecision}
-          onChange={(e) => onFieldChange('finalDecision', e.target.value)}
-          label="Final Decision"
-        >
-          <MenuItem value="pending">Pending</MenuItem>
-          <MenuItem value="selected">Selected</MenuItem>
-          <MenuItem value="rejected">Rejected</MenuItem>
-          <MenuItem value="hold">On Hold</MenuItem>
-          <MenuItem value="waitlist">Waitlist</MenuItem>
-        </Select>
-      </FormControl>
+      <DesignSystemSelect
+        label="Final Decision"
+        value={formData.finalDecision}
+        onChange={(value) => onFieldChange('finalDecision', value)}
+        options={decisionOptions}
+        fullWidth
+      />
     </Box>
   );
 };

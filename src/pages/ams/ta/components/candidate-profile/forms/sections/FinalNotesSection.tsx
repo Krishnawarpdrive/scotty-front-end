@@ -1,9 +1,7 @@
 
 import React from 'react';
-import { 
-  Box, 
-  TextField
-} from '@mui/material';
+import { Box } from '@mui/material';
+import { DesignSystemTextField } from '@/components/ui-mui/DesignSystemTextField';
 
 interface FinalNotesData {
   finalNotes: string;
@@ -20,7 +18,7 @@ export const FinalNotesSection: React.FC<FinalNotesSectionProps> = ({
 }) => {
   return (
     <Box sx={{ mb: 3 }}>
-      <TextField
+      <DesignSystemTextField
         label="Final Notes"
         value={formData.finalNotes}
         onChange={(e) => onFieldChange('finalNotes', e.target.value)}

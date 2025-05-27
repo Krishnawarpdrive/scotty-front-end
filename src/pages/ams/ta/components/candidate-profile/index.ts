@@ -7,6 +7,8 @@ export { SplitLayoutContainer } from './SplitLayoutContainer';
 // Timeline components
 export { CandidateTimeline } from './timeline/CandidateTimeline';
 export { TimelineItem } from './timeline/TimelineItem';
+export { InterviewStagesTimeline } from './timeline/InterviewStagesTimeline';
+export { InterviewStage } from './timeline/InterviewStage';
 
 // Form components
 export { StageFormRenderer } from './forms/StageFormRenderer';
