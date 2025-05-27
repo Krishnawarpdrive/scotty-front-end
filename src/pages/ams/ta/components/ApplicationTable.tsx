@@ -1,8 +1,7 @@
 
 import React, { useState } from "react";
 import { Table, TableBody } from "@/components/ui-mui/table";
-import { Drawer, DrawerContent } from "@/components/ui-mui/Drawer";
-import { CandidateDetails } from "./CandidateDetails";
+import { CandidateProfileDrawer } from "./candidate-profile/CandidateProfileDrawer";
 import { CandidateRow } from "./table/CandidateRow";
 import { CandidateTableHeader } from "./table/TableHeader";
 import { candidates } from "./data/candidatesData";
@@ -59,11 +58,11 @@ export const ApplicationTable: React.FC = () => {
         </div>
       </div>
 
-      <Drawer open={isDetailsOpen} onClose={() => setIsDetailsOpen(false)} side="right">
-        <DrawerContent onClose={() => setIsDetailsOpen(false)}>
-          <CandidateDetails onClose={() => setIsDetailsOpen(false)} />
-        </DrawerContent>
-      </Drawer>
+      <CandidateProfileDrawer
+        open={isDetailsOpen}
+        onClose={() => setIsDetailsOpen(false)}
+        candidate={selectedCandidate}
+      />
     </div>
   );
 };

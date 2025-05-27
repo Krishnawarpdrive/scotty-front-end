@@ -17,7 +17,19 @@ export const candidates: Candidate[] = [
     experience: '5+ years',
     location: 'Mumbai, India',
     skills: ['Network Admin', 'Cisco', 'Linux', 'TCP/IP'],
-    phone: '+91 98765 43210'
+    phone: '+91 98765 43210',
+    score: 85,
+    currentStage: 2,
+    totalStages: 6,
+    timeInStage: '2 days',
+    hiring: 'Network Admin',
+    interviewing: 'Technical',
+    responsible: {
+      name: 'John Doe',
+      avatar: ''
+    },
+    timeSpent: '4 days',
+    targetDate: '2024-01-15'
   },
   {
     id: 2,
@@ -34,7 +46,19 @@ export const candidates: Candidate[] = [
     experience: '3+ years',
     location: 'Bangalore, India',
     skills: ['React', 'Node.js', 'JavaScript', 'Python'],
-    phone: '+91 98765 43211'
+    phone: '+91 98765 43211',
+    score: 78,
+    currentStage: 3,
+    totalStages: 6,
+    timeInStage: '1 day',
+    hiring: 'Software Engineer',
+    interviewing: 'Client Interview',
+    responsible: {
+      name: 'Jane Smith',
+      avatar: ''
+    },
+    timeSpent: '7 days',
+    targetDate: '2024-01-20'
   },
   {
     id: 3,
@@ -51,6 +75,18 @@ export const candidates: Candidate[] = [
     experience: '4+ years',
     location: 'Pune, India',
     skills: ['Figma', 'Adobe XD', 'Sketch', 'Prototyping'],
-    phone: '+91 98765 43212'
+    phone: '+91 98765 43212',
+    score: 92,
+    currentStage: 4,
+    totalStages: 6,
+    timeInStage: '3 days',
+    hiring: 'UI/UX Designer',
+    interviewing: 'Background Check',
+    responsible: {
+      name: 'Mike Johnson',
+      avatar: ''
+    },
+    timeSpent: '10 days',
+    targetDate: '2024-01-18'
   }
 ];

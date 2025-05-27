@@ -11,9 +11,10 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Divider
+  Divider,
+  Chip
 } from '@mui/material';
-import { Business, Save, Schedule } from '@mui/icons-material';
+import { VideoCall, Save, Person } from '@mui/icons-material';
 import { Candidate } from '../../types/CandidateTypes';
 
 interface ClientInterviewFormProps {
@@ -24,19 +25,16 @@ export const ClientInterviewForm: React.FC<ClientInterviewFormProps> = ({
   candidate
 }) => {
   const [formData, setFormData] = useState({
-    clientName: 'TechCorp Solutions',
-    interviewerName: '',
-    interviewDate: '',
-    interviewTime: '',
-    interviewMode: 'video',
     interviewScheduled: false,
+    interviewType: 'video',
     outcome: 'pending',
     clientFeedback: '',
-    culturalFit: '',
-    technicalFit: '',
-    salaryDiscussion: false,
-    agreedSalary: '',
-    nextSteps: ''
+    culturalFit: 'pending',
+    technicalFit: 'pending',
+    interviewNotes: '',
+    duration: '45',
+    clientInterviewerName: '',
+    followUpRequired: false
   });
 
   const handleFieldChange = (field: string, value: any) => {
@@ -53,64 +51,41 @@ export const ClientInterviewForm: React.FC<ClientInterviewFormProps> = ({
         Client Interview Configuration
       </Typography>
 
-      {/* Client Details */}
+      {/* Interview Setup */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Client Information
+          Interview Setup
         </Typography>
         
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
-          <TextField
-            label="Client Company"
-            value={formData.clientName}
-            onChange={(e) => handleFieldChange('clientName', e.target.value)}
-            disabled
-          />
-          <TextField
-            label="Client Interviewer"
-            value={formData.interviewerName}
-            onChange={(e) => handleFieldChange('interviewerName', e.target.value)}
-            placeholder="Hiring Manager Name"
-          />
-        </Box>
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      {/* Interview Scheduling */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Interview Scheduling
-        </Typography>
-        
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 2, mb: 2 }}>
-          <TextField
-            label="Interview Date"
-            type="date"
-            value={formData.interviewDate}
-            onChange={(e) => handleFieldChange('interviewDate', e.target.value)}
-            InputLabelProps={{ shrink: true }}
-          />
-          <TextField
-            label="Interview Time"
-            type="time"
-            value={formData.interviewTime}
-            onChange={(e) => handleFieldChange('interviewTime', e.target.value)}
-            InputLabelProps={{ shrink: true }}
-          />
           <FormControl fullWidth>
-            <InputLabel>Interview Mode</InputLabel>
+            <InputLabel>Interview Type</InputLabel>
             <Select
-              value={formData.interviewMode}
-              onChange={(e) => handleFieldChange('interviewMode', e.target.value)}
-              label="Interview Mode"
+              value={formData.interviewType}
+              onChange={(e) => handleFieldChange('interviewType', e.target.value)}
+              label="Interview Type"
             >
               <MenuItem value="video">Video Call</MenuItem>
               <MenuItem value="in-person">In Person</MenuItem>
               <MenuItem value="phone">Phone</MenuItem>
             </Select>
           </FormControl>
+          
+          <TextField
+            label="Duration (minutes)"
+            value={formData.duration}
+            onChange={(e) => handleFieldChange('duration', e.target.value)}
+            type="number"
+          />
         </Box>
+
+        <TextField
+          label="Client Interviewer Name"
+          value={formData.clientInterviewerName}
+          onChange={(e) => handleFieldChange('clientInterviewerName', e.target.value)}
+          fullWidth
+          sx={{ mb: 2 }}
+        />
 
         <FormControlLabel
           control={
@@ -119,17 +94,17 @@ export const ClientInterviewForm: React.FC<ClientInterviewFormProps> = ({
               onChange={(e) => handleFieldChange('interviewScheduled', e.target.checked)}
             />
           }
-          label="Interview Confirmed with Client"
+          label="Interview Scheduled"
           sx={{ fontFamily: 'Rubik, sans-serif' }}
         />
       </Box>
 
       <Divider sx={{ my: 3 }} />
 
-      {/* Interview Assessment */}
+      {/* Assessment */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Interview Assessment
+          Client Assessment
         </Typography>
         
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
@@ -140,14 +115,14 @@ export const ClientInterviewForm: React.FC<ClientInterviewFormProps> = ({
               onChange={(e) => handleFieldChange('culturalFit', e.target.value)}
               label="Cultural Fit"
             >
-              <MenuItem value="">Not Assessed</MenuItem>
+              <MenuItem value="pending">Pending</MenuItem>
               <MenuItem value="excellent">Excellent</MenuItem>
               <MenuItem value="good">Good</MenuItem>
               <MenuItem value="average">Average</MenuItem>
               <MenuItem value="poor">Poor</MenuItem>
             </Select>
           </FormControl>
-          
+
           <FormControl fullWidth>
             <InputLabel>Technical Fit</InputLabel>
             <Select
@@ -155,7 +130,7 @@ export const ClientInterviewForm: React.FC<ClientInterviewFormProps> = ({
               onChange={(e) => handleFieldChange('technicalFit', e.target.value)}
               label="Technical Fit"
             >
-              <MenuItem value="">Not Assessed</MenuItem>
+              <MenuItem value="pending">Pending</MenuItem>
               <MenuItem value="excellent">Excellent</MenuItem>
               <MenuItem value="good">Good</MenuItem>
               <MenuItem value="average">Average</MenuItem>
@@ -164,6 +139,32 @@ export const ClientInterviewForm: React.FC<ClientInterviewFormProps> = ({
           </FormControl>
         </Box>
 
+        <TextField
+          label="Client Feedback"
+          value={formData.clientFeedback}
+          onChange={(e) => handleFieldChange('clientFeedback', e.target.value)}
+          fullWidth
+          multiline
+          rows={3}
+          sx={{ mb: 2 }}
+        />
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={formData.followUpRequired}
+              onChange={(e) => handleFieldChange('followUpRequired', e.target.checked)}
+            />
+          }
+          label="Follow-up Required"
+          sx={{ fontFamily: 'Rubik, sans-serif' }}
+        />
+      </Box>
+
+      <Divider sx={{ my: 3 }} />
+
+      {/* Interview Outcome */}
+      <Box sx={{ mb: 3 }}>
         <FormControl fullWidth sx={{ mb: 2 }}>
           <InputLabel>Interview Outcome</InputLabel>
           <Select
@@ -172,62 +173,20 @@ export const ClientInterviewForm: React.FC<ClientInterviewFormProps> = ({
             label="Interview Outcome"
           >
             <MenuItem value="pending">Pending</MenuItem>
-            <MenuItem value="selected">Selected</MenuItem>
-            <MenuItem value="rejected">Rejected</MenuItem>
-            <MenuItem value="on-hold">On Hold</MenuItem>
+            <MenuItem value="pass">Pass</MenuItem>
+            <MenuItem value="fail">Fail</MenuItem>
+            <MenuItem value="strong-pass">Strong Pass</MenuItem>
           </Select>
         </FormControl>
 
         <TextField
-          label="Client Feedback"
-          value={formData.clientFeedback}
-          onChange={(e) => handleFieldChange('clientFeedback', e.target.value)}
+          label="Interview Notes"
+          value={formData.interviewNotes}
+          onChange={(e) => handleFieldChange('interviewNotes', e.target.value)}
           fullWidth
           multiline
-          rows={3}
-          placeholder="Client's detailed feedback about the candidate..."
-          sx={{ mb: 2 }}
-        />
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      {/* Salary Discussion */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Compensation Discussion
-        </Typography>
-        
-        <FormControlLabel
-          control={
-            <Switch
-              checked={formData.salaryDiscussion}
-              onChange={(e) => handleFieldChange('salaryDiscussion', e.target.checked)}
-            />
-          }
-          label="Salary Discussed"
-          sx={{ fontFamily: 'Rubik, sans-serif', mb: 2 }}
-        />
-
-        {formData.salaryDiscussion && (
-          <TextField
-            label="Agreed Salary Range"
-            value={formData.agreedSalary}
-            onChange={(e) => handleFieldChange('agreedSalary', e.target.value)}
-            fullWidth
-            placeholder="e.g., 80,000 - 90,000"
-            sx={{ mb: 2 }}
-          />
-        )}
-
-        <TextField
-          label="Next Steps"
-          value={formData.nextSteps}
-          onChange={(e) => handleFieldChange('nextSteps', e.target.value)}
-          fullWidth
-          multiline
-          rows={2}
-          placeholder="Follow-up actions, additional rounds, etc..."
+          rows={4}
+          placeholder="Client feedback, cultural fit assessment, next steps..."
         />
       </Box>
 
@@ -246,10 +205,10 @@ export const ClientInterviewForm: React.FC<ClientInterviewFormProps> = ({
         </Button>
         <Button
           variant="outlined"
-          startIcon={<Schedule />}
+          startIcon={<VideoCall />}
           sx={{ flex: 1 }}
         >
-          Schedule Follow-up
+          Schedule Client Interview
         </Button>
       </Box>
     </Box>
