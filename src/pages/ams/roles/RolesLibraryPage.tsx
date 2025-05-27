@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { 
@@ -19,6 +18,8 @@ import { useToast } from "@/hooks/use-toast";
 import RoleCreationDrawer from './components/RoleCreationDrawer';
 import EnhancedGlobalRoleCreationDrawer from './components/drawer/EnhancedGlobalRoleCreationDrawer';
 import { supabase } from "@/integrations/supabase/client";
+import { useKeyboardShortcuts } from '@/contexts/KeyboardShortcutsContext';
+import { useRolesLibraryShortcuts } from '@/hooks/useRolesLibraryShortcuts';
 
 interface Role {
   id: string;
@@ -36,6 +37,7 @@ interface Role {
 }
 
 const RoleLibraryPage: React.FC = () => {
+  const { setCurrentScope } = useKeyboardShortcuts();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterOpen, setFilterOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -48,6 +50,46 @@ const RoleLibraryPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+
+  // Set the scope when component mounts
+  useEffect(() => {
+    setCurrentScope('roles-library');
+    return () => setCurrentScope('global');
+  }, [setCurrentScope]);
+
+  const handleFocusSearch = () => {
+    const searchInput = document.querySelector('input[placeholder*="Search"]') as HTMLInputElement;
+    if (searchInput) {
+      searchInput.focus();
+      searchInput.select();
+    }
+  };
+
+  const handleExportRoles = () => {
+    console.log('Exporting roles...');
+    toast({
+      title: "Export Started",
+      description: "Your roles data is being exported.",
+    });
+  };
+
+  const handleImportRoles = () => {
+    console.log('Importing roles...');
+    toast({
+      title: "Import Ready",
+      description: "Please select a file to import roles data.",
+    });
+  };
+
+  // Register roles library specific shortcuts
+  useRolesLibraryShortcuts({
+    onCreateRole: () => setDrawerOpen(true),
+    onCreateGlobalRole: () => setGlobalDrawerOpen(true),
+    onToggleFilters: () => setFilterOpen(!filterOpen),
+    onExportRoles: handleExportRoles,
+    onImportRoles: handleImportRoles,
+    onFocusSearch: handleFocusSearch
+  });
 
   // Fetch roles from Supabase
   useEffect(() => {

@@ -1,84 +1,84 @@
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+
 import { Toaster } from "@/components/ui/toaster";
-import { ThemeProvider } from "./theme/ThemeProvider";
-import { KeyboardShortcutsProvider } from "@/contexts/KeyboardShortcutsContext";
-import { KeyboardShortcutsModal } from "@/components/ui/keyboard-shortcuts-modal";
-
-// Layouts
-import AMSLayout from "./layouts/AMSLayout";
-
-// Pages
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "@/theme/ThemeProvider";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import AMSLayout from "./layouts/AMSLayout";
 import Dashboard from "./pages/ams/Dashboard";
 import ClientsPage from "./pages/ams/ClientsPage";
-import RolesLibraryPage from "./pages/ams/RolesLibraryPage";
-import RequirementsPage from "./pages/ams/RequirementsPage";
 import SkillsPage from "./pages/ams/SkillsPage";
 import ChecklistsPage from "./pages/ams/ChecklistsPage";
 import CertificationsPage from "./pages/ams/CertificationsPage";
 import CommissionsPage from "./pages/ams/CommissionsPage";
-
-// Client detail pages
-import ClientDetailsPage from "./pages/ams/clients/ClientDetailsPage";
-import ClientAccountCreationPage from "./pages/ams/clients/ClientAccountCreationPage";
-
-// HR pages
-import RoleManagementPage from "./pages/ams/hr/RoleManagementPage";
+import RequirementsPage from "./pages/ams/RequirementsPage";
 import HRDashboardPage from "./pages/ams/hr/HRDashboardPage";
 import CandidatePoolPage from "./pages/ams/hr/CandidatePoolPage";
-
-// TA pages
+import RoleManagementPage from "./pages/ams/hr/RoleManagementPage";
 import TAMissionControlPage from "./pages/ams/ta/TAMissionControlPage";
-
-// Create / Edit role page
 import CreateRolePage from "./pages/ams/roles/CreateRolePage";
+import RoleLibraryPage from "./pages/ams/roles/RoleLibraryPage";
+import RolesLibraryPage from "./pages/ams/roles/RolesLibraryPage";
+import SkillsLibraryPage from "./pages/ams/skills/SkillsLibraryPage";
+import ClientAccountCreationPage from "./pages/ams/clients/ClientAccountCreationPage";
+import ClientDetailsPage from "./pages/ams/clients/ClientDetailsPage";
+import { KeyboardShortcutsProvider } from "@/contexts/KeyboardShortcutsContext";
+import { KeyboardShortcutsModal } from "@/components/ui/keyboard-shortcuts-modal";
+import { KeyboardHintsOverlay } from "@/components/ui/keyboard-hints-overlay";
+import { useGlobalShortcuts } from "@/hooks/useGlobalShortcuts";
+
+const queryClient = new QueryClient();
+
+function AppContent() {
+  useGlobalShortcuts();
+
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/ams" element={<AMSLayout />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="clients" element={<ClientsPage />} />
+          <Route path="clients/create" element={<ClientAccountCreationPage />} />
+          <Route path="clients/:clientId" element={<ClientDetailsPage />} />
+          <Route path="skills" element={<SkillsPage />} />
+          <Route path="skills/library" element={<SkillsLibraryPage />} />
+          <Route path="checklists" element={<ChecklistsPage />} />
+          <Route path="certifications" element={<CertificationsPage />} />
+          <Route path="commissions" element={<CommissionsPage />} />
+          <Route path="requirements" element={<RequirementsPage />} />
+          <Route path="roles" element={<RolesLibraryPage />} />
+          <Route path="roles/create" element={<CreateRolePage />} />
+          <Route path="roles/library" element={<RoleLibraryPage />} />
+          <Route path="hr/dashboard" element={<HRDashboardPage />} />
+          <Route path="hr/candidate-pool" element={<CandidatePoolPage />} />
+          <Route path="hr/role-management" element={<RoleManagementPage />} />
+          <Route path="ta/mission-control" element={<TAMissionControlPage />} />
+        </Route>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <KeyboardShortcutsModal />
+      <KeyboardHintsOverlay />
+    </>
+  );
+}
 
 function App() {
   return (
-    <ThemeProvider>
-      <KeyboardShortcutsProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Navigate to="/ams" replace />} />
-            <Route path="/index" element={<Index />} />
-
-            {/* AMS Routes with layout */}
-            <Route path="/ams" element={<AMSLayout />}>
-              <Route index element={<Navigate to="/ams/dashboard" replace />} />
-              <Route path="dashboard" element={<Dashboard />} />
-
-              {/* HR Section */}
-              <Route path="hr/role-management" element={<RoleManagementPage />} />
-              <Route path="hr/dashboard" element={<HRDashboardPage />} />
-              <Route path="hr/candidate-pool" element={<CandidatePoolPage />} />
-
-              {/* TA Section */}
-              <Route path="ta/mission-control" element={<TAMissionControlPage />} />
-
-              {/* Client Routes */}
-              <Route path="clients" element={<ClientsPage />} />
-              <Route path="clients/:clientId" element={<ClientDetailsPage />} />
-              <Route path="clients/create" element={<ClientAccountCreationPage />} />
-              
-              {/* Other Main Routes */}
-              <Route path="roles" element={<RolesLibraryPage />} />
-              <Route path="roles/create" element={<CreateRolePage />} />
-              <Route path="requirements" element={<RequirementsPage />} />
-              <Route path="skills" element={<SkillsPage />} />
-              <Route path="checklists" element={<ChecklistsPage />} />
-              <Route path="certifications" element={<CertificationsPage />} />
-              <Route path="commissions" element={<CommissionsPage />} />
-            </Route>
-
-            {/* 404 page */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <KeyboardShortcutsModal />
-        </Router>
-        <Toaster />
-      </KeyboardShortcutsProvider>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <KeyboardShortcutsProvider>
+          <TooltipProvider>
+            <Toaster />
+            <BrowserRouter>
+              <AppContent />
+            </BrowserRouter>
+          </TooltipProvider>
+        </KeyboardShortcutsProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 

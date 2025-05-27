@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs } from "@/components/ui/tabs";
 import { clientsData, rolesData, requirementsData, tasData } from './mockData';
 import ClientDetailDrawer from './components/ClientDetailDrawer';
@@ -8,11 +8,20 @@ import ClientsTabContent from './components/ClientsTabContent';
 import RolesTabContent from './components/RolesTabContent';
 import RequirementsTabContent from './components/RequirementsTabContent';
 import TasTabContent from './components/TasTabContent';
+import { useKeyboardShortcuts } from '@/contexts/KeyboardShortcutsContext';
+import { useRoleManagementShortcuts } from '@/hooks/useRoleManagementShortcuts';
 
 const RoleManagementPage = () => {
+  const { setCurrentScope } = useKeyboardShortcuts();
   const [activeTab, setActiveTab] = useState("roles");
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [clientDrawerOpen, setClientDrawerOpen] = useState(false);
+
+  // Set the scope when component mounts
+  useEffect(() => {
+    setCurrentScope('role-management');
+    return () => setCurrentScope('global');
+  }, [setCurrentScope]);
   
   // Function to handle client click
   const handleClientClick = (clientName: string) => {
@@ -28,6 +37,38 @@ const RoleManagementPage = () => {
     console.log('Row clicked:', item);
     // Handle sidebar opening here
   };
+
+  const handleCreateRole = () => {
+    console.log('Creating new role...');
+    // Implementation for creating role
+  };
+
+  const handleCreateClient = () => {
+    console.log('Creating new client...');
+    // Implementation for creating client
+  };
+
+  const handleExportData = () => {
+    console.log('Exporting data for tab:', activeTab);
+    // Implementation for exporting current tab data
+  };
+
+  const handleImportData = () => {
+    console.log('Importing data for tab:', activeTab);
+    // Implementation for importing data
+  };
+
+  // Register role management specific shortcuts
+  useRoleManagementShortcuts({
+    onCreateRole: handleCreateRole,
+    onCreateClient: handleCreateClient,
+    onExportData: handleExportData,
+    onImportData: handleImportData,
+    onSwitchToRoles: () => setActiveTab('roles'),
+    onSwitchToClients: () => setActiveTab('clients'),
+    onSwitchToRequirements: () => setActiveTab('requirements'),
+    onSwitchToTAs: () => setActiveTab('tas')
+  });
 
   // Tab count data for badges
   const tabCounts = {
