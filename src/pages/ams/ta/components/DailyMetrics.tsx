@@ -8,7 +8,7 @@ import { EnhancedHiringFunnelCard } from "./enhanced/EnhancedHiringFunnelCard";
 import { CompactView } from "./CompactView";
 import { ChevronUp } from "lucide-react";
 import { StreakCelebration } from "./StreakCelebration";
-import { triggerGoalCompletionToast } from "@/components/GoalCompletionToast";
+import { triggerGoalCompletionToast, triggerMilestoneToast } from "@/components/GoalCompletionToast";
 
 export const DailyMetrics: React.FC = () => {
   const [activeTab, setActiveTab] = useState("Default");
@@ -31,10 +31,15 @@ export const DailyMetrics: React.FC = () => {
     }, 3000);
   };
 
+  
+  const handleMilestone = (milestone: number, metricTitle: string) => {
+    triggerMilestoneToast(milestone, metricTitle);
+  };
+  
   React.useEffect(() => {
     toggleCollapse();
+    handleMilestone(5, 'Process 5 new applications');
   }, []);
-
   
   if (isCollapsed) {
     return <CompactView onExpand={() => {}} />;

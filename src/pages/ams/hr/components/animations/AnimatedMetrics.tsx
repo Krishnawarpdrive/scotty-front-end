@@ -1,9 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AnimatedProgressBar } from './AnimatedProgressBar';
-import { triggerMilestoneToast } from '@/components/GoalCompletionToast';
 
 interface MetricData {
   id: string;
@@ -63,9 +61,6 @@ export const AnimatedMetrics: React.FC<AnimatedMetricsProps> = ({
     }
   };
 
-  const handleMilestone = (milestone: number, metricTitle: string) => {
-    triggerMilestoneToast(milestone, metricTitle);
-  };
 
   return (
     <Card>
@@ -112,7 +107,7 @@ export const AnimatedMetrics: React.FC<AnimatedMetricsProps> = ({
                   value={animatedValues[metric.id] || 0}
                   max={metric.target}
                   animationDelay={index * animationStagger}
-                  onMilestone={(milestone) => handleMilestone(milestone, metric.title)}
+                  onMilestone={() => {}}
                   showValue={false}
                 />
                 
