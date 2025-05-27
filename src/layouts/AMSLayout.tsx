@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import AMSSidebar from './AMSSidebar';
+import { AMSSidebar } from './AMSSidebar';
 import { AIAssistant } from '@/components/ai/AIAssistant';
 
 const AMSLayout = () => {
