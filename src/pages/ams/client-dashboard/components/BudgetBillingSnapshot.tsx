@@ -166,7 +166,7 @@ export const BudgetBillingSnapshot: React.FC<BudgetBillingSnapshotProps> = ({ da
                   <Download className="h-3 w-3 mr-1" />
                   Download
                 </Button>
-                {invoice.status !== 'paid' && (
+                {(invoice.status === 'pending' || invoice.status === 'overdue') && (
                   <Button variant="default" size="sm" className="flex-1">
                     Pay Now
                   </Button>
