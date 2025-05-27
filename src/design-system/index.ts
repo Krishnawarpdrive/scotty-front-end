@@ -9,5 +9,6 @@ export * from './components/DataTable/DataTable';
 export * from './components/PageHeader/PageHeader';
 export * from './components/StatusIndicator/StatusIndicator';
 export * from './components/SearchFilter/SearchFilter';
+export * from './components/SemanticSearch/SemanticSearch';
 
 export * from './hooks/useDesignSystem';
