@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useVendorDetail } from './hooks/useVendors';
+import { useVendorDetails } from './hooks/useVendorDetails';
 import { VendorDetailHeader } from './components/vendor-detail/VendorDetailHeader';
 import { VendorOverview } from './components/vendor-detail/VendorOverview';
 import { VendorRolesRequirements } from './components/vendor-detail/VendorRolesRequirements';
@@ -15,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const VendorDetailPage: React.FC = () => {
   const { vendorId } = useParams<{ vendorId: string }>();
-  const { vendor, vendorRoles, vendorSubmissions, isLoading } = useVendorDetail(vendorId || '');
+  const { vendor, vendorRoles, vendorSubmissions, isLoading } = useVendorDetails(vendorId || '');
 
   if (isLoading) {
     return (
