@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { SearchIcon, FilterIcon, XIcon } from 'lucide-react';
+import { SearchIcon, FilterIcon, XIcon, Brain } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -16,6 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { UnifiedSearchBar } from '@/components/search/UnifiedSearchBar';
 import { cn } from '@/lib/utils';
 
 export interface FilterOption {
@@ -32,6 +34,9 @@ export interface SearchFilterProps {
   filters?: FilterOption[];
   activeFilters?: Record<string, any>;
   onFilterChange?: (filters: Record<string, any>) => void;
+  onSemanticResults?: (results: any[]) => void;
+  enableSemanticSearch?: boolean;
+  semanticTables?: string[];
   className?: string;
 }
 
@@ -42,6 +47,9 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
   filters = [],
   activeFilters = {},
   onFilterChange,
+  onSemanticResults,
+  enableSemanticSearch = true,
+  semanticTables = ['roles', 'requirements', 'clients', 'skills'],
   className,
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -69,19 +77,34 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
     onFilterChange?.({});
   };
 
+  const handleTraditionalSearch = (query: string) => {
+    onSearchChange?.(query);
+  };
+
   return (
     <div className={cn('space-y-4', className)}>
-      {/* Search and Filter Controls */}
+      {/* Enhanced Search with Semantic Support */}
       <div className="flex items-center gap-4">
-        {/* Search Input */}
-        <div className="relative flex-1 max-w-md">
-          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            placeholder={searchPlaceholder}
-            value={searchValue}
-            onChange={(e) => onSearchChange?.(e.target.value)}
-            className="pl-10"
-          />
+        <div className="flex-1">
+          {enableSemanticSearch ? (
+            <UnifiedSearchBar
+              placeholder={searchPlaceholder}
+              onTraditionalSearch={handleTraditionalSearch}
+              onSemanticResults={onSemanticResults}
+              defaultTables={semanticTables}
+              searchMode="both"
+            />
+          ) : (
+            <div className="relative">
+              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder={searchPlaceholder}
+                value={searchValue}
+                onChange={(e) => onSearchChange?.(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          )}
         </div>
 
         {/* Filter Button */}
