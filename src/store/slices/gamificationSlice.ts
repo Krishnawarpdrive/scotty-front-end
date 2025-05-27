@@ -1,6 +1,5 @@
-
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { GamificationState, Mission, Achievement, Goal, TAProfile } from '../types/gamificationTypes';
+import { GamificationState, Mission, Achievement, Goal, TAProfile, CelebrationType, CelebrationData } from '../types/gamificationTypes';
 
 // Mock data for initial state
 const mockTAProfile: TAProfile = {
@@ -100,7 +99,7 @@ const gamificationSlice = createSlice({
           goal.status = 'completed';
           // Add celebration to queue
           state.celebrationQueue.push({
-            type: 'goal',
+            type: 'goal' as CelebrationType,
             data: goal,
             id: `goal-${goalId}-${Date.now()}`,
           });
@@ -128,7 +127,7 @@ const gamificationSlice = createSlice({
       if (isNewRecord) {
         state.streakData.longestStreak = streak;
         state.celebrationQueue.push({
-          type: 'streak',
+          type: 'streak' as CelebrationType,
           data: { streak, isNewRecord: true },
           id: `streak-${Date.now()}`,
         });
@@ -141,9 +140,10 @@ const gamificationSlice = createSlice({
     },
 
     // Celebration queue actions
-    addCelebration: (state, action: PayloadAction<{ type: string; data: any }>) => {
+    addCelebration: (state, action: PayloadAction<{ type: CelebrationType; data: any }>) => {
       state.celebrationQueue.push({
-        ...action.payload,
+        type: action.payload.type,
+        data: action.payload.data,
         id: `celebration-${Date.now()}`,
       });
     },
@@ -175,7 +175,7 @@ const gamificationSlice = createSlice({
           
           // Add level up celebration
           state.celebrationQueue.push({
-            type: 'achievement',
+            type: 'achievement' as CelebrationType,
             data: { type: 'levelUp', newLevel: state.currentUser.level },
             id: `levelup-${Date.now()}`,
           });
@@ -210,7 +210,7 @@ const gamificationSlice = createSlice({
           if (progress >= mission.target && mission.status !== 'completed') {
             mission.status = 'completed';
             state.celebrationQueue.push({
-              type: 'mission',
+              type: 'mission' as CelebrationType,
               data: mission,
               id: `mission-${missionId}-${Date.now()}`,
             });
@@ -243,7 +243,7 @@ const gamificationSlice = createSlice({
           achievement.isLocked = false;
           achievement.unlockedAt = unlockedAt;
           state.celebrationQueue.push({
-            type: 'achievement',
+            type: 'achievement' as CelebrationType,
             data: achievement,
             id: `achievement-${achievementId}-${Date.now()}`,
           });

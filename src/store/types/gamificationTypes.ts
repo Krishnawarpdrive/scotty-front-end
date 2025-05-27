@@ -65,6 +65,14 @@ export interface TAProfile {
   };
 }
 
+export type CelebrationType = 'mission' | 'achievement' | 'goal' | 'streak';
+
+export interface CelebrationData {
+  type: CelebrationType;
+  data: any;
+  id: string;
+}
+
 export interface GamificationState {
   currentUser: TAProfile | null;
   missions: Mission[];
@@ -75,11 +83,7 @@ export interface GamificationState {
     longestStreak: number;
     lastActivityDate: string;
   };
-  celebrationQueue: {
-    type: 'mission' | 'achievement' | 'goal' | 'streak';
-    data: any;
-    id: string;
-  }[];
+  celebrationQueue: CelebrationData[];
   settings: {
     notificationsEnabled: boolean;
     soundEnabled: boolean;

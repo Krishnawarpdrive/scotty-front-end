@@ -16,6 +16,7 @@ import {
   completeMission,
   unlockAchievement,
 } from '../slices/gamificationSlice';
+import { CelebrationType } from '../types/gamificationTypes';
 import { triggerGoalCompletionToast, triggerMilestoneToast } from '@/components/GoalCompletionToast';
 
 export const useGamification = () => {
@@ -94,7 +95,7 @@ export const useGamification = () => {
     await dispatch(unlockAchievement({ achievementId }));
   };
 
-  const addCelebrationToQueue = (type: string, data: any) => {
+  const addCelebrationToQueue = (type: CelebrationType, data: any) => {
     dispatch(addCelebration({ type, data }));
   };
 
