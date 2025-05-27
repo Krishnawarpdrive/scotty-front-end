@@ -1,7 +1,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { EnhancedDailyMetrics } from "./enhanced/EnhancedDailyMetrics";
+import { DailyMetrics } from "./DailyMetrics";
 import { ApplicationStages } from "./ApplicationStages";
 import { ApplicationActions } from "./ApplicationActions";
 import { EnhancedApplicationTable } from "./enhanced/EnhancedApplicationTable";
@@ -14,7 +14,7 @@ export const MissionControl: React.FC = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <EnhancedDailyMetrics />
+      <DailyMetrics />
       <ApplicationStages />
       <ApplicationActions />
       <EnhancedApplicationTable />
