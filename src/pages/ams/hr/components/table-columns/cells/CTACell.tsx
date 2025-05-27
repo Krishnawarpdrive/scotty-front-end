@@ -21,13 +21,15 @@ export const CTACell = ({ client }: CTACellProps) => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button 
-            size="sm" 
-            className={`text-xs h-7 px-2 ${getCTAColor(priority)}`}
-            onClick={() => console.log(`Executing: ${action} for client: ${client.name}`)}
-          >
-            {action}
-          </Button>
+          <div className="flex justify-center">
+            <Button 
+              size="sm" 
+              className={`text-xs h-7 px-2 ${getCTAColor(priority)}`}
+              onClick={() => console.log(`Executing: ${action} for client: ${client.name}`)}
+            >
+              {action}
+            </Button>
+          </div>
         </TooltipTrigger>
         <TooltipContent>
           <div className="space-y-1">

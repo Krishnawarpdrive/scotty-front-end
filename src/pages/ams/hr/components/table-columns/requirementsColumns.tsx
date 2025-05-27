@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { 
@@ -7,36 +8,7 @@ import {
   TooltipTrigger 
 } from "@/components/ui/tooltip";
 import { DataTableColumn } from "@/components/ui/data-table/types";
-
-const getCTAColor = (alertReason: string) => {
-  const highPriority = ["TA not assigned", "Due soon", "Pending for 7+ days"];
-  const mediumPriority = ["Requirement not approved", "No candidates sourced", "High rejection rate"];
-  
-  if (highPriority.some(reason => alertReason.includes(reason))) {
-    return "bg-red-500 hover:bg-red-600 text-white";
-  } else if (mediumPriority.some(reason => alertReason.includes(reason))) {
-    return "bg-orange-500 hover:bg-orange-600 text-white";
-  }
-  return "bg-blue-500 hover:bg-blue-600 text-white";
-};
-
-// Mapping from alert reasons to appropriate CTAs
-const getCtaForAlert = (alertReason: string) => {
-  const ctaMapping: Record<string, string> = {
-    "TA not assigned": "Assign TA",
-    "Requirement not approved": "Send for Approval",
-    "No candidates sourced": "Start Sourcing",
-    "High rejection rate": "Revise Criteria",
-    "Due soon": "Notify TA",
-    "TA slow response": "Follow Up TA",
-    "No interview feedback": "Request Feedback",
-    "Multiple edits": "Audit Changes",
-    "Pipeline mismatch": "Fix Hiring Flow",
-    "Pending for 7+ days": "Confirm Requirement"
-  };
-  
-  return ctaMapping[alertReason] || "Take Action";
-};
+import { getRequirementAlertReason, requirementAlertReasonToCta, getRequirementCTAColor } from './utils/requirementAlertUtils';
 
 export const getRequirementsColumns = (): DataTableColumn<any>[] => [
   {
@@ -214,32 +186,20 @@ export const getRequirementsColumns = (): DataTableColumn<any>[] => [
     enableSorting: true,
     enableFiltering: true,
     cell: (req: any) => {
-      const alertReasons = [
-        "TA not assigned",
-        "Requirement not approved",
-        "No candidates sourced",
-        "High rejection rate",
-        "Due soon",
-        "TA slow response",
-        "No interview feedback",
-        "Multiple edits",
-        "Pipeline mismatch",
-        "Pending for 7+ days"
-      ];
-      const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
+      const alertReason = getRequirementAlertReason(req.id);
       
       return (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="text-sm text-gray-600 truncate max-w-[150px] inline-block cursor-help">
-                {randomReason}
-              </span>
+              <div className="text-sm text-gray-600 truncate max-w-[150px] cursor-help">
+                {alertReason}
+              </div>
             </TooltipTrigger>
             <TooltipContent>
               <div className="space-y-1 max-w-xs">
                 <p className="font-semibold">Alert Details</p>
-                <p>{randomReason}</p>
+                <p>{alertReason}</p>
                 <p className="text-xs text-gray-500">Click CTA to resolve</p>
               </div>
             </TooltipContent>
@@ -255,38 +215,27 @@ export const getRequirementsColumns = (): DataTableColumn<any>[] => [
     enableSorting: false,
     enableFiltering: false,
     cell: (req: any) => {
-      const alertReasons = [
-        "TA not assigned",
-        "Requirement not approved",
-        "No candidates sourced",
-        "High rejection rate",
-        "Due soon",
-        "TA slow response",
-        "No interview feedback",
-        "Multiple edits",
-        "Pipeline mismatch",
-        "Pending for 7+ days"
-      ];
-      
-      const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
-      const cta = getCtaForAlert(randomReason);
+      const alertReason = getRequirementAlertReason(req.id);
+      const { action, priority } = requirementAlertReasonToCta[alertReason] || { action: "Take Action", priority: 'low' as const };
       
       return (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button 
-                size="sm" 
-                className={`text-xs h-7 px-2 ${getCTAColor(randomReason)}`}
-                onClick={() => console.log(`Executing: ${cta} for requirement: ${req.id}`)}
-              >
-                {cta}
-              </Button>
+              <div className="flex justify-center">
+                <Button 
+                  size="sm" 
+                  className={`text-xs h-7 px-2 ${getRequirementCTAColor(priority)}`}
+                  onClick={() => console.log(`Executing: ${action} for requirement: ${req.id}`)}
+                >
+                  {action}
+                </Button>
+              </div>
             </TooltipTrigger>
             <TooltipContent>
               <div className="space-y-1">
                 <p className="font-semibold">Action Required</p>
-                <p>{cta}</p>
+                <p>{action}</p>
                 <p className="text-xs text-gray-500">Click to execute</p>
               </div>
             </TooltipContent>

@@ -19,9 +19,9 @@ export const AlertReasonCell = ({ client }: AlertReasonCellProps) => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="text-sm text-gray-600 truncate max-w-[150px] inline-block cursor-help">
+          <div className="text-sm text-gray-600 truncate max-w-[150px] cursor-help">
             {alertReason}
-          </span>
+          </div>
         </TooltipTrigger>
         <TooltipContent>
           <div className="space-y-1 max-w-xs">
