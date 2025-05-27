@@ -124,7 +124,7 @@ const RoleManagementPage = () => {
     mission: 0
   };
 
-  // Mock TA data for the assignment cards and mission control
+  // Mock TA data for the assignment cards and mission control - FIXED TYPES
   const mockTAs = [
     {
       id: '1',
@@ -143,16 +143,16 @@ const RoleManagementPage = () => {
           id: 'streak-7',
           title: '7 Day Streak',
           description: 'Complete daily goals for 7 consecutive days',
-          type: 'streak',
-          level: 'gold',
+          type: 'streak' as const,
+          level: 'gold' as const,
           unlockedAt: new Date()
         },
         {
           id: 'hiring-machine',
           title: 'Hiring Machine',
           description: 'Complete 50 successful hires',
-          type: 'milestone',
-          level: 'platinum',
+          type: 'milestone' as const,
+          level: 'platinum' as const,
           unlockedAt: new Date()
         }
       ],
@@ -161,23 +161,23 @@ const RoleManagementPage = () => {
           id: 'daily-sourcing',
           title: 'Daily Sourcing Goal',
           description: 'Source 10 qualified candidates',
-          type: 'daily',
+          type: 'daily' as const,
           progress: 7,
           target: 10,
           reward: '+50 XP',
           dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000),
-          status: 'active'
+          status: 'active' as const
         },
         {
           id: 'weekly-interviews',
           title: 'Weekly Interview Target',
           description: 'Conduct 25 candidate interviews',
-          type: 'weekly',
+          type: 'weekly' as const,
           progress: 18,
           target: 25,
           reward: '+200 XP + Bonus',
           dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-          status: 'active'
+          status: 'active' as const
         }
       ],
       dailyTargets: {
@@ -194,13 +194,13 @@ const RoleManagementPage = () => {
     // ... keep existing code (other TAs)
   ];
 
-  // Mock roles for role-requirements integration
+  // Mock roles for role-requirements integration - FIXED TYPES
   const mockRolesWithRequirements = [
     {
       id: 'role-1',
       name: 'Senior Frontend Developer',
       client: 'TechCorp Inc.',
-      status: 'active',
+      status: 'active' as const,
       totalVacancies: 3,
       filledPositions: 1,
       budget: 150000,
