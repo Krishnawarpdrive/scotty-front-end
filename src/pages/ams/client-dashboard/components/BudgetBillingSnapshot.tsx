@@ -60,7 +60,7 @@ export const BudgetBillingSnapshot: React.FC<BudgetBillingSnapshotProps> = ({ da
   const budgetUsedPercentage = (mockData.spentAmount / mockData.totalBudget) * 100;
   const overdueInvoices = mockData.upcomingInvoices.filter(inv => inv.status === 'overdue');
   const totalPendingAmount = mockData.upcomingInvoices
-    .filter(inv => inv.status !== 'paid')
+    .filter(inv => inv.status === 'pending' || inv.status === 'overdue')
     .reduce((sum, inv) => sum + inv.amount, 0);
 
   const getStatusColor = (status: string) => {
