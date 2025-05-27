@@ -1,17 +1,23 @@
 
 import React from "react";
-import { DailyMetrics } from "./DailyMetrics";
+import { motion } from "framer-motion";
+import { EnhancedDailyMetrics } from "./enhanced/EnhancedDailyMetrics";
 import { ApplicationStages } from "./ApplicationStages";
 import { ApplicationActions } from "./ApplicationActions";
-import { ApplicationTable } from "./ApplicationTable";
+import { EnhancedApplicationTable } from "./enhanced/EnhancedApplicationTable";
 
 export const MissionControl: React.FC = () => {
   return (
-    <div className="space-y-6">
-      <DailyMetrics />
+    <motion.div 
+      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <EnhancedDailyMetrics />
       <ApplicationStages />
       <ApplicationActions />
-      <ApplicationTable />
-    </div>
+      <EnhancedApplicationTable />
+    </motion.div>
   );
 };
