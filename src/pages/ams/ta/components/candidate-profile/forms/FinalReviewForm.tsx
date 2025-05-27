@@ -5,16 +5,18 @@ import {
   Typography, 
   TextField, 
   Button, 
-  Chip,
+  FormControlLabel, 
+  Switch,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
   Divider,
+  Rating,
   Card,
   CardContent
 } from '@mui/material';
-import { Save, CheckCircle, Cancel } from '@mui/icons-material';
+import { CheckCircle, Save, Send } from '@mui/icons-material';
 import { Candidate } from '../../types/CandidateTypes';
 
 interface FinalReviewFormProps {
@@ -25,34 +27,31 @@ export const FinalReviewForm: React.FC<FinalReviewFormProps> = ({
   candidate
 }) => {
   const [formData, setFormData] = useState({
-    overallRating: '4',
-    finalDecision: 'pending',
-    salaryOffered: '',
+    overallDecision: 'pending',
+    overallRating: 4,
+    technicalRating: 4,
+    culturalRating: 4,
+    communicationRating: 4,
+    finalRemarks: '',
+    salaryNegotiation: false,
+    finalSalary: '',
     joiningDate: '',
-    finalComments: '',
-    hrApproval: 'pending',
-    clientApproval: 'pending'
+    offerLetterSent: false,
+    reviewerName: 'HR Team',
+    clientApproval: false,
+    nextSteps: ''
   });
-
-  const stagesSummary = [
-    { name: 'Phone Screening', status: 'completed', score: '8/10' },
-    { name: 'Technical Interview', status: 'completed', score: '9/10' },
-    { name: 'Client Interview', status: 'completed', score: '8/10' },
-    { name: 'Background Verification', status: 'in-progress', score: 'Pending' }
-  ];
 
   const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return '#009933';
-      case 'in-progress': return '#f59e0b';
-      case 'approved': return '#009933';
-      default: return '#6b7280';
-    }
-  };
+  const stageSummary = [
+    { stage: 'Phone Screening', status: 'Completed', score: '4.2/5' },
+    { stage: 'Technical Interview', status: 'Completed', score: '4.0/5' },
+    { stage: 'Client Interview', status: 'Completed', score: '4.5/5' },
+    { stage: 'Background Verification', status: 'Completed', score: 'Verified' }
+  ];
 
   return (
     <Box sx={{ p: 3, fontFamily: 'Rubik, sans-serif' }}>
@@ -64,37 +63,30 @@ export const FinalReviewForm: React.FC<FinalReviewFormProps> = ({
         Final Review & Decision
       </Typography>
 
-      {/* Interview Summary */}
+      {/* Stage Summary */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Interview Summary
+          Interview Journey Summary
         </Typography>
         
-        <Card variant="outlined" sx={{ mb: 2 }}>
+        <Card sx={{ mb: 3 }}>
           <CardContent>
-            {stagesSummary.map((stage) => (
-              <Box key={stage.name} sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                py: 1,
-                borderBottom: '1px solid #f0f0f0'
-              }}>
-                <Typography variant="body2" sx={{ fontFamily: 'Rubik, sans-serif' }}>
-                  {stage.name}
+            {stageSummary.map((stage, index) => (
+              <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Typography sx={{ fontFamily: 'Rubik, sans-serif', fontSize: '14px' }}>
+                  {stage.stage}
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Chip 
-                    label={stage.status}
-                    size="small"
-                    sx={{ 
-                      bgcolor: stage.status === 'completed' ? '#e8f5e8' : '#fff3cd',
-                      color: getStatusColor(stage.status),
-                      fontFamily: 'Rubik, sans-serif'
-                    }}
-                  />
-                  <Typography variant="body2" color="text.secondary" sx={{ fontFamily: 'Rubik, sans-serif' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Typography sx={{ fontFamily: 'Rubik, sans-serif', fontSize: '12px', color: '#666' }}>
                     {stage.score}
+                  </Typography>
+                  <Typography sx={{ 
+                    fontFamily: 'Rubik, sans-serif', 
+                    fontSize: '12px', 
+                    color: stage.status === 'Completed' ? '#009933' : '#666',
+                    fontWeight: 500
+                  }}>
+                    {stage.status}
                   </Typography>
                 </Box>
               </Box>
@@ -103,122 +95,153 @@ export const FinalReviewForm: React.FC<FinalReviewFormProps> = ({
         </Card>
       </Box>
 
-      <Divider sx={{ my: 3 }} />
-
       {/* Overall Assessment */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
           Overall Assessment
         </Typography>
         
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>Overall Rating</InputLabel>
-          <Select
-            value={formData.overallRating}
-            onChange={(e) => handleFieldChange('overallRating', e.target.value)}
-            label="Overall Rating"
-          >
-            <MenuItem value="5">5 - Excellent</MenuItem>
-            <MenuItem value="4">4 - Good</MenuItem>
-            <MenuItem value="3">3 - Average</MenuItem>
-            <MenuItem value="2">2 - Below Average</MenuItem>
-            <MenuItem value="1">1 - Poor</MenuItem>
-          </Select>
-        </FormControl>
-
-        <FormControl fullWidth>
-          <InputLabel>Final Decision</InputLabel>
-          <Select
-            value={formData.finalDecision}
-            onChange={(e) => handleFieldChange('finalDecision', e.target.value)}
-            label="Final Decision"
-          >
-            <MenuItem value="pending">Pending</MenuItem>
-            <MenuItem value="selected">Selected</MenuItem>
-            <MenuItem value="rejected">Rejected</MenuItem>
-            <MenuItem value="on-hold">On Hold</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      {/* Offer Details */}
-      {formData.finalDecision === 'selected' && (
-        <>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-              Offer Details
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, mb: 3 }}>
+          <Box>
+            <Typography sx={{ mb: 1, fontFamily: 'Rubik, sans-serif', fontSize: '14px' }}>
+              Technical Skills
             </Typography>
-            
-            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-              <TextField
-                label="Salary Offered (₹)"
-                value={formData.salaryOffered}
-                onChange={(e) => handleFieldChange('salaryOffered', e.target.value)}
-                placeholder="8,00,000"
-              />
-              <TextField
-                label="Expected Joining Date"
-                type="date"
-                value={formData.joiningDate}
-                onChange={(e) => handleFieldChange('joiningDate', e.target.value)}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Box>
+            <Rating
+              value={formData.technicalRating}
+              onChange={(_, value) => handleFieldChange('technicalRating', value)}
+              size="large"
+            />
           </Box>
-
-          <Divider sx={{ my: 3 }} />
-        </>
-      )}
-
-      {/* Approvals */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Approvals Required
-        </Typography>
-        
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-          <FormControl fullWidth>
-            <InputLabel>HR Approval</InputLabel>
-            <Select
-              value={formData.hrApproval}
-              onChange={(e) => handleFieldChange('hrApproval', e.target.value)}
-              label="HR Approval"
-            >
-              <MenuItem value="pending">Pending</MenuItem>
-              <MenuItem value="approved">Approved</MenuItem>
-              <MenuItem value="rejected">Rejected</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl fullWidth>
-            <InputLabel>Client Approval</InputLabel>
-            <Select
-              value={formData.clientApproval}
-              onChange={(e) => handleFieldChange('clientApproval', e.target.value)}
-              label="Client Approval"
-            >
-              <MenuItem value="pending">Pending</MenuItem>
-              <MenuItem value="approved">Approved</MenuItem>
-              <MenuItem value="rejected">Rejected</MenuItem>
-            </Select>
-          </FormControl>
+          
+          <Box>
+            <Typography sx={{ mb: 1, fontFamily: 'Rubik, sans-serif', fontSize: '14px' }}>
+              Cultural Fit
+            </Typography>
+            <Rating
+              value={formData.culturalRating}
+              onChange={(_, value) => handleFieldChange('culturalRating', value)}
+              size="large"
+            />
+          </Box>
+          
+          <Box>
+            <Typography sx={{ mb: 1, fontFamily: 'Rubik, sans-serif', fontSize: '14px' }}>
+              Communication
+            </Typography>
+            <Rating
+              value={formData.communicationRating}
+              onChange={(_, value) => handleFieldChange('communicationRating', value)}
+              size="large"
+            />
+          </Box>
+          
+          <Box>
+            <Typography sx={{ mb: 1, fontFamily: 'Rubik, sans-serif', fontSize: '14px' }}>
+              Overall Rating
+            </Typography>
+            <Rating
+              value={formData.overallRating}
+              onChange={(_, value) => handleFieldChange('overallRating', value)}
+              size="large"
+            />
+          </Box>
         </Box>
       </Box>
 
       <Divider sx={{ my: 3 }} />
 
-      {/* Final Comments */}
+      {/* Final Decision */}
       <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
+          Final Decision
+        </Typography>
+        
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel>Overall Decision</InputLabel>
+          <Select
+            value={formData.overallDecision}
+            onChange={(e) => handleFieldChange('overallDecision', e.target.value)}
+            label="Overall Decision"
+          >
+            <MenuItem value="pending">Pending Review</MenuItem>
+            <MenuItem value="hire">Hire</MenuItem>
+            <MenuItem value="reject">Reject</MenuItem>
+            <MenuItem value="hold">Put on Hold</MenuItem>
+            <MenuItem value="reconsider">Needs Reconsideration</MenuItem>
+          </Select>
+        </FormControl>
+
         <TextField
-          label="Final Comments"
-          value={formData.finalComments}
-          onChange={(e) => handleFieldChange('finalComments', e.target.value)}
+          label="Final Remarks"
+          value={formData.finalRemarks}
+          onChange={(e) => handleFieldChange('finalRemarks', e.target.value)}
           fullWidth
           multiline
           rows={4}
-          placeholder="Add final comments about the candidate..."
+          placeholder="Summary of candidate's performance, strengths, areas of concern, and recommendation..."
+          sx={{ mb: 2 }}
+        />
+      </Box>
+
+      <Divider sx={{ my: 3 }} />
+
+      {/* Offer Details */}
+      {formData.overallDecision === 'hire' && (
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
+            Offer Details
+          </Typography>
+          
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+            <TextField
+              label="Final Salary Package"
+              value={formData.finalSalary}
+              onChange={(e) => handleFieldChange('finalSalary', e.target.value)}
+              placeholder="e.g., ₹85,000 per month"
+            />
+            <TextField
+              label="Expected Joining Date"
+              type="date"
+              value={formData.joiningDate}
+              onChange={(e) => handleFieldChange('joiningDate', e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Box>
+
+          <FormControlLabel
+            control={
+              <Switch
+                checked={formData.clientApproval}
+                onChange={(e) => handleFieldChange('clientApproval', e.target.checked)}
+              />
+            }
+            label="Client Approval Received"
+            sx={{ fontFamily: 'Rubik, sans-serif', mb: 1 }}
+          />
+
+          <FormControlLabel
+            control={
+              <Switch
+                checked={formData.offerLetterSent}
+                onChange={(e) => handleFieldChange('offerLetterSent', e.target.checked)}
+              />
+            }
+            label="Offer Letter Sent"
+            sx={{ fontFamily: 'Rubik, sans-serif' }}
+          />
+        </Box>
+      )}
+
+      {/* Next Steps */}
+      <Box sx={{ mb: 3 }}>
+        <TextField
+          label="Next Steps"
+          value={formData.nextSteps}
+          onChange={(e) => handleFieldChange('nextSteps', e.target.value)}
+          fullWidth
+          multiline
+          rows={2}
+          placeholder="Follow-up actions, documentation required, etc..."
         />
       </Box>
 
@@ -235,27 +258,17 @@ export const FinalReviewForm: React.FC<FinalReviewFormProps> = ({
         >
           Save Review
         </Button>
-        {formData.finalDecision === 'selected' && (
+        {formData.overallDecision === 'hire' && (
           <Button
             variant="contained"
-            startIcon={<CheckCircle />}
+            startIcon={<Send />}
             sx={{ 
-              bgcolor: '#009933', 
-              '&:hover': { bgcolor: '#00a341' },
+              bgcolor: '#2196f3', 
+              '&:hover': { bgcolor: '#1976d2' },
               flex: 1
             }}
           >
-            Send Offer
-          </Button>
-        )}
-        {formData.finalDecision === 'rejected' && (
-          <Button
-            variant="outlined"
-            startIcon={<Cancel />}
-            color="error"
-            sx={{ flex: 1 }}
-          >
-            Send Rejection
+            Send Offer Letter
           </Button>
         )}
       </Box>

@@ -7,14 +7,13 @@ import {
   Button, 
   FormControlLabel, 
   Switch,
-  Chip,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
   Divider
 } from '@mui/material';
-import { Save, Group } from '@mui/icons-material';
+import { Business, Save, Schedule } from '@mui/icons-material';
 import { Candidate } from '../../types/CandidateTypes';
 
 interface ClientInterviewFormProps {
@@ -26,17 +25,18 @@ export const ClientInterviewForm: React.FC<ClientInterviewFormProps> = ({
 }) => {
   const [formData, setFormData] = useState({
     clientName: 'TechCorp Solutions',
-    interviewerName: 'Michael Johnson',
-    interviewerContact: 'michael.johnson@techcorp.com',
-    roundType: 'Final Round',
-    taCoordinator: 'Sarah Wilson',
-    ndaSigned: false,
-    interviewType: 'one-on-one',
-    mode: 'virtual',
-    dateTime: '',
-    meetingLink: '',
-    notes: '',
-    outcome: 'pending'
+    interviewerName: '',
+    interviewDate: '',
+    interviewTime: '',
+    interviewMode: 'video',
+    interviewScheduled: false,
+    outcome: 'pending',
+    clientFeedback: '',
+    culturalFit: '',
+    technicalFit: '',
+    salaryDiscussion: false,
+    agreedSalary: '',
+    nextSteps: ''
   });
 
   const handleFieldChange = (field: string, value: any) => {
@@ -53,125 +53,117 @@ export const ClientInterviewForm: React.FC<ClientInterviewFormProps> = ({
         Client Interview Configuration
       </Typography>
 
-      {/* Client Information */}
+      {/* Client Details */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
           Client Information
         </Typography>
         
-        <TextField
-          label="Client Name"
-          value={formData.clientName}
-          onChange={(e) => handleFieldChange('clientName', e.target.value)}
-          fullWidth
-          sx={{ mb: 2 }}
-        />
-
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
           <TextField
-            label="Interviewer Name"
+            label="Client Company"
+            value={formData.clientName}
+            onChange={(e) => handleFieldChange('clientName', e.target.value)}
+            disabled
+          />
+          <TextField
+            label="Client Interviewer"
             value={formData.interviewerName}
             onChange={(e) => handleFieldChange('interviewerName', e.target.value)}
-          />
-          <TextField
-            label="Interviewer Contact"
-            value={formData.interviewerContact}
-            onChange={(e) => handleFieldChange('interviewerContact', e.target.value)}
-          />
-        </Box>
-
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-          <TextField
-            label="Round Type"
-            value={formData.roundType}
-            onChange={(e) => handleFieldChange('roundType', e.target.value)}
-          />
-          <TextField
-            label="TA Coordinator"
-            value={formData.taCoordinator}
-            onChange={(e) => handleFieldChange('taCoordinator', e.target.value)}
+            placeholder="Hiring Manager Name"
           />
         </Box>
       </Box>
 
       <Divider sx={{ my: 3 }} />
 
-      {/* Legal & Compliance */}
+      {/* Interview Scheduling */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Legal & Compliance
+          Interview Scheduling
         </Typography>
         
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 2, mb: 2 }}>
+          <TextField
+            label="Interview Date"
+            type="date"
+            value={formData.interviewDate}
+            onChange={(e) => handleFieldChange('interviewDate', e.target.value)}
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            label="Interview Time"
+            type="time"
+            value={formData.interviewTime}
+            onChange={(e) => handleFieldChange('interviewTime', e.target.value)}
+            InputLabelProps={{ shrink: true }}
+          />
+          <FormControl fullWidth>
+            <InputLabel>Interview Mode</InputLabel>
+            <Select
+              value={formData.interviewMode}
+              onChange={(e) => handleFieldChange('interviewMode', e.target.value)}
+              label="Interview Mode"
+            >
+              <MenuItem value="video">Video Call</MenuItem>
+              <MenuItem value="in-person">In Person</MenuItem>
+              <MenuItem value="phone">Phone</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
         <FormControlLabel
           control={
             <Switch
-              checked={formData.ndaSigned}
-              onChange={(e) => handleFieldChange('ndaSigned', e.target.checked)}
+              checked={formData.interviewScheduled}
+              onChange={(e) => handleFieldChange('interviewScheduled', e.target.checked)}
             />
           }
-          label="NDA Signed"
+          label="Interview Confirmed with Client"
           sx={{ fontFamily: 'Rubik, sans-serif' }}
         />
       </Box>
 
       <Divider sx={{ my: 3 }} />
 
-      {/* Interview Setup */}
+      {/* Interview Assessment */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Interview Setup
+          Interview Assessment
         </Typography>
         
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
           <FormControl fullWidth>
-            <InputLabel>Interview Type</InputLabel>
+            <InputLabel>Cultural Fit</InputLabel>
             <Select
-              value={formData.interviewType}
-              onChange={(e) => handleFieldChange('interviewType', e.target.value)}
-              label="Interview Type"
+              value={formData.culturalFit}
+              onChange={(e) => handleFieldChange('culturalFit', e.target.value)}
+              label="Cultural Fit"
             >
-              <MenuItem value="one-on-one">One-on-One</MenuItem>
-              <MenuItem value="panel">Panel Interview</MenuItem>
-              <MenuItem value="group">Group Interview</MenuItem>
+              <MenuItem value="">Not Assessed</MenuItem>
+              <MenuItem value="excellent">Excellent</MenuItem>
+              <MenuItem value="good">Good</MenuItem>
+              <MenuItem value="average">Average</MenuItem>
+              <MenuItem value="poor">Poor</MenuItem>
             </Select>
           </FormControl>
-
+          
           <FormControl fullWidth>
-            <InputLabel>Mode</InputLabel>
+            <InputLabel>Technical Fit</InputLabel>
             <Select
-              value={formData.mode}
-              onChange={(e) => handleFieldChange('mode', e.target.value)}
-              label="Mode"
+              value={formData.technicalFit}
+              onChange={(e) => handleFieldChange('technicalFit', e.target.value)}
+              label="Technical Fit"
             >
-              <MenuItem value="virtual">Virtual</MenuItem>
-              <MenuItem value="in-person">In-Person</MenuItem>
+              <MenuItem value="">Not Assessed</MenuItem>
+              <MenuItem value="excellent">Excellent</MenuItem>
+              <MenuItem value="good">Good</MenuItem>
+              <MenuItem value="average">Average</MenuItem>
+              <MenuItem value="poor">Poor</MenuItem>
             </Select>
           </FormControl>
         </Box>
 
-        <TextField
-          label="Date & Time"
-          type="datetime-local"
-          value={formData.dateTime}
-          onChange={(e) => handleFieldChange('dateTime', e.target.value)}
-          fullWidth
-          sx={{ mb: 2 }}
-          InputLabelProps={{ shrink: true }}
-        />
-
-        <TextField
-          label="Meeting Link"
-          value={formData.meetingLink}
-          onChange={(e) => handleFieldChange('meetingLink', e.target.value)}
-          fullWidth
-          placeholder="https://teams.microsoft.com/..."
-        />
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      {/* Outcome & Notes */}
-      <Box sx={{ mb: 3 }}>
         <FormControl fullWidth sx={{ mb: 2 }}>
           <InputLabel>Interview Outcome</InputLabel>
           <Select
@@ -180,20 +172,62 @@ export const ClientInterviewForm: React.FC<ClientInterviewFormProps> = ({
             label="Interview Outcome"
           >
             <MenuItem value="pending">Pending</MenuItem>
-            <MenuItem value="pass">Pass</MenuItem>
-            <MenuItem value="fail">Fail</MenuItem>
+            <MenuItem value="selected">Selected</MenuItem>
+            <MenuItem value="rejected">Rejected</MenuItem>
             <MenuItem value="on-hold">On Hold</MenuItem>
           </Select>
         </FormControl>
 
         <TextField
-          label="Client Interview Notes"
-          value={formData.notes}
-          onChange={(e) => handleFieldChange('notes', e.target.value)}
+          label="Client Feedback"
+          value={formData.clientFeedback}
+          onChange={(e) => handleFieldChange('clientFeedback', e.target.value)}
           fullWidth
           multiline
-          rows={4}
-          placeholder="Add notes about the client interview..."
+          rows={3}
+          placeholder="Client's detailed feedback about the candidate..."
+          sx={{ mb: 2 }}
+        />
+      </Box>
+
+      <Divider sx={{ my: 3 }} />
+
+      {/* Salary Discussion */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
+          Compensation Discussion
+        </Typography>
+        
+        <FormControlLabel
+          control={
+            <Switch
+              checked={formData.salaryDiscussion}
+              onChange={(e) => handleFieldChange('salaryDiscussion', e.target.checked)}
+            />
+          }
+          label="Salary Discussed"
+          sx={{ fontFamily: 'Rubik, sans-serif', mb: 2 }}
+        />
+
+        {formData.salaryDiscussion && (
+          <TextField
+            label="Agreed Salary Range"
+            value={formData.agreedSalary}
+            onChange={(e) => handleFieldChange('agreedSalary', e.target.value)}
+            fullWidth
+            placeholder="e.g., 80,000 - 90,000"
+            sx={{ mb: 2 }}
+          />
+        )}
+
+        <TextField
+          label="Next Steps"
+          value={formData.nextSteps}
+          onChange={(e) => handleFieldChange('nextSteps', e.target.value)}
+          fullWidth
+          multiline
+          rows={2}
+          placeholder="Follow-up actions, additional rounds, etc..."
         />
       </Box>
 
@@ -212,10 +246,10 @@ export const ClientInterviewForm: React.FC<ClientInterviewFormProps> = ({
         </Button>
         <Button
           variant="outlined"
-          startIcon={<Group />}
+          startIcon={<Schedule />}
           sx={{ flex: 1 }}
         >
-          Coordinate Interview
+          Schedule Follow-up
         </Button>
       </Box>
     </Box>

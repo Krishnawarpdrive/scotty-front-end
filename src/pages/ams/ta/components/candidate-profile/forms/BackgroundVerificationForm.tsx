@@ -12,9 +12,9 @@ import {
   FormControl,
   InputLabel,
   Divider,
-  LinearProgress
+  Chip
 } from '@mui/material';
-import { Save, Upload, Verified } from '@mui/icons-material';
+import { VerifiedUser, Save, Upload } from '@mui/icons-material';
 import { Candidate } from '../../types/CandidateTypes';
 
 interface BackgroundVerificationFormProps {
@@ -25,39 +25,38 @@ export const BackgroundVerificationForm: React.FC<BackgroundVerificationFormProp
   candidate
 }) => {
   const [formData, setFormData] = useState({
-    panId: '',
-    idNumber: '',
-    documentsUploaded: {
-      resume: true,
-      id: false,
-      offerLetter: false
-    },
-    verificationPartner: 'First Advantage',
-    verificationStatus: 'pending',
-    slaDate: '',
-    remarks: ''
+    identityVerification: 'pending',
+    educationVerification: 'pending',
+    employmentVerification: 'pending',
+    criminalCheck: 'pending',
+    referenceCheck: 'pending',
+    verificationAgency: '',
+    estimatedDays: '7',
+    verificationNotes: '',
+    documentsSubmitted: false,
+    documentsRequired: ['Identity Proof', 'Education Certificates', 'Experience Letters'],
+    verificationCost: '',
+    priority: 'standard'
   });
 
   const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleDocumentToggle = (docType: string) => {
-    setFormData(prev => ({
-      ...prev,
-      documentsUploaded: {
-        ...prev.documentsUploaded,
-        [docType]: !prev.documentsUploaded[docType]
-      }
-    }));
-  };
+  const verificationItems = [
+    { key: 'identityVerification', label: 'Identity Verification' },
+    { key: 'educationVerification', label: 'Education Verification' },
+    { key: 'employmentVerification', label: 'Employment History' },
+    { key: 'criminalCheck', label: 'Criminal Background Check' },
+    { key: 'referenceCheck', label: 'Reference Check' }
+  ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return '#009933';
-      case 'in-progress': return '#f59e0b';
-      case 'failed': return '#dc2626';
-      default: return '#6b7280';
+      case 'completed': return 'success';
+      case 'in-progress': return 'warning';
+      case 'failed': return 'error';
+      default: return 'default';
     }
   };
 
@@ -68,8 +67,98 @@ export const BackgroundVerificationForm: React.FC<BackgroundVerificationFormProp
         fontFamily: 'Rubik, sans-serif', 
         fontWeight: 600 
       }}>
-        Background Verification
+        Background Verification Configuration
       </Typography>
+
+      {/* Verification Setup */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
+          Verification Setup
+        </Typography>
+        
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 2, mb: 2 }}>
+          <TextField
+            label="Verification Agency"
+            value={formData.verificationAgency}
+            onChange={(e) => handleFieldChange('verificationAgency', e.target.value)}
+            placeholder="e.g., AuthBridge, First Advantage"
+          />
+          <TextField
+            label="Estimated Days"
+            value={formData.estimatedDays}
+            onChange={(e) => handleFieldChange('estimatedDays', e.target.value)}
+            type="number"
+          />
+          <FormControl fullWidth>
+            <InputLabel>Priority</InputLabel>
+            <Select
+              value={formData.priority}
+              onChange={(e) => handleFieldChange('priority', e.target.value)}
+              label="Priority"
+            >
+              <MenuItem value="standard">Standard (7-10 days)</MenuItem>
+              <MenuItem value="express">Express (3-5 days)</MenuItem>
+              <MenuItem value="urgent">Urgent (1-2 days)</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
+        <TextField
+          label="Verification Cost"
+          value={formData.verificationCost}
+          onChange={(e) => handleFieldChange('verificationCost', e.target.value)}
+          fullWidth
+          placeholder="e.g., ₹2,500"
+          sx={{ mb: 2 }}
+        />
+      </Box>
+
+      <Divider sx={{ my: 3 }} />
+
+      {/* Document Requirements */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
+          Document Requirements
+        </Typography>
+        
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="caption" sx={{ mb: 1, display: 'block', fontFamily: 'Rubik, sans-serif' }}>
+            Required Documents
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+            {formData.documentsRequired.map((doc, index) => (
+              <Chip
+                key={index}
+                label={doc}
+                variant="outlined"
+                size="small"
+              />
+            ))}
+          </Box>
+        </Box>
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={formData.documentsSubmitted}
+              onChange={(e) => handleFieldChange('documentsSubmitted', e.target.checked)}
+            />
+          }
+          label="All Documents Submitted by Candidate"
+          sx={{ fontFamily: 'Rubik, sans-serif', mb: 2 }}
+        />
+
+        <Button
+          variant="outlined"
+          startIcon={<Upload />}
+          fullWidth
+          sx={{ mb: 2, p: 2, borderStyle: 'dashed' }}
+        >
+          Upload Documents for Verification
+        </Button>
+      </Box>
+
+      <Divider sx={{ my: 3 }} />
 
       {/* Verification Status */}
       <Box sx={{ mb: 3 }}>
@@ -77,153 +166,44 @@ export const BackgroundVerificationForm: React.FC<BackgroundVerificationFormProp
           Verification Status
         </Typography>
         
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>Verification Status</InputLabel>
-          <Select
-            value={formData.verificationStatus}
-            onChange={(e) => handleFieldChange('verificationStatus', e.target.value)}
-            label="Verification Status"
-          >
-            <MenuItem value="pending">Pending</MenuItem>
-            <MenuItem value="in-progress">In Progress</MenuItem>
-            <MenuItem value="completed">Completed</MenuItem>
-            <MenuItem value="failed">Failed</MenuItem>
-          </Select>
-        </FormControl>
-
-        <LinearProgress 
-          variant="determinate" 
-          value={formData.verificationStatus === 'completed' ? 100 : formData.verificationStatus === 'in-progress' ? 60 : 0}
-          sx={{ 
-            height: 8, 
-            borderRadius: 4,
-            bgcolor: '#f3f4f6',
-            '& .MuiLinearProgress-bar': {
-              bgcolor: getStatusColor(formData.verificationStatus)
-            }
-          }}
-        />
+        {verificationItems.map((item) => (
+          <Box key={item.key} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <Typography sx={{ flex: 1, fontFamily: 'Rubik, sans-serif', fontSize: '14px' }}>
+              {item.label}
+            </Typography>
+            <FormControl sx={{ minWidth: 150 }}>
+              <Select
+                value={formData[item.key as keyof typeof formData]}
+                onChange={(e) => handleFieldChange(item.key, e.target.value)}
+                size="small"
+              >
+                <MenuItem value="pending">Pending</MenuItem>
+                <MenuItem value="in-progress">In Progress</MenuItem>
+                <MenuItem value="completed">Completed</MenuItem>
+                <MenuItem value="failed">Failed</MenuItem>
+              </Select>
+            </FormControl>
+            <Chip
+              label={formData[item.key as keyof typeof formData] as string}
+              color={getStatusColor(formData[item.key as keyof typeof formData] as string) as any}
+              size="small"
+            />
+          </Box>
+        ))}
       </Box>
 
       <Divider sx={{ my: 3 }} />
 
-      {/* Identity Verification */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Identity Verification
-        </Typography>
-        
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-          <TextField
-            label="PAN ID"
-            value={formData.panId}
-            onChange={(e) => handleFieldChange('panId', e.target.value)}
-            placeholder="ABCDE1234F"
-          />
-          <TextField
-            label="ID Number"
-            value={formData.idNumber}
-            onChange={(e) => handleFieldChange('idNumber', e.target.value)}
-            placeholder="Aadhaar/Passport Number"
-          />
-        </Box>
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      {/* Document Upload */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Document Upload Status
-        </Typography>
-        
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={formData.documentsUploaded.resume}
-                onChange={() => handleDocumentToggle('resume')}
-              />
-            }
-            label="Resume"
-            sx={{ fontFamily: 'Rubik, sans-serif' }}
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={formData.documentsUploaded.id}
-                onChange={() => handleDocumentToggle('id')}
-              />
-            }
-            label="ID Proof"
-            sx={{ fontFamily: 'Rubik, sans-serif' }}
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={formData.documentsUploaded.offerLetter}
-                onChange={() => handleDocumentToggle('offerLetter')}
-              />
-            }
-            label="Previous Offer Letter"
-            sx={{ fontFamily: 'Rubik, sans-serif' }}
-          />
-        </Box>
-
-        <Button
-          variant="outlined"
-          startIcon={<Upload />}
-          fullWidth
-          sx={{ mt: 2, p: 2, borderStyle: 'dashed' }}
-        >
-          Upload Additional Documents
-        </Button>
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      {/* Verification Partner */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Verification Details
-        </Typography>
-        
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>Verification Partner</InputLabel>
-          <Select
-            value={formData.verificationPartner}
-            onChange={(e) => handleFieldChange('verificationPartner', e.target.value)}
-            label="Verification Partner"
-          >
-            <MenuItem value="First Advantage">First Advantage</MenuItem>
-            <MenuItem value="HireRight">HireRight</MenuItem>
-            <MenuItem value="Sterling">Sterling</MenuItem>
-            <MenuItem value="Internal">Internal Team</MenuItem>
-          </Select>
-        </FormControl>
-
-        <TextField
-          label="SLA Date"
-          type="date"
-          value={formData.slaDate}
-          onChange={(e) => handleFieldChange('slaDate', e.target.value)}
-          fullWidth
-          InputLabelProps={{ shrink: true }}
-        />
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      {/* Remarks */}
+      {/* Verification Notes */}
       <Box sx={{ mb: 3 }}>
         <TextField
-          label="Verification Remarks"
-          value={formData.remarks}
-          onChange={(e) => handleFieldChange('remarks', e.target.value)}
+          label="Verification Notes"
+          value={formData.verificationNotes}
+          onChange={(e) => handleFieldChange('verificationNotes', e.target.value)}
           fullWidth
           multiline
           rows={4}
-          placeholder="Add any remarks about the background verification..."
+          placeholder="Any specific instructions, concerns, or findings during verification..."
         />
       </Box>
 
@@ -242,10 +222,10 @@ export const BackgroundVerificationForm: React.FC<BackgroundVerificationFormProp
         </Button>
         <Button
           variant="outlined"
-          startIcon={<Verified />}
+          startIcon={<VerifiedUser />}
           sx={{ flex: 1 }}
         >
-          Request Verification
+          Initiate Verification
         </Button>
       </Box>
     </Box>

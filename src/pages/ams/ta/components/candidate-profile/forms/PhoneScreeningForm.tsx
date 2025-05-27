@@ -29,11 +29,14 @@ export const PhoneScreeningForm: React.FC<PhoneScreeningFormProps> = ({
     phoneNumber: '+91 98765 43210',
     outcome: 'pending',
     notes: '',
-    experienceYears: '5',
+    experienceYears: '20',
     currentLocation: 'Mumbai',
     availabilityWeeks: '2',
     recordingUrl: '',
-    questionsAsked: ['Tell me about your network administration experience', 'What are your salary expectations?']
+    questionsAsked: ['Tell me about your design experience', 'What are your salary expectations?'],
+    skills: ['Figma', 'Adobe XD', 'Sketch', 'Prototyping', 'User Research'],
+    currentRole: 'Senior UI/UX Designer',
+    currentCompany: 'Design Studio Inc.'
   });
 
   const handleFieldChange = (field: string, value: any) => {
@@ -115,6 +118,19 @@ export const PhoneScreeningForm: React.FC<PhoneScreeningFormProps> = ({
           />
         </Box>
 
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+          <TextField
+            label="Current Role"
+            value={formData.currentRole}
+            onChange={(e) => handleFieldChange('currentRole', e.target.value)}
+          />
+          <TextField
+            label="Current Company"
+            value={formData.currentCompany}
+            onChange={(e) => handleFieldChange('currentCompany', e.target.value)}
+          />
+        </Box>
+
         <TextField
           label="Availability (in weeks)"
           value={formData.availabilityWeeks}
@@ -122,6 +138,32 @@ export const PhoneScreeningForm: React.FC<PhoneScreeningFormProps> = ({
           fullWidth
           sx={{ mb: 2 }}
         />
+      </Box>
+
+      <Divider sx={{ my: 3 }} />
+
+      {/* Skills Assessment */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
+          Skills Assessment
+        </Typography>
+        
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="caption" sx={{ mb: 1, display: 'block', fontFamily: 'Rubik, sans-serif' }}>
+            Candidate Skills
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {formData.skills.map((skill, index) => (
+              <Chip
+                key={index}
+                label={skill}
+                color="primary"
+                variant="outlined"
+                size="small"
+              />
+            ))}
+          </Box>
+        </Box>
       </Box>
 
       <Divider sx={{ my: 3 }} />

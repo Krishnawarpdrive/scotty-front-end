@@ -5,14 +5,16 @@ import {
   Typography, 
   TextField, 
   Button, 
-  Chip,
+  FormControlLabel, 
+  Switch,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
-  Divider
+  Divider,
+  Chip
 } from '@mui/material';
-import { Save, VideoCall } from '@mui/icons-material';
+import { Code, Save, VideoCall } from '@mui/icons-material';
 import { Candidate } from '../../types/CandidateTypes';
 
 interface TechnicalInterviewFormProps {
@@ -23,19 +25,35 @@ export const TechnicalInterviewForm: React.FC<TechnicalInterviewFormProps> = ({
   candidate
 }) => {
   const [formData, setFormData] = useState({
-    interviewType: 'one-on-one',
-    mode: 'virtual',
-    dateTime: '',
-    meetingLink: '',
-    interviewers: ['John Smith', 'Sarah Wilson'],
-    technicalSkills: ['Network Administration', 'Cisco', 'Linux', 'TCP/IP'],
-    assessmentAreas: ['Technical Knowledge', 'Problem Solving', 'Communication'],
-    notes: '',
-    outcome: 'pending'
+    interviewScheduled: false,
+    interviewType: 'video',
+    outcome: 'pending',
+    technicalSkills: ['React', 'Node.js', 'JavaScript'],
+    codingChallengeCompleted: false,
+    codingScore: '',
+    interviewNotes: '',
+    duration: '60',
+    interviewerName: ''
   });
 
   const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const addSkill = (skill: string) => {
+    if (skill && !formData.technicalSkills.includes(skill)) {
+      setFormData(prev => ({
+        ...prev,
+        technicalSkills: [...prev.technicalSkills, skill]
+      }));
+    }
+  };
+
+  const removeSkill = (skillToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      technicalSkills: prev.technicalSkills.filter(skill => skill !== skillToRemove)
+    }));
   };
 
   return (
@@ -48,7 +66,7 @@ export const TechnicalInterviewForm: React.FC<TechnicalInterviewFormProps> = ({
         Technical Interview Configuration
       </Typography>
 
-      {/* Interview Setup */}
+      {/* Interview Scheduling */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
           Interview Setup
@@ -62,67 +80,38 @@ export const TechnicalInterviewForm: React.FC<TechnicalInterviewFormProps> = ({
               onChange={(e) => handleFieldChange('interviewType', e.target.value)}
               label="Interview Type"
             >
-              <MenuItem value="one-on-one">One-on-One</MenuItem>
-              <MenuItem value="panel">Panel Interview</MenuItem>
-              <MenuItem value="group">Group Interview</MenuItem>
+              <MenuItem value="video">Video Call</MenuItem>
+              <MenuItem value="in-person">In Person</MenuItem>
+              <MenuItem value="phone">Phone</MenuItem>
             </Select>
           </FormControl>
-
-          <FormControl fullWidth>
-            <InputLabel>Mode</InputLabel>
-            <Select
-              value={formData.mode}
-              onChange={(e) => handleFieldChange('mode', e.target.value)}
-              label="Mode"
-            >
-              <MenuItem value="virtual">Virtual</MenuItem>
-              <MenuItem value="in-person">In-Person</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-
-        <TextField
-          label="Date & Time"
-          type="datetime-local"
-          value={formData.dateTime}
-          onChange={(e) => handleFieldChange('dateTime', e.target.value)}
-          fullWidth
-          sx={{ mb: 2 }}
-          InputLabelProps={{ shrink: true }}
-        />
-
-        <TextField
-          label="Meeting Link (for virtual interviews)"
-          value={formData.meetingLink}
-          onChange={(e) => handleFieldChange('meetingLink', e.target.value)}
-          fullWidth
-          placeholder="https://zoom.us/j/..."
-        />
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      {/* Interviewers */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Interviewers
-        </Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-          {formData.interviewers.map((interviewer) => (
-            <Chip 
-              key={interviewer}
-              label={interviewer} 
-              variant="outlined"
-              sx={{ fontFamily: 'Rubik, sans-serif' }}
-            />
-          ))}
-          <Chip 
-            label="+ Add Interviewer" 
-            variant="outlined" 
-            color="primary"
-            sx={{ fontFamily: 'Rubik, sans-serif' }}
+          
+          <TextField
+            label="Duration (minutes)"
+            value={formData.duration}
+            onChange={(e) => handleFieldChange('duration', e.target.value)}
+            type="number"
           />
         </Box>
+
+        <TextField
+          label="Interviewer Name"
+          value={formData.interviewerName}
+          onChange={(e) => handleFieldChange('interviewerName', e.target.value)}
+          fullWidth
+          sx={{ mb: 2 }}
+        />
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={formData.interviewScheduled}
+              onChange={(e) => handleFieldChange('interviewScheduled', e.target.checked)}
+            />
+          }
+          label="Interview Scheduled"
+          sx={{ fontFamily: 'Rubik, sans-serif' }}
+        />
       </Box>
 
       <Divider sx={{ my: 3 }} />
@@ -130,45 +119,53 @@ export const TechnicalInterviewForm: React.FC<TechnicalInterviewFormProps> = ({
       {/* Technical Skills Assessment */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Technical Skills to Assess
+          Technical Skills Assessment
         </Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-          {formData.technicalSkills.map((skill) => (
-            <Chip 
-              key={skill}
-              label={skill} 
-              sx={{ 
-                bgcolor: '#e8f5e8', 
-                color: '#2e7d32',
-                fontFamily: 'Rubik, sans-serif'
-              }}
-            />
-          ))}
+        
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="caption" sx={{ mb: 1, display: 'block', fontFamily: 'Rubik, sans-serif' }}>
+            Skills to Evaluate
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+            {formData.technicalSkills.map((skill, index) => (
+              <Chip
+                key={index}
+                label={skill}
+                onDelete={() => removeSkill(skill)}
+                color="primary"
+                variant="outlined"
+                size="small"
+              />
+            ))}
+          </Box>
         </Box>
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={formData.codingChallengeCompleted}
+              onChange={(e) => handleFieldChange('codingChallengeCompleted', e.target.checked)}
+            />
+          }
+          label="Coding Challenge Completed"
+          sx={{ fontFamily: 'Rubik, sans-serif', mb: 2 }}
+        />
+
+        {formData.codingChallengeCompleted && (
+          <TextField
+            label="Coding Challenge Score (%)"
+            value={formData.codingScore}
+            onChange={(e) => handleFieldChange('codingScore', e.target.value)}
+            type="number"
+            fullWidth
+            sx={{ mb: 2 }}
+          />
+        )}
       </Box>
 
       <Divider sx={{ my: 3 }} />
 
-      {/* Assessment Areas */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Assessment Areas
-        </Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-          {formData.assessmentAreas.map((area) => (
-            <Chip 
-              key={area}
-              label={area} 
-              variant="outlined"
-              sx={{ fontFamily: 'Rubik, sans-serif' }}
-            />
-          ))}
-        </Box>
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      {/* Outcome & Notes */}
+      {/* Interview Outcome */}
       <Box sx={{ mb: 3 }}>
         <FormControl fullWidth sx={{ mb: 2 }}>
           <InputLabel>Interview Outcome</InputLabel>
@@ -180,18 +177,18 @@ export const TechnicalInterviewForm: React.FC<TechnicalInterviewFormProps> = ({
             <MenuItem value="pending">Pending</MenuItem>
             <MenuItem value="pass">Pass</MenuItem>
             <MenuItem value="fail">Fail</MenuItem>
-            <MenuItem value="on-hold">On Hold</MenuItem>
+            <MenuItem value="strong-pass">Strong Pass</MenuItem>
           </Select>
         </FormControl>
 
         <TextField
           label="Interview Notes"
-          value={formData.notes}
-          onChange={(e) => handleFieldChange('notes', e.target.value)}
+          value={formData.interviewNotes}
+          onChange={(e) => handleFieldChange('interviewNotes', e.target.value)}
           fullWidth
           multiline
           rows={4}
-          placeholder="Add notes about the technical interview..."
+          placeholder="Technical competency, problem-solving approach, communication..."
         />
       </Box>
 

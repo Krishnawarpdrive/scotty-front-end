@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { Box } from '@mui/material';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui-mui/Tabs';
+import { Box, Tabs, Tab, useTheme } from '@mui/material';
 import { SplitLayoutContainer } from './SplitLayoutContainer';
 import { Candidate } from '../types/CandidateTypes';
 
@@ -24,29 +23,63 @@ export const InterviewStagesTabSystem: React.FC<InterviewStagesTabSystemProps> =
   activeStage,
   onStageChange
 }) => {
+  const theme = useTheme();
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
+    onStageChange(newValue);
+  };
+
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Tabs value={activeStage} onValueChange={onStageChange}>
-        <Box sx={{ borderBottom: '1px solid #e0e0e0', px: 2 }}>
-          <TabsList>
-            {interviewStages.map((stage) => (
-              <TabsTrigger key={stage.id} value={stage.id}>
-                {stage.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Box>
-
-        {interviewStages.map((stage) => (
-          <TabsContent key={stage.id} value={stage.id} className="flex-1">
-            <SplitLayoutContainer
-              candidate={candidate}
-              stageId={stage.id}
-              stageName={stage.label}
+      {/* Tabs Header */}
+      <Box sx={{ 
+        borderBottom: '1px solid #e0e0e0', 
+        px: 2, 
+        backgroundColor: 'white',
+        minHeight: '48px'
+      }}>
+        <Tabs 
+          value={activeStage} 
+          onChange={handleTabChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{
+            '& .MuiTab-root': {
+              fontFamily: 'Rubik, sans-serif',
+              fontSize: '13px',
+              textTransform: 'none',
+              minHeight: '48px',
+              fontWeight: 500,
+              color: '#666',
+              '&.Mui-selected': {
+                color: '#009933',
+                fontWeight: 600
+              }
+            },
+            '& .MuiTabs-indicator': {
+              backgroundColor: '#009933',
+              height: '3px'
+            }
+          }}
+        >
+          {interviewStages.map((stage) => (
+            <Tab 
+              key={stage.id} 
+              value={stage.id}
+              label={stage.label}
             />
-          </TabsContent>
-        ))}
-      </Tabs>
+          ))}
+        </Tabs>
+      </Box>
+
+      {/* Tab Content */}
+      <Box sx={{ flex: 1, overflow: 'hidden' }}>
+        <SplitLayoutContainer
+          candidate={candidate}
+          stageId={activeStage}
+          stageName={interviewStages.find(s => s.id === activeStage)?.label || ''}
+        />
+      </Box>
     </Box>
   );
 };
