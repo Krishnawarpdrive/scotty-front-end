@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AnimatedProgressBar } from './AnimatedProgressBar';
-import { triggerMilestoneToast } from './GoalCompletionToast';
+import { triggerMilestoneToast } from '@/components/GoalCompletionToast';
 
 interface MetricData {
   id: string;

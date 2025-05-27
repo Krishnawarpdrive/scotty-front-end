@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { useKeyboardShortcuts } from '@/contexts/KeyboardShortcutsContext';
 import { useRoleManagementShortcuts } from '@/hooks/useRoleManagementShortcuts';
 import { clientsData, rolesData, requirementsData, tasData } from '../mockData';
-import { triggerGoalCompletionToast } from '../components/animations/GoalCompletionToast';
 
 export const useRoleManagementState = () => {
   const { setCurrentScope } = useKeyboardShortcuts();
@@ -36,18 +35,7 @@ export const useRoleManagementState = () => {
 
     const completed = Math.floor(Math.random() * 3);
     setDailyGoalsCompleted(completed);
-    
-    if (completed > 0) {
-      setTimeout(() => {
-        triggerGoalCompletionToast({
-          id: '1',
-          title: 'Process 5 new applications',
-          type: 'daily',
-          value: 5,
-          target: 5
-        });
-      }, 2000);
-    }
+
   }, []);
   
   // Function to handle client click

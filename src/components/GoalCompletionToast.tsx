@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, Target, Star } from 'lucide-react';
@@ -56,7 +55,7 @@ export const triggerGoalCompletionToast = (goal: Goal) => {
         </div>
       </motion.div>
     ) as any,
-    duration: 4000,
+    duration: 3000,
   });
 };
 

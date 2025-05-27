@@ -8,20 +8,36 @@ import { EnhancedHiringFunnelCard } from "./enhanced/EnhancedHiringFunnelCard";
 import { CompactView } from "./CompactView";
 import { ChevronUp } from "lucide-react";
 import { StreakCelebration } from "./StreakCelebration";
+import { triggerGoalCompletionToast } from "@/components/GoalCompletionToast";
 
 export const DailyMetrics: React.FC = () => {
   const [activeTab, setActiveTab] = useState("Default");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showStreakCelebration, setShowStreakCelebration] = useState(true);
   const [streakCount, setStreakCount] = useState(7);
+  const [dailyGoalsCompleted, setDailyGoalsCompleted] = useState(3);
   
   const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
+    setIsCollapsed(false);
     setShowStreakCelebration(true);
+    setTimeout(() => {
+      triggerGoalCompletionToast({
+        id: '1',
+        title: 'Process 5 new applications',
+        type: 'daily',
+        value: dailyGoalsCompleted,
+        target: 5,
+      });
+    }, 3000);
   };
+
+  React.useEffect(() => {
+    toggleCollapse();
+  }, []);
+
   
   if (isCollapsed) {
-    return <CompactView onExpand={toggleCollapse} />;
+    return <CompactView onExpand={() => {}} />;
   }
   
   return (
