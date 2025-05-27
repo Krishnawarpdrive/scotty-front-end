@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -10,6 +11,9 @@ import { VendorPerformanceMetrics } from './components/vendor-detail/VendorPerfo
 import { VendorBilling } from './components/vendor-detail/VendorBilling';
 import { VendorCommunicationLogs } from './components/vendor-detail/VendorCommunicationLogs';
 import { VendorQuickActions } from './components/vendor-detail/VendorQuickActions';
+import { VendorRoles } from './components/vendor-detail/VendorRoles';
+import { VendorRequirements } from './components/vendor-detail/VendorRequirements';
+import { VendorAgreements } from './components/vendor-detail/VendorAgreements';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const VendorDetailPage: React.FC = () => {
@@ -52,41 +56,48 @@ const VendorDetailPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div className="lg:col-span-3">
               <Tabs defaultValue="overview" className="space-y-6">
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="grid w-full grid-cols-6">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="roles">Roles & Requirements</TabsTrigger>
-                  <TabsTrigger value="submissions">Submissions</TabsTrigger>
-                  <TabsTrigger value="performance">Performance</TabsTrigger>
+                  <TabsTrigger value="roles">Roles</TabsTrigger>
+                  <TabsTrigger value="requirements">Requirements</TabsTrigger>
+                  <TabsTrigger value="agreements">Agreements</TabsTrigger>
+                  <TabsTrigger value="activity">Activity</TabsTrigger>
+                  <TabsTrigger value="billing">Billing</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-6">
                   <VendorOverview vendor={vendor} />
-                  <VendorBilling vendor={vendor} />
-                </TabsContent>
-
-                <TabsContent value="roles" className="space-y-6">
-                  <VendorRolesRequirements 
-                    vendor={vendor} 
-                    roles={vendorRoles} 
-                  />
-                </TabsContent>
-
-                <TabsContent value="submissions" className="space-y-6">
+                  <VendorPerformanceMetrics vendor={vendor} />
                   <VendorSubmissions 
                     vendor={vendor}
                     submissions={vendorSubmissions} 
                   />
                 </TabsContent>
 
-                <TabsContent value="performance" className="space-y-6">
-                  <VendorPerformanceMetrics vendor={vendor} />
+                <TabsContent value="roles" className="space-y-6">
+                  <VendorRoles vendor={vendor} />
+                </TabsContent>
+
+                <TabsContent value="requirements" className="space-y-6">
+                  <VendorRequirements vendor={vendor} />
+                </TabsContent>
+
+                <TabsContent value="agreements" className="space-y-6">
+                  <VendorAgreements vendor={vendor} />
+                </TabsContent>
+
+                <TabsContent value="activity" className="space-y-6">
+                  <VendorCommunicationLogs vendor={vendor} />
+                </TabsContent>
+
+                <TabsContent value="billing" className="space-y-6">
+                  <VendorBilling vendor={vendor} />
                 </TabsContent>
               </Tabs>
             </div>
 
             <div className="space-y-6">
               <VendorQuickActions vendor={vendor} />
-              <VendorCommunicationLogs vendor={vendor} />
             </div>
           </div>
         </motion.div>
