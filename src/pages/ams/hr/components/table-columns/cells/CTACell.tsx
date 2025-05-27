@@ -7,15 +7,15 @@ import {
   TooltipProvider, 
   TooltipTrigger 
 } from "@/components/ui/tooltip";
-import { getRandomAlertReason, alertReasonToCta, getCTAColor } from '../utils/alertUtils';
+import { getClientAlertReason, alertReasonToCta, getCTAColor } from '../utils/alertUtils';
 
 interface CTACellProps {
   client: any;
 }
 
 export const CTACell = ({ client }: CTACellProps) => {
-  const randomReason = getRandomAlertReason();
-  const { action, priority } = alertReasonToCta[randomReason] || { action: "Take Action", priority: 'low' as const };
+  const alertReason = getClientAlertReason(client.name);
+  const { action, priority } = alertReasonToCta[alertReason] || { action: "Take Action", priority: 'low' as const };
   
   return (
     <TooltipProvider>

@@ -9,6 +9,7 @@ import RolesTabContent from './components/RolesTabContent';
 import RequirementsTabContent from './components/RequirementsTabContent';
 import TasTabContent from './components/TasTabContent';
 import { TAAssignmentCard } from './components/TAAssignmentCard';
+import { RoleConfigurationDrawer } from './components/RoleConfigurationDrawer';
 import { useKeyboardShortcuts } from '@/contexts/KeyboardShortcutsContext';
 import { useRoleManagementShortcuts } from '@/hooks/useRoleManagementShortcuts';
 
@@ -17,6 +18,8 @@ const RoleManagementPage = () => {
   const [activeTab, setActiveTab] = useState("roles");
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [clientDrawerOpen, setClientDrawerOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<any>(null);
+  const [roleConfigDrawerOpen, setRoleConfigDrawerOpen] = useState(false);
 
   // Set the scope when component mounts
   useEffect(() => {
@@ -36,7 +39,11 @@ const RoleManagementPage = () => {
   
   const handleRowClick = (item: any) => {
     console.log('Row clicked:', item);
-    // Handle sidebar opening here
+    // Check if it's a role item and open role configuration drawer
+    if (item.name && item.client && activeTab === 'roles') {
+      setSelectedRole(item);
+      setRoleConfigDrawerOpen(true);
+    }
   };
 
   const handleCreateRole = () => {
@@ -194,6 +201,13 @@ const RoleManagementPage = () => {
         client={selectedClient}
         open={clientDrawerOpen}
         onOpenChange={setClientDrawerOpen}
+      />
+
+      {/* Role Configuration Drawer */}
+      <RoleConfigurationDrawer
+        role={selectedRole}
+        open={roleConfigDrawerOpen}
+        onOpenChange={setRoleConfigDrawerOpen}
       />
     </div>
   );

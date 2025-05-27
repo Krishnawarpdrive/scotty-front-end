@@ -6,27 +6,27 @@ import {
   TooltipProvider, 
   TooltipTrigger 
 } from "@/components/ui/tooltip";
-import { getRandomAlertReason } from '../utils/alertUtils';
+import { getClientAlertReason } from '../utils/alertUtils';
 
 interface AlertReasonCellProps {
   client: any;
 }
 
 export const AlertReasonCell = ({ client }: AlertReasonCellProps) => {
-  const randomReason = getRandomAlertReason();
+  const alertReason = getClientAlertReason(client.name);
   
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
           <span className="text-sm text-gray-600 truncate max-w-[150px] inline-block cursor-help">
-            {randomReason}
+            {alertReason}
           </span>
         </TooltipTrigger>
         <TooltipContent>
           <div className="space-y-1 max-w-xs">
             <p className="font-semibold">Alert Details</p>
-            <p>{randomReason}</p>
+            <p>{alertReason}</p>
             <p className="text-xs text-gray-500">Click CTA to resolve</p>
           </div>
         </TooltipContent>
