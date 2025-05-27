@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs } from "@/components/ui/tabs";
@@ -14,25 +13,29 @@ import { RoleConfigurationDrawer } from './components/RoleConfigurationDrawer';
 import { useKeyboardShortcuts } from '@/contexts/KeyboardShortcutsContext';
 import { useRoleManagementShortcuts } from '@/hooks/useRoleManagementShortcuts';
 
-// New animated components
+// Enhanced components
 import { StreakCelebration } from './components/animations/StreakCelebration';
 import { AnimatedMetrics } from './components/animations/AnimatedMetrics';
 import { FloatingActionButton, defaultRoleManagementActions } from './components/animations/FloatingActionButton';
 import { InteractiveCardContainer } from './components/animations/InteractiveCardContainer';
 import { triggerGoalCompletionToast } from './components/animations/GoalCompletionToast';
+import { TAMissionControl } from './components/gamification/TAMissionControl';
+import { RoleRequirementsIntegration } from './components/role-requirements/RoleRequirementsIntegration';
+import { UniversalCommentingSystem } from './components/commenting/UniversalCommentingSystem';
 
 const RoleManagementPage = () => {
   const { setCurrentScope } = useKeyboardShortcuts();
-  const [activeTab, setActiveTab] = useState("roles");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [clientDrawerOpen, setClientDrawerOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<any>(null);
   const [roleConfigDrawerOpen, setRoleConfigDrawerOpen] = useState(false);
   
-  // Animation states
+  // Animation and gamification states
   const [streakCount, setStreakCount] = useState(0);
   const [showStreakCelebration, setShowStreakCelebration] = useState(false);
   const [dailyGoalsCompleted, setDailyGoalsCompleted] = useState(0);
+  const [selectedTA, setSelectedTA] = useState<any>(null);
 
   // Set the scope when component mounts
   useEffect(() => {
@@ -42,16 +45,13 @@ const RoleManagementPage = () => {
 
   // Simulate streak and goals for demo
   useEffect(() => {
-    // Simulate daily streak
     const streak = Math.floor(Math.random() * 15) + 1;
     setStreakCount(streak);
     
-    // Show celebration for milestones
     if (streak === 7 || streak === 14 || streak % 5 === 0) {
       setShowStreakCelebration(true);
     }
 
-    // Check for completed goals
     const completed = Math.floor(Math.random() * 3);
     setDailyGoalsCompleted(completed);
     
@@ -70,7 +70,6 @@ const RoleManagementPage = () => {
   
   // Function to handle client click
   const handleClientClick = (clientName: string) => {
-    // Find client by name
     const client = clientsData.find(c => c.name === clientName);
     if (client) {
       setSelectedClient(client);
@@ -80,7 +79,6 @@ const RoleManagementPage = () => {
   
   const handleRowClick = (item: any) => {
     console.log('Row clicked:', item);
-    // Check if it's a role item and open role configuration drawer
     if (item.name && item.client && activeTab === 'roles') {
       setSelectedRole(item);
       setRoleConfigDrawerOpen(true);
@@ -89,22 +87,18 @@ const RoleManagementPage = () => {
 
   const handleCreateRole = () => {
     console.log('Creating new role...');
-    // Implementation for creating role
   };
 
   const handleCreateClient = () => {
     console.log('Creating new client...');
-    // Implementation for creating client
   };
 
   const handleExportData = () => {
     console.log('Exporting data for tab:', activeTab);
-    // Implementation for exporting current tab data
   };
 
   const handleImportData = () => {
     console.log('Importing data for tab:', activeTab);
-    // Implementation for importing data
   };
 
   // Register role management specific shortcuts
@@ -121,19 +115,71 @@ const RoleManagementPage = () => {
 
   // Tab count data for badges
   const tabCounts = {
+    dashboard: 0,
     clients: clientsData.length,
     roles: rolesData.length,
     requirements: requirementsData.length,
-    tas: tasData.length
+    tas: tasData.length,
+    'role-requirements': rolesData.length,
+    mission: 0
   };
 
-  // Mock TA data for the assignment cards
+  // Mock TA data for the assignment cards and mission control
   const mockTAs = [
     {
+      id: '1',
       name: 'Sarah Johnson',
       email: 'sarah.j@company.com',
       currentLoad: 8,
       maxLoad: 10,
+      level: 15,
+      xp: 2340,
+      xpToNext: 2500,
+      streak: 12,
+      totalMissionsCompleted: 47,
+      rank: 'Senior TA',
+      achievements: [
+        {
+          id: 'streak-7',
+          title: '7 Day Streak',
+          description: 'Complete daily goals for 7 consecutive days',
+          type: 'streak',
+          level: 'gold',
+          unlockedAt: new Date()
+        },
+        {
+          id: 'hiring-machine',
+          title: 'Hiring Machine',
+          description: 'Complete 50 successful hires',
+          type: 'milestone',
+          level: 'platinum',
+          unlockedAt: new Date()
+        }
+      ],
+      currentMissions: [
+        {
+          id: 'daily-sourcing',
+          title: 'Daily Sourcing Goal',
+          description: 'Source 10 qualified candidates',
+          type: 'daily',
+          progress: 7,
+          target: 10,
+          reward: '+50 XP',
+          dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          status: 'active'
+        },
+        {
+          id: 'weekly-interviews',
+          title: 'Weekly Interview Target',
+          description: 'Conduct 25 candidate interviews',
+          type: 'weekly',
+          progress: 18,
+          target: 25,
+          reward: '+200 XP + Bonus',
+          dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+          status: 'active'
+        }
+      ],
       dailyTargets: {
         interviews: 5,
         completedInterviews: 3,
@@ -145,37 +191,39 @@ const RoleManagementPage = () => {
       assignedRoles: 8,
       efficiency: 87
     },
+    // ... keep existing code (other TAs)
+  ];
+
+  // Mock roles for role-requirements integration
+  const mockRolesWithRequirements = [
     {
-      name: 'Mike Chen',
-      email: 'mike.c@company.com',
-      currentLoad: 12,
-      maxLoad: 10,
-      dailyTargets: {
-        interviews: 6,
-        completedInterviews: 6,
-        sourcing: 8,
-        completedSourcing: 5,
-        offers: 3,
-        completedOffers: 2
-      },
-      assignedRoles: 12,
-      efficiency: 72
-    },
-    {
-      name: 'Emma Davis',
-      email: 'emma.d@company.com',
-      currentLoad: 6,
-      maxLoad: 10,
-      dailyTargets: {
-        interviews: 4,
-        completedInterviews: 4,
-        sourcing: 12,
-        completedSourcing: 10,
-        offers: 1,
-        completedOffers: 1
-      },
-      assignedRoles: 6,
-      efficiency: 92
+      id: 'role-1',
+      name: 'Senior Frontend Developer',
+      client: 'TechCorp Inc.',
+      status: 'active',
+      totalVacancies: 3,
+      filledPositions: 1,
+      budget: 150000,
+      deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      requirements: [
+        {
+          id: 'req-1',
+          name: 'Frontend Developer - Team A',
+          roleId: 'role-1',
+          status: 'in_progress',
+          priority: 'high',
+          vacancies: 2,
+          assignedTo: 'Sarah Johnson',
+          dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+          progress: {
+            sourced: 12,
+            screened: 8,
+            interviewed: 4,
+            offered: 2,
+            hired: 1
+          }
+        }
+      ]
     }
   ];
 
@@ -232,128 +280,218 @@ const RoleManagementPage = () => {
       transition={{ duration: 0.5 }}
     >
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        {/* Page Header with Tabs */}
-        <PageHeader 
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          tabCounts={tabCounts}
-        />
+        {/* Enhanced Page Header with new tabs */}
+        <div className="bg-white border-b sticky top-0 z-10">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between mb-4">
+              <h1 className="text-2xl font-bold text-gray-900">Talent Acquisition Management</h1>
+            </div>
+            
+            <div className="flex items-center gap-6">
+              {[
+                { id: 'dashboard', label: 'Dashboard', count: tabCounts.dashboard },
+                { id: 'mission', label: 'Mission Control', count: tabCounts.mission },
+                { id: 'role-requirements', label: 'Roles & Requirements', count: tabCounts['role-requirements'] },
+                { id: 'clients', label: 'Clients', count: tabCounts.clients },
+                { id: 'roles', label: 'Roles', count: tabCounts.roles },
+                { id: 'requirements', label: 'Requirements', count: tabCounts.requirements },
+                { id: 'tas', label: 'Team', count: tabCounts.tas }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                    activeTab === tab.id
+                      ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
+                >
+                  {tab.label}
+                  {tab.count > 0 && (
+                    <span className={`px-2 py-0.5 rounded-full text-xs ${
+                      activeTab === tab.id ? 'bg-blue-200 text-blue-800' : 'bg-gray-200 text-gray-600'
+                    }`}>
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
         {/* Content Area */}
         <div className="px-6 space-y-6">
-          {/* Animated Metrics Dashboard */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-          >
-            <AnimatedMetrics 
-              metrics={mockMetrics}
-              title="Today's Performance"
-              animationStagger={150}
-            />
-          </motion.div>
-
-          {/* TA Assignment Dashboard - show on TAs tab */}
           <AnimatePresence mode="wait">
-            {activeTab === "tas" && (
-              <motion.div 
-                className="mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
+            {activeTab === "dashboard" && (
+              <motion.div
+                key="dashboard"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-6"
               >
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">TA Assignment Dashboard</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                  {mockTAs.map((ta, index) => (
+                <AnimatedMetrics 
+                  metrics={mockMetrics}
+                  title="Today's Performance"
+                  animationStagger={150}
+                />
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <UniversalCommentingSystem
+                    entityType="dashboard"
+                    entityId="main-dashboard"
+                    title="Dashboard Updates"
+                    allowReplies={true}
+                    allowReactions={true}
+                  />
+                  
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Quick Actions</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      {['Create Role', 'Add Client', 'New Requirement', 'Team Analytics'].map((action, index) => (
+                        <InteractiveCardContainer key={action} hoverEffect="scale">
+                          <div className="p-4 bg-white rounded-lg border cursor-pointer text-center">
+                            <p className="font-medium">{action}</p>
+                          </div>
+                        </InteractiveCardContainer>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === "mission" && (
+              <motion.div
+                key="mission"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {mockTAs.slice(0, 2).map((ta, index) => (
                     <motion.div
-                      key={index}
+                      key={ta.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1, duration: 0.4 }}
+                      transition={{ delay: index * 0.1 }}
                     >
-                      <InteractiveCardContainer 
-                        hoverEffect="lift"
-                        onCardClick={() => console.log(`Clicked TA: ${ta.name}`)}
-                      >
-                        <TAAssignmentCard ta={ta} />
-                      </InteractiveCardContainer>
+                      <TAMissionControl
+                        ta={ta}
+                        onMissionClick={(mission) => console.log('Mission clicked:', mission)}
+                        onAchievementClick={(achievement) => console.log('Achievement clicked:', achievement)}
+                      />
                     </motion.div>
                   ))}
                 </div>
               </motion.div>
             )}
+
+            {activeTab === "role-requirements" && (
+              <motion.div
+                key="role-requirements"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <RoleRequirementsIntegration
+                  roles={mockRolesWithRequirements}
+                  onCreateRole={handleCreateRole}
+                  onCreateRequirement={(roleId) => console.log('Create requirement for role:', roleId)}
+                  onEditRole={(role) => console.log('Edit role:', role)}
+                  onEditRequirement={(req) => console.log('Edit requirement:', req)}
+                />
+              </motion.div>
+            )}
+
+            {/* Keep existing tab content */}
+            {activeTab === "clients" && (
+              <motion.div
+                key="clients"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ClientsTabContent 
+                  clientsData={clientsData} 
+                  handleClientClick={handleClientClick}
+                  handleRowClick={handleRowClick}
+                />
+              </motion.div>
+            )}
+
+            {activeTab === "roles" && (
+              <motion.div
+                key="roles"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <RolesTabContent 
+                  rolesData={rolesData}
+                  handleClientClick={handleClientClick}
+                  handleRowClick={handleRowClick}
+                />
+              </motion.div>
+            )}
+
+            {activeTab === "requirements" && (
+              <motion.div
+                key="requirements"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <RequirementsTabContent 
+                  requirementsData={requirementsData}
+                  handleRowClick={handleRowClick}
+                />
+              </motion.div>
+            )}
+
+            {activeTab === "tas" && (
+              <motion.div
+                key="tas"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">TA Assignment Dashboard</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                    {mockTAs.map((ta, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1, duration: 0.4 }}
+                      >
+                        <InteractiveCardContainer 
+                          hoverEffect="lift"
+                          onCardClick={() => console.log(`Clicked TA: ${ta.name}`)}
+                        >
+                          <TAAssignmentCard ta={ta} />
+                        </InteractiveCardContainer>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+                
+                <TasTabContent 
+                  tasData={tasData}
+                  handleRowClick={handleRowClick}
+                />
+              </motion.div>
+            )}
           </AnimatePresence>
-
-          <motion.div 
-            className="overflow-auto max-h-[calc(100vh-280px)]"
-            layout
-          >
-            <AnimatePresence mode="wait">
-              {activeTab === "clients" && (
-                <motion.div
-                  key="clients"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <ClientsTabContent 
-                    clientsData={clientsData} 
-                    handleClientClick={handleClientClick}
-                    handleRowClick={handleRowClick}
-                  />
-                </motion.div>
-              )}
-
-              {activeTab === "roles" && (
-                <motion.div
-                  key="roles"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <RolesTabContent 
-                    rolesData={rolesData}
-                    handleClientClick={handleClientClick}
-                    handleRowClick={handleRowClick}
-                  />
-                </motion.div>
-              )}
-
-              {activeTab === "requirements" && (
-                <motion.div
-                  key="requirements"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <RequirementsTabContent 
-                    requirementsData={requirementsData}
-                    handleRowClick={handleRowClick}
-                  />
-                </motion.div>
-              )}
-
-              {activeTab === "tas" && (
-                <motion.div
-                  key="tas"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <TasTabContent 
-                    tasData={tasData}
-                    handleRowClick={handleRowClick}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
         </div>
       </Tabs>
 
@@ -370,14 +508,13 @@ const RoleManagementPage = () => {
         onComplete={() => setShowStreakCelebration(false)}
       />
 
-      {/* Client Detail Drawer */}
+      {/* Existing Drawers */}
       <ClientDetailDrawer
         client={selectedClient}
         open={clientDrawerOpen}
         onOpenChange={setClientDrawerOpen}
       />
 
-      {/* Role Configuration Drawer */}
       <RoleConfigurationDrawer
         role={selectedRole}
         open={roleConfigDrawerOpen}
