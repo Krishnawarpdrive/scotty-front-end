@@ -2,9 +2,9 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs } from "@/components/ui/tabs";
-import { ClientsTabContent } from '../ClientsTabContent';
-import { RolesTabContent } from '../RolesTabContent';
-import { RequirementsTabContent } from '../RequirementsTabContent';
+import ClientsTabContent from '../ClientsTabContent';
+import RolesTabContent from '../RolesTabContent';
+import RequirementsTabContent from '../RequirementsTabContent';
 import { DashboardTab } from './DashboardTab';
 import { MissionTab } from './MissionTab';
 import { RoleRequirementsTab } from './RoleRequirementsTab';

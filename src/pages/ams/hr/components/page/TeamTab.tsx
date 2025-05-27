@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { TAAssignmentCard } from '../TAAssignmentCard';
 import { InteractiveCardContainer } from '../animations/InteractiveCardContainer';
-import { TasTabContent } from '../TasTabContent';
+import TasTabContent from '../TasTabContent';
 import { tasData } from '../../mockData';
 
 interface TeamTabProps {

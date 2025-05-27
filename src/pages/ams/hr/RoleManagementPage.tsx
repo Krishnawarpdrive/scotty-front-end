@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Tabs } from "@/components/ui/tabs";
-import { ClientDetailDrawer } from './components/ClientDetailDrawer';
+import ClientDetailDrawer from './components/ClientDetailDrawer';
 import { RoleConfigurationDrawer } from './components/RoleConfigurationDrawer';
 import { StreakCelebration } from './components/animations/StreakCelebration';
 import { FloatingActionButton, defaultRoleManagementActions } from './components/animations/FloatingActionButton';
