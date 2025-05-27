@@ -17,3 +17,6 @@ export { TechnicalInterviewForm } from './forms/TechnicalInterviewForm';
 export { ClientInterviewForm } from './forms/ClientInterviewForm';
 export { BackgroundVerificationForm } from './forms/BackgroundVerificationForm';
 export { FinalReviewForm } from './forms/FinalReviewForm';
+
+// Form sections
+export { PhoneScreeningActions } from './forms/sections/PhoneScreeningActions';
