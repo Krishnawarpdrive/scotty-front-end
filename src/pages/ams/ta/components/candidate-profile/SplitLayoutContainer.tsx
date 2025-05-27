@@ -24,9 +24,10 @@ export const SplitLayoutContainer: React.FC<SplitLayoutContainerProps> = ({
     }}>
       {/* Timeline Section - Left Side */}
       <Box sx={{ 
-        width: '35%', 
+        width: '40%', 
         borderRight: '1px solid #e0e0e0',
-        overflow: 'auto'
+        overflow: 'auto',
+        backgroundColor: '#fafafa'
       }}>
         <CandidateTimeline 
           candidate={candidate}
@@ -37,7 +38,8 @@ export const SplitLayoutContainer: React.FC<SplitLayoutContainerProps> = ({
       {/* Forms Section - Right Side */}
       <Box sx={{ 
         flex: 1, 
-        overflow: 'auto'
+        overflow: 'auto',
+        backgroundColor: 'white'
       }}>
         <StageFormRenderer 
           candidate={candidate}

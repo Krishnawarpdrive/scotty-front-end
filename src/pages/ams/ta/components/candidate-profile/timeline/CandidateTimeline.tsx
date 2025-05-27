@@ -2,82 +2,68 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { TimelineItem } from './TimelineItem';
-import { Candidate } from '../../types/CandidateTypes';
+import { Candidate, TimelineItemData } from '../../types/CandidateTypes';
 
 interface CandidateTimelineProps {
   candidate: Candidate;
   currentStage: string;
 }
 
-const timelineData = [
-  {
-    id: 'application-submitted',
-    title: 'Application Submitted',
-    date: '2 days ago',
-    status: 'completed' as const,
-    description: 'Candidate submitted application for Network Administrator role'
-  },
-  {
-    id: 'phone-screening',
-    title: 'Phone Screening',
-    date: '1 day ago',
-    status: 'in-progress' as const,
-    description: 'Initial phone screening call scheduled'
-  },
-  {
-    id: 'technical',
-    title: 'Technical Interview',
-    date: 'Pending',
-    status: 'pending' as const,
-    description: 'Technical assessment and interview'
-  },
-  {
-    id: 'client-interview',
-    title: 'Client Interview',
-    date: 'Pending',
-    status: 'pending' as const,
-    description: 'Final interview with client team'
-  },
-  {
-    id: 'background-verification',
-    title: 'Background Verification',
-    date: 'Pending',
-    status: 'pending' as const,
-    description: 'Document verification and background check'
-  }
-];
+const generateTimelineData = (candidate: Candidate, currentStage: string): TimelineItemData[] => {
+  const stages = [
+    { id: 'application', title: 'Application Submitted', stage: 'application' },
+    { id: 'phone-screening', title: 'Phone Screening', stage: 'phone-screening' },
+    { id: 'technical', title: 'Technical Interview', stage: 'technical' },
+    { id: 'client-interview', title: 'Client Interview', stage: 'client-interview' },
+    { id: 'background-verification', title: 'Background Verification', stage: 'background-verification' },
+    { id: 'final-review', title: 'Final Review', stage: 'final-review' }
+  ];
+
+  const currentStageIndex = stages.findIndex(s => s.stage === currentStage);
+
+  return stages.map((stage, index) => ({
+    id: stage.id,
+    title: stage.title,
+    date: index <= currentStageIndex ? '2024-01-15' : '',
+    status: index < currentStageIndex ? 'completed' : 
+            index === currentStageIndex ? 'in-progress' : 'pending',
+    description: index <= currentStageIndex ? 
+      'Completed successfully' : 
+      'Pending'
+  })) as TimelineItemData[];
+};
 
 export const CandidateTimeline: React.FC<CandidateTimelineProps> = ({
   candidate,
   currentStage
 }) => {
+  const timelineData = generateTimelineData(candidate, currentStage);
+
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h6" sx={{ 
-        mb: 3, 
-        fontFamily: 'Rubik, sans-serif', 
-        fontWeight: 600 
-      }}>
-        Candidate Journey
+    <Box sx={{ 
+      p: 2, 
+      fontFamily: 'Rubik, sans-serif',
+      height: '100%'
+    }}>
+      <Typography 
+        variant="h6" 
+        sx={{ 
+          mb: 2, 
+          fontFamily: 'Rubik, sans-serif', 
+          fontWeight: 600,
+          fontSize: '14px',
+          color: '#333'
+        }}
+      >
+        Application Timeline
       </Typography>
       
       <Box sx={{ position: 'relative' }}>
-        {/* Timeline Line */}
-        <Box sx={{
-          position: 'absolute',
-          left: 12,
-          top: 0,
-          bottom: 0,
-          width: 2,
-          bgcolor: '#e0e0e0'
-        }} />
-        
         {timelineData.map((item, index) => (
           <TimelineItem
             key={item.id}
-            item={item}
+            data={item}
             isLast={index === timelineData.length - 1}
-            isActive={item.id === currentStage}
           />
         ))}
       </Box>

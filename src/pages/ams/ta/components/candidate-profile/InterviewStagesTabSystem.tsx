@@ -34,9 +34,9 @@ export const InterviewStagesTabSystem: React.FC<InterviewStagesTabSystemProps> =
       {/* Tabs Header */}
       <Box sx={{ 
         borderBottom: '1px solid #e0e0e0', 
-        px: 2, 
+        px: 1.5, 
         backgroundColor: 'white',
-        minHeight: '48px'
+        minHeight: '42px'
       }}>
         <Tabs 
           value={activeStage} 
@@ -44,13 +44,16 @@ export const InterviewStagesTabSystem: React.FC<InterviewStagesTabSystemProps> =
           variant="scrollable"
           scrollButtons="auto"
           sx={{
+            minHeight: '42px',
             '& .MuiTab-root': {
               fontFamily: 'Rubik, sans-serif',
-              fontSize: '13px',
+              fontSize: '12px',
               textTransform: 'none',
-              minHeight: '48px',
+              minHeight: '42px',
               fontWeight: 500,
               color: '#666',
+              padding: '8px 12px',
+              minWidth: 'auto',
               '&.Mui-selected': {
                 color: '#009933',
                 fontWeight: 600
@@ -58,7 +61,7 @@ export const InterviewStagesTabSystem: React.FC<InterviewStagesTabSystemProps> =
             },
             '& .MuiTabs-indicator': {
               backgroundColor: '#009933',
-              height: '3px'
+              height: '2px'
             }
           }}
         >

@@ -53,44 +53,45 @@ const ActionCard: React.FC<ActionCardProps> = ({
 
   return (
     <motion.div
-      whileHover={{ y: -4, scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{ y: -2, scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Card className="cursor-pointer transition-all duration-300 hover:shadow-lg border-2 hover:border-[#009933]/30">
-        <CardHeader className="pb-3">
+      <Card className="cursor-pointer transition-all duration-300 hover:shadow-md border hover:border-[#009933]/30 h-36">
+        <CardHeader className="pb-2 px-4 pt-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <motion.div
-                animate={isHovered ? { rotate: 10, scale: 1.1 } : { rotate: 0, scale: 1 }}
+                animate={isHovered ? { rotate: 5, scale: 1.05 } : { rotate: 0, scale: 1 }}
                 transition={{ duration: 0.2 }}
-                className="p-2 rounded-lg bg-[#009933]/10 text-[#009933]"
+                className="p-1.5 rounded-md bg-[#009933]/10 text-[#009933]"
               >
                 {icon}
               </motion.div>
-              <CardTitle className="text-sm font-medium">{title}</CardTitle>
+              <CardTitle className="text-xs font-medium">{title}</CardTitle>
             </div>
-            <Badge variant="outline" className={getUrgencyColor()}>
+            <Badge variant="outline" className={`${getUrgencyColor()} text-xs px-1.5 py-0.5`}>
               {getUrgencyIcon()}
-              {urgency}
+              <span className="ml-1 text-xs">{urgency}</span>
             </Badge>
           </div>
         </CardHeader>
-        <CardContent className="pt-0">
-          <p className="text-sm text-gray-600 mb-3">{description}</p>
+        <CardContent className="pt-0 px-4 pb-3">
+          <p className="text-xs text-gray-600 mb-2 line-clamp-2">{description}</p>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-gray-900">{count}</span>
-              <span className="text-sm text-gray-500">pending</span>
+            <div className="flex items-center gap-1">
+              <span className="text-lg font-bold text-gray-900">{count}</span>
+              <span className="text-xs text-gray-500">pending</span>
             </div>
             <Button
               onClick={onClick}
               size="sm"
-              className="bg-[#009933] hover:bg-[#00a341] text-white transition-all duration-200 hover:scale-105 active:scale-95"
+              variant="secondary"
+              className="text-xs px-2 py-1 h-7 bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all duration-200 hover:scale-105 active:scale-95"
             >
               <motion.span
-                animate={isHovered ? { x: 2 } : { x: 0 }}
+                animate={isHovered ? { x: 1 } : { x: 0 }}
                 transition={{ duration: 0.2 }}
               >
                 Take Action
@@ -106,7 +107,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
 export const ApplicationActions: React.FC = () => {
   const actions = [
     {
-      icon: <Phone className="h-4 w-4" />,
+      icon: <Phone className="h-3.5 w-3.5" />,
       title: "Follow-up Calls",
       description: "Candidates awaiting response",
       count: 8,
@@ -114,7 +115,7 @@ export const ApplicationActions: React.FC = () => {
       onClick: () => console.log("Making follow-up calls...")
     },
     {
-      icon: <Calendar className="h-4 w-4" />,
+      icon: <Calendar className="h-3.5 w-3.5" />,
       title: "Schedule Interviews",
       description: "Ready for next round",
       count: 5,
@@ -122,7 +123,7 @@ export const ApplicationActions: React.FC = () => {
       onClick: () => console.log("Scheduling interviews...")
     },
     {
-      icon: <FileText className="h-4 w-4" />,
+      icon: <FileText className="h-3.5 w-3.5" />,
       title: "Review Applications",
       description: "New submissions to evaluate",
       count: 12,
@@ -130,7 +131,7 @@ export const ApplicationActions: React.FC = () => {
       onClick: () => console.log("Reviewing applications...")
     },
     {
-      icon: <Mail className="h-4 w-4" />,
+      icon: <Mail className="h-3.5 w-3.5" />,
       title: "Send Updates",
       description: "Status updates pending",
       count: 3,
@@ -144,22 +145,22 @@ export const ApplicationActions: React.FC = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="space-y-4"
+      className="space-y-3"
     >
       <div className="flex items-center justify-between">
         <motion.h2 
-          className="text-lg font-semibold text-gray-900"
+          className="text-base font-semibold text-gray-900"
           initial={{ x: -20 }}
           animate={{ x: 0 }}
         >
           Quick Actions
         </motion.h2>
-        <Badge className="bg-blue-50 text-blue-700 border-blue-200">
+        <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
           {actions.reduce((sum, action) => sum + action.count, 0)} Total Tasks
         </Badge>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         {actions.map((action, index) => (
           <motion.div
             key={action.title}
