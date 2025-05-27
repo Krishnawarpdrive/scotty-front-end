@@ -26,7 +26,6 @@ import {
   Search,
   BarChart,
   UserCheck,
-  Monitor,
   User,
   FolderOpen
 } from 'lucide-react';
@@ -46,7 +45,6 @@ interface NavigationItem {
 
 const navigationItems: NavigationItem[] = [
   { title: 'Dashboard', path: '/ams/dashboard', icon: LayoutDashboard },
-  { title: 'Client Dashboard', path: '/ams/client-dashboard', icon: Monitor },
   { title: 'Candidate Dashboard', path: '/ams/candidate-dashboard', icon: User },
   { title: 'Client Roles & Requirements', path: '/ams/client-roles-requirements', icon: FolderOpen },
   { title: 'HR Dashboard', path: '/ams/hr/dashboard', icon: BarChart },
