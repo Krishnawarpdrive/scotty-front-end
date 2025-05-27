@@ -25,6 +25,7 @@ import SkillsLibraryPage from "./pages/ams/skills/SkillsLibraryPage";
 import ClientAccountCreationPage from "./pages/ams/clients/ClientAccountCreationPage";
 import ClientDetailsPage from "./pages/ams/clients/ClientDetailsPage";
 import ClientDashboardPage from "./pages/ams/ClientDashboardPage";
+import CandidateDashboardPage from "./pages/ams/CandidateDashboardPage";
 import { KeyboardShortcutsProvider } from "@/contexts/KeyboardShortcutsContext";
 import { KeyboardShortcutsModal } from "@/components/ui/keyboard-shortcuts-modal";
 import { KeyboardHintsOverlay } from "@/components/ui/keyboard-hints-overlay";
@@ -42,6 +43,7 @@ function AppContent() {
         <Route path="/ams" element={<AMSLayout />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="client-dashboard" element={<ClientDashboardPage />} />
+          <Route path="candidate-dashboard" element={<CandidateDashboardPage />} />
           <Route path="clients" element={<ClientsPage />} />
           <Route path="clients/create" element={<ClientAccountCreationPage />} />
           <Route path="clients/:clientId" element={<ClientDetailsPage />} />
