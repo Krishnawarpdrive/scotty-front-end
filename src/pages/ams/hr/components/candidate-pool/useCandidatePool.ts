@@ -9,39 +9,36 @@ import { useCandidateActions } from './hooks/useCandidateActions';
 export const useCandidatePool = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Initialize all sub-hooks
+  // Get candidate data first
+  const {
+    allCandidates,
+    filteredCandidates: baseCandidates,
+    totalCandidates
+  } = useCandidateData();
+
+  // Initialize filters with candidates and search term
   const {
     showFilters,
     setShowFilters,
     filters,
+    filteredCandidates,
     activeFilterCount,
     handleFilterChange,
     handleClearFilter,
     handleClearAllFilters
-  } = useCandidateFilters();
+  } = useCandidateFilters(allCandidates, searchTerm);
 
-  const {
-    allCandidates,
-    filteredCandidates,
-    totalCandidates
-  } = useCandidateData(searchTerm, filters);
-
+  // Initialize selection with filtered candidates
   const {
     selectedCandidates,
     setSelectedCandidates,
     handleCandidateSelect,
-    handleSelectAll,
-    clearSelection
-  } = useCandidateSelection();
+    handleSelectAll
+  } = useCandidateSelection(filteredCandidates);
 
   const { metrics } = useCandidateMetrics(allCandidates);
 
   const { handleBulkAction, handleQuickAction } = useCandidateActions();
-
-  // Wrapper for handleSelectAll to pass filtered candidates
-  const handleSelectAllWrapper = (selected: boolean) => {
-    handleSelectAll(filteredCandidates, selected);
-  };
 
   return {
     // Data
@@ -60,7 +57,7 @@ export const useCandidatePool = () => {
     setSearchTerm,
     setShowFilters,
     handleCandidateSelect,
-    handleSelectAll: handleSelectAllWrapper,
+    handleSelectAll,
     handleFilterChange,
     handleClearFilter,
     handleClearAllFilters,

@@ -113,8 +113,8 @@ export const CandidatePoolPage: React.FC = () => {
       />
 
       <CandidateDetailDrawer
-        candidate={selectedCandidate}
-        isOpen={drawerOpen}
+        candidateData={selectedCandidate}
+        open={drawerOpen}
         onClose={handleCloseDrawer}
       />
     </div>
