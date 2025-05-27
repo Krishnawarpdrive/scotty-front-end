@@ -1,10 +1,9 @@
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { InteractiveCardContainer } from "../../../hr/components/animations/InteractiveCardContainer";
-import { EnhancedFunnelStage } from "./hiring-funnel/EnhancedFunnelStage";
 import { FunnelHeader } from "./hiring-funnel/FunnelHeader";
 import { FunnelTimeframePicker } from "./hiring-funnel/FunnelTimeframePicker";
+import { FunnelStagesList } from "./hiring-funnel/FunnelStagesList";
 
 export const EnhancedHiringFunnelCard: React.FC = () => {
   const [timeframe, setTimeframe] = useState("D");
@@ -37,20 +36,7 @@ export const EnhancedHiringFunnelCard: React.FC = () => {
           />
         </div>
         
-        <motion.div 
-          className="flex w-full flex-col items-stretch text-center mt-[19px]"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          {funnelStages.map((stage, index) => (
-            <EnhancedFunnelStage 
-              key={stage.name}
-              {...stage}
-              index={index}
-            />
-          ))}
-        </motion.div>
+        <FunnelStagesList stages={funnelStages} />
       </div>
     </InteractiveCardContainer>
   );
