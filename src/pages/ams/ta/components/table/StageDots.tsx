@@ -1,18 +1,24 @@
 
 import React from "react";
 
-interface StageDotsProps {
-  stage: number;
-  totalStages?: number;
+export interface StageDotsProps {
+  currentStage: number;
+  totalStages: number;
 }
 
-export const StageDots: React.FC<StageDotsProps> = ({ stage, totalStages = 6 }) => {
+export const StageDots: React.FC<StageDotsProps> = ({ currentStage, totalStages }) => {
+  const stages = Array.from({ length: totalStages }, (_, index) => index + 1);
+
   return (
-    <div className="flex items-center space-x-1">
-      {Array.from({ length: totalStages }, (_, index) => index + 1).map((dot) => (
+    <div className="flex items-center gap-1">
+      {stages.map((stage) => (
         <div
-          key={dot}
-          className={`h-2 w-2 rounded-full ${dot <= stage ? 'bg-green-500' : 'bg-gray-300'}`}
+          key={stage}
+          className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+            stage <= currentStage
+              ? 'bg-[#009933]'
+              : 'bg-gray-300'
+          }`}
         />
       ))}
     </div>

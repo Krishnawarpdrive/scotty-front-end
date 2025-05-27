@@ -2,20 +2,12 @@
 export interface Candidate {
   id: number;
   name: string;
+  email: string;
   role: string;
-  hiring: string;
-  interviewing: string;
-  stage: number;
-  responsible: {
-    name: string;
-    avatar?: string;
-  };
-  status: {
-    text: string;
-    type: 'scheduled' | 'awaited' | 'delay' | 'needs' | 'screening';
-    time?: string;
-    date?: string;
-  };
-  timeSpent: string;
-  targetDate: string;
+  status: 'active' | 'pending' | 'completed' | 'rejected';
+  priority: 'high' | 'medium' | 'low';
+  score: number;
+  currentStage: number;
+  totalStages: number;
+  timeInStage: string;
 }

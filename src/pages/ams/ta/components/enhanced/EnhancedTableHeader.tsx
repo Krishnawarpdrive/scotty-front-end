@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { TableHeader, TableHead, TableRow } from "@/components/ui-mui/table";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,8 +17,15 @@ export const EnhancedTableHeader: React.FC<EnhancedTableHeaderProps> = ({
   totalCount,
   onToggleSelectAll
 }) => {
+  const checkboxRef = useRef<HTMLButtonElement>(null);
   const isAllSelected = selectedCount === totalCount && totalCount > 0;
   const isIndeterminate = selectedCount > 0 && selectedCount < totalCount;
+
+  useEffect(() => {
+    if (checkboxRef.current) {
+      checkboxRef.current.indeterminate = isIndeterminate;
+    }
+  }, [isIndeterminate]);
 
   return (
     <TableHeader>
@@ -29,10 +36,8 @@ export const EnhancedTableHeader: React.FC<EnhancedTableHeaderProps> = ({
             whileTap={{ scale: 0.9 }}
           >
             <Checkbox
+              ref={checkboxRef}
               checked={isAllSelected}
-              ref={(el) => {
-                if (el) el.indeterminate = isIndeterminate;
-              }}
               onCheckedChange={onToggleSelectAll}
               className="border-2 data-[state=checked]:bg-[#009933] data-[state=checked]:border-[#009933]"
             />
