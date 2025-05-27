@@ -14,35 +14,35 @@ const timelineData = [
     id: 'application-submitted',
     title: 'Application Submitted',
     date: '2 days ago',
-    status: 'completed',
+    status: 'completed' as const,
     description: 'Candidate submitted application for Network Administrator role'
   },
   {
     id: 'phone-screening',
     title: 'Phone Screening',
     date: '1 day ago',
-    status: 'in-progress',
+    status: 'in-progress' as const,
     description: 'Initial phone screening call scheduled'
   },
   {
     id: 'technical',
     title: 'Technical Interview',
     date: 'Pending',
-    status: 'pending',
+    status: 'pending' as const,
     description: 'Technical assessment and interview'
   },
   {
     id: 'client-interview',
     title: 'Client Interview',
     date: 'Pending',
-    status: 'pending',
+    status: 'pending' as const,
     description: 'Final interview with client team'
   },
   {
     id: 'background-verification',
     title: 'Background Verification',
     date: 'Pending',
-    status: 'pending',
+    status: 'pending' as const,
     description: 'Document verification and background check'
   }
 ];

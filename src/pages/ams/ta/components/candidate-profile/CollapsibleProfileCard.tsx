@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Box, Typography, IconButton, Avatar, Chip, Collapse } from '@mui/material';
-import { ExpandLess, ExpandMore, Phone, Mail, MapPin } from '@mui/icons-material';
+import { ExpandLess, ExpandMore, Phone, Mail, LocationOn } from '@mui/icons-material';
 import { Candidate } from '../types/CandidateTypes';
 
 interface CollapsibleProfileCardProps {
@@ -68,7 +68,7 @@ export const CollapsibleProfileCard: React.FC<CollapsibleProfileCardProps> = ({
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <MapPin sx={{ fontSize: 16, color: 'text.secondary' }} />
+                <LocationOn sx={{ fontSize: 16, color: 'text.secondary' }} />
                 <Typography variant="body2" sx={{ fontFamily: 'Rubik, sans-serif' }}>
                   Mumbai, India
                 </Typography>
