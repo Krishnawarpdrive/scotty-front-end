@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs } from "@/components/ui/tabs";
 import { clientsData, rolesData, requirementsData, tasData } from './mockData';
 import ClientDetailDrawer from './components/ClientDetailDrawer';
@@ -13,6 +14,13 @@ import { RoleConfigurationDrawer } from './components/RoleConfigurationDrawer';
 import { useKeyboardShortcuts } from '@/contexts/KeyboardShortcutsContext';
 import { useRoleManagementShortcuts } from '@/hooks/useRoleManagementShortcuts';
 
+// New animated components
+import { StreakCelebration } from './components/animations/StreakCelebration';
+import { AnimatedMetrics } from './components/animations/AnimatedMetrics';
+import { FloatingActionButton, defaultRoleManagementActions } from './components/animations/FloatingActionButton';
+import { InteractiveCardContainer } from './components/animations/InteractiveCardContainer';
+import { triggerGoalCompletionToast } from './components/animations/GoalCompletionToast';
+
 const RoleManagementPage = () => {
   const { setCurrentScope } = useKeyboardShortcuts();
   const [activeTab, setActiveTab] = useState("roles");
@@ -20,12 +28,45 @@ const RoleManagementPage = () => {
   const [clientDrawerOpen, setClientDrawerOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<any>(null);
   const [roleConfigDrawerOpen, setRoleConfigDrawerOpen] = useState(false);
+  
+  // Animation states
+  const [streakCount, setStreakCount] = useState(0);
+  const [showStreakCelebration, setShowStreakCelebration] = useState(false);
+  const [dailyGoalsCompleted, setDailyGoalsCompleted] = useState(0);
 
   // Set the scope when component mounts
   useEffect(() => {
     setCurrentScope('role-management');
     return () => setCurrentScope('global');
   }, [setCurrentScope]);
+
+  // Simulate streak and goals for demo
+  useEffect(() => {
+    // Simulate daily streak
+    const streak = Math.floor(Math.random() * 15) + 1;
+    setStreakCount(streak);
+    
+    // Show celebration for milestones
+    if (streak === 7 || streak === 14 || streak % 5 === 0) {
+      setShowStreakCelebration(true);
+    }
+
+    // Check for completed goals
+    const completed = Math.floor(Math.random() * 3);
+    setDailyGoalsCompleted(completed);
+    
+    if (completed > 0) {
+      setTimeout(() => {
+        triggerGoalCompletionToast({
+          id: '1',
+          title: 'Process 5 new applications',
+          type: 'daily',
+          value: 5,
+          target: 5
+        });
+      }, 2000);
+    }
+  }, []);
   
   // Function to handle client click
   const handleClientClick = (clientName: string) => {
@@ -138,8 +179,58 @@ const RoleManagementPage = () => {
     }
   ];
 
+  // Mock metrics data
+  const mockMetrics = [
+    {
+      id: 'active-roles',
+      title: 'Active Roles',
+      value: rolesData.length,
+      target: 50,
+      trend: 'up' as const,
+      trendValue: 12
+    },
+    {
+      id: 'completion-rate',
+      title: 'Completion Rate',
+      value: 78,
+      target: 85,
+      unit: '%',
+      trend: 'up' as const,
+      trendValue: 5
+    },
+    {
+      id: 'avg-time-hire',
+      title: 'Avg. Time to Hire',
+      value: 18.5,
+      target: 15,
+      unit: 'days',
+      trend: 'down' as const,
+      trendValue: -8
+    }
+  ];
+
+  const enhancedActions = [
+    {
+      ...defaultRoleManagementActions[0],
+      action: handleCreateClient
+    },
+    {
+      ...defaultRoleManagementActions[1],
+      action: handleCreateRole
+    },
+    {
+      ...defaultRoleManagementActions[2],
+      action: () => console.log("Create requirement")
+    }
+  ];
+
   return (
-    <div className="space-y-6 bg-slate-50 min-h-screen">
+    <motion.div 
+      className="space-y-6 bg-slate-50 min-h-screen"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         {/* Page Header with Tabs */}
         <PageHeader 
@@ -149,52 +240,135 @@ const RoleManagementPage = () => {
         />
 
         {/* Content Area */}
-        <div className="px-6">
+        <div className="px-6 space-y-6">
+          {/* Animated Metrics Dashboard */}
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            <AnimatedMetrics 
+              metrics={mockMetrics}
+              title="Today's Performance"
+              animationStagger={150}
+            />
+          </motion.div>
+
           {/* TA Assignment Dashboard - show on TAs tab */}
-          {activeTab === "tas" && (
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">TA Assignment Dashboard</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                {mockTAs.map((ta, index) => (
-                  <TAAssignmentCard key={index} ta={ta} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="overflow-auto max-h-[calc(100vh-280px)]">
-            {activeTab === "clients" && (
-              <ClientsTabContent 
-                clientsData={clientsData} 
-                handleClientClick={handleClientClick}
-                handleRowClick={handleRowClick}
-              />
-            )}
-
-            {activeTab === "roles" && (
-              <RolesTabContent 
-                rolesData={rolesData}
-                handleClientClick={handleClientClick}
-                handleRowClick={handleRowClick}
-              />
-            )}
-
-            {activeTab === "requirements" && (
-              <RequirementsTabContent 
-                requirementsData={requirementsData}
-                handleRowClick={handleRowClick}
-              />
-            )}
-
+          <AnimatePresence mode="wait">
             {activeTab === "tas" && (
-              <TasTabContent 
-                tasData={tasData}
-                handleRowClick={handleRowClick}
-              />
+              <motion.div 
+                className="mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">TA Assignment Dashboard</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                  {mockTAs.map((ta, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1, duration: 0.4 }}
+                    >
+                      <InteractiveCardContainer 
+                        hoverEffect="lift"
+                        onCardClick={() => console.log(`Clicked TA: ${ta.name}`)}
+                      >
+                        <TAAssignmentCard ta={ta} />
+                      </InteractiveCardContainer>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
             )}
-          </div>
+          </AnimatePresence>
+
+          <motion.div 
+            className="overflow-auto max-h-[calc(100vh-280px)]"
+            layout
+          >
+            <AnimatePresence mode="wait">
+              {activeTab === "clients" && (
+                <motion.div
+                  key="clients"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ClientsTabContent 
+                    clientsData={clientsData} 
+                    handleClientClick={handleClientClick}
+                    handleRowClick={handleRowClick}
+                  />
+                </motion.div>
+              )}
+
+              {activeTab === "roles" && (
+                <motion.div
+                  key="roles"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <RolesTabContent 
+                    rolesData={rolesData}
+                    handleClientClick={handleClientClick}
+                    handleRowClick={handleRowClick}
+                  />
+                </motion.div>
+              )}
+
+              {activeTab === "requirements" && (
+                <motion.div
+                  key="requirements"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <RequirementsTabContent 
+                    requirementsData={requirementsData}
+                    handleRowClick={handleRowClick}
+                  />
+                </motion.div>
+              )}
+
+              {activeTab === "tas" && (
+                <motion.div
+                  key="tas"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <TasTabContent 
+                    tasData={tasData}
+                    handleRowClick={handleRowClick}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
       </Tabs>
+
+      {/* Floating Action Button */}
+      <FloatingActionButton 
+        actions={enhancedActions}
+        position="bottom-right"
+      />
+
+      {/* Streak Celebration */}
+      <StreakCelebration
+        streakCount={streakCount}
+        milestone={streakCount % 7 === 0}
+        onComplete={() => setShowStreakCelebration(false)}
+      />
 
       {/* Client Detail Drawer */}
       <ClientDetailDrawer
@@ -209,7 +383,7 @@ const RoleManagementPage = () => {
         open={roleConfigDrawerOpen}
         onOpenChange={setRoleConfigDrawerOpen}
       />
-    </div>
+    </motion.div>
   );
 };
 
