@@ -12,6 +12,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Settings, User, LogOut, HelpCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { KeyboardIcon } from '@/components/ui/keyboard-icon';
+import { useGlobalShortcuts } from '@/hooks/useGlobalShortcuts';
 
 interface HeaderProps {
   userName?: string;
@@ -19,6 +21,9 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ userName = 'John Doe' }) => {
   const navigate = useNavigate();
+  
+  // Register global shortcuts
+  useGlobalShortcuts();
 
   return (
     <header className="h-14 border-b bg-background flex items-center justify-between px-6 sticky top-0 z-50 w-full">
@@ -27,6 +32,7 @@ const Header: React.FC<HeaderProps> = ({ userName = 'John Doe' }) => {
       </div>
       
       <div className="flex items-center gap-3">
+        <KeyboardIcon />
         <span className="text-sm hidden md:block">{userName}</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

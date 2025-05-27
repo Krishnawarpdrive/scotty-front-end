@@ -1,10 +1,11 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow } from '@/components/ui/table';
 import { Plus, Users, Briefcase, ClipboardList } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useKeyboardShortcuts } from '@/contexts/KeyboardShortcutsContext';
+import { useDashboardShortcuts } from '@/hooks/useDashboardShortcuts';
 
 interface ActivityItem {
   id: string;
@@ -36,6 +37,17 @@ const upcomingTasks: TaskItem[] = [
 ];
 
 const AMSDashboard: React.FC = () => {
+  const { setCurrentScope } = useKeyboardShortcuts();
+  
+  // Set the scope when component mounts
+  useEffect(() => {
+    setCurrentScope('dashboard');
+    return () => setCurrentScope('global');
+  }, [setCurrentScope]);
+
+  // Register dashboard specific shortcuts
+  useDashboardShortcuts();
+
   return (
     <div className="space-y-6">
       {/* Hero Widgets */}
