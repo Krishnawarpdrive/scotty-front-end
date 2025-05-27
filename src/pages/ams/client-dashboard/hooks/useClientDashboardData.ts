@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { UsersIcon, BriefcaseIcon, CheckCircleIcon, ClockIcon } from 'lucide-react';
 
@@ -10,6 +9,29 @@ interface Activity {
   description: string;
   timestamp: string;
   priority: 'high' | 'medium' | 'low';
+}
+
+// Add new interfaces for vendor integration
+interface VendorSummary {
+  id: string;
+  name: string;
+  rolesAssigned: number;
+  activeRequirements: number;
+  performanceScore: number;
+  status: 'Active' | 'Warning' | 'Breach';
+  lastSubmission: string;
+}
+
+interface RoleOwnership {
+  id: string;
+  roleName: string;
+  vendorName?: string;
+  vacancies: number;
+  filledPositions: number;
+  candidatesInPipeline: number;
+  status: 'Assigned' | 'Unassigned' | 'Completed';
+  priority: 'High' | 'Medium' | 'Low';
+  deadline: string;
 }
 
 // Mock data - in a real app, this would come from APIs
@@ -203,6 +225,84 @@ export const useClientDashboardData = () => {
     }
   ];
 
+  // Mock vendor summary data
+  const vendorSummary: VendorSummary[] = [
+    {
+      id: '1',
+      name: 'TechTalent Solutions',
+      rolesAssigned: 8,
+      activeRequirements: 5,
+      performanceScore: 87,
+      status: 'Active',
+      lastSubmission: '2 days ago'
+    },
+    {
+      id: '2',
+      name: 'Global Recruiters Inc',
+      rolesAssigned: 5,
+      activeRequirements: 3,
+      performanceScore: 73,
+      status: 'Warning',
+      lastSubmission: '5 days ago'
+    },
+    {
+      id: '3',
+      name: 'Executive Search Partners',
+      rolesAssigned: 3,
+      activeRequirements: 2,
+      performanceScore: 91,
+      status: 'Active',
+      lastSubmission: '1 day ago'
+    }
+  ];
+
+  // Mock role ownership data
+  const roleOwnership: RoleOwnership[] = [
+    {
+      id: '1',
+      roleName: 'Senior Software Engineer',
+      vendorName: 'TechTalent Solutions',
+      vacancies: 3,
+      filledPositions: 1,
+      candidatesInPipeline: 5,
+      status: 'Assigned',
+      priority: 'High',
+      deadline: '2024-02-15'
+    },
+    {
+      id: '2',
+      roleName: 'Product Manager',
+      vendorName: 'Global Recruiters Inc',
+      vacancies: 2,
+      filledPositions: 0,
+      candidatesInPipeline: 3,
+      status: 'Assigned',
+      priority: 'Medium',
+      deadline: '2024-02-28'
+    },
+    {
+      id: '3',
+      roleName: 'UX Designer',
+      vacancies: 2,
+      filledPositions: 0,
+      candidatesInPipeline: 0,
+      status: 'Unassigned',
+      priority: 'High',
+      deadline: '2024-03-10'
+    },
+    {
+      id: '4',
+      roleName: 'Data Scientist',
+      vendorName: 'Executive Search Partners',
+      vacancies: 1,
+      filledPositions: 0,
+      candidatesInPipeline: 2,
+      status: 'Assigned',
+      priority: 'Medium',
+      deadline: '2024-02-20'
+    }
+  ];
+
   // Mock activity data with explicit typing
   const activities: Activity[] = [
     {
@@ -255,6 +355,8 @@ export const useClientDashboardData = () => {
     pipelineData,
     complianceData,
     activities,
+    vendorSummary,
+    roleOwnership,
     isLoading
   };
 };

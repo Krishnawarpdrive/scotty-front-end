@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ClientDashboardHeader } from './client-dashboard/components/ClientDashboardHeader';
@@ -8,6 +7,8 @@ import { RolesRequirementsTable } from './client-dashboard/components/RolesRequi
 import { PipelineVisualization } from './client-dashboard/components/PipelineVisualization';
 import { DocumentComplianceTracker } from './client-dashboard/components/DocumentComplianceTracker';
 import { ActivityFeed } from './client-dashboard/components/ActivityFeed';
+import { ClientVendorIntegration } from './client-dashboard/components/ClientVendorIntegration';
+import { ClientRoleOwnership } from './client-dashboard/components/ClientRoleOwnership';
 import { useClientDashboardData } from './client-dashboard/hooks/useClientDashboardData';
 
 const ClientDashboardPage: React.FC = () => {
@@ -18,6 +19,8 @@ const ClientDashboardPage: React.FC = () => {
     pipelineData, 
     complianceData, 
     activities,
+    vendorSummary,
+    roleOwnership,
     isLoading 
   } = useClientDashboardData();
 
@@ -31,6 +34,16 @@ const ClientDashboardPage: React.FC = () => {
       </div>
     );
   }
+
+  const handleViewAllVendors = () => {
+    // Navigate to vendor management page
+    console.log('Navigate to vendor management');
+  };
+
+  const handleAssignVendor = (roleId: string) => {
+    // Open vendor assignment modal
+    console.log('Assign vendor to role:', roleId);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -53,9 +66,21 @@ const ClientDashboardPage: React.FC = () => {
             
             <div className="space-y-6">
               <VendorScorecard scores={vendorScores} />
+              <ClientVendorIntegration 
+                vendors={vendorSummary} 
+                onViewAllVendors={handleViewAllVendors}
+              />
               <DocumentComplianceTracker data={complianceData} />
               <ActivityFeed activities={activities} />
             </div>
+          </div>
+
+          {/* Role Ownership Section */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <ClientRoleOwnership 
+              roles={roleOwnership}
+              onAssignVendor={handleAssignVendor}
+            />
           </div>
         </motion.div>
       </div>
