@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 248 250 252;
     --foreground: 0 0% 20%;
 
     --card: 0 0% 100%;
@@ -91,7 +91,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-rubik text-body;
+    @apply bg-slate-100 text-foreground font-rubik text-body;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -134,5 +134,25 @@
   
   .table-text {
     @apply text-table font-rubik;
+  }
+
+  .sidebar-nav-item {
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  .sidebar-nav-item:hover {
+    @apply bg-slate-100 shadow-sm;
+  }
+
+  .sidebar-nav-item.active {
+    @apply bg-primary/10 border-r-2 border-primary shadow-sm;
+  }
+
+  .sidebar-nav-item.active .sidebar-nav-text {
+    @apply text-primary font-medium;
+  }
+
+  .sidebar-nav-item.active .sidebar-nav-icon {
+    @apply text-primary;
   }
 }

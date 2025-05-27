@@ -25,7 +25,6 @@ import {
   TrendingUp,
   Search,
   BarChart,
-  Menu,
   UserCheck
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -69,37 +68,40 @@ export const AMSSidebar = () => {
 
   return (
     <Sidebar 
-      className="border-r transition-all duration-300 ease-in-out"
+      className="border-r transition-all duration-300 ease-in-out bg-white shadow-sm"
       collapsible="icon"
       variant="sidebar"
     >
-      <SidebarHeader className="border-b p-2">
-          <h2 className="text-xl font-semibold px-2">AMS</h2>
-        <div className="p-2 flex justify-between items-center">
+      <SidebarHeader className="border-b p-4 bg-gradient-to-r from-primary/5 to-accent/5">
+        <div className="flex items-center justify-between">
+          <h2 className={`text-xl font-semibold text-primary transition-all duration-200 ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
+            AMS
+          </h2>
+          <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-200" />
         </div>
         {!isCollapsed && (
-          <div className="px-2 pb-2">
+          <div className="mt-3">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search..."
-                className="w-full bg-background pl-8"
+                className="w-full bg-white border-gray-200 pl-8 focus:ring-2 focus:ring-primary/20"
               />
             </div>
           </div>
         )}
       </SidebarHeader>
       
-      <SidebarContent>
+      <SidebarContent className="bg-white">
         <SidebarGroup>
-          <div className="flex items-center justify-between">
-            {!isCollapsed && <SidebarGroupLabel>Navigation</SidebarGroupLabel>}
-            <SidebarTrigger />
-          </div>
+          {!isCollapsed && (
+            <SidebarGroupLabel className="text-xs uppercase tracking-wider text-gray-500 font-medium px-3 py-2">
+              Navigation
+            </SidebarGroupLabel>
+          )}
           
           <SidebarGroupContent>
-            <SidebarMenu>
-              
+            <SidebarMenu className="space-y-1 p-2">
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.path}>
                   <TooltipProvider>
@@ -107,17 +109,26 @@ export const AMSSidebar = () => {
                       <TooltipTrigger asChild>
                         <SidebarMenuButton 
                           asChild 
-                          isActive={isActive(item.path)} 
-                          className="my-1"
+                          isActive={isActive(item.path)}
+                          className={`
+                            sidebar-nav-item rounded-lg mx-1 h-11
+                            ${isActive(item.path) ? 'active' : ''}
+                            hover:bg-slate-50 hover:shadow-sm
+                            ${isActive(item.path) ? 'bg-primary/10 border-r-4 border-primary text-primary font-medium' : ''}
+                          `}
                         >
-                          <NavLink to={item.path} className="flex items-center">
-                            <item.icon className="h-4 w-4 min-w-4" />
-                            {!isCollapsed && <span className="ml-2 truncate">{item.title}</span>}
+                          <NavLink to={item.path} className="flex items-center w-full px-3">
+                            <item.icon className={`h-5 w-5 min-w-5 sidebar-nav-icon ${isActive(item.path) ? 'text-primary' : 'text-gray-600'}`} />
+                            {!isCollapsed && (
+                              <span className={`ml-3 truncate sidebar-nav-text transition-colors ${isActive(item.path) ? 'text-primary font-medium' : 'text-gray-700'}`}>
+                                {item.title}
+                              </span>
+                            )}
                           </NavLink>
                         </SidebarMenuButton>
                       </TooltipTrigger>
-                      {!isCollapsed && (
-                        <TooltipContent side="right">
+                      {isCollapsed && (
+                        <TooltipContent side="right" className="ml-2">
                           <p>{item.title}</p>
                         </TooltipContent>
                       )}

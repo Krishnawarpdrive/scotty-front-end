@@ -8,6 +8,7 @@ import ClientsTabContent from './components/ClientsTabContent';
 import RolesTabContent from './components/RolesTabContent';
 import RequirementsTabContent from './components/RequirementsTabContent';
 import TasTabContent from './components/TasTabContent';
+import { TAAssignmentCard } from './components/TAAssignmentCard';
 import { useKeyboardShortcuts } from '@/contexts/KeyboardShortcutsContext';
 import { useRoleManagementShortcuts } from '@/hooks/useRoleManagementShortcuts';
 
@@ -78,8 +79,60 @@ const RoleManagementPage = () => {
     tas: tasData.length
   };
 
+  // Mock TA data for the assignment cards
+  const mockTAs = [
+    {
+      name: 'Sarah Johnson',
+      email: 'sarah.j@company.com',
+      currentLoad: 8,
+      maxLoad: 10,
+      dailyTargets: {
+        interviews: 5,
+        completedInterviews: 3,
+        sourcing: 10,
+        completedSourcing: 7,
+        offers: 2,
+        completedOffers: 1
+      },
+      assignedRoles: 8,
+      efficiency: 87
+    },
+    {
+      name: 'Mike Chen',
+      email: 'mike.c@company.com',
+      currentLoad: 12,
+      maxLoad: 10,
+      dailyTargets: {
+        interviews: 6,
+        completedInterviews: 6,
+        sourcing: 8,
+        completedSourcing: 5,
+        offers: 3,
+        completedOffers: 2
+      },
+      assignedRoles: 12,
+      efficiency: 72
+    },
+    {
+      name: 'Emma Davis',
+      email: 'emma.d@company.com',
+      currentLoad: 6,
+      maxLoad: 10,
+      dailyTargets: {
+        interviews: 4,
+        completedInterviews: 4,
+        sourcing: 12,
+        completedSourcing: 10,
+        offers: 1,
+        completedOffers: 1
+      },
+      assignedRoles: 6,
+      efficiency: 92
+    }
+  ];
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-slate-50 min-h-screen">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         {/* Page Header with Tabs */}
         <PageHeader 
@@ -89,36 +142,50 @@ const RoleManagementPage = () => {
         />
 
         {/* Content Area */}
-        <div className="px-6 overflow-auto max-h-[calc(100vh-180px)]">
-          {activeTab === "clients" && (
-            <ClientsTabContent 
-              clientsData={clientsData} 
-              handleClientClick={handleClientClick}
-              handleRowClick={handleRowClick}
-            />
-          )}
-
-          {activeTab === "roles" && (
-            <RolesTabContent 
-              rolesData={rolesData}
-              handleClientClick={handleClientClick}
-              handleRowClick={handleRowClick}
-            />
-          )}
-
-          {activeTab === "requirements" && (
-            <RequirementsTabContent 
-              requirementsData={requirementsData}
-              handleRowClick={handleRowClick}
-            />
-          )}
-
+        <div className="px-6">
+          {/* TA Assignment Dashboard - show on TAs tab */}
           {activeTab === "tas" && (
-            <TasTabContent 
-              tasData={tasData}
-              handleRowClick={handleRowClick}
-            />
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">TA Assignment Dashboard</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {mockTAs.map((ta, index) => (
+                  <TAAssignmentCard key={index} ta={ta} />
+                ))}
+              </div>
+            </div>
           )}
+
+          <div className="overflow-auto max-h-[calc(100vh-280px)]">
+            {activeTab === "clients" && (
+              <ClientsTabContent 
+                clientsData={clientsData} 
+                handleClientClick={handleClientClick}
+                handleRowClick={handleRowClick}
+              />
+            )}
+
+            {activeTab === "roles" && (
+              <RolesTabContent 
+                rolesData={rolesData}
+                handleClientClick={handleClientClick}
+                handleRowClick={handleRowClick}
+              />
+            )}
+
+            {activeTab === "requirements" && (
+              <RequirementsTabContent 
+                requirementsData={requirementsData}
+                handleRowClick={handleRowClick}
+              />
+            )}
+
+            {activeTab === "tas" && (
+              <TasTabContent 
+                tasData={tasData}
+                handleRowClick={handleRowClick}
+              />
+            )}
+          </div>
         </div>
       </Tabs>
 

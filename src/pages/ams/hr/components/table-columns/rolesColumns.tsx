@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { 
@@ -9,36 +10,8 @@ import {
 import { AlertCircle } from "lucide-react";
 import { DataTableColumn } from "@/components/ui/data-table/types";
 import TAProfileList from '../TAProfileList';
-
-const getCTAColor = (alertReason: string) => {
-  const highPriority = ["TA not assigned", "Overdue vacancies", "No candidates sourced"];
-  const mediumPriority = ["Pipeline not configured", "Candidate progress stalled", "Inactive TA"];
-  
-  if (highPriority.some(reason => alertReason.includes(reason))) {
-    return "bg-red-500 hover:bg-red-600 text-white";
-  } else if (mediumPriority.some(reason => alertReason.includes(reason))) {
-    return "bg-orange-500 hover:bg-orange-600 text-white";
-  }
-  return "bg-blue-500 hover:bg-blue-600 text-white";
-};
-
-// Mapping from alert reasons to appropriate CTAs
-const getCtaForAlert = (alertReason: string) => {
-  const ctaMapping: Record<string, string> = {
-    "TA not assigned": "Assign TA",
-    "Pipeline not configured": "Configure Pipeline",
-    "Candidate progress stalled": "Check Pipeline Stage",
-    "Low interview-to-offer ratio": "Investigate Interview Quality",
-    "JD not attached": "Upload JD",
-    "Inactive TA": "Ping TA",
-    "Vacancies filled": "Mark Role as Completed",
-    "No candidates sourced": "Activate Sourcing",
-    "Overdue vacancies": "Escalate Deadline",
-    "Duplicate role": "Review Duplicate Roles"
-  };
-  
-  return ctaMapping[alertReason] || "Take Action";
-};
+import { PipelineStatusIndicator } from '../PipelineStatusIndicator';
+import { getRandomAlertReason, getAlertColor } from '../utils/alertReasons';
 
 export const getRolesColumns = (handleClientClick: (clientName: string) => void): DataTableColumn<any>[] => [
   {
@@ -47,30 +20,45 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
     accessorKey: "name",
     enableSorting: true,
     enableFiltering: true,
-    cell: (role: any) => (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="flex flex-col truncate min-w-[160px] cursor-help">
-              <span className="font-medium truncate hover:text-primary cursor-pointer">
-                {role.name}
-              </span>
-              <span className="text-[10px] text-muted-foreground truncate">
-                #{role.id.substring(0, 8)}
-              </span>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <div className="space-y-1 max-w-xs">
-              <p className="font-semibold">{role.name}</p>
-              <p className="text-xs">Role ID: #{role.id}</p>
-              <p className="text-xs">Department: {role.department || 'Engineering'}</p>
-              <p className="text-xs">Level: {role.level || 'Senior'}</p>
-            </div>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    ),
+    cell: (role: any) => {
+      const isPipelineConfigured = Math.random() > 0.3; // Mock data
+      const hasRequirements = Math.random() > 0.2; // Mock data
+      
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex flex-col truncate min-w-[160px] cursor-help">
+                <PipelineStatusIndicator
+                  roleName={role.name}
+                  isPipelineConfigured={isPipelineConfigured}
+                  hasRequirements={hasRequirements}
+                  className="font-medium truncate hover:text-primary cursor-pointer"
+                />
+                <span className="text-[10px] text-muted-foreground truncate">
+                  #{role.id.substring(0, 8)}
+                </span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="space-y-1 max-w-xs">
+                <p className="font-semibold">{role.name}</p>
+                <p className="text-xs">Role ID: #{role.id}</p>
+                <p className="text-xs">Department: {role.department || 'Engineering'}</p>
+                <p className="text-xs">Level: {role.level || 'Senior'}</p>
+                {(!isPipelineConfigured || !hasRequirements) && (
+                  <div className="pt-1 border-t">
+                    <p className="text-xs text-red-600 font-medium">Action Required:</p>
+                    {!isPipelineConfigured && <p className="text-xs">• Configure hiring pipeline</p>}
+                    {!hasRequirements && <p className="text-xs">• Map requirements</p>}
+                  </div>
+                )}
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
   },
   {
     id: "clientName",
@@ -223,33 +211,22 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
     enableSorting: true,
     enableFiltering: true,
     cell: (role: any) => {
-      const alertReasons = [
-        "TA not assigned",
-        "Pipeline not configured",
-        "Candidate progress stalled",
-        "Low interview-to-offer ratio",
-        "JD not attached",
-        "Inactive TA",
-        "Vacancies filled",
-        "No candidates sourced",
-        "Overdue vacancies",
-        "Duplicate role"
-      ];
-      const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
+      const alertReason = getRandomAlertReason();
       
       return (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <span className="text-sm text-gray-600 truncate max-w-[150px] inline-block cursor-help">
-                {randomReason}
+                {alertReason.reason}
               </span>
             </TooltipTrigger>
             <TooltipContent>
               <div className="space-y-1 max-w-xs">
                 <p className="font-semibold">Alert Details</p>
-                <p>{randomReason}</p>
-                <p className="text-xs text-gray-500">Click CTA to resolve</p>
+                <p>{alertReason.reason}</p>
+                <p className="text-xs text-gray-500">{alertReason.description}</p>
+                <p className="text-xs text-blue-600">Click CTA to resolve</p>
               </div>
             </TooltipContent>
           </Tooltip>
@@ -264,21 +241,7 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
     enableSorting: false,
     enableFiltering: false,
     cell: (role: any) => {
-      const alertReasons = [
-        "TA not assigned",
-        "Pipeline not configured",
-        "Candidate progress stalled",
-        "Low interview-to-offer ratio",
-        "JD not attached",
-        "Inactive TA",
-        "Vacancies filled",
-        "No candidates sourced",
-        "Overdue vacancies",
-        "Duplicate role"
-      ];
-      
-      const randomReason = alertReasons[Math.floor(Math.random() * alertReasons.length)];
-      const cta = getCtaForAlert(randomReason);
+      const alertReason = getRandomAlertReason();
       
       return (
         <TooltipProvider>
@@ -286,17 +249,20 @@ export const getRolesColumns = (handleClientClick: (clientName: string) => void)
             <TooltipTrigger asChild>
               <Button 
                 size="sm" 
-                className={`text-xs h-7 px-2 ${getCTAColor(randomReason)}`}
-                onClick={() => console.log(`Executing: ${cta} for role: ${role.name}`)}
+                className={`text-xs h-7 px-2 ${getAlertColor(alertReason.priority)}`}
+                onClick={() => {
+                  console.log(`Executing: ${alertReason.cta} for role: ${role.name}`);
+                  // Add actual action logic here
+                }}
               >
-                {cta}
+                {alertReason.cta}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
               <div className="space-y-1">
                 <p className="font-semibold">Action Required</p>
-                <p>{cta}</p>
-                <p className="text-xs text-gray-500">Click to execute</p>
+                <p>{alertReason.cta}</p>
+                <p className="text-xs text-gray-500">{alertReason.description}</p>
               </div>
             </TooltipContent>
           </Tooltip>
