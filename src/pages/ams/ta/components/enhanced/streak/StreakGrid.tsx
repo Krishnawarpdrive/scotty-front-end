@@ -1,8 +1,7 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { StreakDay } from "./StreakDay";
-import { StreakTooltip } from "./StreakTooltip";
 
 interface DayData {
   date: string;
@@ -19,30 +18,34 @@ interface StreakGridProps {
 }
 
 export const StreakGrid: React.FC<StreakGridProps> = ({ streakData }) => {
-  const [hoveredDay, setHoveredDay] = useState<DayData | null>(null);
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
-  const [showTooltip, setShowTooltip] = useState(false);
-
-  const handleDayHover = (dayData: DayData, position: { x: number; y: number }) => {
-    setHoveredDay(dayData);
-    setTooltipPosition(position);
-    setShowTooltip(true);
-  };
-
-  const handleDayLeave = () => {
-    setShowTooltip(false);
-    setTimeout(() => {
-      setHoveredDay(null);
-    }, 150);
-  };
-
-  // Group days by weeks (7 days each)
+  // Create a proper grid with exactly 90 days
+  // GitHub-style: 13 weeks × 7 days = 91, but we'll use 90 days
   const weeks = [];
-  for (let i = 0; i < streakData.length; i += 7) {
-    weeks.push(streakData.slice(i, i + 7));
+  const totalWeeks = 13; // 13 weeks for better visual layout
+  
+  // Pad the beginning with empty cells if needed
+  const firstDayOfWeek = new Date(streakData[0]?.date).getDay();
+  const paddedData = [...Array(firstDayOfWeek).fill(null), ...streakData];
+  
+  // Group into weeks of 7 days each
+  for (let i = 0; i < totalWeeks; i++) {
+    const weekData = [];
+    for (let j = 0; j < 7; j++) {
+      const dataIndex = i * 7 + j;
+      weekData.push(dataIndex < paddedData.length ? paddedData[dataIndex] : null);
+    }
+    weeks.push(weekData);
   }
 
   const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+  const handleDayHover = () => {
+    // No longer needed with Radix tooltip
+  };
+
+  const handleDayLeave = () => {
+    // No longer needed with Radix tooltip
+  };
 
   return (
     <motion.div 
@@ -51,45 +54,49 @@ export const StreakGrid: React.FC<StreakGridProps> = ({ streakData }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
     >
-      {/* Weekday labels */}
-      <div className="flex gap-1 mb-2">
-        <div className="w-3"></div> {/* Spacer for alignment */}
-        {weekDays.map((day, index) => (
-          <div key={index} className="w-3 text-xs text-gray-500 text-center">
-            {day}
+      <div className="flex">
+        {/* Weekday labels column */}
+        <div className="flex flex-col gap-0.5 mr-2">
+          <div className="h-3 mb-2"></div> {/* Spacer for month labels */}
+          {weekDays.map((day, index) => (
+            <div key={index} className="h-3 text-xs text-gray-500 flex items-center">
+              {index % 2 === 1 ? day : ''} {/* Show only alternate labels for space */}
+            </div>
+          ))}
+        </div>
+
+        {/* Calendar grid */}
+        <div className="flex flex-col">
+          {/* Month labels */}
+          <div className="flex justify-between text-xs text-gray-500 mb-2 h-3">
+            <span>3 months ago</span>
+            <span>2 months ago</span>
+            <span>1 month ago</span>
+            <span>Today</span>
           </div>
-        ))}
-      </div>
-
-      {/* Calendar grid */}
-      <div className="grid grid-cols-[repeat(13,1fr)] gap-1">
-        {weeks.map((week, weekIndex) => (
-          <React.Fragment key={weekIndex}>
-            {week.map((day, dayIndex) => (
-              <StreakDay
-                key={`${weekIndex}-${dayIndex}`}
-                dayData={day}
-                onHover={handleDayHover}
-                onLeave={handleDayLeave}
-              />
+          
+          {/* Grid of weeks */}
+          <div className="flex gap-0.5">
+            {weeks.map((week, weekIndex) => (
+              <div key={weekIndex} className="flex flex-col gap-0.5">
+                {week.map((day, dayIndex) => (
+                  <div key={`${weekIndex}-${dayIndex}`} className="w-3 h-3">
+                    {day ? (
+                      <StreakDay
+                        dayData={day}
+                        onHover={handleDayHover}
+                        onLeave={handleDayLeave}
+                      />
+                    ) : (
+                      <div className="w-3 h-3"></div>
+                    )}
+                  </div>
+                ))}
+              </div>
             ))}
-          </React.Fragment>
-        ))}
+          </div>
+        </div>
       </div>
-
-      {/* Month labels */}
-      <div className="flex justify-between text-xs text-gray-500 mt-2">
-        <span>3 months ago</span>
-        <span>2 months ago</span>
-        <span>1 month ago</span>
-        <span>Today</span>
-      </div>
-
-      <StreakTooltip
-        dayData={hoveredDay}
-        position={tooltipPosition}
-        isVisible={showTooltip}
-      />
     </motion.div>
   );
 };

@@ -2,11 +2,22 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { StreakGrid } from "./StreakGrid";
-import { generateStreakData } from "./streakUtils";
 
-export const StreakCalendar: React.FC = () => {
-  const streakData = generateStreakData(91); // 13 weeks = 91 days for proper grid
+interface DayData {
+  date: string;
+  calls: number;
+  profiles: number;
+  interviews: number;
+  callsTarget: number;
+  profilesTarget: number;
+  interviewsTarget: number;
+}
 
+interface StreakCalendarProps {
+  streakData: DayData[];
+}
+
+export const StreakCalendar: React.FC<StreakCalendarProps> = ({ streakData }) => {
   return (
     <motion.div 
       className="flex w-full flex-col mt-4 py-5"
@@ -23,7 +34,7 @@ export const StreakCalendar: React.FC = () => {
         <div className="text-xs text-gray-600">
           Less
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5">
           <div className="w-3 h-3 bg-gray-100 rounded-sm border border-gray-200"></div>
           <div className="w-3 h-3 bg-red-200 rounded-sm border border-gray-200"></div>
           <div className="w-3 h-3 bg-yellow-300 rounded-sm border border-gray-200"></div>

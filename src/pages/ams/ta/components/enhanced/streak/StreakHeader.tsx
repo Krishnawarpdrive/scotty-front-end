@@ -2,20 +2,31 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { generateStreakData, calculateCurrentStreak } from "./streakUtils";
+import { calculateCurrentStreak } from "./streakUtils";
+
+interface DayData {
+  date: string;
+  calls: number;
+  profiles: number;
+  interviews: number;
+  callsTarget: number;
+  profilesTarget: number;
+  interviewsTarget: number;
+}
 
 interface StreakHeaderProps {
   isHovered: boolean;
   selectedDate: string;
   onNavigate: (direction: 'prev' | 'next') => void;
+  streakData: DayData[];
 }
 
 export const StreakHeader: React.FC<StreakHeaderProps> = ({
   isHovered,
   selectedDate,
-  onNavigate
+  onNavigate,
+  streakData
 }) => {
-  const streakData = generateStreakData(90);
   const currentStreak = calculateCurrentStreak(streakData);
 
   return (
