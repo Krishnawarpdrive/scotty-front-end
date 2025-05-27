@@ -91,7 +91,7 @@ export const AMSSidebar = () => {
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search..."
-                className="w-full bg-white border-gray-200 pl-8 focus:ring-2 focus:ring-primary/20"
+                className="w-full bg-white border-gray-200 pl-8 focus:ring-2 focus:ring-primary/20 text-[13px] h-9"
               />
             </div>
           </div>
@@ -117,7 +117,7 @@ export const AMSSidebar = () => {
                           asChild 
                           isActive={isActive(item.path)}
                           className={`
-                            sidebar-nav-item rounded-lg mx-1 h-11
+                            sidebar-nav-item rounded-lg mx-1 h-11 text-[13px]
                             ${isActive(item.path) ? 'active' : ''}
                             hover:bg-slate-50 hover:shadow-sm
                             ${isActive(item.path) ? 'bg-primary/10 border-r-4 border-primary text-primary font-medium' : ''}
@@ -126,7 +126,7 @@ export const AMSSidebar = () => {
                           <NavLink to={item.path} className="flex items-center w-full px-3">
                             <item.icon className={`h-5 w-5 min-w-5 sidebar-nav-icon ${isActive(item.path) ? 'text-primary' : 'text-gray-600'}`} />
                             {!isCollapsed && (
-                              <span className={`ml-3 truncate sidebar-nav-text transition-colors ${isActive(item.path) ? 'text-primary font-medium' : 'text-gray-700'}`}>
+                              <span className={`ml-3 truncate sidebar-nav-text transition-colors text-[13px] ${isActive(item.path) ? 'text-primary font-medium' : 'text-gray-700'}`}>
                                 {item.title}
                               </span>
                             )}
@@ -135,7 +135,7 @@ export const AMSSidebar = () => {
                       </TooltipTrigger>
                       {isCollapsed && (
                         <TooltipContent side="right" className="ml-2">
-                          <p>{item.title}</p>
+                          <p className="text-[13px]">{item.title}</p>
                         </TooltipContent>
                       )}
                     </Tooltip>
