@@ -29,7 +29,10 @@ export const EnhancedTableHeader: React.FC<EnhancedTableHeaderProps> = ({
             whileTap={{ scale: 0.9 }}
           >
             <Checkbox
-              checked={isAllSelected || (isIndeterminate ? "indeterminate" : false)}
+              checked={isAllSelected}
+              ref={(el) => {
+                if (el) el.indeterminate = isIndeterminate;
+              }}
               onCheckedChange={onToggleSelectAll}
               className="border-2 data-[state=checked]:bg-[#009933] data-[state=checked]:border-[#009933]"
             />

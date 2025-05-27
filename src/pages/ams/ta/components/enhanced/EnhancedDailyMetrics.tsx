@@ -1,12 +1,12 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronUp, ChevronDown, Phone, Eye, Calendar } from "lucide-react";
+import { ChevronUp, ChevronDown, Target, TrendingUp, Phone, Eye, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AnimatedProgressBar } from "../animations/AnimatedProgressBar";
-import { InteractiveCardContainer } from "../animations/InteractiveCardContainer";
+import { AnimatedProgressBar } from "../../hr/components/animations/AnimatedProgressBar";
+import { InteractiveCardContainer } from "../../hr/components/animations/InteractiveCardContainer";
 
 interface MetricCardProps {
   icon: React.ReactNode;
