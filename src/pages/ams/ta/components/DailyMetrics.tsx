@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { EnhancedStreakCard } from "./enhanced/EnhancedStreakCard";
 import { EnhancedTodaysTargetsCard } from "./enhanced/EnhancedTodaysTargetsCard";
@@ -9,6 +9,7 @@ import { CompactView } from "./CompactView";
 import { ChevronUp } from "lucide-react";
 import { StreakCelebration } from "./StreakCelebration";
 import { triggerGoalCompletionToast, triggerMilestoneToast } from "@/components/GoalCompletionToast";
+import { useGamification } from "@/store/hooks/useGamification";
 
 export const DailyMetrics: React.FC = () => {
   const [activeTab, setActiveTab] = useState("Default");
@@ -16,6 +17,15 @@ export const DailyMetrics: React.FC = () => {
   const [showStreakCelebration, setShowStreakCelebration] = useState(true);
   const [streakCount, setStreakCount] = useState(7);
   const [dailyGoalsCompleted, setDailyGoalsCompleted] = useState(3);
+  
+  const { 
+    currentUser, 
+    streakData, 
+    incrementStreak, 
+    updateGoal, 
+    celebrationQueue,
+    processCelebrationQueue 
+  } = useGamification();
   
   const toggleCollapse = () => {
     setIsCollapsed(false);
@@ -31,10 +41,31 @@ export const DailyMetrics: React.FC = () => {
     }, 3000);
   };
 
-  
   const handleMilestone = (milestone: number, metricTitle: string) => {
     triggerMilestoneToast(milestone, metricTitle);
+    
+    // Simulate daily activity
+    incrementStreak();
+    
+    // Update a daily goal
+    setTimeout(() => {
+      updateGoal('daily-applications', 3);
+    }, 3000);
   };
+
+  useEffect(() => {
+    toggleCollapse();
+  }, []);
+
+  // Process celebration queue
+  useEffect(() => {
+    if (celebrationQueue.length > 0) {
+      const celebration = processCelebrationQueue();
+      if (celebration) {
+        console.log('Processing celebration:', celebration);
+      }
+    }
+  }, [celebrationQueue.length]);
   
   React.useEffect(() => {
     toggleCollapse();
@@ -59,7 +90,7 @@ export const DailyMetrics: React.FC = () => {
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          Daily Metrics
+          Daily Metrics {currentUser && `- ${currentUser.name}`}
         </motion.h2>
         
         <div className="self-stretch flex min-w-60 items-center gap-[3px] my-auto">
@@ -100,13 +131,13 @@ export const DailyMetrics: React.FC = () => {
       </div>
 
       {showStreakCelebration && (
-          <StreakCelebration
-            streakCount={streakCount}
-            milestone={streakCount % 7 === 0}
-            duration={3000}
-            onComplete={() => setShowStreakCelebration(false)}
-          />
-        )}
+        <StreakCelebration
+          streakCount={streakData.currentStreak}
+          milestone={streakData.currentStreak % 7 === 0}
+          duration={3000}
+          onComplete={() => setShowStreakCelebration(false)}
+        />
+      )}
       
       <motion.div 
         className="flex w-full gap-[11px] flex-wrap mt-[11px] px-5"
@@ -146,7 +177,6 @@ export const DailyMetrics: React.FC = () => {
           <EnhancedHiringFunnelCard />
         </motion.div>
       </motion.div>
-
     </motion.div>
   );
 };
