@@ -48,13 +48,8 @@ export const InteractiveCardContainer: React.FC<InteractiveCardContainerProps> =
           }
         };
       case 'tilt':
-        return {
-          hover: { 
-            rotateX: rotateX,
-            rotateY: rotateY,
-            transition: { duration: 0.1 }
-          }
-        };
+        // For tilt effect, we'll handle rotation separately using style prop
+        return {};
       default:
         return {};
     }
@@ -78,6 +73,18 @@ export const InteractiveCardContainer: React.FC<InteractiveCardContainerProps> =
     }
   };
 
+  // For tilt effect, we need to handle the style separately
+  const getMotionStyle = () => {
+    if (hoverEffect === 'tilt') {
+      return {
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d" as const
+      };
+    }
+    return {};
+  };
+
   return (
     <motion.div
       className={`cursor-pointer ${className}`}
@@ -89,11 +96,7 @@ export const InteractiveCardContainer: React.FC<InteractiveCardContainerProps> =
       onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}
       onClick={onCardClick}
-      style={hoverEffect === 'tilt' ? { 
-        rotateX, 
-        rotateY,
-        transformStyle: "preserve-3d"
-      } : {}}
+      style={getMotionStyle()}
     >
       <Card className={`transition-all duration-200 ${isHovered ? 'shadow-lg' : 'shadow-sm'}`}>
         {children}
