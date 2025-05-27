@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Filter, ChevronDown, Download } from 'lucide-react';
@@ -16,6 +15,7 @@ import { AdvancedFiltersDrawer } from './components/dashboard/AdvancedFiltersDra
 import { useDashboardData, MetricData } from './hooks/useDashboardData';
 import { useFilterOptions } from './hooks/useFilterOptions';
 import { motion } from 'framer-motion';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 const HRDashboardPage: React.FC = () => {
   const [dateRange, setDateRange] = useState('30');
@@ -35,24 +35,20 @@ const HRDashboardPage: React.FC = () => {
   const [roleDrawerOpen, setRoleDrawerOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
-  
   const {
     metrics,
     isLoading
   } = useDashboardData(dateRange, taFilter, roleFilter, clientFilter);
-  
   const {
     dateRangeOptions,
     taOptions,
     roleOptions,
     clientOptions
   } = useFilterOptions();
-  
   const handleShowDetails = (metric: MetricData) => {
     setCurrentMetric(metric);
     setDetailsDrawerOpen(true);
   };
-  
   const handlePipelineStageClick = (stage: string, data: any) => {
     setSelectedPipelineStage({
       stage,
@@ -60,38 +56,33 @@ const HRDashboardPage: React.FC = () => {
     });
     setPipelineDrawerOpen(true);
   };
-  
   const handlePersonClick = (person: string) => {
     setSelectedPerson(person);
     setPersonDrawerOpen(true);
   };
-  
   const handleRoleClick = (role: string) => {
     setSelectedRole(role);
     setRoleDrawerOpen(true);
   };
-  
   const handleAdvancedFiltersApply = (filters: any) => {
     console.log('Advanced filters applied:', filters);
     // Apply filters to dashboard data
   };
-  
-  return (
-    <div className="h-full flex flex-col bg-slate-50">
-      {/* Header with improved spacing and typography */}
-      <div className="bg-white border-b border-slate-200 px-8 py-6 sticky top-0 z-10 shadow-sm">
+  return <div className="h-full flex flex-col bg-gray-50">
+      {/* Header with Breadcrumbs */}
+      <div className="bg-white border-b px-6 py-4 sticky top-0 z-10 shadow-sm">
+
         <div className="flex justify-between items-center">
-          <div className="space-y-1">
-            <h1 className="page-title text-slate-900">Hiring Analytics Dashboard</h1>
-            <p className="text-slate-500 text-sm">Track and optimize your recruitment performance</p>
+          <div>
+            <h1 className="text-2xl font-bold">Hiring Analytics Dashboard</h1>
           </div>
-          <div className="flex space-x-3">
-            <Button variant="outline" size="default" className="flex items-center gap-2" onClick={() => setAdvancedFiltersOpen(true)}>
+          <div className="flex space-x-2">
+            <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={() => setAdvancedFiltersOpen(true)}>
               <Filter className="h-4 w-4" />
               <span>Advanced Filters</span>
               <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
-            <Button size="default" className="flex items-center gap-2">
+            <Button size="sm" className="flex items-center gap-1">
               <Download className="h-4 w-4" />
               Export Report
             </Button>
@@ -99,112 +90,65 @@ const HRDashboardPage: React.FC = () => {
         </div>
       </div>
       
-      {/* Enhanced Filters with better spacing */}
-      <div className="bg-white border-b border-slate-200 px-8 py-4">
-        <EnhancedFilters 
-          dateRange={dateRange} 
-          taFilter={taFilter} 
-          roleFilter={roleFilter} 
-          clientFilter={clientFilter} 
-          onDateRangeChange={setDateRange} 
-          onTaFilterChange={setTaFilter} 
-          onRoleFilterChange={setRoleFilter} 
-          onClientFilterChange={setClientFilter} 
-          dateRangeOptions={dateRangeOptions} 
-          taOptions={taOptions} 
-          roleOptions={roleOptions} 
-          clientOptions={clientOptions} 
-        />
-      </div>
+      {/* Filters */}
+      <EnhancedFilters dateRange={dateRange} taFilter={taFilter} roleFilter={roleFilter} clientFilter={clientFilter} onDateRangeChange={setDateRange} onTaFilterChange={setTaFilter} onRoleFilterChange={setRoleFilter} onClientFilterChange={setClientFilter} dateRangeOptions={dateRangeOptions} taOptions={taOptions} roleOptions={roleOptions} clientOptions={clientOptions} />
       
       <div className="flex-1 flex overflow-hidden">
-        <div className="flex-1 p-8 overflow-y-auto space-y-8">
-          {/* Candidate Pipeline Overview with improved spacing */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ duration: 0.5 }} 
-            className="card"
-          >
+        <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+          {/* Candidate Pipeline Overview */}
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          duration: 0.5
+        }} className="mb-4 md:mb-6">
             <CandidatePipelineChart onStageClick={handlePipelineStageClick} />
           </motion.div>
           
           {/* Weekly Goals Progress */}
-          <WeeklyGoalsSection className="card" />
+          <WeeklyGoalsSection className="mb-4 md:mb-6" />
           
-          {/* Primary Metrics with improved grid and spacing */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ duration: 0.5, delay: 0.2 }} 
-            className="space-y-6"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="section-heading">Primary Hiring Metrics</h2>
-              <p className="text-slate-500 text-sm">Key performance indicators for your hiring process</p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {isLoading ? (
-                Array(5).fill(null).map((_, i) => (
-                  <div key={i} className="h-[240px] bg-white animate-pulse rounded-xl border border-slate-200"></div>
-                ))
-              ) : (
-                metrics.map((metric, index) => (
-                  <MetricCard 
-                    key={index} 
-                    metric={metric} 
-                    onClick={() => handleShowDetails(metric)} 
-                  />
-                ))
-              )}
+          {/* Primary Metrics */}
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          duration: 0.5,
+          delay: 0.3
+        }} className="mb-6 md:mb-8">
+            <h2 className="font-bold text-xl mb-4">Primary Hiring Metrics</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {isLoading ? Array(5).fill(null).map((_, i) => <div key={i} className="h-[280px] bg-white animate-pulse rounded-xl border"></div>) : metrics.map((metric, index) => <MetricCard key={index} metric={metric} onClick={() => handleShowDetails(metric)} />)}
             </div>
           </motion.div>
+          
+          {/* Secondary Metrics */}
+          
         </div>
         
-        {/* Activity Feed Sidebar with improved styling */}
-        <div className="hidden lg:block border-l border-slate-200">
-          <RecentActivityPanel 
-            collapsed={activityPanelCollapsed} 
-            onToggle={() => setActivityPanelCollapsed(!activityPanelCollapsed)} 
-            onPersonClick={handlePersonClick} 
-            onRoleClick={handleRoleClick} 
-          />
+        {/* Activity Feed Sidebar */}
+        <div className="hidden lg:block">
+          <RecentActivityPanel collapsed={activityPanelCollapsed} onToggle={() => setActivityPanelCollapsed(!activityPanelCollapsed)} onPersonClick={handlePersonClick} onRoleClick={handleRoleClick} />
         </div>
       </div>
       
       {/* Drawers */}
-      <MetricDetailsDrawer 
-        open={detailsDrawerOpen} 
-        onOpenChange={setDetailsDrawerOpen} 
-        metric={currentMetric} 
-      />
+      <MetricDetailsDrawer open={detailsDrawerOpen} onOpenChange={setDetailsDrawerOpen} metric={currentMetric} />
 
-      <PipelineDetailSidebar 
-        open={pipelineDrawerOpen} 
-        onOpenChange={setPipelineDrawerOpen} 
-        stage={selectedPipelineStage?.stage || null} 
-        data={selectedPipelineStage?.data || null} 
-      />
+      <PipelineDetailSidebar open={pipelineDrawerOpen} onOpenChange={setPipelineDrawerOpen} stage={selectedPipelineStage?.stage || null} data={selectedPipelineStage?.data || null} />
 
-      <PersonDetailDrawer 
-        open={personDrawerOpen} 
-        onOpenChange={setPersonDrawerOpen} 
-        personName={selectedPerson} 
-      />
+      <PersonDetailDrawer open={personDrawerOpen} onOpenChange={setPersonDrawerOpen} personName={selectedPerson} />
 
-      <RoleDetailDrawer 
-        open={roleDrawerOpen} 
-        onOpenChange={setRoleDrawerOpen} 
-        roleName={selectedRole} 
-      />
+      <RoleDetailDrawer open={roleDrawerOpen} onOpenChange={setRoleDrawerOpen} roleName={selectedRole} />
 
-      <AdvancedFiltersDrawer 
-        open={advancedFiltersOpen} 
-        onOpenChange={setAdvancedFiltersOpen} 
-        onFiltersApply={handleAdvancedFiltersApply} 
-      />
-    </div>
-  );
+      <AdvancedFiltersDrawer open={advancedFiltersOpen} onOpenChange={setAdvancedFiltersOpen} onFiltersApply={handleAdvancedFiltersApply} />
+    </div>;
 };
 
 export default HRDashboardPage;
