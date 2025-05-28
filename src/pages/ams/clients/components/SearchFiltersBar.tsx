@@ -2,7 +2,7 @@
 import React from 'react';
 import { SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui-mui/Button';
-import { EnhancedSearchBar } from '@/components/ai/EnhancedSearchBar';
+import { UnifiedSearchBar } from '@/components/search/UnifiedSearchBar';
 
 interface SearchFiltersBarProps {
   searchTerm: string;
@@ -18,11 +18,11 @@ const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
   return (
     <div className="flex gap-4 items-center">
       <div className="flex-1">
-        <EnhancedSearchBar
-          placeholder="Search clients or ask AI for insights..."
+        <UnifiedSearchBar
+          placeholder="Search clients..."
           onTraditionalSearch={onSearchChange}
           defaultTables={['clients']}
-          showTrending={true}
+          searchMode="both"
         />
       </div>
       <Button 

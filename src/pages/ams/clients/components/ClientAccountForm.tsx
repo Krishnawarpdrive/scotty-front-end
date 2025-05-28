@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
@@ -11,8 +12,6 @@ import AccountInfoStep from './client-form/AccountInfoStep';
 import CompanyProfileStep from './client-form/CompanyProfileStep';
 import SourcingDetailsStep from './client-form/SourcingDetailsStep';
 import AddressDetailsStep from './client-form/AddressDetailsStep';
-import { SmartSuggestions } from '@/components/ai/SmartSuggestions';
-import { ContentGenerator } from '@/components/ai/ContentGenerator';
 
 // Import the client form schema
 import { formSchema, FormValues, CustomField } from './client-form/clientFormSchema';
@@ -28,7 +27,6 @@ const ClientAccountForm: React.FC<ClientAccountFormProps> = ({ isDrawer = false 
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [sameAsBilling, setSameAsBilling] = useState(true);
   const [formProgress, setFormProgress] = useState(0);
-  const [showAIAssistance, setShowAIAssistance] = useState(false);
   
   // Custom fields state
   const [customAccountFields, setCustomAccountFields] = useState<CustomField[]>([]);
@@ -223,39 +221,12 @@ const ClientAccountForm: React.FC<ClientAccountFormProps> = ({ isDrawer = false 
     }
   }, [sameAsBilling]);
   
-  const handleAISuggestionApply = (suggestion: any) => {
-    // Apply AI suggestions to form fields
-    if (suggestion.data) {
-      Object.entries(suggestion.data).forEach(([field, value]) => {
-        if (form.getValues()[field as keyof FormValues] !== undefined) {
-          form.setValue(field as keyof FormValues, value as any);
-        }
-      });
-      
-      toast({
-        title: "AI Suggestion Applied",
-        description: suggestion.description,
-      });
-    }
-  };
-
-  const toggleAIAssistance = () => {
-    setShowAIAssistance(!showAIAssistance);
-  };
-  
   return (
     <div className={`space-y-4 ${isDrawer ? "" : "w-full"}`}>
       {!isDrawer && (
         <>
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-medium text-[#262626]">Add Client Account</h1>
-            <Button 
-              variant="outline" 
-              onClick={toggleAIAssistance}
-              className="flex items-center gap-2"
-            >
-              🤖 AI Assistant
-            </Button>
           </div>
           
           <div className="text-gray-600">
@@ -277,39 +248,17 @@ const ClientAccountForm: React.FC<ClientAccountFormProps> = ({ isDrawer = false 
         </div>
       )}
       
-      {/* AI Smart Suggestions */}
-      <SmartSuggestions
-        context="client-creation"
-        data={form.getValues()}
-        onApplySuggestion={handleAISuggestionApply}
-      />
-      
       <div className={`${isDrawer ? "" : "bg-white rounded-md shadow-sm border border-gray-200"} overflow-hidden`}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div ref={formRef} className={`p-6 ${isDrawer ? "max-h-[calc(100vh-220px)]" : "max-h-[calc(100vh-320px)]"} overflow-y-auto`}>
               {/* Account Information - Step 0 */}
               {currentStep === 0 && (
-                <div className="space-y-6">
-                  <AccountInfoStep 
-                    form={form} 
-                    customAccountFields={customAccountFields}
-                    setCustomAccountFields={setCustomAccountFields}
-                  />
-                  
-                  {showAIAssistance && (
-                    <ContentGenerator
-                      type="job-description"
-                      context={{
-                        accountName: form.watch('accountName'),
-                        industry: form.watch('industry')
-                      }}
-                      onGenerated={(content) => {
-                        form.setValue('description', content);
-                      }}
-                    />
-                  )}
-                </div>
+                <AccountInfoStep 
+                  form={form} 
+                  customAccountFields={customAccountFields}
+                  setCustomAccountFields={setCustomAccountFields}
+                />
               )}
               
               {/* Company Profile - Step 1 */}
