@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Box, Typography, Grid, Chip } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { DesignSystemTextField } from '@/components/ui-mui/DesignSystemTextField';
 import { DesignSystemSelect } from '@/components/ui-mui/DesignSystemSelect';
 
@@ -31,9 +31,16 @@ const experienceOptions = [
 const noticePeriodOptions = [
   { value: 'immediate', label: 'Immediate' },
   { value: '15-days', label: '15 days' },
-  { value: '30-days', label: '30 days' },
-  { value: '60-days', label: '60 days' },
-  { value: '90-days', label: '90 days' }
+  { value: '1-month', label: '1 month' },
+  { value: '2-months', label: '2 months' },
+  { value: '3-months', label: '3 months' }
+];
+
+const availabilityOptions = [
+  { value: 'immediate', label: 'Immediate' },
+  { value: 'within-week', label: 'Within a week' },
+  { value: 'within-month', label: 'Within a month' },
+  { value: 'flexible', label: 'Flexible' }
 ];
 
 export const RoleInformationSection: React.FC<RoleInformationSectionProps> = ({
@@ -49,109 +56,89 @@ export const RoleInformationSection: React.FC<RoleInformationSectionProps> = ({
         fontSize: '14px',
         color: '#111827'
       }}>
-        Role & Employment Information
+        Role Information
       </Typography>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <DesignSystemTextField
-            fullWidth
-            label="Applied Role"
-            value={formData.appliedRole}
-            onChange={(e) => onFieldChange('appliedRole', e.target.value)}
-            InputProps={{
-              readOnly: true,
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: '#f9fafb',
-              },
-            }}
-          />
-        </Grid>
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+        <DesignSystemTextField
+          fullWidth
+          label="Applied Role"
+          value={formData.appliedRole}
+          onChange={(e) => onFieldChange('appliedRole', e.target.value)}
+        />
 
-        <Grid item xs={12} md={6}>
-          <DesignSystemTextField
-            fullWidth
-            label="Current Role/Position"
-            value={formData.currentRole}
-            onChange={(e) => onFieldChange('currentRole', e.target.value)}
-          />
-        </Grid>
+        <DesignSystemTextField
+          fullWidth
+          label="Current Role"
+          value={formData.currentRole}
+          onChange={(e) => onFieldChange('currentRole', e.target.value)}
+        />
+      </Box>
 
-        <Grid item xs={12} md={6}>
-          <DesignSystemTextField
-            fullWidth
-            label="Current Company"
-            value={formData.currentCompany}
-            onChange={(e) => onFieldChange('currentCompany', e.target.value)}
-          />
-        </Grid>
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+        <DesignSystemTextField
+          fullWidth
+          label="Current Company"
+          value={formData.currentCompany}
+          onChange={(e) => onFieldChange('currentCompany', e.target.value)}
+        />
 
-        <Grid item xs={12} md={6}>
-          <DesignSystemSelect
-            fullWidth
-            label="Total Experience"
-            value={formData.experienceYears}
-            onChange={(value) => onFieldChange('experienceYears', value)}
-            options={experienceOptions}
-          />
-        </Grid>
+        <DesignSystemSelect
+          fullWidth
+          label="Total Experience"
+          value={formData.experienceYears}
+          onChange={(value) => onFieldChange('experienceYears', value)}
+          options={experienceOptions}
+        />
+      </Box>
 
-        <Grid item xs={12}>
-          <DesignSystemTextField
-            fullWidth
-            label="Relevant Experience Description"
-            value={formData.relevantExperience}
-            onChange={(e) => onFieldChange('relevantExperience', e.target.value)}
-            multiline
-            rows={3}
-            placeholder="Describe relevant experience, key projects, and achievements..."
-          />
-        </Grid>
+      <Box sx={{ mb: 2 }}>
+        <DesignSystemTextField
+          fullWidth
+          label="Relevant Experience"
+          value={formData.relevantExperience}
+          onChange={(e) => onFieldChange('relevantExperience', e.target.value)}
+          multiline
+          rows={3}
+          placeholder="Describe relevant experience for this role..."
+        />
+      </Box>
 
-        <Grid item xs={12} md={4}>
-          <DesignSystemTextField
-            fullWidth
-            label="Current Salary (₹ LPA)"
-            value={formData.currentSalary}
-            onChange={(e) => onFieldChange('currentSalary', e.target.value)}
-            placeholder="e.g., 12.5"
-          />
-        </Grid>
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+        <DesignSystemTextField
+          fullWidth
+          label="Current Salary (LPA)"
+          value={formData.currentSalary}
+          onChange={(e) => onFieldChange('currentSalary', e.target.value)}
+          placeholder="e.g., 12 LPA"
+        />
 
-        <Grid item xs={12} md={4}>
-          <DesignSystemTextField
-            fullWidth
-            label="Expected Salary (₹ LPA)"
-            value={formData.expectedSalary}
-            onChange={(e) => onFieldChange('expectedSalary', e.target.value)}
-            placeholder="e.g., 15.0"
-          />
-        </Grid>
+        <DesignSystemTextField
+          fullWidth
+          label="Expected Salary (LPA)"
+          value={formData.expectedSalary}
+          onChange={(e) => onFieldChange('expectedSalary', e.target.value)}
+          placeholder="e.g., 15 LPA"
+        />
+      </Box>
 
-        <Grid item xs={12} md={4}>
-          <DesignSystemSelect
-            fullWidth
-            label="Notice Period"
-            value={formData.noticePeriod}
-            onChange={(value) => onFieldChange('noticePeriod', value)}
-            options={noticePeriodOptions}
-          />
-        </Grid>
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+        <DesignSystemSelect
+          fullWidth
+          label="Notice Period"
+          value={formData.noticePeriod}
+          onChange={(value) => onFieldChange('noticePeriod', value)}
+          options={noticePeriodOptions}
+        />
 
-        <Grid item xs={12}>
-          <DesignSystemTextField
-            fullWidth
-            label="Availability & Constraints"
-            value={formData.availability}
-            onChange={(e) => onFieldChange('availability', e.target.value)}
-            multiline
-            rows={2}
-            placeholder="Any specific availability constraints, preferred interview times, etc."
-          />
-        </Grid>
-      </Grid>
+        <DesignSystemSelect
+          fullWidth
+          label="Availability"
+          value={formData.availability}
+          onChange={(value) => onFieldChange('availability', value)}
+          options={availabilityOptions}
+        />
+      </Box>
     </Box>
   );
 };
