@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Box, Typography, Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent, TimelineDot } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import { Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent, TimelineDot } from '@mui/lab';
 import { CheckCircle, Clock, AlertCircle } from 'lucide-react';
 
 interface ActivityTimelineTabProps {

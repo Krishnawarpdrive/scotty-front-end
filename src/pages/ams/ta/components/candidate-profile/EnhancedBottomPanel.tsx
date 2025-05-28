@@ -10,7 +10,7 @@ import { Candidate } from '../types/CandidateTypes';
 interface Stage {
   id: string;
   name: string;
-  status: 'completed' | 'active' | 'pending';
+  status: 'completed' | 'current' | 'pending';
   order: number;
 }
 

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Box, Typography, Grid } from '@mui/material';
+import { Box, Typography, Grid2 as Grid } from '@mui/material';
 import { DesignSystemTextField } from '@/components/ui-mui/DesignSystemTextField';
 import { DesignSystemSelect } from '@/components/ui-mui/DesignSystemSelect';
 
@@ -56,7 +56,7 @@ export const AddressSection: React.FC<AddressSectionProps> = ({
       </Typography>
 
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid xs={12}>
           <DesignSystemTextField
             fullWidth
             label="Current Address"
@@ -67,7 +67,7 @@ export const AddressSection: React.FC<AddressSectionProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <DesignSystemTextField
             fullWidth
             label="City"
@@ -76,7 +76,7 @@ export const AddressSection: React.FC<AddressSectionProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid xs={12} md={3}>
           <DesignSystemSelect
             fullWidth
             label="State"
@@ -86,7 +86,7 @@ export const AddressSection: React.FC<AddressSectionProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid xs={12} md={3}>
           <DesignSystemTextField
             fullWidth
             label="ZIP Code"
@@ -95,7 +95,7 @@ export const AddressSection: React.FC<AddressSectionProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <DesignSystemSelect
             fullWidth
             label="Country"
@@ -105,7 +105,7 @@ export const AddressSection: React.FC<AddressSectionProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <DesignSystemTextField
             fullWidth
             label="Preferred Work Location"
@@ -115,7 +115,7 @@ export const AddressSection: React.FC<AddressSectionProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid xs={12}>
           <DesignSystemSelect
             fullWidth
             label="Willing to Relocate"
