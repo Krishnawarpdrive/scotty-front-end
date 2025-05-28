@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Box, Typography, Grid, Alert } from '@mui/material';
+import { Box, Typography, Alert } from '@mui/material';
 import { DesignSystemTextField } from '@/components/ui-mui/DesignSystemTextField';
 import { DesignSystemSelect } from '@/components/ui-mui/DesignSystemSelect';
 import { AlertTriangle, CheckCircle, Clock } from 'lucide-react';
@@ -68,8 +68,8 @@ export const RemarksSection: React.FC<RemarksSectionProps> = ({
         Interviewer Remarks & Assessment
       </Typography>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
+      <Box sx={{ display: 'grid', gap: 2 }}>
+        <Box>
           <DesignSystemSelect
             fullWidth
             label="Overall Rating"
@@ -86,9 +86,9 @@ export const RemarksSection: React.FC<RemarksSectionProps> = ({
               {ratingOptions.find(option => option.value === formData.rating)?.label}
             </Alert>
           )}
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} md={6}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
           <DesignSystemTextField
             fullWidth
             label="Key Strengths"
@@ -98,9 +98,7 @@ export const RemarksSection: React.FC<RemarksSectionProps> = ({
             rows={4}
             placeholder="Highlight the candidate's key strengths and positive attributes..."
           />
-        </Grid>
 
-        <Grid item xs={12} md={6}>
           <DesignSystemTextField
             fullWidth
             label="Areas of Concern"
@@ -110,9 +108,9 @@ export const RemarksSection: React.FC<RemarksSectionProps> = ({
             rows={4}
             placeholder="Note any concerns or areas that need attention..."
           />
-        </Grid>
+        </Box>
 
-        <Grid item xs={12}>
+        <Box>
           <DesignSystemTextField
             fullWidth
             label="Overall Notes & Comments"
@@ -122,9 +120,9 @@ export const RemarksSection: React.FC<RemarksSectionProps> = ({
             rows={4}
             placeholder="Detailed notes from the phone screening session..."
           />
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} md={6}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
           <DesignSystemTextField
             fullWidth
             label="Recommendation"
@@ -134,9 +132,7 @@ export const RemarksSection: React.FC<RemarksSectionProps> = ({
             rows={3}
             placeholder="Your recommendation for this candidate's progression..."
           />
-        </Grid>
 
-        <Grid item xs={12} md={6}>
           <DesignSystemTextField
             fullWidth
             label="Next Steps"
@@ -146,8 +142,8 @@ export const RemarksSection: React.FC<RemarksSectionProps> = ({
             rows={3}
             placeholder="Outline the next steps in the hiring process..."
           />
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 };

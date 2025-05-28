@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Box, Typography, Grid, Chip, IconButton } from '@mui/material';
+import { Box, Typography, Chip, IconButton } from '@mui/material';
 import { DesignSystemTextField } from '@/components/ui-mui/DesignSystemTextField';
 import { DesignSystemSelect } from '@/components/ui-mui/DesignSystemSelect';
 import { Plus, X } from 'lucide-react';
@@ -86,79 +86,80 @@ export const ExperienceSkillSetSection: React.FC<ExperienceSkillSetSectionProps>
         Experience & Skill Set
       </Typography>
 
-      <Grid container spacing={3}>
-        {/* Technical Skills */}
-        <Grid item xs={12} md={6}>
-          <Typography variant="body2" sx={{ mb: 1, fontFamily: 'Rubik, sans-serif', fontWeight: 500 }}>
-            Technical Skills
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-            <DesignSystemTextField
-              fullWidth
-              size="small"
-              placeholder="Add technical skill"
-              value={newSkill}
-              onChange={(e) => setNewSkill(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addSkill('technicalSkills')}
-            />
-            <IconButton 
-              onClick={() => addSkill('technicalSkills')}
-              size="small"
-              sx={{ bgcolor: '#009933', color: 'white', '&:hover': { bgcolor: '#00a341' } }}
-            >
-              <Plus className="h-4 w-4" />
-            </IconButton>
-          </Box>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {(formData.technicalSkills || []).map((skill, index) => (
-              <Chip
-                key={index}
-                label={skill}
-                onDelete={() => removeSkill('technicalSkills', index)}
-                deleteIcon={<X className="h-3 w-3" />}
-                sx={{ bgcolor: '#e0f2fe', color: '#0277bd' }}
+      <Box sx={{ display: 'grid', gap: 3 }}>
+        {/* Technical Skills and Soft Skills */}
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
+          <Box>
+            <Typography variant="body2" sx={{ mb: 1, fontFamily: 'Rubik, sans-serif', fontWeight: 500 }}>
+              Technical Skills
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+              <DesignSystemTextField
+                fullWidth
+                size="small"
+                placeholder="Add technical skill"
+                value={newSkill}
+                onChange={(e) => setNewSkill(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && addSkill('technicalSkills')}
               />
-            ))}
+              <IconButton 
+                onClick={() => addSkill('technicalSkills')}
+                size="small"
+                sx={{ bgcolor: '#009933', color: 'white', '&:hover': { bgcolor: '#00a341' } }}
+              >
+                <Plus className="h-4 w-4" />
+              </IconButton>
+            </Box>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {(formData.technicalSkills || []).map((skill, index) => (
+                <Chip
+                  key={index}
+                  label={skill}
+                  onDelete={() => removeSkill('technicalSkills', index)}
+                  deleteIcon={<X className="h-3 w-3" />}
+                  sx={{ bgcolor: '#e0f2fe', color: '#0277bd' }}
+                />
+              ))}
+            </Box>
           </Box>
-        </Grid>
 
-        {/* Soft Skills */}
-        <Grid item xs={12} md={6}>
-          <Typography variant="body2" sx={{ mb: 1, fontFamily: 'Rubik, sans-serif', fontWeight: 500 }}>
-            Soft Skills
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-            <DesignSystemTextField
-              fullWidth
-              size="small"
-              placeholder="Add soft skill"
-              value={newSkill}
-              onChange={(e) => setNewSkill(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addSkill('softSkills')}
-            />
-            <IconButton 
-              onClick={() => addSkill('softSkills')}
-              size="small"
-              sx={{ bgcolor: '#009933', color: 'white', '&:hover': { bgcolor: '#00a341' } }}
-            >
-              <Plus className="h-4 w-4" />
-            </IconButton>
-          </Box>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {(formData.softSkills || []).map((skill, index) => (
-              <Chip
-                key={index}
-                label={skill}
-                onDelete={() => removeSkill('softSkills', index)}
-                deleteIcon={<X className="h-3 w-3" />}
-                sx={{ bgcolor: '#f3e8ff', color: '#7c3aed' }}
+          <Box>
+            <Typography variant="body2" sx={{ mb: 1, fontFamily: 'Rubik, sans-serif', fontWeight: 500 }}>
+              Soft Skills
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+              <DesignSystemTextField
+                fullWidth
+                size="small"
+                placeholder="Add soft skill"
+                value={newSkill}
+                onChange={(e) => setNewSkill(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && addSkill('softSkills')}
               />
-            ))}
+              <IconButton 
+                onClick={() => addSkill('softSkills')}
+                size="small"
+                sx={{ bgcolor: '#009933', color: 'white', '&:hover': { bgcolor: '#00a341' } }}
+              >
+                <Plus className="h-4 w-4" />
+              </IconButton>
+            </Box>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {(formData.softSkills || []).map((skill, index) => (
+                <Chip
+                  key={index}
+                  label={skill}
+                  onDelete={() => removeSkill('softSkills', index)}
+                  deleteIcon={<X className="h-3 w-3" />}
+                  sx={{ bgcolor: '#f3e8ff', color: '#7c3aed' }}
+                />
+              ))}
+            </Box>
           </Box>
-        </Grid>
+        </Box>
 
         {/* Tools & Frameworks */}
-        <Grid item xs={12}>
+        <Box>
           <Typography variant="body2" sx={{ mb: 1, fontFamily: 'Rubik, sans-serif', fontWeight: 500 }}>
             Tools & Frameworks
           </Typography>
@@ -190,10 +191,10 @@ export const ExperienceSkillSetSection: React.FC<ExperienceSkillSetSectionProps>
               />
             ))}
           </Box>
-        </Grid>
+        </Box>
 
         {/* Certifications */}
-        <Grid item xs={12}>
+        <Box>
           <Typography variant="body2" sx={{ mb: 1, fontFamily: 'Rubik, sans-serif', fontWeight: 500 }}>
             Certifications
           </Typography>
@@ -225,10 +226,10 @@ export const ExperienceSkillSetSection: React.FC<ExperienceSkillSetSectionProps>
               />
             ))}
           </Box>
-        </Grid>
+        </Box>
 
         {/* Key Projects */}
-        <Grid item xs={12}>
+        <Box>
           <DesignSystemTextField
             fullWidth
             label="Key Projects & Accomplishments"
@@ -238,10 +239,10 @@ export const ExperienceSkillSetSection: React.FC<ExperienceSkillSetSectionProps>
             rows={4}
             placeholder="Describe your most significant projects, technologies used, and your role..."
           />
-        </Grid>
+        </Box>
 
         {/* Achievements */}
-        <Grid item xs={12}>
+        <Box>
           <DesignSystemTextField
             fullWidth
             label="Professional Achievements"
@@ -251,8 +252,8 @@ export const ExperienceSkillSetSection: React.FC<ExperienceSkillSetSectionProps>
             rows={3}
             placeholder="Awards, recognitions, performance improvements, team leadership examples..."
           />
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 };
