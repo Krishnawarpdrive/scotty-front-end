@@ -4,6 +4,7 @@ import { Box, Typography } from '@mui/material';
 import { SkillsInput } from './components/SkillsInput';
 import { CertificationsInput } from './components/CertificationsInput';
 import { ProjectsAchievementsFields } from './components/ProjectsAchievementsFields';
+import { useSkillsManagement } from './hooks/useSkillsManagement';
 
 interface ExperienceSkillSetSectionProps {
   formData: {
@@ -21,27 +22,10 @@ export const ExperienceSkillSetSection: React.FC<ExperienceSkillSetSectionProps>
   formData,
   onFieldChange
 }) => {
-  const addSkill = (type: 'technicalSkills' | 'softSkills' | 'toolsFrameworks', skill: string) => {
-    const currentSkills = formData[type] || [];
-    onFieldChange(type, [...currentSkills, skill]);
-  };
-
-  const removeSkill = (type: 'technicalSkills' | 'softSkills' | 'toolsFrameworks', index: number) => {
-    const currentSkills = formData[type] || [];
-    const updatedSkills = currentSkills.filter((_, i) => i !== index);
-    onFieldChange(type, updatedSkills);
-  };
-
-  const addCertification = (certification: string) => {
-    const currentCerts = formData.certifications || [];
-    onFieldChange('certifications', [...currentCerts, certification]);
-  };
-
-  const removeCertification = (index: number) => {
-    const currentCerts = formData.certifications || [];
-    const updatedCerts = currentCerts.filter((_, i) => i !== index);
-    onFieldChange('certifications', updatedCerts);
-  };
+  const { addSkill, removeSkill, addCertification, removeCertification } = useSkillsManagement(
+    formData,
+    onFieldChange
+  );
 
   return (
     <Box sx={{ mb: 4 }}>

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Box, Typography, Grid, InputAdornment } from '@mui/material';
+import { Box, Typography, InputAdornment } from '@mui/material';
 import { DesignSystemTextField } from '@/components/ui-mui/DesignSystemTextField';
 import { Linkedin, Github, Globe, Twitter } from 'lucide-react';
 
@@ -31,8 +31,8 @@ export const SocialProfilesSection: React.FC<SocialProfilesSectionProps> = ({
         Social Profiles & Portfolio
       </Typography>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
+        <Box>
           <DesignSystemTextField
             fullWidth
             label="LinkedIn Profile"
@@ -47,9 +47,9 @@ export const SocialProfilesSection: React.FC<SocialProfilesSectionProps> = ({
               ),
             }}
           />
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} md={6}>
+        <Box>
           <DesignSystemTextField
             fullWidth
             label="GitHub Profile"
@@ -64,9 +64,9 @@ export const SocialProfilesSection: React.FC<SocialProfilesSectionProps> = ({
               ),
             }}
           />
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} md={6}>
+        <Box>
           <DesignSystemTextField
             fullWidth
             label="Portfolio/Website"
@@ -81,9 +81,9 @@ export const SocialProfilesSection: React.FC<SocialProfilesSectionProps> = ({
               ),
             }}
           />
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} md={6}>
+        <Box>
           <DesignSystemTextField
             fullWidth
             label="Twitter Profile"
@@ -98,9 +98,9 @@ export const SocialProfilesSection: React.FC<SocialProfilesSectionProps> = ({
               ),
             }}
           />
-        </Grid>
+        </Box>
 
-        <Grid item xs={12}>
+        <Box sx={{ gridColumn: 'span 2' }}>
           <DesignSystemTextField
             fullWidth
             label="Other Professional Profiles"
@@ -110,8 +110,8 @@ export const SocialProfilesSection: React.FC<SocialProfilesSectionProps> = ({
             rows={2}
             placeholder="List any other relevant professional profiles or certifications..."
           />
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 };
