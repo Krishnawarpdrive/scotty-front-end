@@ -6,19 +6,7 @@ import { InterviewNotesTab } from './tabs/InterviewNotesTab';
 import { DocumentsTab } from './tabs/DocumentsTab';
 import { ActivityTimelineTab } from './tabs/ActivityTimelineTab';
 import { Candidate } from '../types/CandidateTypes';
-
-interface Stage {
-  id: string;
-  name: string;
-  status: 'completed' | 'active' | 'pending';
-  order: number;
-}
-
-interface Role {
-  id: string;
-  name: string;
-  stages: Stage[];
-}
+import { Stage, Role } from './types/SharedTypes';
 
 interface EnhancedBottomPanelProps {
   candidate: Candidate;

@@ -7,6 +7,7 @@ import { ActivityTimelineTab } from './tabs/ActivityTimelineTab';
 import { DocumentsTab } from './tabs/DocumentsTab';
 import { InterviewNotesTab } from './tabs/InterviewNotesTab';
 import { Candidate } from '../types/CandidateTypes';
+import { Stage } from './types/SharedTypes';
 
 interface RoleBasedTabSystemProps {
   candidate: Candidate;
@@ -16,13 +17,6 @@ interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
-}
-
-interface Stage {
-  id: string;
-  name: string;
-  status: 'completed' | 'active' | 'pending';
-  order: number;
 }
 
 function TabPanel({ children, value, index }: TabPanelProps) {

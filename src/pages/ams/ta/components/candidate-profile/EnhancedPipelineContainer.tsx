@@ -1,74 +1,44 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Box } from '@mui/material';
-import { CompactPipelineVisualization } from './CompactPipelineVisualization';
 import { EnhancedBottomPanel } from './EnhancedBottomPanel';
 import { Candidate } from '../types/CandidateTypes';
-
-interface Stage {
-  id: string;
-  name: string;
-  status: 'completed' | 'current' | 'pending';
-  order: number;
-}
-
-interface Role {
-  id: string;
-  name: string;
-  stages: Stage[];
-}
+import { Stage, Role } from './types/SharedTypes';
 
 interface EnhancedPipelineContainerProps {
   candidate: Candidate;
-  role: Role;
 }
 
 export const EnhancedPipelineContainer: React.FC<EnhancedPipelineContainerProps> = ({
-  candidate,
-  role
+  candidate
 }) => {
-  const [selectedStage, setSelectedStage] = useState<Stage | null>(
-    role.stages.find(stage => stage.status === 'current') || role.stages[0]
-  );
+  // Mock data - in real app, this would come from props or API
+  const currentStage: Stage = {
+    id: 'phone-screening',
+    name: 'Phone Screening',
+    status: 'active',
+    order: 1
+  };
 
-  const handleStageSelect = (stage: Stage) => {
-    setSelectedStage(stage);
+  const role: Role = {
+    id: 'role-1',
+    name: candidate.role,
+    stages: [
+      { id: 'phone-screening', name: 'Phone Screening', status: 'active', order: 1 },
+      { id: 'technical', name: 'Technical Interview', status: 'pending', order: 2 },
+      { id: 'client-interview', name: 'Client Interview', status: 'pending', order: 3 },
+      { id: 'background-verification', name: 'Background Check', status: 'pending', order: 4 },
+      { id: 'final-review', name: 'Final Review', status: 'pending', order: 5 }
+    ]
   };
 
   return (
-    <Box sx={{ 
-      height: '100%', 
-      display: 'flex',
-      flexDirection: 'column',
-      fontFamily: 'Rubik, sans-serif'
-    }}>
-      {/* Compact Pipeline Visualization */}
-      <Box sx={{ 
-        height: '140px',
-        borderBottom: '1px solid #e0e0e0',
-        backgroundColor: '#fafafa',
-        overflow: 'hidden'
-      }}>
-        <CompactPipelineVisualization
-          stages={role.stages}
-          selectedStage={selectedStage}
-          onStageSelect={handleStageSelect}
-          roleName={role.name}
-        />
-      </Box>
-
-      {/* Enhanced Bottom Panel */}
-      <Box sx={{ 
-        flex: 1, 
-        overflow: 'hidden',
-        backgroundColor: 'white'
-      }}>
-        <EnhancedBottomPanel
-          candidate={candidate}
-          stage={selectedStage}
-          role={role}
-        />
-      </Box>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <EnhancedBottomPanel
+        candidate={candidate}
+        stage={currentStage}
+        role={role}
+      />
     </Box>
   );
 };
