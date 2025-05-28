@@ -2,7 +2,7 @@
 export interface Stage {
   id: string;
   name: string;
-  status: 'completed' | 'current' | 'pending';
+  status: 'completed' | 'active' | 'pending';
   order: number;
 }
 
