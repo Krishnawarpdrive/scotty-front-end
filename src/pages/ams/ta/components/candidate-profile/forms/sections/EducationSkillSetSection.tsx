@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Box, Typography, Grid, Chip, IconButton } from '@mui/material';
+import { Box, Typography, Chip, IconButton } from '@mui/material';
 import { DesignSystemTextField } from '@/components/ui-mui/DesignSystemTextField';
 import { DesignSystemSelect } from '@/components/ui-mui/DesignSystemSelect';
 import { Plus, X } from 'lucide-react';
@@ -75,83 +75,79 @@ export const EducationSkillSetSection: React.FC<EducationSkillSetSectionProps> =
         Education & Additional Skills
       </Typography>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <DesignSystemSelect
-            fullWidth
-            label="Highest Education"
-            value={formData.highestEducation}
-            onChange={(value) => onFieldChange('highestEducation', value)}
-            options={educationLevels}
-          />
-        </Grid>
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+        <DesignSystemSelect
+          fullWidth
+          label="Highest Education"
+          value={formData.highestEducation}
+          onChange={(value) => onFieldChange('highestEducation', value)}
+          options={educationLevels}
+        />
 
-        <Grid item xs={12} md={6}>
+        <DesignSystemTextField
+          fullWidth
+          label="University/Institution"
+          value={formData.university}
+          onChange={(e) => onFieldChange('university', e.target.value)}
+        />
+      </Box>
+
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+        <DesignSystemTextField
+          fullWidth
+          label="Graduation Year"
+          value={formData.graduationYear}
+          onChange={(e) => onFieldChange('graduationYear', e.target.value)}
+          placeholder="e.g., 2020"
+        />
+
+        <DesignSystemTextField
+          fullWidth
+          label="Specialization/Major"
+          value={formData.specialization}
+          onChange={(e) => onFieldChange('specialization', e.target.value)}
+          placeholder="e.g., Computer Science, Electronics"
+        />
+      </Box>
+
+      {/* Additional Courses */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="body2" sx={{ mb: 1, fontFamily: 'Rubik, sans-serif', fontWeight: 500 }}>
+          Additional Courses & Training
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
           <DesignSystemTextField
             fullWidth
-            label="University/Institution"
-            value={formData.university}
-            onChange={(e) => onFieldChange('university', e.target.value)}
+            size="small"
+            placeholder="Add course or training"
+            value={newCourse}
+            onChange={(e) => setNewCourse(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && addCourse()}
           />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <DesignSystemTextField
-            fullWidth
-            label="Graduation Year"
-            value={formData.graduationYear}
-            onChange={(e) => onFieldChange('graduationYear', e.target.value)}
-            placeholder="e.g., 2020"
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <DesignSystemTextField
-            fullWidth
-            label="Specialization/Major"
-            value={formData.specialization}
-            onChange={(e) => onFieldChange('specialization', e.target.value)}
-            placeholder="e.g., Computer Science, Electronics"
-          />
-        </Grid>
-
-        {/* Additional Courses */}
-        <Grid item xs={12}>
-          <Typography variant="body2" sx={{ mb: 1, fontFamily: 'Rubik, sans-serif', fontWeight: 500 }}>
-            Additional Courses & Training
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-            <DesignSystemTextField
-              fullWidth
-              size="small"
-              placeholder="Add course or training"
-              value={newCourse}
-              onChange={(e) => setNewCourse(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addCourse()}
+          <IconButton 
+            onClick={addCourse}
+            size="small"
+            sx={{ bgcolor: '#009933', color: 'white', '&:hover': { bgcolor: '#00a341' } }}
+          >
+            <Plus className="h-4 w-4" />
+          </IconButton>
+        </Box>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
+          {(formData.additionalCourses || []).map((course, index) => (
+            <Chip
+              key={index}
+              label={course}
+              onDelete={() => removeCourse(index)}
+              deleteIcon={<X className="h-3 w-3" />}
+              sx={{ bgcolor: '#e1f5fe', color: '#0277bd' }}
             />
-            <IconButton 
-              onClick={addCourse}
-              size="small"
-              sx={{ bgcolor: '#009933', color: 'white', '&:hover': { bgcolor: '#00a341' } }}
-            >
-              <Plus className="h-4 w-4" />
-            </IconButton>
-          </Box>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-            {(formData.additionalCourses || []).map((course, index) => (
-              <Chip
-                key={index}
-                label={course}
-                onDelete={() => removeCourse(index)}
-                deleteIcon={<X className="h-3 w-3" />}
-                sx={{ bgcolor: '#e1f5fe', color: '#0277bd' }}
-              />
-            ))}
-          </Box>
-        </Grid>
+          ))}
+        </Box>
+      </Box>
 
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
         {/* Languages */}
-        <Grid item xs={12} md={6}>
+        <Box>
           <Typography variant="body2" sx={{ mb: 1, fontFamily: 'Rubik, sans-serif', fontWeight: 500 }}>
             Languages Known
           </Typography>
@@ -183,32 +179,30 @@ export const EducationSkillSetSection: React.FC<EducationSkillSetSectionProps> =
               />
             ))}
           </Box>
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} md={6}>
-          <DesignSystemTextField
-            fullWidth
-            label="Hobbies & Interests"
-            value={formData.hobbies}
-            onChange={(e) => onFieldChange('hobbies', e.target.value)}
-            multiline
-            rows={3}
-            placeholder="Personal interests, hobbies, volunteer work..."
-          />
-        </Grid>
+        <DesignSystemTextField
+          fullWidth
+          label="Hobbies & Interests"
+          value={formData.hobbies}
+          onChange={(e) => onFieldChange('hobbies', e.target.value)}
+          multiline
+          rows={3}
+          placeholder="Personal interests, hobbies, volunteer work..."
+        />
+      </Box>
 
-        <Grid item xs={12}>
-          <DesignSystemTextField
-            fullWidth
-            label="Career Goals & Aspirations"
-            value={formData.careerGoals}
-            onChange={(e) => onFieldChange('careerGoals', e.target.value)}
-            multiline
-            rows={3}
-            placeholder="Short-term and long-term career goals, areas of interest for growth..."
-          />
-        </Grid>
-      </Grid>
+      <Box sx={{ mb: 2 }}>
+        <DesignSystemTextField
+          fullWidth
+          label="Career Goals & Aspirations"
+          value={formData.careerGoals}
+          onChange={(e) => onFieldChange('careerGoals', e.target.value)}
+          multiline
+          rows={3}
+          placeholder="Short-term and long-term career goals, areas of interest for growth..."
+        />
+      </Box>
     </Box>
   );
 };
