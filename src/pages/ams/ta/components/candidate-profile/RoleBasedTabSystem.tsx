@@ -1,115 +1,119 @@
 
 import React, { useState } from 'react';
-import { Box, Tabs, Tab, useTheme } from '@mui/material';
-import { EnhancedPipelineContainer } from './EnhancedPipelineContainer';
+import { Box, Tabs, Tab } from '@mui/material';
+import { EnhancedStageNavigator } from './EnhancedStageNavigator';
+import { StageFormRenderer } from './forms/StageFormRenderer';
+import { ActivityTimelineTab } from './tabs/ActivityTimelineTab';
+import { DocumentsTab } from './tabs/DocumentsTab';
+import { InterviewNotesTab } from './tabs/InterviewNotesTab';
 import { Candidate } from '../types/CandidateTypes';
 
 interface RoleBasedTabSystemProps {
   candidate: Candidate;
 }
 
-// Mock role data - in a real app, this would come from your database
-const mockRoles = [
-  { 
-    id: 'network-admin', 
-    name: 'Network Administrator',
-    stages: [
-      { id: 'phone-screening', name: 'Phone Screening', status: 'completed' as const, order: 1 },
-      { id: 'technical', name: 'Technical Interview', status: 'current' as const, order: 2 },
-      { id: 'client-interview', name: 'Client Interview', status: 'pending' as const, order: 3 },
-      { id: 'background-verification', name: 'Background Check', status: 'pending' as const, order: 4 },
-      { id: 'final-review', name: 'Final Review', status: 'pending' as const, order: 5 }
-    ]
-  },
-  { 
-    id: 'devops-eng', 
-    name: 'DevOps Engineer',
-    stages: [
-      { id: 'phone-screening', name: 'Phone Screening', status: 'pending' as const, order: 1 },
-      { id: 'technical', name: 'Technical Assessment', status: 'pending' as const, order: 2 },
-      { id: 'system-design', name: 'System Design', status: 'pending' as const, order: 3 },
-      { id: 'client-interview', name: 'Client Interview', status: 'pending' as const, order: 4 },
-      { id: 'final-review', name: 'Final Review', status: 'pending' as const, order: 5 }
-    ]
-  },
-  { 
-    id: 'data-analyst', 
-    name: 'Data Analyst',
-    stages: [
-      { id: 'phone-screening', name: 'Phone Screening', status: 'pending' as const, order: 1 },
-      { id: 'case-study', name: 'Case Study', status: 'pending' as const, order: 2 },
-      { id: 'presentation', name: 'Presentation', status: 'pending' as const, order: 3 },
-      { id: 'final-review', name: 'Final Review', status: 'pending' as const, order: 4 }
-    ]
-  }
-];
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel({ children, value, index }: TabPanelProps) {
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      style={{ height: '100%', overflow: 'hidden' }}
+    >
+      {value === index && children}
+    </div>
+  );
+}
 
 export const RoleBasedTabSystem: React.FC<RoleBasedTabSystemProps> = ({
   candidate
 }) => {
-  const theme = useTheme();
-  const [activeRole, setActiveRole] = useState('network-admin');
+  const [activeTab, setActiveTab] = useState(0);
+  const [currentStageId, setCurrentStageId] = useState('phone-screening');
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
-    setActiveRole(newValue);
+  // Mock stages data - in real app, this would come from the candidate's journey
+  const stages = [
+    { id: 'phone-screening', name: 'Phone Screening', status: 'active' as const, order: 1 },
+    { id: 'technical', name: 'Technical Interview', status: 'pending' as const, order: 2 },
+    { id: 'client-interview', name: 'Client Interview', status: 'pending' as const, order: 3 },
+    { id: 'background-verification', name: 'Background Check', status: 'pending' as const, order: 4 },
+    { id: 'final-review', name: 'Final Review', status: 'pending' as const, order: 5 }
+  ];
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
   };
 
-  const currentRole = mockRoles.find(role => role.id === activeRole);
+  const handleStageChange = (stageId: string) => {
+    setCurrentStageId(stageId);
+  };
+
+  const getCurrentStageName = () => {
+    const stage = stages.find(s => s.id === currentStageId);
+    return stage?.name || 'Phone Screening';
+  };
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* Role Tabs Header */}
-      <Box sx={{ 
-        borderBottom: '1px solid #e0e0e0', 
-        px: 2, 
-        backgroundColor: 'white',
-        minHeight: '48px'
-      }}>
-        <Tabs 
-          value={activeRole} 
+      {/* Stage Navigator */}
+      <EnhancedStageNavigator
+        stages={stages}
+        currentStageId={currentStageId}
+        onStageChange={handleStageChange}
+      />
+
+      {/* Tab Navigation */}
+      <Box sx={{ borderBottom: '1px solid #e5e7eb', bgcolor: 'white' }}>
+        <Tabs
+          value={activeTab}
           onChange={handleTabChange}
-          variant="scrollable"
-          scrollButtons="auto"
           sx={{
-            minHeight: '48px',
+            px: 2,
             '& .MuiTab-root': {
               fontFamily: 'Rubik, sans-serif',
               fontSize: '13px',
               textTransform: 'none',
               minHeight: '48px',
-              fontWeight: 500,
               color: '#666',
-              padding: '12px 16px',
-              minWidth: 'auto',
-              '&.Mui-selected': {
-                color: '#009933',
-                fontWeight: 600
-              }
+            },
+            '& .Mui-selected': {
+              color: '#009933 !important',
             },
             '& .MuiTabs-indicator': {
               backgroundColor: '#009933',
-              height: '3px'
-            }
+            },
           }}
         >
-          {mockRoles.map((role) => (
-            <Tab 
-              key={role.id} 
-              value={role.id}
-              label={role.name}
-            />
-          ))}
+          <Tab label={`${getCurrentStageName()} Form`} />
+          <Tab label="Activity Timeline" />
+          <Tab label="Documents" />
+          <Tab label="Interview Notes" />
         </Tabs>
       </Box>
 
-      {/* Enhanced Pipeline Container */}
+      {/* Tab Content */}
       <Box sx={{ flex: 1, overflow: 'hidden' }}>
-        {currentRole && (
-          <EnhancedPipelineContainer
+        <TabPanel value={activeTab} index={0}>
+          <StageFormRenderer
             candidate={candidate}
-            role={currentRole}
+            stageId={currentStageId}
+            stageName={getCurrentStageName()}
           />
-        )}
+        </TabPanel>
+        <TabPanel value={activeTab} index={1}>
+          <ActivityTimelineTab candidate={candidate} />
+        </TabPanel>
+        <TabPanel value={activeTab} index={2}>
+          <DocumentsTab candidate={candidate} />
+        </TabPanel>
+        <TabPanel value={activeTab} index={3}>
+          <InterviewNotesTab candidate={candidate} />
+        </TabPanel>
       </Box>
     </Box>
   );
