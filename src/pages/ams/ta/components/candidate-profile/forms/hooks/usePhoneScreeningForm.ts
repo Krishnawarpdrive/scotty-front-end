@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Candidate } from '../../types/CandidateTypes';
+import { Candidate } from '../../../types/CandidateTypes';
 
 export interface PhoneScreeningFormData {
   // Header data

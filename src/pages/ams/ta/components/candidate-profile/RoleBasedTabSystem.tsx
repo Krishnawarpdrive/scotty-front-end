@@ -39,7 +39,7 @@ export const RoleBasedTabSystem: React.FC<RoleBasedTabSystemProps> = ({
 
   // Mock stages data - in real app, this would come from the candidate's journey
   const stages: Stage[] = [
-    { id: 'phone-screening', name: 'Phone Screening', status: 'active', order: 1 },
+    { id: 'phone-screening', name: 'Phone Screening', status: 'current', order: 1 },
     { id: 'technical', name: 'Technical Interview', status: 'pending', order: 2 },
     { id: 'client-interview', name: 'Client Interview', status: 'pending', order: 3 },
     { id: 'background-verification', name: 'Background Check', status: 'pending', order: 4 },

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Box, Typography, Grid } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { DesignSystemTextField } from '@/components/ui-mui/DesignSystemTextField';
 import { DesignSystemSelect } from '@/components/ui-mui/DesignSystemSelect';
 
@@ -17,7 +17,7 @@ interface AddressSectionProps {
   onFieldChange: (field: string, value: any) => void;
 }
 
-const countries = [
+const countryOptions = [
   { value: 'IN', label: 'India' },
   { value: 'US', label: 'United States' },
   { value: 'UK', label: 'United Kingdom' },
@@ -25,18 +25,10 @@ const countries = [
   { value: 'AU', label: 'Australia' }
 ];
 
-const states = [
-  { value: 'MH', label: 'Maharashtra' },
-  { value: 'DL', label: 'Delhi' },
-  { value: 'KA', label: 'Karnataka' },
-  { value: 'TN', label: 'Tamil Nadu' },
-  { value: 'GJ', label: 'Gujarat' }
-];
-
-const relocateOptions = [
-  { value: 'yes', label: 'Yes, willing to relocate' },
-  { value: 'no', label: 'No, prefer current location' },
-  { value: 'depends', label: 'Depends on opportunity' }
+const relocationOptions = [
+  { value: 'yes', label: 'Yes' },
+  { value: 'no', label: 'No' },
+  { value: 'maybe', label: 'Maybe' }
 ];
 
 export const AddressSection: React.FC<AddressSectionProps> = ({
@@ -52,79 +44,71 @@ export const AddressSection: React.FC<AddressSectionProps> = ({
         fontSize: '14px',
         color: '#111827'
       }}>
-        Address & Location Information
+        Address & Location
       </Typography>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <DesignSystemTextField
-            fullWidth
-            label="Current Address"
-            value={formData.currentAddress}
-            onChange={(e) => onFieldChange('currentAddress', e.target.value)}
-            multiline
-            rows={2}
-          />
-        </Grid>
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2, mb: 2 }}>
+        <DesignSystemTextField
+          fullWidth
+          label="Current Address"
+          value={formData.currentAddress}
+          onChange={(e) => onFieldChange('currentAddress', e.target.value)}
+          multiline
+          rows={2}
+          placeholder="Enter your current address"
+        />
+      </Box>
 
-        <Grid item xs={12} md={6}>
-          <DesignSystemTextField
-            fullWidth
-            label="City"
-            value={formData.city}
-            onChange={(e) => onFieldChange('city', e.target.value)}
-          />
-        </Grid>
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+        <DesignSystemTextField
+          fullWidth
+          label="City"
+          value={formData.city}
+          onChange={(e) => onFieldChange('city', e.target.value)}
+          placeholder="Enter city"
+        />
+        <DesignSystemTextField
+          fullWidth
+          label="State/Province"
+          value={formData.state}
+          onChange={(e) => onFieldChange('state', e.target.value)}
+          placeholder="Enter state or province"
+        />
+      </Box>
 
-        <Grid item xs={12} md={3}>
-          <DesignSystemSelect
-            fullWidth
-            label="State"
-            value={formData.state}
-            onChange={(value) => onFieldChange('state', value)}
-            options={states}
-          />
-        </Grid>
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+        <DesignSystemSelect
+          fullWidth
+          label="Country"
+          value={formData.country}
+          onChange={(value) => onFieldChange('country', value)}
+          options={countryOptions}
+        />
+        <DesignSystemTextField
+          fullWidth
+          label="ZIP/Postal Code"
+          value={formData.zipCode}
+          onChange={(e) => onFieldChange('zipCode', e.target.value)}
+          placeholder="Enter ZIP or postal code"
+        />
+      </Box>
 
-        <Grid item xs={12} md={3}>
-          <DesignSystemTextField
-            fullWidth
-            label="ZIP Code"
-            value={formData.zipCode}
-            onChange={(e) => onFieldChange('zipCode', e.target.value)}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <DesignSystemSelect
-            fullWidth
-            label="Country"
-            value={formData.country}
-            onChange={(value) => onFieldChange('country', value)}
-            options={countries}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <DesignSystemTextField
-            fullWidth
-            label="Preferred Work Location"
-            value={formData.preferredLocation}
-            onChange={(e) => onFieldChange('preferredLocation', e.target.value)}
-            placeholder="e.g., Mumbai, Bangalore, Remote"
-          />
-        </Grid>
-
-        <Grid item xs={12}>
-          <DesignSystemSelect
-            fullWidth
-            label="Willing to Relocate"
-            value={formData.willingToRelocate}
-            onChange={(value) => onFieldChange('willingToRelocate', value)}
-            options={relocateOptions}
-          />
-        </Grid>
-      </Grid>
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+        <DesignSystemTextField
+          fullWidth
+          label="Preferred Work Location"
+          value={formData.preferredLocation}
+          onChange={(e) => onFieldChange('preferredLocation', e.target.value)}
+          placeholder="Enter preferred work location"
+        />
+        <DesignSystemSelect
+          fullWidth
+          label="Willing to Relocate"
+          value={formData.willingToRelocate}
+          onChange={(value) => onFieldChange('willingToRelocate', value)}
+          options={relocationOptions}
+        />
+      </Box>
     </Box>
   );
 };

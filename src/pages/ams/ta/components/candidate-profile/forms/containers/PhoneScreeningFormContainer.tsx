@@ -5,7 +5,7 @@ import { PhoneScreeningHeader } from '../sections/PhoneScreeningHeader';
 import { PhoneScreeningFormContent } from './PhoneScreeningFormContent';
 import { PhoneScreeningFormActions } from '../sections/PhoneScreeningFormActions';
 import { usePhoneScreeningForm } from '../hooks/usePhoneScreeningForm';
-import { Candidate } from '../../types/CandidateTypes';
+import { Candidate } from '../../../types/CandidateTypes';
 
 interface PhoneScreeningFormContainerProps {
   candidate: Candidate;

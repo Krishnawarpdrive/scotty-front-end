@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { PhoneScreeningFormContainer } from './containers/PhoneScreeningFormContainer';
-import { Candidate } from '../types/CandidateTypes';
+import { Candidate } from '../../types/CandidateTypes';
 
 interface EnhancedPhoneScreeningFormProps {
   candidate: Candidate;
