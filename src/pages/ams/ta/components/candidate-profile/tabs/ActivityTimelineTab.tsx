@@ -1,64 +1,46 @@
 
 import React from 'react';
-import { Box, Typography, Card, CardContent, Avatar } from '@mui/material';
-import { Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent, TimelineDot } from '@mui/lab';
-import { CheckCircle, Schedule, PersonOutline, Assignment } from '@mui/icons-material';
-
-interface Stage {
-  id: string;
-  name: string;
-  status: 'completed' | 'current' | 'pending';
-  order: number;
-}
-
-interface Role {
-  id: string;
-  name: string;
-  stages: Stage[];
-}
+import { Box, Typography, Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent, TimelineDot } from '@mui/material';
+import { CheckCircle, Clock, AlertCircle } from 'lucide-react';
 
 interface ActivityTimelineTabProps {
   candidate: any;
-  role: Role;
+  role: string;
 }
 
-// Mock activity data
+// Mock timeline data
 const mockActivities = [
   {
     id: '1',
-    type: 'stage_completed',
-    title: 'Phone Screening Completed',
-    description: 'Successfully passed initial phone screening with Sarah Johnson',
-    timestamp: '2024-01-15 14:30',
-    user: 'Sarah Johnson',
-    icon: 'completed'
+    title: 'Application Submitted',
+    description: 'Candidate applied for the position',
+    timestamp: '2024-01-10 09:00',
+    status: 'completed' as const,
+    type: 'application'
   },
   {
     id: '2',
-    type: 'note_added',
-    title: 'Interview Notes Added',
-    description: 'Technical assessment notes added after phone screening',
-    timestamp: '2024-01-15 14:35',
-    user: 'Sarah Johnson',
-    icon: 'note'
+    title: 'Resume Screened',
+    description: 'Initial resume review completed successfully',
+    timestamp: '2024-01-11 14:30',
+    status: 'completed' as const,
+    type: 'screening'
   },
   {
     id: '3',
-    type: 'stage_scheduled',
-    title: 'Technical Interview Scheduled',
-    description: 'Technical interview scheduled for tomorrow at 2:00 PM',
-    timestamp: '2024-01-15 15:00',
-    user: 'System',
-    icon: 'scheduled'
+    title: 'Phone Screening Scheduled',
+    description: 'Phone screening scheduled for tomorrow',
+    timestamp: '2024-01-12 16:45',
+    status: 'in-progress' as const,
+    type: 'interview'
   },
   {
     id: '4',
-    type: 'application_submitted',
-    title: 'Application Submitted',
-    description: 'Initial application received for Network Administrator position',
-    timestamp: '2024-01-14 09:15',
-    user: 'Candidate',
-    icon: 'submitted'
+    title: 'Technical Interview',
+    description: 'Technical interview pending',
+    timestamp: '2024-01-15 10:00',
+    status: 'pending' as const,
+    type: 'interview'
   }
 ];
 
@@ -66,108 +48,84 @@ export const ActivityTimelineTab: React.FC<ActivityTimelineTabProps> = ({
   candidate,
   role
 }) => {
-  const getActivityIcon = (iconType: string) => {
-    switch (iconType) {
+  const getStatusIcon = (status: string) => {
+    switch (status) {
       case 'completed':
-        return <CheckCircle sx={{ color: '#009933' }} />;
-      case 'scheduled':
-        return <Schedule sx={{ color: '#2196F3' }} />;
-      case 'note':
-        return <PersonOutline sx={{ color: '#FF9800' }} />;
-      case 'submitted':
-        return <Assignment sx={{ color: '#9C27B0' }} />;
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case 'in-progress':
+        return <Clock className="h-4 w-4 text-blue-600" />;
       default:
-        return <PersonOutline sx={{ color: '#666' }} />;
+        return <AlertCircle className="h-4 w-4 text-gray-400" />;
     }
   };
 
-  const getActivityColor = (iconType: string) => {
-    switch (iconType) {
-      case 'completed': return '#009933';
-      case 'scheduled': return '#2196F3';
-      case 'note': return '#FF9800';
-      case 'submitted': return '#9C27B0';
-      default: return '#666';
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return '#10b981';
+      case 'in-progress':
+        return '#3b82f6';
+      default:
+        return '#9ca3af';
     }
   };
 
   return (
     <Box sx={{ p: 3, height: '100%', overflow: 'auto' }}>
       <Typography 
-        variant="subtitle2" 
+        variant="h6" 
         sx={{ 
           fontFamily: 'Rubik, sans-serif',
           fontWeight: 600,
           mb: 3,
-          color: '#262626'
+          color: '#111827'
         }}
       >
-        Activity Timeline for {role.name}
+        Activity Timeline - {role}
       </Typography>
 
-      <Timeline sx={{ p: 0 }}>
+      <Timeline>
         {mockActivities.map((activity, index) => (
           <TimelineItem key={activity.id}>
             <TimelineSeparator>
-              <TimelineDot sx={{ bgcolor: 'transparent', p: 0, boxShadow: 'none' }}>
-                {getActivityIcon(activity.icon)}
+              <TimelineDot sx={{ bgcolor: getStatusColor(activity.status), p: 1 }}>
+                {getStatusIcon(activity.status)}
               </TimelineDot>
-              {index < mockActivities.length - 1 && (
-                <TimelineConnector sx={{ bgcolor: '#e0e0e0' }} />
-              )}
+              {index < mockActivities.length - 1 && <TimelineConnector />}
             </TimelineSeparator>
-            
-            <TimelineContent sx={{ py: 1, px: 2 }}>
-              <Card sx={{ 
-                borderRadius: '8px', 
-                border: '1px solid #e0e0e0',
-                boxShadow: 'none'
-              }}>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        sx={{
-                          fontFamily: 'Rubik, sans-serif',
-                          fontSize: '13px',
-                          fontWeight: 600,
-                          color: getActivityColor(activity.icon),
-                          mb: 0.5
-                        }}
-                      >
-                        {activity.title}
-                      </Typography>
-                      
-                      <Typography
-                        sx={{
-                          fontFamily: 'Rubik, sans-serif',
-                          fontSize: '12px',
-                          color: '#666',
-                          mb: 1,
-                          lineHeight: 1.4
-                        }}
-                      >
-                        {activity.description}
-                      </Typography>
-                      
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Avatar sx={{ width: 16, height: 16, fontSize: '10px' }}>
-                          {activity.user.charAt(0)}
-                        </Avatar>
-                        <Typography
-                          sx={{
-                            fontFamily: 'Rubik, sans-serif',
-                            fontSize: '11px',
-                            color: '#999'
-                          }}
-                        >
-                          {activity.user} • {activity.timestamp}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Box>
-                </CardContent>
-              </Card>
+            <TimelineContent>
+              <Box sx={{ mb: 2 }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontFamily: 'Rubik, sans-serif',
+                    fontWeight: 600,
+                    color: '#111827',
+                    mb: 0.5
+                  }}
+                >
+                  {activity.title}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontFamily: 'Rubik, sans-serif',
+                    color: '#6b7280',
+                    mb: 0.5
+                  }}
+                >
+                  {activity.description}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontFamily: 'Rubik, sans-serif',
+                    color: '#9ca3af'
+                  }}
+                >
+                  {activity.timestamp}
+                </Typography>
+              </Box>
             </TimelineContent>
           </TimelineItem>
         ))}

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Box, Typography, Grid, InputAdornment } from '@mui/material';
+import { Box, Typography, Grid2 as Grid, InputAdornment } from '@mui/material';
 import { DesignSystemTextField } from '@/components/ui-mui/DesignSystemTextField';
 import { Linkedin, Github, Globe, Twitter } from 'lucide-react';
 
@@ -32,7 +32,7 @@ export const SocialProfilesSection: React.FC<SocialProfilesSectionProps> = ({
       </Typography>
 
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <DesignSystemTextField
             fullWidth
             label="LinkedIn Profile"
@@ -49,7 +49,7 @@ export const SocialProfilesSection: React.FC<SocialProfilesSectionProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <DesignSystemTextField
             fullWidth
             label="GitHub Profile"
@@ -66,7 +66,7 @@ export const SocialProfilesSection: React.FC<SocialProfilesSectionProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <DesignSystemTextField
             fullWidth
             label="Portfolio/Website"
@@ -83,7 +83,7 @@ export const SocialProfilesSection: React.FC<SocialProfilesSectionProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <DesignSystemTextField
             fullWidth
             label="Twitter Profile"
@@ -100,7 +100,7 @@ export const SocialProfilesSection: React.FC<SocialProfilesSectionProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid xs={12}>
           <DesignSystemTextField
             fullWidth
             label="Other Professional Profiles"

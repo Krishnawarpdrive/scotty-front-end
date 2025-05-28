@@ -53,6 +53,10 @@ export const RoleBasedTabSystem: React.FC<RoleBasedTabSystemProps> = ({
     setCurrentStageId(stageId);
   };
 
+  const getCurrentStage = () => {
+    return stages.find(s => s.id === currentStageId) || stages[0];
+  };
+
   const getCurrentStageName = () => {
     const stage = stages.find(s => s.id === currentStageId);
     return stage?.name || 'Phone Screening';
@@ -106,13 +110,22 @@ export const RoleBasedTabSystem: React.FC<RoleBasedTabSystemProps> = ({
           />
         </TabPanel>
         <TabPanel value={activeTab} index={1}>
-          <ActivityTimelineTab candidate={candidate} />
+          <ActivityTimelineTab 
+            candidate={candidate} 
+            role={candidate.role}
+          />
         </TabPanel>
         <TabPanel value={activeTab} index={2}>
-          <DocumentsTab candidate={candidate} />
+          <DocumentsTab 
+            candidate={candidate} 
+            stage={getCurrentStage()}
+          />
         </TabPanel>
         <TabPanel value={activeTab} index={3}>
-          <InterviewNotesTab candidate={candidate} />
+          <InterviewNotesTab 
+            candidate={candidate} 
+            stage={getCurrentStage()}
+          />
         </TabPanel>
       </Box>
     </Box>

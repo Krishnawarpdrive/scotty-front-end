@@ -1,12 +1,12 @@
 
-import React, { useState } from 'react';
-import { Box, Button, Typography, Card, CardContent, IconButton, Chip } from '@mui/material';
-import { CloudUpload, GetApp, Delete, PictureAsPdf, Description } from '@mui/icons-material';
+import React from 'react';
+import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, IconButton, Chip } from '@mui/material';
+import { FileText, Download, Eye, Upload } from 'lucide-react';
 
 interface Stage {
   id: string;
   name: string;
-  status: 'completed' | 'current' | 'pending';
+  status: 'completed' | 'active' | 'pending';
   order: number;
 }
 
@@ -20,20 +20,34 @@ const mockDocuments = [
   {
     id: '1',
     name: 'Resume_AditiSharma.pdf',
-    type: 'PDF',
+    type: 'Resume',
+    uploadDate: '2024-01-10',
     size: '2.4 MB',
-    uploadedBy: 'Candidate',
-    uploadedAt: '2024-01-15 09:30',
-    category: 'Resume'
+    status: 'verified'
   },
   {
     id: '2',
-    name: 'Technical_Assessment_Results.pdf',
-    type: 'PDF',
+    name: 'CoverLetter_AditiSharma.pdf',
+    type: 'Cover Letter',
+    uploadDate: '2024-01-10',
+    size: '1.1 MB',
+    status: 'pending'
+  },
+  {
+    id: '3',
+    name: 'Certificates_Networking.pdf',
+    type: 'Certification',
+    uploadDate: '2024-01-11',
+    size: '3.2 MB',
+    status: 'verified'
+  },
+  {
+    id: '4',
+    name: 'Experience_Letter.pdf',
+    type: 'Experience Letter',
+    uploadDate: '2024-01-12',
     size: '1.8 MB',
-    uploadedBy: 'Sarah Johnson',
-    uploadedAt: '2024-01-15 15:45',
-    category: 'Assessment'
+    status: 'under_review'
   }
 ];
 
@@ -41,139 +55,129 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({
   candidate,
   stage
 }) => {
-  const [documents] = useState(mockDocuments);
-
-  const getFileIcon = (type: string) => {
-    switch (type.toLowerCase()) {
-      case 'pdf':
-        return <PictureAsPdf sx={{ color: '#f44336' }} />;
-      default:
-        return <Description sx={{ color: '#666' }} />;
-    }
-  };
-
-  const getCategoryColor = (category: string) => {
-    switch (category.toLowerCase()) {
-      case 'resume':
-        return { backgroundColor: '#e3f2fd', color: '#1976d2' };
-      case 'assessment':
-        return { backgroundColor: '#e8f5e8', color: '#009933' };
-      default:
-        return { backgroundColor: '#f5f5f5', color: '#666' };
-    }
+  const getStatusChip = (status: string) => {
+    const statusConfig = {
+      verified: { color: '#10b981', bgcolor: '#ecfdf5', label: 'Verified' },
+      pending: { color: '#f59e0b', bgcolor: '#fffbeb', label: 'Pending' },
+      under_review: { color: '#3b82f6', bgcolor: '#eff6ff', label: 'Under Review' }
+    };
+    
+    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+    
+    return (
+      <Chip
+        label={config.label}
+        size="small"
+        sx={{
+          color: config.color,
+          bgcolor: config.bgcolor,
+          fontSize: '11px',
+          height: '20px'
+        }}
+      />
+    );
   };
 
   return (
     <Box sx={{ p: 3, height: '100%', overflow: 'auto' }}>
-      {/* Upload Section */}
-      <Box sx={{ mb: 3 }}>
-        <Typography 
-          variant="subtitle2" 
-          sx={{ 
-            fontFamily: 'Rubik, sans-serif',
-            fontWeight: 600,
-            mb: 2,
-            color: '#262626'
-          }}
-        >
-          Upload Documents
-        </Typography>
-        
-        <Button
-          variant="outlined"
-          startIcon={<CloudUpload />}
-          sx={{
-            borderColor: '#009933',
-            color: '#009933',
-            '&:hover': { 
-              borderColor: '#00A341',
-              backgroundColor: 'rgba(0, 153, 51, 0.04)' 
-            },
-            fontFamily: 'Rubik, sans-serif',
-            textTransform: 'none'
-          }}
-        >
-          Upload Document
-        </Button>
-      </Box>
-
-      {/* Documents List */}
       <Typography 
-        variant="subtitle2" 
+        variant="h6" 
         sx={{ 
           fontFamily: 'Rubik, sans-serif',
           fontWeight: 600,
-          mb: 2,
-          color: '#262626'
+          mb: 1,
+          color: '#111827'
         }}
       >
-        Documents ({documents.length})
+        Documents - {stage.name}
+      </Typography>
+      
+      <Typography 
+        variant="body2" 
+        sx={{ 
+          fontFamily: 'Rubik, sans-serif',
+          color: '#6b7280',
+          mb: 3
+        }}
+      >
+        Manage candidate documents for this stage
       </Typography>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {documents.map((doc) => (
-          <Card key={doc.id} sx={{ borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-            <CardContent sx={{ p: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                {getFileIcon(doc.type)}
-                
-                <Box sx={{ flex: 1 }}>
+      <List>
+        {mockDocuments.map((doc) => (
+          <ListItem
+            key={doc.id}
+            sx={{
+              bgcolor: '#f9fafb',
+              borderRadius: '8px',
+              mb: 1,
+              border: '1px solid #e5e7eb'
+            }}
+          >
+            <ListItemIcon>
+              <FileText className="h-5 w-5 text-gray-600" />
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography
                     sx={{
                       fontFamily: 'Rubik, sans-serif',
-                      fontSize: '13px',
+                      fontSize: '14px',
                       fontWeight: 500,
-                      color: '#262626',
-                      mb: 0.5
+                      color: '#111827'
                     }}
                   >
                     {doc.name}
                   </Typography>
-                  
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    <Chip
-                      label={doc.category}
-                      size="small"
-                      sx={{
-                        height: '20px',
-                        fontSize: '10px',
-                        ...getCategoryColor(doc.category)
-                      }}
-                    />
-                    <Typography
-                      sx={{
-                        fontFamily: 'Rubik, sans-serif',
-                        fontSize: '11px',
-                        color: '#999'
-                      }}
-                    >
-                      {doc.size}
-                    </Typography>
-                  </Box>
-                  
-                  <Typography
-                    sx={{
-                      fontFamily: 'Rubik, sans-serif',
-                      fontSize: '11px',
-                      color: '#999'
-                    }}
-                  >
-                    Uploaded by {doc.uploadedBy} • {doc.uploadedAt}
-                  </Typography>
+                  {getStatusChip(doc.status)}
                 </Box>
-                
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <IconButton size="small" sx={{ color: '#009933' }}>
-                    <GetApp />
-                  </IconButton>
-                  <IconButton size="small" sx={{ color: '#f44336' }}>
-                    <Delete />
-                  </IconButton>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
+              }
+              secondary={
+                <Typography
+                  sx={{
+                    fontFamily: 'Rubik, sans-serif',
+                    fontSize: '12px',
+                    color: '#6b7280'
+                  }}
+                >
+                  {doc.type} • {doc.size} • Uploaded {doc.uploadDate}
+                </Typography>
+              }
+            />
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <IconButton size="small" sx={{ color: '#6b7280' }}>
+                <Eye className="h-4 w-4" />
+              </IconButton>
+              <IconButton size="small" sx={{ color: '#6b7280' }}>
+                <Download className="h-4 w-4" />
+              </IconButton>
+            </Box>
+          </ListItem>
         ))}
+      </List>
+
+      <Box sx={{ mt: 3, p: 2, bgcolor: '#f3f4f6', borderRadius: '8px', textAlign: 'center' }}>
+        <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+        <Typography
+          sx={{
+            fontFamily: 'Rubik, sans-serif',
+            fontSize: '13px',
+            color: '#6b7280',
+            mb: 1
+          }}
+        >
+          Upload additional documents for {stage.name}
+        </Typography>
+        <Typography
+          sx={{
+            fontFamily: 'Rubik, sans-serif',
+            fontSize: '11px',
+            color: '#9ca3af'
+          }}
+        >
+          Drag and drop files here or click to browse
+        </Typography>
       </Box>
     </Box>
   );
