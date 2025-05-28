@@ -18,6 +18,13 @@ interface TabPanelProps {
   value: number;
 }
 
+interface Stage {
+  id: string;
+  name: string;
+  status: 'completed' | 'active' | 'pending';
+  order: number;
+}
+
 function TabPanel({ children, value, index }: TabPanelProps) {
   return (
     <div
@@ -37,12 +44,12 @@ export const RoleBasedTabSystem: React.FC<RoleBasedTabSystemProps> = ({
   const [currentStageId, setCurrentStageId] = useState('phone-screening');
 
   // Mock stages data - in real app, this would come from the candidate's journey
-  const stages = [
-    { id: 'phone-screening', name: 'Phone Screening', status: 'active' as const, order: 1 },
-    { id: 'technical', name: 'Technical Interview', status: 'pending' as const, order: 2 },
-    { id: 'client-interview', name: 'Client Interview', status: 'pending' as const, order: 3 },
-    { id: 'background-verification', name: 'Background Check', status: 'pending' as const, order: 4 },
-    { id: 'final-review', name: 'Final Review', status: 'pending' as const, order: 5 }
+  const stages: Stage[] = [
+    { id: 'phone-screening', name: 'Phone Screening', status: 'active', order: 1 },
+    { id: 'technical', name: 'Technical Interview', status: 'pending', order: 2 },
+    { id: 'client-interview', name: 'Client Interview', status: 'pending', order: 3 },
+    { id: 'background-verification', name: 'Background Check', status: 'pending', order: 4 },
+    { id: 'final-review', name: 'Final Review', status: 'pending', order: 5 }
   ];
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {

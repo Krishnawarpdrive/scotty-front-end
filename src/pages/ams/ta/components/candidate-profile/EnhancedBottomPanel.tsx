@@ -10,7 +10,7 @@ import { Candidate } from '../types/CandidateTypes';
 interface Stage {
   id: string;
   name: string;
-  status: 'completed' | 'current' | 'pending';
+  status: 'completed' | 'active' | 'pending';
   order: number;
 }
 
@@ -129,7 +129,7 @@ export const EnhancedBottomPanel: React.FC<EnhancedBottomPanelProps> = ({
         {activeTab === 'timeline' && (
           <ActivityTimelineTab 
             candidate={candidate}
-            role={role}
+            role={role.name}
           />
         )}
       </Box>
