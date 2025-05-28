@@ -14,32 +14,32 @@ const mockRoles = [
     id: 'network-admin', 
     name: 'Network Administrator',
     stages: [
-      { id: 'phone-screening', name: 'Phone Screening', status: 'completed', order: 1 },
-      { id: 'technical', name: 'Technical Interview', status: 'current', order: 2 },
-      { id: 'client-interview', name: 'Client Interview', status: 'pending', order: 3 },
-      { id: 'background-verification', name: 'Background Check', status: 'pending', order: 4 },
-      { id: 'final-review', name: 'Final Review', status: 'pending', order: 5 }
+      { id: 'phone-screening', name: 'Phone Screening', status: 'completed' as const, order: 1 },
+      { id: 'technical', name: 'Technical Interview', status: 'current' as const, order: 2 },
+      { id: 'client-interview', name: 'Client Interview', status: 'pending' as const, order: 3 },
+      { id: 'background-verification', name: 'Background Check', status: 'pending' as const, order: 4 },
+      { id: 'final-review', name: 'Final Review', status: 'pending' as const, order: 5 }
     ]
   },
   { 
     id: 'devops-eng', 
     name: 'DevOps Engineer',
     stages: [
-      { id: 'phone-screening', name: 'Phone Screening', status: 'pending', order: 1 },
-      { id: 'technical', name: 'Technical Assessment', status: 'pending', order: 2 },
-      { id: 'system-design', name: 'System Design', status: 'pending', order: 3 },
-      { id: 'client-interview', name: 'Client Interview', status: 'pending', order: 4 },
-      { id: 'final-review', name: 'Final Review', status: 'pending', order: 5 }
+      { id: 'phone-screening', name: 'Phone Screening', status: 'pending' as const, order: 1 },
+      { id: 'technical', name: 'Technical Assessment', status: 'pending' as const, order: 2 },
+      { id: 'system-design', name: 'System Design', status: 'pending' as const, order: 3 },
+      { id: 'client-interview', name: 'Client Interview', status: 'pending' as const, order: 4 },
+      { id: 'final-review', name: 'Final Review', status: 'pending' as const, order: 5 }
     ]
   },
   { 
     id: 'data-analyst', 
     name: 'Data Analyst',
     stages: [
-      { id: 'phone-screening', name: 'Phone Screening', status: 'pending', order: 1 },
-      { id: 'case-study', name: 'Case Study', status: 'pending', order: 2 },
-      { id: 'presentation', name: 'Presentation', status: 'pending', order: 3 },
-      { id: 'final-review', name: 'Final Review', status: 'pending', order: 4 }
+      { id: 'phone-screening', name: 'Phone Screening', status: 'pending' as const, order: 1 },
+      { id: 'case-study', name: 'Case Study', status: 'pending' as const, order: 2 },
+      { id: 'presentation', name: 'Presentation', status: 'pending' as const, order: 3 },
+      { id: 'final-review', name: 'Final Review', status: 'pending' as const, order: 4 }
     ]
   }
 ];
