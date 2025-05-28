@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { PhoneScreeningFormContainer } from './containers/PhoneScreeningFormContainer';
+import { EnhancedPhoneScreeningFormContainer } from './containers/EnhancedPhoneScreeningFormContainer';
 import { Candidate } from '../../types/CandidateTypes';
 
 interface EnhancedPhoneScreeningFormProps {
@@ -10,5 +10,5 @@ interface EnhancedPhoneScreeningFormProps {
 export const EnhancedPhoneScreeningForm: React.FC<EnhancedPhoneScreeningFormProps> = ({
   candidate
 }) => {
-  return <PhoneScreeningFormContainer candidate={candidate} />;
+  return <EnhancedPhoneScreeningFormContainer candidate={candidate} />;
 };

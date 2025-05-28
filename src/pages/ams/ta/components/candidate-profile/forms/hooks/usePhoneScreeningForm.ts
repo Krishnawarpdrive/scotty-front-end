@@ -1,16 +1,17 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Candidate } from '../../../types/CandidateTypes';
 
 export interface PhoneScreeningFormData {
-  // Header data
+  // Basic Info
   candidateName: string;
   phoneNumber: string;
+  alternativePhone: string;
   scheduledDate: string;
   duration: string;
   status: 'pending' | 'in-progress' | 'completed';
 
-  // Address section
+  // Contact & Location
   currentAddress: string;
   city: string;
   state: string;
@@ -19,14 +20,14 @@ export interface PhoneScreeningFormData {
   preferredLocation: string;
   willingToRelocate: string;
 
-  // Social profiles
+  // Social Profiles
   linkedinUrl: string;
   githubUrl: string;
   portfolioUrl: string;
   twitterUrl: string;
   otherProfiles: string;
 
-  // Role information
+  // Role Information
   appliedRole: string;
   currentRole: string;
   currentCompany: string;
@@ -37,7 +38,7 @@ export interface PhoneScreeningFormData {
   noticePeriod: string;
   availability: string;
 
-  // Experience & skills
+  // Skills
   technicalSkills: string[];
   softSkills: string[];
   certifications: string[];
@@ -55,7 +56,7 @@ export interface PhoneScreeningFormData {
   hobbies: string;
   careerGoals: string;
 
-  // Remarks
+  // Assessment
   overallNotes: string;
   strengths: string;
   concerns: string;
@@ -66,14 +67,15 @@ export interface PhoneScreeningFormData {
 
 export const usePhoneScreeningForm = (candidate: Candidate) => {
   const [formData, setFormData] = useState<PhoneScreeningFormData>({
-    // Header data
+    // Basic Info
     candidateName: candidate.name,
-    phoneNumber: '+91 98765 43210',
-    scheduledDate: '2024-01-15 10:00 AM',
-    duration: '45 minutes',
-    status: 'in-progress',
+    phoneNumber: candidate.phone || '+91 98765 43210',
+    alternativePhone: '',
+    scheduledDate: new Date().toISOString().split('T')[0],
+    duration: '30 minutes',
+    status: 'pending',
 
-    // Address section
+    // Contact & Location
     currentAddress: '',
     city: '',
     state: '',
@@ -82,26 +84,26 @@ export const usePhoneScreeningForm = (candidate: Candidate) => {
     preferredLocation: '',
     willingToRelocate: '',
 
-    // Social profiles
+    // Social Profiles
     linkedinUrl: '',
     githubUrl: '',
     portfolioUrl: '',
     twitterUrl: '',
     otherProfiles: '',
 
-    // Role information
+    // Role Information
     appliedRole: candidate.role,
     currentRole: '',
     currentCompany: '',
-    experienceYears: '',
+    experienceYears: candidate.experience,
     relevantExperience: '',
     currentSalary: '',
     expectedSalary: '',
     noticePeriod: '',
     availability: '',
 
-    // Experience & skills
-    technicalSkills: [],
+    // Skills
+    technicalSkills: candidate.skills || [],
     softSkills: [],
     certifications: [],
     keyProjects: '',
@@ -118,7 +120,7 @@ export const usePhoneScreeningForm = (candidate: Candidate) => {
     hobbies: '',
     careerGoals: '',
 
-    // Remarks
+    // Assessment
     overallNotes: '',
     strengths: '',
     concerns: '',
@@ -130,28 +132,50 @@ export const usePhoneScreeningForm = (candidate: Candidate) => {
   const [hasChanges, setHasChanges] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleFieldChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleFieldChange = useCallback((field: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
     setHasChanges(true);
-  };
+  }, []);
 
-  const handleSave = () => {
-    console.log('Saving form data:', formData);
-    setHasChanges(false);
-  };
-
-  const handleSubmit = () => {
-    setIsSubmitting(true);
-    console.log('Submitting assessment:', formData);
-    setTimeout(() => {
-      setIsSubmitting(false);
+  const handleSave = useCallback(async () => {
+    try {
+      setIsSubmitting(true);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Form saved:', formData);
       setHasChanges(false);
-    }, 2000);
-  };
+    } catch (error) {
+      console.error('Error saving form:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [formData]);
 
-  const handleGenerateReport = () => {
-    console.log('Generating report for:', candidate.name);
-  };
+  const handleSubmit = useCallback(async () => {
+    try {
+      setIsSubmitting(true);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log('Form submitted:', formData);
+      setHasChanges(false);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [formData]);
+
+  const handleGenerateReport = useCallback(async () => {
+    try {
+      console.log('Generating report for:', formData);
+      // This would typically generate a PDF or summary report
+    } catch (error) {
+      console.error('Error generating report:', error);
+    }
+  }, [formData]);
 
   return {
     formData,
