@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { Candidate } from '../../../types/CandidateTypes';
 
@@ -13,6 +12,7 @@ export interface PhoneScreeningFormData {
 
   // Contact & Location
   currentAddress: string;
+  currentLocation: string;
   city: string;
   state: string;
   country: string;
@@ -77,6 +77,7 @@ export const usePhoneScreeningForm = (candidate: Candidate) => {
 
     // Contact & Location
     currentAddress: '',
+    currentLocation: candidate.location || '',
     city: '',
     state: '',
     country: 'IN',
