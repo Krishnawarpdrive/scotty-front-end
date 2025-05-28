@@ -13,7 +13,7 @@ export const EnhancedTimelyTrackCard: React.FC = () => {
       hoverEffect="lift"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bg-white border min-w-60 min-h-[198px] overflow-hidden grow shrink w-[244px] pt-[11px] pb-0.5 px-1 rounded-lg border-[rgba(246,246,246,1)] border-solid hover:border-[#009933]/30 hover:shadow-lg transition-all duration-300"
+      className="bg-white border min-w-[300px] min-h-[250px] overflow-hidden flex-grow flex-shrink rounded-lg pt-[11px] pb-0.5 px-1 border-[rgba(246,246,246,1)] border-solid hover:border-[#009933]/30 hover:shadow-lg transition-all duration-300"
     >
       <div className="flex w-full items-center gap-[40px_42px] justify-space-between">
         <motion.div 
@@ -86,7 +86,7 @@ export const EnhancedTimelyTrackCard: React.FC = () => {
       </div>
       
       <motion.div 
-        className="mt-4 p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded flex items-center justify-center h-32 relative overflow-hidden"
+        className="mt-4 p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded flex items-center justify-center h-[200px] relative overflow-hidden"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}

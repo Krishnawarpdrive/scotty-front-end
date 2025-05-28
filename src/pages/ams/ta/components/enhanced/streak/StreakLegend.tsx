@@ -3,39 +3,35 @@ import React from "react";
 import { motion } from "framer-motion";
 import { calculateLongestStreak } from "./streakUtils";
 
-interface DayData {
-  date: string;
-  calls: number;
-  profiles: number;
-  interviews: number;
-  callsTarget: number;
-  profilesTarget: number;
-  interviewsTarget: number;
-}
+
+import type { DayData } from "./streakUtils";
 
 interface StreakLegendProps {
-  streakData: DayData[];
+  streakData: (DayData|null)[];
+  days?: number;
 }
 
-export const StreakLegend: React.FC<StreakLegendProps> = ({ streakData }) => {
-  const longestStreak = calculateLongestStreak(streakData);
+export const StreakLegend: React.FC<StreakLegendProps> = ({ streakData, days }) => {
+  // Only use the last N days if days prop is provided
+  const data = (days ? streakData.slice(-days) : streakData).filter((d): d is DayData => d !== null);
+  const longestStreak = calculateLongestStreak(data);
 
   // Calculate total contributions
-  const totalContributions = streakData.reduce((total, day) => {
+  const totalContributions = data.reduce((total, day) => {
     return total + day.calls + day.profiles + day.interviews;
   }, 0);
 
   // Calculate target achievement percentages
-  const targetMetrics = streakData.reduce((acc, day) => {
+  const targetMetrics = data.reduce((acc, day) => {
     acc.calls += day.calls >= day.callsTarget ? 1 : 0;
     acc.profiles += day.profiles >= day.profilesTarget ? 1 : 0;
     acc.interviews += day.interviews >= day.interviewsTarget ? 1 : 0;
     return acc;
   }, { calls: 0, profiles: 0, interviews: 0 });
 
-  const callsPercentage = Math.round((targetMetrics.calls / streakData.length) * 100);
-  const profilesPercentage = Math.round((targetMetrics.profiles / streakData.length) * 100);
-  const interviewsPercentage = Math.round((targetMetrics.interviews / streakData.length) * 100);
+  const callsPercentage = Math.round((targetMetrics.calls / data.length) * 100);
+  const profilesPercentage = Math.round((targetMetrics.profiles / data.length) * 100);
+  const interviewsPercentage = Math.round((targetMetrics.interviews / data.length) * 100);
 
   const getPercentageColor = (percentage: number) => {
     if (percentage >= 80) return 'text-green-600';
