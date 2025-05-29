@@ -113,7 +113,7 @@ export class AIAssistantService {
   async analyzeSkillGap(candidate: Candidate, roleRequirements: string[]): Promise<SkillGapAnalysis> {
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    const candidateSkills = candidate.skills || [];
+    const candidateSkills: string[] = candidate.skills || [];
     const missingSkills = roleRequirements.filter(skill => 
       !candidateSkills.some(cs => cs.toLowerCase().includes(skill.toLowerCase()))
     );
@@ -353,7 +353,7 @@ export class AIAssistantService {
   }
 
   private extractTechnicalSkills(text: string): string[] {
-    const techSkills = [
+    const techSkills: string[] = [
       'JavaScript', 'TypeScript', 'React', 'Node.js', 'Python', 'Java', 'C++', 'C#',
       'Angular', 'Vue.js', 'HTML', 'CSS', 'SQL', 'MongoDB', 'PostgreSQL', 'AWS',
       'Docker', 'Kubernetes', 'Git', 'Jenkins', 'Linux', 'Windows', 'macOS'
@@ -365,7 +365,7 @@ export class AIAssistantService {
   }
 
   private extractSoftSkills(text: string): string[] {
-    const softSkills = [
+    const softSkills: string[] = [
       'Leadership', 'Communication', 'Teamwork', 'Problem Solving', 'Critical Thinking',
       'Project Management', 'Time Management', 'Adaptability', 'Creativity', 'Collaboration'
     ];
@@ -376,7 +376,7 @@ export class AIAssistantService {
   }
 
   private extractTools(text: string): string[] {
-    const tools = [
+    const tools: string[] = [
       'VS Code', 'IntelliJ', 'Eclipse', 'Jira', 'Confluence', 'Slack', 'Teams',
       'Photoshop', 'Figma', 'Sketch', 'Postman', 'Swagger', 'Tableau', 'Power BI'
     ];

@@ -1,8 +1,6 @@
 
 import React from 'react';
-import { Box } from '@mui/material';
-import { DesignSystemTextField } from '@/components/ui-mui/DesignSystemTextField';
-import { DesignSystemSelect } from '@/components/ui-mui/DesignSystemSelect';
+import { FormGrid, FormInput, FormSelect } from '../../shared/FormComponents';
 
 interface EducationFieldsProps {
   formData: {
@@ -14,55 +12,54 @@ interface EducationFieldsProps {
   onFieldChange: (field: string, value: any) => void;
 }
 
-const educationLevels = [
-  { value: 'bachelors', label: 'Bachelor\'s Degree' },
-  { value: 'masters', label: 'Master\'s Degree' },
-  { value: 'phd', label: 'PhD' },
-  { value: 'diploma', label: 'Diploma' },
-  { value: 'certificate', label: 'Professional Certificate' },
-  { value: 'other', label: 'Other' }
-];
-
 export const EducationFields: React.FC<EducationFieldsProps> = ({
   formData,
   onFieldChange
 }) => {
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: 50 }, (_, i) => {
+    const year = currentYear - i;
+    return { value: year.toString(), label: year.toString() };
+  });
+
   return (
-    <>
-      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
-        <DesignSystemSelect
-          fullWidth
-          label="Highest Education"
-          value={formData.highestEducation}
-          onChange={(value) => onFieldChange('highestEducation', value)}
-          options={educationLevels}
-        />
+    <FormGrid columns={2} gap={3}>
+      <FormSelect
+        label="Highest Education"
+        value={formData.highestEducation || ''}
+        onChange={(value) => onFieldChange('highestEducation', value)}
+        options={[
+          { value: 'high_school', label: 'High School' },
+          { value: 'diploma', label: 'Diploma' },
+          { value: 'bachelors', label: "Bachelor's Degree" },
+          { value: 'masters', label: "Master's Degree" },
+          { value: 'phd', label: 'PhD' },
+          { value: 'other', label: 'Other' }
+        ]}
+        placeholder="Select education level"
+      />
 
-        <DesignSystemTextField
-          fullWidth
-          label="University/Institution"
-          value={formData.university}
-          onChange={(e) => onFieldChange('university', e.target.value)}
-        />
-      </Box>
+      <FormInput
+        label="University/Institution"
+        value={formData.university || ''}
+        onChange={(value) => onFieldChange('university', value)}
+        placeholder="Name of educational institution"
+      />
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
-        <DesignSystemTextField
-          fullWidth
-          label="Graduation Year"
-          value={formData.graduationYear}
-          onChange={(e) => onFieldChange('graduationYear', e.target.value)}
-          placeholder="e.g., 2020"
-        />
+      <FormSelect
+        label="Graduation Year"
+        value={formData.graduationYear || ''}
+        onChange={(value) => onFieldChange('graduationYear', value)}
+        options={yearOptions}
+        placeholder="Select graduation year"
+      />
 
-        <DesignSystemTextField
-          fullWidth
-          label="Specialization/Major"
-          value={formData.specialization}
-          onChange={(e) => onFieldChange('specialization', e.target.value)}
-          placeholder="e.g., Computer Science, Electronics"
-        />
-      </Box>
-    </>
+      <FormInput
+        label="Specialization/Major"
+        value={formData.specialization || ''}
+        onChange={(value) => onFieldChange('specialization', value)}
+        placeholder="Field of study or specialization"
+      />
+    </FormGrid>
   );
 };

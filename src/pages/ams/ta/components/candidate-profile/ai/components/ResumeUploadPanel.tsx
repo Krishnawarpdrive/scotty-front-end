@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Box, Typography, Button, Paper, LinearProgress, Alert } from '@mui/material';
 import { CloudUpload, Description, Psychology } from '@mui/icons-material';
@@ -57,12 +56,11 @@ export const ResumeUploadPanel: React.FC<ResumeUploadPanelProps> = ({
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file) {
-      // Create a proper ChangeEvent-like object
-      const mockEvent = {
-        target: { files: [file] },
-        currentTarget: { files: [file] }
-      } as React.ChangeEvent<HTMLInputElement>;
-      handleFileUpload(mockEvent);
+      // Create a synthetic event object
+      const syntheticEvent = {
+        target: { files: [file] }
+      } as unknown as React.ChangeEvent<HTMLInputElement>;
+      handleFileUpload(syntheticEvent);
     }
   }, [handleFileUpload]);
 

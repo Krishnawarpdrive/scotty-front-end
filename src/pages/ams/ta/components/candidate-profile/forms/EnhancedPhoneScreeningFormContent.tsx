@@ -104,7 +104,7 @@ export const EnhancedPhoneScreeningFormContent: React.FC<EnhancedPhoneScreeningF
             country: formData.country,
             zipCode: formData.zipCode,
             preferredLocation: formData.preferredLocation,
-            willingToRelocate: formData.willingToRelocate
+            willingToRelocate: formData.willingToRelocate ? 'true' : 'false'
           }}
           onFieldChange={onFieldChange}
         />

@@ -1,29 +1,40 @@
 
+import { useCallback } from 'react';
+
+interface EducationFormData {
+  additionalCourses: string[];
+  languages: string[];
+}
+
 export const useEducationManagement = (
-  formData: any,
+  formData: EducationFormData,
   onFieldChange: (field: string, value: any) => void
 ) => {
-  const addCourse = (course: string) => {
+  const addCourse = useCallback((course: string) => {
     const currentCourses = formData.additionalCourses || [];
-    onFieldChange('additionalCourses', [...currentCourses, course]);
-  };
+    if (!currentCourses.includes(course)) {
+      onFieldChange('additionalCourses', [...currentCourses, course]);
+    }
+  }, [formData.additionalCourses, onFieldChange]);
 
-  const removeCourse = (index: number) => {
+  const removeCourse = useCallback((index: number) => {
     const currentCourses = formData.additionalCourses || [];
     const updatedCourses = currentCourses.filter((_, i) => i !== index);
     onFieldChange('additionalCourses', updatedCourses);
-  };
+  }, [formData.additionalCourses, onFieldChange]);
 
-  const addLanguage = (language: string) => {
+  const addLanguage = useCallback((language: string) => {
     const currentLanguages = formData.languages || [];
-    onFieldChange('languages', [...currentLanguages, language]);
-  };
+    if (!currentLanguages.includes(language)) {
+      onFieldChange('languages', [...currentLanguages, language]);
+    }
+  }, [formData.languages, onFieldChange]);
 
-  const removeLanguage = (index: number) => {
+  const removeLanguage = useCallback((index: number) => {
     const currentLanguages = formData.languages || [];
     const updatedLanguages = currentLanguages.filter((_, i) => i !== index);
     onFieldChange('languages', updatedLanguages);
-  };
+  }, [formData.languages, onFieldChange]);
 
   return {
     addCourse,

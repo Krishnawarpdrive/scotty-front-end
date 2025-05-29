@@ -1,29 +1,37 @@
 
+import { useCallback } from 'react';
+
+interface SkillsFormData {
+  technicalSkills: string[];
+  softSkills: string[];
+  certifications: string[];
+  toolsFrameworks: string[];
+}
+
 export const useSkillsManagement = (
-  formData: any,
+  formData: SkillsFormData,
   onFieldChange: (field: string, value: any) => void
 ) => {
-  const addSkill = (type: 'technicalSkills' | 'softSkills' | 'toolsFrameworks', skill: string) => {
-    const currentSkills = formData[type] || [];
-    onFieldChange(type, [...currentSkills, skill]);
-  };
+  const addSkill = useCallback((field: keyof SkillsFormData, skill: string) => {
+    const currentSkills = formData[field] || [];
+    if (!currentSkills.includes(skill)) {
+      onFieldChange(field, [...currentSkills, skill]);
+    }
+  }, [formData, onFieldChange]);
 
-  const removeSkill = (type: 'technicalSkills' | 'softSkills' | 'toolsFrameworks', index: number) => {
-    const currentSkills = formData[type] || [];
+  const removeSkill = useCallback((field: keyof SkillsFormData, index: number) => {
+    const currentSkills = formData[field] || [];
     const updatedSkills = currentSkills.filter((_, i) => i !== index);
-    onFieldChange(type, updatedSkills);
-  };
+    onFieldChange(field, updatedSkills);
+  }, [formData, onFieldChange]);
 
-  const addCertification = (certification: string) => {
-    const currentCerts = formData.certifications || [];
-    onFieldChange('certifications', [...currentCerts, certification]);
-  };
+  const addCertification = useCallback((certification: string) => {
+    addSkill('certifications', certification);
+  }, [addSkill]);
 
-  const removeCertification = (index: number) => {
-    const currentCerts = formData.certifications || [];
-    const updatedCerts = currentCerts.filter((_, i) => i !== index);
-    onFieldChange('certifications', updatedCerts);
-  };
+  const removeCertification = useCallback((index: number) => {
+    removeSkill('certifications', index);
+  }, [removeSkill]);
 
   return {
     addSkill,

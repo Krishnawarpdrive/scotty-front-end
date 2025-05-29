@@ -1,136 +1,93 @@
 
 import React from 'react';
-import { Box, Typography, Button, Paper, Chip, IconButton } from '@mui/material';
-import { AutoFixHigh, Check, Close, Psychology } from '@mui/icons-material';
+import { Box, Typography, Paper, Button, Chip, LinearProgress } from '@mui/material';
+import { Lightbulb, Check, Close } from '@mui/icons-material';
 import { FormSuggestion } from '../AIAssistantService';
 
 interface FormSuggestionsPanelProps {
   suggestions: FormSuggestion[];
   onApplySuggestion: (suggestion: FormSuggestion) => void;
   onDismissSuggestion: (suggestion: FormSuggestion) => void;
-  isLoading?: boolean;
+  isLoading: boolean;
 }
 
 export const FormSuggestionsPanel: React.FC<FormSuggestionsPanelProps> = ({
   suggestions,
   onApplySuggestion,
   onDismissSuggestion,
-  isLoading = false
+  isLoading
 }) => {
-  if (isLoading) {
-    return (
-      <Paper sx={{ p: 2, mb: 2, backgroundColor: '#f0f7ff' }}>
-        <Typography variant="body2" color="text.secondary">
-          Generating AI suggestions...
-        </Typography>
-      </Paper>
-    );
-  }
-
-  if (suggestions.length === 0) {
+  if (!isLoading && suggestions.length === 0) {
     return null;
   }
 
-  const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 0.9) return 'success';
-    if (confidence >= 0.7) return 'warning';
-    return 'default';
-  };
-
-  const getConfidenceLabel = (confidence: number) => {
-    if (confidence >= 0.9) return 'High Confidence';
-    if (confidence >= 0.7) return 'Medium Confidence';
-    return 'Low Confidence';
-  };
-
   return (
-    <Paper sx={{ 
-      p: 2, 
-      mb: 2, 
-      backgroundColor: '#f0f7ff',
-      border: '1px solid #bbdefb'
-    }}>
+    <Paper sx={{ p: 3, mb: 3, backgroundColor: '#fff3e0' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-        <Psychology sx={{ color: '#1976d2', fontSize: 20 }} />
-        <Typography variant="subtitle2" fontWeight="bold" color="#1976d2">
+        <Lightbulb sx={{ color: '#ff9800', fontSize: 24 }} />
+        <Typography variant="h6" fontWeight="bold">
           AI Form Suggestions
         </Typography>
-        <Chip 
-          label={`${suggestions.length} suggestions`} 
-          size="small" 
-          color="primary" 
-          variant="outlined"
-        />
       </Box>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-        {suggestions.map((suggestion, index) => (
-          <Paper 
-            key={index} 
-            sx={{ 
-              p: 2, 
-              backgroundColor: 'white',
-              border: '1px solid #e3f2fd'
-            }}
-          >
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="subtitle2" fontWeight="medium" sx={{ mb: 0.5 }}>
-                  {suggestion.field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                  Suggested: <strong>{suggestion.suggestedValue}</strong>
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {suggestion.reasoning}
-                </Typography>
-              </Box>
-              
-              <Box sx={{ display: 'flex', gap: 1, ml: 2 }}>
-                <Chip
-                  label={getConfidenceLabel(suggestion.confidence)}
-                  size="small"
-                  color={getConfidenceColor(suggestion.confidence)}
-                  variant="outlined"
-                />
-              </Box>
-            </Box>
+      {isLoading && (
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            AI is analyzing form data and generating suggestions...
+          </Typography>
+          <LinearProgress />
+        </Box>
+      )}
 
-            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-              <Button
-                size="small"
-                startIcon={<Check />}
-                variant="contained"
-                color="primary"
-                onClick={() => onApplySuggestion(suggestion)}
-                sx={{ minWidth: 100 }}
-              >
-                Apply
-              </Button>
-              <IconButton
-                size="small"
-                onClick={() => onDismissSuggestion(suggestion)}
-                sx={{ color: 'text.secondary' }}
-              >
-                <Close />
-              </IconButton>
-            </Box>
-          </Paper>
-        ))}
-      </Box>
+      {suggestions.map((suggestion, index) => (
+        <Box key={index} sx={{ 
+          p: 2, 
+          border: '1px solid #ffcc02', 
+          borderRadius: 1, 
+          mb: 2,
+          backgroundColor: 'white'
+        }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+            <Typography variant="subtitle2" fontWeight="bold">
+              {suggestion.field.charAt(0).toUpperCase() + suggestion.field.slice(1)}
+            </Typography>
+            <Chip 
+              label={`${Math.round(suggestion.confidence * 100)}% confidence`}
+              size="small"
+              color="warning"
+              variant="outlined"
+            />
+          </Box>
+          
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            Suggested value: <strong>{suggestion.suggestedValue}</strong>
+          </Typography>
+          
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            {suggestion.reasoning}
+          </Typography>
 
-      <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid #e3f2fd' }}>
-        <Button
-          size="small"
-          startIcon={<AutoFixHigh />}
-          variant="outlined"
-          color="primary"
-          onClick={() => suggestions.forEach(onApplySuggestion)}
-          fullWidth
-        >
-          Apply All High Confidence Suggestions
-        </Button>
-      </Box>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              size="small"
+              variant="contained"
+              startIcon={<Check />}
+              onClick={() => onApplySuggestion(suggestion)}
+              sx={{ backgroundColor: '#4caf50' }}
+            >
+              Apply
+            </Button>
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<Close />}
+              onClick={() => onDismissSuggestion(suggestion)}
+            >
+              Dismiss
+            </Button>
+          </Box>
+        </Box>
+      ))}
     </Paper>
   );
 };
