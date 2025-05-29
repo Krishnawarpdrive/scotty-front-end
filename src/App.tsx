@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -33,6 +34,7 @@ import CandidateDashboardPage from "./pages/ams/CandidateDashboardPage";
 import ClientRolesRequirementsPage from "./pages/ams/ClientRolesRequirementsPage";
 import VendorManagementPage from "./pages/ams/VendorManagementPage";
 import VendorDetailPage from "./pages/ams/vendors/VendorDetailPage";
+import ExecutiveDashboardPage from "./pages/ams/executive/ExecutiveDashboardPage";
 import { KeyboardShortcutsProvider } from "@/contexts/KeyboardShortcutsContext";
 import { KeyboardShortcutsModal } from "@/components/ui/keyboard-shortcuts-modal";
 import { KeyboardHintsOverlay } from "@/components/ui/keyboard-hints-overlay";
@@ -70,6 +72,7 @@ function AppContent() {
           <Route path="hr/candidate-pool" element={<CandidatePoolPage />} />
           <Route path="hr/role-management" element={<RoleManagementPage />} />
           <Route path="ta/mission-control" element={<TAMissionControlPage />} />
+          <Route path="executive/dashboard" element={<ExecutiveDashboardPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="support" element={<SupportPage />} />

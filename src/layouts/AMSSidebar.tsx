@@ -46,6 +46,7 @@ interface NavigationItem {
 
 const navigationItems: NavigationItem[] = [
   { title: 'Dashboard', path: '/ams/dashboard', icon: LayoutDashboard },
+  { title: 'Executive Dashboard', path: '/ams/executive/dashboard', icon: TrendingUp },
   { title: 'Candidate Dashboard', path: '/ams/candidate-dashboard', icon: User },
   { title: 'Client Dashboard', path: '/ams/client-dashboard', icon: BarChart },
   { title: 'Client Roles & Requirements', path: '/ams/client-roles-requirements', icon: FolderOpen },
