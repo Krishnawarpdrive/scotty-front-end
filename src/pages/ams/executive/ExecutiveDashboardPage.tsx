@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ExecutiveDashboardHeader } from './components/ExecutiveDashboardHeader';
-import { ExecutiveKPICards } from './components/ExecutiveKPICards';
+import { EnhancedExecutiveKPICards } from './components/EnhancedExecutiveKPICards';
 import { ExecutiveFilters } from './components/ExecutiveFilters';
 import { CompanyPerformanceChart } from './components/CompanyPerformanceChart';
 import { HiringTrendsChart } from './components/HiringTrendsChart';
@@ -11,6 +11,7 @@ import { HiringProcessPentagon } from './components/HiringProcessPentagon';
 import { TAPerformanceMetrics } from './components/TAPerformanceMetrics';
 import { ClientWiseHiringBreakdown } from './components/ClientWiseHiringBreakdown';
 import { ExecutiveNotificationSidebar } from './components/ExecutiveNotificationSidebar';
+import { ExecutiveDetailDrawer } from './components/ExecutiveDetailDrawer';
 import { useExecutiveDashboardData } from './hooks/useExecutiveDashboardData';
 
 const ExecutiveDashboardPage: React.FC = () => {
@@ -18,6 +19,9 @@ const ExecutiveDashboardPage: React.FC = () => {
   const [departmentFilter, setDepartmentFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
   const [notificationsPanelOpen, setNotificationsPanelOpen] = useState(false);
+  const [detailDrawerOpen, setDetailDrawerOpen] = useState(false);
+  const [drawerType, setDrawerType] = useState<string | null>(null);
+  const [drawerData, setDrawerData] = useState<any>(null);
 
   const {
     kpiData,
@@ -33,6 +37,18 @@ const ExecutiveDashboardPage: React.FC = () => {
     departmentFilter,
     regionFilter
   });
+
+  const handleCardClick = (cardType: string, data: any) => {
+    setDrawerType(cardType);
+    setDrawerData(data);
+    setDetailDrawerOpen(true);
+  };
+
+  const handleCloseDrawer = () => {
+    setDetailDrawerOpen(false);
+    setDrawerType(null);
+    setDrawerData(null);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -57,7 +73,11 @@ const ExecutiveDashboardPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <ExecutiveKPICards data={kpiData} isLoading={isLoading} />
+            <EnhancedExecutiveKPICards 
+              data={kpiData} 
+              isLoading={isLoading}
+              onCardClick={handleCardClick}
+            />
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -118,6 +138,13 @@ const ExecutiveDashboardPage: React.FC = () => {
           onClose={() => setNotificationsPanelOpen(false)}
         />
       </div>
+
+      <ExecutiveDetailDrawer
+        open={detailDrawerOpen}
+        onClose={handleCloseDrawer}
+        drawerType={drawerType}
+        drawerData={drawerData}
+      />
     </div>
   );
 };
