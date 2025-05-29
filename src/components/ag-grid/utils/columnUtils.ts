@@ -1,4 +1,3 @@
-
 import { ColDef } from 'ag-grid-community';
 import { StatusBadgeCellRenderer } from '../cell-renderers/StatusBadgeCellRenderer';
 import { ActionsCellRenderer } from '../cell-renderers/ActionsCellRenderer';
@@ -14,6 +13,7 @@ export interface ColumnConfig {
   sortable?: boolean;
   filter?: boolean;
   resizable?: boolean;
+  pinned?: 'left' | 'right';
   cellRenderer?: any;
   cellRendererParams?: any;
   valueFormatter?: (params: any) => string;
@@ -31,6 +31,7 @@ export const createColumnDef = (config: ColumnConfig): ColDef => {
     sortable = true,
     filter = true,
     resizable = true,
+    pinned,
     cellRenderer,
     cellRendererParams,
     valueFormatter,
@@ -46,6 +47,7 @@ export const createColumnDef = (config: ColumnConfig): ColDef => {
     sortable,
     filter,
     resizable,
+    pinned,
     valueFormatter,
     comparator
   };
