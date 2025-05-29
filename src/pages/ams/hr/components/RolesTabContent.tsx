@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
-import { DataTable } from "@/components/ui/data-table";
-import { getRolesColumns } from './table-columns/rolesColumns';
+import { AGGridTable } from "@/components/ag-grid/AGGridTable";
+import { createStandardColumns, commonColumns } from "@/components/ag-grid/utils/columnUtils";
 import RoleDetailDrawer from './drawer/RoleDetailDrawer';
+import { ColDef } from 'ag-grid-community';
 
 interface RolesTabContentProps {
   rolesData: any[];
@@ -14,35 +15,61 @@ interface RolesTabContentProps {
 const RolesTabContent = ({ rolesData, handleClientClick, handleRowClick }: RolesTabContentProps) => {
   const [selectedRole, setSelectedRole] = useState<any>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
 
   const handleRoleClick = (role: any) => {
     setSelectedRole(role);
     setDrawerOpen(true);
   };
 
-  // Create enhanced columns that handle role name clicks
-  const columns = React.useMemo(() => {
-    const baseColumns = getRolesColumns(handleClientClick);
-    
-    // Find the role name column and enhance it with click handler
-    return baseColumns.map(column => {
-      if (column.id === 'roleName' || column.accessorKey === 'name') {
-        return {
-          ...column,
-          cell: (role: any) => (
-            <button
-              onClick={() => handleRoleClick(role)}
-              className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer text-left font-medium"
-              style={{ fontFamily: 'Rubik, sans-serif', fontSize: '12px' }}
-            >
-              {role.name || role.roleName}
-            </button>
-          ),
-        };
-      }
-      return column;
-    });
-  }, [handleClientClick]);
+  const handleRowAction = (action: string, rowData: any) => {
+    switch (action) {
+      case 'view':
+        handleRoleClick(rowData);
+        break;
+      default:
+        console.log(`Action ${action} for role:`, rowData);
+    }
+  };
+
+  // AG Grid column definitions
+  const columnDefs: ColDef[] = [
+    ...createStandardColumns([
+      { 
+        field: 'name', 
+        headerName: 'Role Name', 
+        width: 200,
+        cellRenderer: (params: any) => (
+          <button
+            onClick={() => handleRoleClick(params.data)}
+            className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer text-left font-medium"
+            style={{ fontFamily: 'Rubik, sans-serif', fontSize: '12px' }}
+          >
+            {params.value}
+          </button>
+        )
+      },
+      { field: 'category', headerName: 'Category', width: 150 },
+      { field: 'work_mode', headerName: 'Work Mode', width: 120 },
+      { field: 'employment_type', headerName: 'Employment Type', width: 140 },
+      { 
+        field: 'client', 
+        headerName: 'Client', 
+        width: 150,
+        cellRenderer: (params: any) => (
+          <button
+            onClick={() => handleClientClick(params.value)}
+            className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+          >
+            {params.value}
+          </button>
+        )
+      },
+      { field: 'status', headerName: 'Status', width: 120, type: 'status' },
+      { field: 'created_at', headerName: 'Created', width: 150, type: 'date' }
+    ]),
+    commonColumns.actions(handleRowAction)
+  ];
 
   const handleCloseDrawer = () => {
     setDrawerOpen(false);
@@ -53,10 +80,14 @@ const RolesTabContent = ({ rolesData, handleClientClick, handleRowClick }: Roles
     <>
       <Card className="border shadow-sm">
         <div className="overflow-x-auto">
-          <DataTable 
-            data={rolesData}
-            columns={columns}
-            onRowClick={handleRowClick}
+          <AGGridTable
+            title="Roles"
+            rowData={rolesData}
+            columnDefs={columnDefs}
+            totalCount={rolesData.length}
+            selectedCount={selectedRoles.length}
+            onRowClicked={(event) => handleRowClick(event.data)}
+            height="600px"
           />
         </div>
       </Card>
