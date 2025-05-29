@@ -238,6 +238,57 @@ export type Database = {
           },
         ]
       }
+      executive_metrics: {
+        Row: {
+          client_id: string | null
+          created_at: string | null
+          id: string
+          measurement_date: string
+          metadata: Json | null
+          metric_type: string
+          metric_value: number
+          period_type: string
+          requirement_id: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string | null
+          id?: string
+          measurement_date?: string
+          metadata?: Json | null
+          metric_type: string
+          metric_value: number
+          period_type?: string
+          requirement_id?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string | null
+          id?: string
+          measurement_date?: string
+          metadata?: Json | null
+          metric_type?: string
+          metric_value?: number
+          period_type?: string
+          requirement_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "executive_metrics_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "executive_metrics_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       global_roles: {
         Row: {
           created_at: string
@@ -282,6 +333,70 @@ export type Database = {
           work_mode?: string
         }
         Relationships: []
+      }
+      handoff_documentation: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          documentation: Json
+          from_stage_id: string | null
+          handoff_type: string
+          id: string
+          requirement_id: string | null
+          reviewed_by: string | null
+          status: string
+          to_stage_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          documentation?: Json
+          from_stage_id?: string | null
+          handoff_type: string
+          id?: string
+          requirement_id?: string | null
+          reviewed_by?: string | null
+          status?: string
+          to_stage_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          documentation?: Json
+          from_stage_id?: string | null
+          handoff_type?: string
+          id?: string
+          requirement_id?: string | null
+          reviewed_by?: string | null
+          status?: string
+          to_stage_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "handoff_documentation_from_stage_id_fkey"
+            columns: ["from_stage_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_stages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "handoff_documentation_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "handoff_documentation_to_stage_id_fkey"
+            columns: ["to_stage_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_stages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       hiring_pipelines: {
         Row: {
@@ -333,6 +448,104 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      quality_gate_validations: {
+        Row: {
+          created_at: string | null
+          id: string
+          quality_gate_id: string | null
+          requirement_id: string | null
+          validated_at: string | null
+          validated_by: string | null
+          validation_data: Json | null
+          validation_notes: string | null
+          validation_status: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          quality_gate_id?: string | null
+          requirement_id?: string | null
+          validated_at?: string | null
+          validated_by?: string | null
+          validation_data?: Json | null
+          validation_notes?: string | null
+          validation_status?: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          quality_gate_id?: string | null
+          requirement_id?: string | null
+          validated_at?: string | null
+          validated_by?: string | null
+          validation_data?: Json | null
+          validation_notes?: string | null
+          validation_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_gate_validations_quality_gate_id_fkey"
+            columns: ["quality_gate_id"]
+            isOneToOne: false
+            referencedRelation: "quality_gates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_gate_validations_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_gates: {
+        Row: {
+          automatable: boolean | null
+          created_at: string | null
+          criteria: Json
+          description: string | null
+          gate_type: string
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+          workflow_stage_id: string | null
+        }
+        Insert: {
+          automatable?: boolean | null
+          created_at?: string | null
+          criteria?: Json
+          description?: string | null
+          gate_type: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+          workflow_stage_id?: string | null
+        }
+        Update: {
+          automatable?: boolean | null
+          created_at?: string | null
+          criteria?: Json
+          description?: string | null
+          gate_type?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+          workflow_stage_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_gates_workflow_stage_id_fkey"
+            columns: ["workflow_stage_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_stages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       requirements: {
         Row: {
@@ -681,6 +894,97 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      workflow_stages: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          stage_order: number
+          stage_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          stage_order: number
+          stage_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          stage_order?: number
+          stage_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      workflow_transitions: {
+        Row: {
+          created_at: string | null
+          from_stage_id: string | null
+          id: string
+          requirement_id: string | null
+          to_stage_id: string | null
+          transition_data: Json | null
+          transition_notes: string | null
+          transition_type: string
+          transitioned_by: string
+        }
+        Insert: {
+          created_at?: string | null
+          from_stage_id?: string | null
+          id?: string
+          requirement_id?: string | null
+          to_stage_id?: string | null
+          transition_data?: Json | null
+          transition_notes?: string | null
+          transition_type: string
+          transitioned_by: string
+        }
+        Update: {
+          created_at?: string | null
+          from_stage_id?: string | null
+          id?: string
+          requirement_id?: string | null
+          to_stage_id?: string | null
+          transition_data?: Json | null
+          transition_notes?: string | null
+          transition_type?: string
+          transitioned_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_transitions_from_stage_id_fkey"
+            columns: ["from_stage_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_stages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_transitions_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_transitions_to_stage_id_fkey"
+            columns: ["to_stage_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_stages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
