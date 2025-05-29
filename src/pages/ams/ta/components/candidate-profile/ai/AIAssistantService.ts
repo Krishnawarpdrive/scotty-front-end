@@ -117,13 +117,17 @@ export class AIAssistantService {
     const candidateSkills: string[] = Array.isArray(candidate.skills) ? candidate.skills : [];
     const requirements: string[] = Array.isArray(roleRequirements) ? roleRequirements : [];
     
-    const missingSkills: string[] = requirements.filter((skill: string) => 
-      !candidateSkills.some((cs: string) => cs.toLowerCase().includes(skill.toLowerCase()))
-    );
+    const missingSkills: string[] = requirements.filter((skill: string) => {
+      return !candidateSkills.some((candidateSkill: string) => 
+        candidateSkill.toLowerCase().includes(skill.toLowerCase())
+      );
+    });
     
-    const matchingSkills: string[] = requirements.filter((skill: string) => 
-      candidateSkills.some((cs: string) => cs.toLowerCase().includes(skill.toLowerCase()))
-    );
+    const matchingSkills: string[] = requirements.filter((skill: string) => {
+      return candidateSkills.some((candidateSkill: string) => 
+        candidateSkill.toLowerCase().includes(skill.toLowerCase())
+      );
+    });
 
     return {
       missingSkills,
@@ -212,11 +216,11 @@ export class AIAssistantService {
       const requirements: string[] = roleRequirements;
       const techSkills: string[] = formData.technicalSkills;
       
-      const matchCount = requirements.filter((req: string) => 
-        techSkills.some((skill: string) => 
+      const matchCount = requirements.filter((req: string) => {
+        return techSkills.some((skill: string) => 
           skill.toLowerCase().includes(req.toLowerCase())
-        )
-      ).length;
+        );
+      }).length;
       
       if (matchCount / requirements.length > 0.8) {
         insights.push({
@@ -366,8 +370,9 @@ export class AIAssistantService {
       'Docker', 'Kubernetes', 'Git', 'Jenkins', 'Linux', 'Windows', 'macOS'
     ];
     
+    const textLower = text.toLowerCase();
     return techSkills.filter((skill: string) => 
-      text.toLowerCase().includes(skill.toLowerCase())
+      textLower.includes(skill.toLowerCase())
     );
   }
 
@@ -377,8 +382,9 @@ export class AIAssistantService {
       'Project Management', 'Time Management', 'Adaptability', 'Creativity', 'Collaboration'
     ];
     
+    const textLower = text.toLowerCase();
     return softSkills.filter((skill: string) => 
-      text.toLowerCase().includes(skill.toLowerCase())
+      textLower.includes(skill.toLowerCase())
     );
   }
 
@@ -388,8 +394,9 @@ export class AIAssistantService {
       'Photoshop', 'Figma', 'Sketch', 'Postman', 'Swagger', 'Tableau', 'Power BI'
     ];
     
+    const textLower = text.toLowerCase();
     return tools.filter((tool: string) => 
-      text.toLowerCase().includes(tool.toLowerCase())
+      textLower.includes(tool.toLowerCase())
     );
   }
 
