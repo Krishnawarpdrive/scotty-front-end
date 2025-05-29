@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ExecutiveDashboardHeader } from './components/ExecutiveDashboardHeader';
 import { EnhancedExecutiveKPICards } from './components/EnhancedExecutiveKPICards';
 import { ExecutiveFilters } from './components/ExecutiveFilters';
@@ -50,29 +50,55 @@ const ExecutiveDashboardPage: React.FC = () => {
     setDrawerData(null);
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100/50">
       <ExecutiveDashboardHeader 
         onNotificationsToggle={() => setNotificationsPanelOpen(!notificationsPanelOpen)}
         notificationsOpen={notificationsPanelOpen}
       />
       
       <div className="flex">
-        <div className="flex-1 p-6 space-y-6">
-          <ExecutiveFilters
-            dateRange={dateRange}
-            departmentFilter={departmentFilter}
-            regionFilter={regionFilter}
-            onDateRangeChange={setDateRange}
-            onDepartmentChange={setDepartmentFilter}
-            onRegionChange={setRegionFilter}
-          />
+        <motion.div 
+          className="flex-1 p-6 space-y-8"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div variants={sectionVariants}>
+            <ExecutiveFilters
+              dateRange={dateRange}
+              departmentFilter={departmentFilter}
+              regionFilter={regionFilter}
+              onDateRangeChange={setDateRange}
+              onDepartmentChange={setDepartmentFilter}
+              onRegionChange={setRegionFilter}
+            />
+          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <motion.div variants={sectionVariants}>
             <EnhancedExecutiveKPICards 
               data={kpiData} 
               isLoading={isLoading}
@@ -80,63 +106,71 @@ const ExecutiveDashboardPage: React.FC = () => {
             />
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <motion.div 
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            variants={sectionVariants}
+          >
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.2 }}
             >
               <CompanyPerformanceChart data={performanceData} isLoading={isLoading} />
             </motion.div>
             
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.2 }}
             >
               <HiringTrendsChart data={hiringTrends} isLoading={isLoading} />
             </motion.div>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <motion.div 
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            variants={sectionVariants}
+          >
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.2 }}
             >
               <HiringProcessPentagon data={pentagonData} isLoading={isLoading} />
             </motion.div>
             
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.2 }}
             >
               <TAPerformanceMetrics data={taPerformanceData} isLoading={isLoading} />
             </motion.div>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-          >
-            <ClientWiseHiringBreakdown data={clientHiringData} isLoading={isLoading} />
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.7 }}
-          >
-            <DepartmentBreakdown data={departmentData} isLoading={isLoading} />
+          <motion.div variants={sectionVariants}>
+            <motion.div
+              whileHover={{ scale: 1.005 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ClientWiseHiringBreakdown data={clientHiringData} isLoading={isLoading} />
+            </motion.div>
           </motion.div>
-        </div>
 
-        <ExecutiveNotificationSidebar 
-          open={notificationsPanelOpen}
-          onClose={() => setNotificationsPanelOpen(false)}
-        />
+          <motion.div variants={sectionVariants}>
+            <motion.div
+              whileHover={{ scale: 1.005 }}
+              transition={{ duration: 0.3 }}
+            >
+              <DepartmentBreakdown data={departmentData} isLoading={isLoading} />
+            </motion.div>
+          </motion.div>
+        </motion.div>
+
+        <AnimatePresence>
+          {notificationsPanelOpen && (
+            <ExecutiveNotificationSidebar 
+              open={notificationsPanelOpen}
+              onClose={() => setNotificationsPanelOpen(false)}
+            />
+          )}
+        </AnimatePresence>
       </div>
 
       <ExecutiveDetailDrawer
