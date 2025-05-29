@@ -20,7 +20,7 @@ import {
   UserCheck,
   AlertTriangle,
   CheckCircle,
-  Export,
+  Download,
   Filter
 } from 'lucide-react';
 
@@ -104,7 +104,7 @@ export const ExecutiveDetailDrawer: React.FC<ExecutiveDetailDrawerProps> = ({
       footer={
         <div className="flex gap-2">
           <Button variant="outline" size="sm">
-            <Export className="h-4 w-4 mr-2" />
+            <Download className="h-4 w-4 mr-2" />
             Export Data
           </Button>
           <Button variant="outline" size="sm">
