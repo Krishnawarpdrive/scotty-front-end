@@ -28,7 +28,7 @@ export const useWorkflowData = () => {
         .order('stage_order');
       
       if (error) throw error;
-      setWorkflowStages(data || []);
+      setWorkflowStages((data || []) as WorkflowStage[]);
     } catch (err) {
       console.error('Error fetching workflow stages:', err);
       throw err;
@@ -46,7 +46,7 @@ export const useWorkflowData = () => {
         .eq('is_active', true);
       
       if (error) throw error;
-      setQualityGates(data || []);
+      setQualityGates((data || []) as QualityGate[]);
     } catch (err) {
       console.error('Error fetching quality gates:', err);
       throw err;
@@ -67,7 +67,7 @@ export const useWorkflowData = () => {
         .limit(50);
       
       if (error) throw error;
-      setHandoffDocuments(data || []);
+      setHandoffDocuments((data || []) as HandoffDocumentation[]);
     } catch (err) {
       console.error('Error fetching handoff documents:', err);
       throw err;
@@ -87,7 +87,7 @@ export const useWorkflowData = () => {
         .order('measurement_date', { ascending: false });
       
       if (error) throw error;
-      setExecutiveMetrics(data || []);
+      setExecutiveMetrics((data || []) as ExecutiveMetric[]);
     } catch (err) {
       console.error('Error fetching executive metrics:', err);
       throw err;
@@ -107,7 +107,7 @@ export const useWorkflowData = () => {
         .limit(100);
       
       if (error) throw error;
-      setQualityGateValidations(data || []);
+      setQualityGateValidations((data || []) as QualityGateValidation[]);
     } catch (err) {
       console.error('Error fetching quality gate validations:', err);
       throw err;
@@ -128,7 +128,7 @@ export const useWorkflowData = () => {
         .limit(100);
       
       if (error) throw error;
-      setWorkflowTransitions(data || []);
+      setWorkflowTransitions((data || []) as WorkflowTransition[]);
     } catch (err) {
       console.error('Error fetching workflow transitions:', err);
       throw err;
@@ -169,7 +169,7 @@ export const useWorkflowData = () => {
       
       if (error) throw error;
       
-      setQualityGateValidations(prev => [data, ...prev]);
+      setQualityGateValidations(prev => [data as QualityGateValidation, ...prev]);
       return data;
     } catch (err) {
       console.error('Error creating quality gate validation:', err);
@@ -187,7 +187,7 @@ export const useWorkflowData = () => {
       
       if (error) throw error;
       
-      setHandoffDocuments(prev => [data, ...prev]);
+      setHandoffDocuments(prev => [data as HandoffDocumentation, ...prev]);
       return data;
     } catch (err) {
       console.error('Error creating handoff document:', err);
@@ -207,7 +207,7 @@ export const useWorkflowData = () => {
       if (error) throw error;
       
       setHandoffDocuments(prev => 
-        prev.map(doc => doc.id === id ? { ...doc, ...data } : doc)
+        prev.map(doc => doc.id === id ? { ...doc, ...data } as HandoffDocumentation : doc)
       );
       return data;
     } catch (err) {
@@ -226,7 +226,7 @@ export const useWorkflowData = () => {
       
       if (error) throw error;
       
-      setWorkflowTransitions(prev => [data, ...prev]);
+      setWorkflowTransitions(prev => [data as WorkflowTransition, ...prev]);
       return data;
     } catch (err) {
       console.error('Error creating workflow transition:', err);
