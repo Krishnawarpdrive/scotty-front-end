@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -9,6 +8,9 @@ import { store } from "@/store";
 import { ThemeProvider } from "@/theme/ThemeProvider";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import ProfilePage from "./pages/ProfilePage";
+import SettingsPage from "./pages/SettingsPage";
+import SupportPage from "./pages/SupportPage";
 import AMSLayout from "./layouts/AMSLayout";
 import Dashboard from "./pages/ams/Dashboard";
 import ClientsPage from "./pages/ams/ClientsPage";
@@ -68,6 +70,12 @@ function AppContent() {
           <Route path="hr/candidate-pool" element={<CandidatePoolPage />} />
           <Route path="hr/role-management" element={<RoleManagementPage />} />
           <Route path="ta/mission-control" element={<TAMissionControlPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="support" element={<SupportPage />} />
+          <Route path="*/profile" element={<ProfilePage />} />
+          <Route path="*/settings" element={<SettingsPage />} />
+          <Route path="*/support" element={<SupportPage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
