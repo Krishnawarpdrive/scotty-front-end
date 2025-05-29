@@ -66,7 +66,7 @@ export const createColumnDef = (config: ColumnConfig): ColDef => {
       return {
         ...baseColDef,
         cellRenderer: ActionsCellRenderer,
-        width: 80,
+        width: 100,
         sortable: false,
         filter: false,
         pinned: 'right',
@@ -81,8 +81,8 @@ export const createColumnDef = (config: ColumnConfig): ColDef => {
         sortable: false,
         filter: false,
         pinned: 'left',
-        headerCheckboxSelection: true,
-        checkboxSelection: true,
+        headerCheckboxSelection: false,
+        checkboxSelection: false,
         ...cellRendererParams && { cellRendererParams }
       };
     
@@ -128,7 +128,7 @@ export const commonColumns = {
   actions: (onRowAction: (action: string, rowData: any) => void): ColDef =>
     createColumnDef({
       field: 'actions',
-      headerName: '',
+      headerName: 'Actions',
       type: 'actions',
       cellRendererParams: { onRowAction }
     }),
