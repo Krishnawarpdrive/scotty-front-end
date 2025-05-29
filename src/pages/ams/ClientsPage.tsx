@@ -47,9 +47,9 @@ const ClientsPage = () => {
     });
   };
 
-  // Handle search change
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+  // Handle search change - now expects a string directly
+  const handleSearchChange = (query: string) => {
+    setSearchTerm(query);
   };
 
   // Add a sort handler function

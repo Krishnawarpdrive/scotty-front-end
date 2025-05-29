@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { PhoneScreeningForm } from './PhoneScreeningForm';
+import { EnhancedPhoneScreeningForm } from './EnhancedPhoneScreeningForm';
 import { TechnicalInterviewForm } from './TechnicalInterviewForm';
 import { ClientInterviewForm } from './ClientInterviewForm';
 import { BackgroundVerificationForm } from './BackgroundVerificationForm';
@@ -21,7 +21,7 @@ export const StageFormRenderer: React.FC<StageFormRendererProps> = ({
   const renderForm = () => {
     switch (stageId) {
       case 'phone-screening':
-        return <PhoneScreeningForm candidate={candidate} />;
+        return <EnhancedPhoneScreeningForm candidate={candidate} />;
       case 'technical':
         return <TechnicalInterviewForm candidate={candidate} />;
       case 'client-interview':
@@ -31,13 +31,13 @@ export const StageFormRenderer: React.FC<StageFormRendererProps> = ({
       case 'final-review':
         return <FinalReviewForm candidate={candidate} />;
       default:
-        return <PhoneScreeningForm candidate={candidate} />;
+        return <EnhancedPhoneScreeningForm candidate={candidate} />;
     }
   };
 
   return (
-    <>
+    <div style={{ height: '100%', overflow: 'auto' }}>
       {renderForm()}
-    </>
+    </div>
   );
 };

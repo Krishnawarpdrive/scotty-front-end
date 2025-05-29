@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Table, TableBody } from "@/components/ui-mui/table";
-import { CandidateProfileDrawer } from "./candidate-profile/CandidateProfileDrawer";
+import { EnhancedCandidateProfileDrawer } from "./candidate-profile/EnhancedCandidateProfileDrawer";
 import { CandidateRow } from "./table/CandidateRow";
 import { CandidateTableHeader } from "./table/TableHeader";
 import { candidates } from "./data/candidatesData";
@@ -58,7 +58,7 @@ export const ApplicationTable: React.FC = () => {
         </div>
       </div>
 
-      <CandidateProfileDrawer
+      <EnhancedCandidateProfileDrawer
         open={isDetailsOpen}
         onClose={() => setIsDetailsOpen(false)}
         candidate={selectedCandidate}

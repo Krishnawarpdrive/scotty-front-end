@@ -27,7 +27,8 @@ import {
   BarChart,
   UserCheck,
   User,
-  FolderOpen
+  FolderOpen,
+  Building
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { 
@@ -52,6 +53,7 @@ const navigationItems: NavigationItem[] = [
   { title: 'Role Management', path: '/ams/hr/role-management', icon: Briefcase },
   { title: 'Candidate Pool', path: '/ams/hr/candidate-pool', icon: UserCheck },
   { title: 'TA Mission Control', path: '/ams/ta/mission-control', icon: LayoutDashboard },
+  { title: 'Vendor Management', path: '/ams/vendor-management', icon: Building },
   { title: 'Clients', path: '/ams/clients', icon: Users },
   { title: 'Global Role Library', path: '/ams/roles', icon: Briefcase },
   { title: 'Requirements', path: '/ams/requirements', icon: FileText },

@@ -10,7 +10,7 @@ interface ClientsPageContentProps {
   filteredClients: Client[];
   isLoading: boolean;
   searchTerm: string;
-  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSearchChange: (query: string) => void;
   selectedClients: string[];
   toggleFilterPanel: () => void;
   onEditClient: (client: Client) => void;

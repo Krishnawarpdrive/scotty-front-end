@@ -120,6 +120,7 @@ export type Database = {
           created_at: string | null
           created_on: string | null
           email: string | null
+          embedding: string | null
           health_score: number | null
           hiring_status: string | null
           id: string
@@ -139,6 +140,7 @@ export type Database = {
           created_at?: string | null
           created_on?: string | null
           email?: string | null
+          embedding?: string | null
           health_score?: number | null
           hiring_status?: string | null
           id?: string
@@ -158,6 +160,7 @@ export type Database = {
           created_at?: string | null
           created_on?: string | null
           email?: string | null
+          embedding?: string | null
           health_score?: number | null
           hiring_status?: string | null
           id?: string
@@ -240,6 +243,7 @@ export type Database = {
           created_at: string
           department: string
           description: string | null
+          embedding: string | null
           employment_type: string
           experience_range: string
           id: string
@@ -253,6 +257,7 @@ export type Database = {
           created_at?: string
           department: string
           description?: string | null
+          embedding?: string | null
           employment_type: string
           experience_range: string
           id?: string
@@ -266,6 +271,7 @@ export type Database = {
           created_at?: string
           department?: string
           description?: string | null
+          embedding?: string | null
           employment_type?: string
           experience_range?: string
           id?: string
@@ -337,6 +343,7 @@ export type Database = {
           custom_jd: string | null
           description: string | null
           due_date: string | null
+          embedding: string | null
           experience_variance: string | null
           hiring_manager: string | null
           id: string
@@ -355,6 +362,7 @@ export type Database = {
           custom_jd?: string | null
           description?: string | null
           due_date?: string | null
+          embedding?: string | null
           experience_variance?: string | null
           hiring_manager?: string | null
           id?: string
@@ -373,6 +381,7 @@ export type Database = {
           custom_jd?: string | null
           description?: string | null
           due_date?: string | null
+          embedding?: string | null
           experience_variance?: string | null
           hiring_manager?: string | null
           id?: string
@@ -472,6 +481,7 @@ export type Database = {
           client_id: string | null
           created_at: string | null
           created_by: string | null
+          embedding: string | null
           employment_type: string
           external_name: string | null
           id: string
@@ -491,6 +501,7 @@ export type Database = {
           client_id?: string | null
           created_at?: string | null
           created_by?: string | null
+          embedding?: string | null
           employment_type: string
           external_name?: string | null
           id?: string
@@ -510,6 +521,7 @@ export type Database = {
           client_id?: string | null
           created_at?: string | null
           created_by?: string | null
+          embedding?: string | null
           employment_type?: string
           external_name?: string | null
           id?: string
@@ -541,10 +553,71 @@ export type Database = {
           },
         ]
       }
+      search_analytics: {
+        Row: {
+          clicked_result_id: string | null
+          created_at: string
+          id: string
+          results_count: number
+          search_query: string
+          search_time_ms: number | null
+          search_type: string
+          user_id: string | null
+        }
+        Insert: {
+          clicked_result_id?: string | null
+          created_at?: string
+          id?: string
+          results_count?: number
+          search_query: string
+          search_time_ms?: number | null
+          search_type: string
+          user_id?: string | null
+        }
+        Update: {
+          clicked_result_id?: string | null
+          created_at?: string
+          id?: string
+          results_count?: number
+          search_query?: string
+          search_time_ms?: number | null
+          search_type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      search_suggestions: {
+        Row: {
+          created_at: string
+          frequency: number
+          id: string
+          query: string
+          suggestion: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          frequency?: number
+          id?: string
+          query: string
+          suggestion: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          frequency?: number
+          id?: string
+          query?: string
+          suggestion?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       skills: {
         Row: {
           category: string | null
           created_at: string | null
+          embedding: string | null
           id: string
           name: string
           popularity: number | null
@@ -552,6 +625,7 @@ export type Database = {
         Insert: {
           category?: string | null
           created_at?: string | null
+          embedding?: string | null
           id?: string
           name: string
           popularity?: number | null
@@ -559,6 +633,7 @@ export type Database = {
         Update: {
           category?: string | null
           created_at?: string | null
+          embedding?: string | null
           id?: string
           name?: string
           popularity?: number | null
@@ -612,7 +687,98 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      binary_quantize: {
+        Args: { "": string } | { "": unknown }
+        Returns: unknown
+      }
+      halfvec_avg: {
+        Args: { "": number[] }
+        Returns: unknown
+      }
+      halfvec_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      halfvec_send: {
+        Args: { "": unknown }
+        Returns: string
+      }
+      halfvec_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
+      hnsw_bit_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnsw_halfvec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnsw_sparsevec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnswhandler: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflat_bit_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflat_halfvec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflathandler: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      l2_norm: {
+        Args: { "": unknown } | { "": unknown }
+        Returns: number
+      }
+      l2_normalize: {
+        Args: { "": string } | { "": unknown } | { "": unknown }
+        Returns: string
+      }
+      sparsevec_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      sparsevec_send: {
+        Args: { "": unknown }
+        Returns: string
+      }
+      sparsevec_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
+      vector_avg: {
+        Args: { "": number[] }
+        Returns: string
+      }
+      vector_dims: {
+        Args: { "": string } | { "": unknown }
+        Returns: number
+      }
+      vector_norm: {
+        Args: { "": string }
+        Returns: number
+      }
+      vector_out: {
+        Args: { "": string }
+        Returns: unknown
+      }
+      vector_send: {
+        Args: { "": string }
+        Returns: string
+      }
+      vector_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never

@@ -31,6 +31,10 @@ export interface Candidate {
   };
   timeSpent?: string;
   targetDate?: string;
+  // Missing properties that caused errors
+  currentRole?: string;
+  currentCompany?: string;
+  appliedRole?: string;
 }
 
 export interface TimelineItemData {

@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { Search, SlidersHorizontal } from 'lucide-react';
-import { Input } from '@/components/ui-mui/Input';
+import { SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui-mui/Button';
+import { UnifiedSearchBar } from '@/components/search/UnifiedSearchBar';
 
 interface SearchFiltersBarProps {
   searchTerm: string;
-  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSearchChange: (query: string) => void;
   toggleFilterPanel: () => void;
 }
 
@@ -17,13 +17,12 @@ const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
 }) => {
   return (
     <div className="flex gap-4 items-center">
-      <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-        <Input
+      <div className="flex-1">
+        <UnifiedSearchBar
           placeholder="Search clients..."
-          value={searchTerm}
-          onChange={onSearchChange}
-          className="pl-10"
+          onTraditionalSearch={onSearchChange}
+          defaultTables={['clients']}
+          searchMode="both"
         />
       </div>
       <Button 

@@ -29,6 +29,8 @@ import ClientAccountCreationPage from "./pages/ams/clients/ClientAccountCreation
 import ClientDetailsPage from "./pages/ams/clients/ClientDetailsPage";
 import CandidateDashboardPage from "./pages/ams/CandidateDashboardPage";
 import ClientRolesRequirementsPage from "./pages/ams/ClientRolesRequirementsPage";
+import VendorManagementPage from "./pages/ams/VendorManagementPage";
+import VendorDetailPage from "./pages/ams/vendors/VendorDetailPage";
 import { KeyboardShortcutsProvider } from "@/contexts/KeyboardShortcutsContext";
 import { KeyboardShortcutsModal } from "@/components/ui/keyboard-shortcuts-modal";
 import { KeyboardHintsOverlay } from "@/components/ui/keyboard-hints-overlay";
@@ -51,6 +53,8 @@ function AppContent() {
           <Route path="clients/create" element={<ClientAccountCreationPage />} />
           <Route path="client-dashboard" element={<ClientDashboardPage />} />
           <Route path="clients/:clientId" element={<ClientDetailsPage />} />
+          <Route path="vendor-management" element={<VendorManagementPage />} />
+          <Route path="vendor-management/:vendorId" element={<VendorDetailPage />} />
           <Route path="skills" element={<SkillsPage />} />
           <Route path="skills/library" element={<SkillsLibraryPage />} />
           <Route path="checklists" element={<ChecklistsPage />} />
