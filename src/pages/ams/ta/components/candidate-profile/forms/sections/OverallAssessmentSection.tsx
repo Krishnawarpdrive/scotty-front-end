@@ -1,13 +1,15 @@
 
 import React from 'react';
-import { 
-  Box, 
-  Typography,
-  Rating
-} from '@mui/material';
-import { DesignSystemSelect } from '@/components/ui-mui/DesignSystemSelect';
+import { Box, Typography, Rating, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { FormSection, FormGrid, FormInput } from '../shared/FormComponents';
 
 interface OverallAssessmentData {
+  overallNotes: string;
+  strengths: string;
+  concerns: string;
+  recommendation: string;
+  nextSteps: string;
+  rating: number;
   overallRating: number;
   finalDecision: string;
 }
@@ -17,59 +19,84 @@ interface OverallAssessmentSectionProps {
   onFieldChange: (field: string, value: any) => void;
 }
 
-const decisionOptions = [
-  { value: 'pending', label: 'Pending' },
-  { value: 'selected', label: 'Selected' },
-  { value: 'rejected', label: 'Rejected' },
-  { value: 'hold', label: 'On Hold' },
-  { value: 'waitlist', label: 'Waitlist' }
-];
-
 export const OverallAssessmentSection: React.FC<OverallAssessmentSectionProps> = ({
   formData,
   onFieldChange
 }) => {
   return (
-    <Box sx={{ mb: 3 }}>
-      <Typography variant="h6" sx={{ 
-        mb: 2, 
-        fontFamily: 'Rubik, sans-serif', 
-        fontWeight: 600,
-        fontSize: '14px',
-        color: '#374151'
-      }}>
-        Overall Assessment
-      </Typography>
-      
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="body2" sx={{ 
-          mb: 1, 
-          display: 'block', 
-          fontFamily: 'Rubik, sans-serif',
-          fontSize: '13px',
-          color: '#6b7280'
-        }}>
-          Overall Rating
-        </Typography>
-        <Rating
-          value={formData.overallRating}
-          onChange={(event, newValue) => onFieldChange('overallRating', newValue)}
-          size="medium"
-          sx={{
-            '& .MuiRating-iconFilled': {
-              color: '#009933',
-            },
-          }}
+    <FormSection title="Overall Assessment" defaultExpanded>
+      <FormGrid columns={1} gap={3}>
+        <FormInput
+          label="Overall Notes"
+          value={formData.overallNotes || ''}
+          onChange={(value) => onFieldChange('overallNotes', value)}
+          placeholder="General observations and notes"
+          multiline
+          rows={4}
         />
-      </Box>
 
-      <DesignSystemSelect
-        label="Final Decision"
-        value={formData.finalDecision}
-        onChange={(value) => onFieldChange('finalDecision', value)}
-        options={decisionOptions}
-        fullWidth
-      />
-    </Box>
+        <FormInput
+          label="Key Strengths"
+          value={formData.strengths || ''}
+          onChange={(value) => onFieldChange('strengths', value)}
+          placeholder="Candidate's main strengths"
+          multiline
+          rows={3}
+        />
+
+        <FormInput
+          label="Areas of Concern"
+          value={formData.concerns || ''}
+          onChange={(value) => onFieldChange('concerns', value)}
+          placeholder="Any concerns or areas for improvement"
+          multiline
+          rows={3}
+        />
+
+        <FormInput
+          label="Recommendation"
+          value={formData.recommendation || ''}
+          onChange={(value) => onFieldChange('recommendation', value)}
+          placeholder="Your recommendation for this candidate"
+          multiline
+          rows={3}
+        />
+
+        <FormInput
+          label="Next Steps"
+          value={formData.nextSteps || ''}
+          onChange={(value) => onFieldChange('nextSteps', value)}
+          placeholder="Recommended next steps in the process"
+          multiline
+          rows={2}
+        />
+
+        <Box>
+          <Typography variant="subtitle2" sx={{ mb: 1 }}>
+            Overall Rating
+          </Typography>
+          <Rating
+            value={formData.overallRating || 0}
+            onChange={(_, value) => onFieldChange('overallRating', value || 0)}
+            size="large"
+            max={5}
+          />
+        </Box>
+
+        <FormControl fullWidth size="small">
+          <InputLabel>Final Decision</InputLabel>
+          <Select
+            value={formData.finalDecision || ''}
+            onChange={(e) => onFieldChange('finalDecision', e.target.value)}
+            label="Final Decision"
+          >
+            <MenuItem value="proceed">Proceed to Next Stage</MenuItem>
+            <MenuItem value="hold">Put on Hold</MenuItem>
+            <MenuItem value="reject">Reject</MenuItem>
+            <MenuItem value="pending">Pending Review</MenuItem>
+          </Select>
+        </FormControl>
+      </FormGrid>
+    </FormSection>
   );
 };

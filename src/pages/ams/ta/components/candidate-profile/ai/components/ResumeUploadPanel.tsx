@@ -57,10 +57,12 @@ export const ResumeUploadPanel: React.FC<ResumeUploadPanelProps> = ({
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file) {
-      const fakeEvent = {
-        target: { files: [file] }
+      // Create a proper ChangeEvent-like object
+      const mockEvent = {
+        target: { files: [file] },
+        currentTarget: { files: [file] }
       } as React.ChangeEvent<HTMLInputElement>;
-      handleFileUpload(fakeEvent);
+      handleFileUpload(mockEvent);
     }
   }, [handleFileUpload]);
 

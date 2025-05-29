@@ -1,51 +1,54 @@
+
 import { useState, useCallback } from 'react';
 import { Candidate } from '../../../types/CandidateTypes';
 
 export interface PhoneScreeningFormData {
-  // Basic Info
+  // Basic Information
   candidateName: string;
   phoneNumber: string;
-  alternativePhone: string;
-  scheduledDate: string;
-  duration: string;
-  status: 'pending' | 'in-progress' | 'completed';
-
-  // Contact & Location
-  currentAddress: string;
+  callScheduled: boolean;
+  experienceYears: string;
   currentLocation: string;
+  currentRole: string;
+  currentCompany: string;
+  availabilityWeeks: string;
+  
+  // Contact Details
+  alternativeEmail: string;
+  alternativePhone: string;
+  
+  // Address Information
+  currentAddress: string;
   city: string;
   state: string;
   country: string;
   zipCode: string;
   preferredLocation: string;
-  willingToRelocate: string;
-
+  willingToRelocate: boolean;
+  
   // Social Profiles
   linkedinUrl: string;
   githubUrl: string;
   portfolioUrl: string;
   twitterUrl: string;
   otherProfiles: string;
-
+  
   // Role Information
   appliedRole: string;
-  currentRole: string;
-  currentCompany: string;
-  experienceYears: string;
   relevantExperience: string;
   currentSalary: string;
   expectedSalary: string;
   noticePeriod: string;
   availability: string;
-
-  // Skills
+  
+  // Skills & Experience
   technicalSkills: string[];
   softSkills: string[];
   certifications: string[];
   keyProjects: string;
   achievements: string;
   toolsFrameworks: string[];
-
+  
   // Education
   highestEducation: string;
   university: string;
@@ -55,63 +58,75 @@ export interface PhoneScreeningFormData {
   languages: string[];
   hobbies: string;
   careerGoals: string;
-
+  
   // Assessment
   overallNotes: string;
   strengths: string;
   concerns: string;
   recommendation: string;
   nextSteps: string;
-  rating: string;
+  rating: number;
+  overallRating: number;
+  finalDecision: string;
+  
+  // Phone Screening Specific
+  scheduledDate: string;
+  duration: string;
+  status: string;
 }
 
-export const usePhoneScreeningForm = (candidate: Candidate) => {
-  const [formData, setFormData] = useState<PhoneScreeningFormData>({
-    // Basic Info
-    candidateName: candidate.name,
-    phoneNumber: candidate.phone || '+91 98765 43210',
-    alternativePhone: '',
-    scheduledDate: new Date().toISOString().split('T')[0],
-    duration: '30 minutes',
-    status: 'pending',
+interface UsePhoneScreeningFormReturn {
+  formData: PhoneScreeningFormData;
+  hasChanges: boolean;
+  isSubmitting: boolean;
+  handleFieldChange: (field: string, value: any) => void;
+  handleSave: () => Promise<void>;
+  handleSubmit: () => Promise<void>;
+  handleGenerateReport: () => Promise<void>;
+}
 
-    // Contact & Location
-    currentAddress: '',
+export const usePhoneScreeningForm = (candidate: Candidate): UsePhoneScreeningFormReturn => {
+  const [formData, setFormData] = useState<PhoneScreeningFormData>({
+    candidateName: candidate.name || '',
+    phoneNumber: candidate.phone || '',
+    callScheduled: false,
+    experienceYears: candidate.experience || '',
     currentLocation: candidate.location || '',
+    currentRole: candidate.currentRole || '',
+    currentCompany: candidate.currentCompany || '',
+    availabilityWeeks: '',
+    
+    alternativeEmail: '',
+    alternativePhone: '',
+    
+    currentAddress: '',
     city: '',
     state: '',
-    country: 'IN',
+    country: '',
     zipCode: '',
     preferredLocation: '',
-    willingToRelocate: '',
-
-    // Social Profiles
+    willingToRelocate: false,
+    
     linkedinUrl: '',
     githubUrl: '',
     portfolioUrl: '',
     twitterUrl: '',
     otherProfiles: '',
-
-    // Role Information
-    appliedRole: candidate.role,
-    currentRole: '',
-    currentCompany: '',
-    experienceYears: candidate.experience,
+    
+    appliedRole: candidate.appliedRole || '',
     relevantExperience: '',
     currentSalary: '',
     expectedSalary: '',
     noticePeriod: '',
     availability: '',
-
-    // Skills
+    
     technicalSkills: candidate.skills || [],
     softSkills: [],
     certifications: [],
     keyProjects: '',
     achievements: '',
     toolsFrameworks: [],
-
-    // Education
+    
     highestEducation: '',
     university: '',
     graduationYear: '',
@@ -120,14 +135,19 @@ export const usePhoneScreeningForm = (candidate: Candidate) => {
     languages: [],
     hobbies: '',
     careerGoals: '',
-
-    // Assessment
+    
     overallNotes: '',
     strengths: '',
     concerns: '',
     recommendation: '',
     nextSteps: '',
-    rating: ''
+    rating: 0,
+    overallRating: 0,
+    finalDecision: '',
+    
+    scheduledDate: new Date().toISOString().split('T')[0],
+    duration: '30 minutes',
+    status: 'Scheduled'
   });
 
   const [hasChanges, setHasChanges] = useState(false);
@@ -142,39 +162,40 @@ export const usePhoneScreeningForm = (candidate: Candidate) => {
   }, []);
 
   const handleSave = useCallback(async () => {
+    setIsSubmitting(true);
     try {
-      setIsSubmitting(true);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Form saved:', formData);
+      // TODO: Implement save logic
+      console.log('Saving phone screening form:', formData);
       setHasChanges(false);
     } catch (error) {
-      console.error('Error saving form:', error);
+      console.error('Failed to save form:', error);
     } finally {
       setIsSubmitting(false);
     }
   }, [formData]);
 
   const handleSubmit = useCallback(async () => {
+    setIsSubmitting(true);
     try {
-      setIsSubmitting(true);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      console.log('Form submitted:', formData);
+      // TODO: Implement submit logic
+      console.log('Submitting phone screening form:', formData);
       setHasChanges(false);
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('Failed to submit form:', error);
     } finally {
       setIsSubmitting(false);
     }
   }, [formData]);
 
   const handleGenerateReport = useCallback(async () => {
+    setIsSubmitting(true);
     try {
+      // TODO: Implement report generation
       console.log('Generating report for:', formData);
-      // This would typically generate a PDF or summary report
     } catch (error) {
-      console.error('Error generating report:', error);
+      console.error('Failed to generate report:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   }, [formData]);
 
