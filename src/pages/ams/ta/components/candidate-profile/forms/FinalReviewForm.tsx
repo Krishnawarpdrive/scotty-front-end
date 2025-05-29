@@ -25,7 +25,14 @@ export const FinalReviewForm: React.FC<FinalReviewFormProps> = ({
     finalNotes: '',
     hrApproval: false,
     clientApproval: false,
-    contractSigned: false
+    contractSigned: false,
+    // Add missing properties for OverallAssessmentData
+    overallNotes: '',
+    strengths: '',
+    concerns: '',
+    recommendation: '',
+    nextSteps: '',
+    rating: 0
   });
 
   const handleFieldChange = (field: string, value: any) => {
@@ -45,7 +52,13 @@ export const FinalReviewForm: React.FC<FinalReviewFormProps> = ({
       <OverallAssessmentSection
         formData={{
           overallRating: formData.overallRating,
-          finalDecision: formData.finalDecision
+          finalDecision: formData.finalDecision,
+          overallNotes: formData.overallNotes,
+          strengths: formData.strengths,
+          concerns: formData.concerns,
+          recommendation: formData.recommendation,
+          nextSteps: formData.nextSteps,
+          rating: formData.rating
         }}
         onFieldChange={handleFieldChange}
       />

@@ -34,7 +34,7 @@ export const PhoneScreeningFormContent: React.FC<PhoneScreeningFormContentProps>
           country: formData.country,
           zipCode: formData.zipCode,
           preferredLocation: formData.preferredLocation,
-          willingToRelocate: formData.willingToRelocate
+          willingToRelocate: formData.willingToRelocate ? 'true' : 'false'
         }}
         onFieldChange={onFieldChange}
       />
@@ -98,7 +98,7 @@ export const PhoneScreeningFormContent: React.FC<PhoneScreeningFormContentProps>
           concerns: formData.concerns,
           recommendation: formData.recommendation,
           nextSteps: formData.nextSteps,
-          rating: formData.rating
+          rating: formData.rating.toString()
         }}
         onFieldChange={onFieldChange}
       />

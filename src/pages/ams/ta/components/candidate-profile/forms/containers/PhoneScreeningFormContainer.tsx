@@ -36,7 +36,7 @@ export const PhoneScreeningFormContainer: React.FC<PhoneScreeningFormContainerPr
           phoneNumber={formData.phoneNumber}
           scheduledDate={formData.scheduledDate}
           duration={formData.duration}
-          status={formData.status}
+          status={formData.status as 'pending' | 'completed' | 'in-progress'}
         />
 
         <PhoneScreeningFormContent
