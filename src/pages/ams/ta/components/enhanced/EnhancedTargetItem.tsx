@@ -28,7 +28,7 @@ export const EnhancedTargetItem: React.FC<EnhancedTargetItemProps> = ({
   
   return (
     <motion.div 
-      className="w-full mt-3 first:mt-0"
+      className="w-full mt-4 first:mt-0"
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.2 }}
       onMouseEnter={() => setIsHovered(true)}

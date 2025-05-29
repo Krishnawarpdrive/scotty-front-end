@@ -40,7 +40,7 @@ export const AnimatedProgressBar: React.FC<AnimatedProgressBarProps> = ({
   return (
     <div className="w-full space-y-2">
       <div className="relative">
-        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+        <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
           <motion.div
             className="h-full rounded-full relative overflow-hidden"
             initial={{ width: "0%" }}

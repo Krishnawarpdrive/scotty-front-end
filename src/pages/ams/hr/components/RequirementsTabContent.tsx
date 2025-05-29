@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
-import { AGGridTable } from "@/components/ag-grid/AGGridTable";
-import { createStandardColumns, commonColumns } from "@/components/ag-grid/utils/columnUtils";
-import { ColDef } from 'ag-grid-community';
+import { DataTable } from "@/components/ui/data-table";
+import { getRequirementsColumns } from './table-columns/requirementsColumns';
+import { RequirementDetailDrawer } from './drawer/RequirementDetailDrawer';
 
 interface RequirementsTabContentProps {
   requirementsData: any[];
@@ -11,48 +11,61 @@ interface RequirementsTabContentProps {
 }
 
 const RequirementsTabContent = ({ requirementsData, handleRowClick }: RequirementsTabContentProps) => {
-  const [selectedRequirements, setSelectedRequirements] = useState<string[]>([]);
+  const [selectedRequirement, setSelectedRequirement] = useState<any>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const handleRowAction = (action: string, rowData: any) => {
-    switch (action) {
-      case 'view':
-        handleRowClick(rowData);
-        break;
-      default:
-        console.log(`Action ${action} for requirement:`, rowData);
-    }
+  const handleRequirementClick = (requirement: any) => {
+    setSelectedRequirement(requirement);
+    setDrawerOpen(true);
   };
 
-  // AG Grid column definitions
-  const columnDefs: ColDef[] = [
-    ...createStandardColumns([
-      { field: 'name', headerName: 'Requirement Name', width: 200 },
-      { field: 'client', headerName: 'Client', width: 150 },
-      { field: 'role', headerName: 'Role', width: 150 },
-      { field: 'priority', headerName: 'Priority', width: 120, type: 'status' },
-      { field: 'status', headerName: 'Status', width: 120, type: 'status' },
-      { field: 'assigned_to', headerName: 'Assigned To', width: 150 },
-      { field: 'vacancies', headerName: 'Vacancies', width: 100, type: 'number' },
-      { field: 'due_date', headerName: 'Due Date', width: 150, type: 'date' },
-      { field: 'created_at', headerName: 'Created', width: 150, type: 'date' }
-    ]),
-    commonColumns.actions(handleRowAction)
-  ];
+  // Create enhanced columns that handle requirement ID clicks
+  const columns = React.useMemo(() => {
+    const baseColumns = getRequirementsColumns();
+    
+    // Find the requirement ID column and enhance it with click handler
+    return baseColumns.map(column => {
+      if (column.id === 'requirementId') {
+        return {
+          ...column,
+          cell: (req: any) => (
+            <button
+              onClick={() => handleRequirementClick(req)}
+              className="font-medium hover:text-primary cursor-pointer min-w-[80px] inline-block text-blue-600 hover:text-blue-800 hover:underline text-left"
+              style={{ fontFamily: 'Rubik, sans-serif', fontSize: '12px' }}
+            >
+              #{req.id.substring(0, 8)}
+            </button>
+          ),
+        };
+      }
+      return column;
+    });
+  }, []);
+
+  const handleCloseDrawer = () => {
+    setDrawerOpen(false);
+    setSelectedRequirement(null);
+  };
 
   return (
-    <Card className="border shadow-sm">
-      <div className="overflow-x-auto">
-        <AGGridTable
-          title="Requirements"
-          rowData={requirementsData}
-          columnDefs={columnDefs}
-          totalCount={requirementsData.length}
-          selectedCount={selectedRequirements.length}
-          onRowClicked={(event) => handleRowClick(event.data)}
-          height="600px"
-        />
-      </div>
-    </Card>
+    <>
+      <Card className="border shadow-sm">
+        <div className="overflow-x-auto">
+          <DataTable 
+            data={requirementsData}
+            columns={columns}
+            onRowClick={handleRowClick}
+          />
+        </div>
+      </Card>
+
+      <RequirementDetailDrawer
+        open={drawerOpen}
+        onOpenChange={handleCloseDrawer}
+        requirement={selectedRequirement}
+      />
+    </>
   );
 };
 

@@ -1,5 +1,5 @@
 
-interface DayData {
+export interface DayData {
   date: string;
   calls: number;
   profiles: number;
@@ -26,11 +26,23 @@ class SeededRandom {
   }
 }
 
-export const generateStreakData = (days: number = 90): DayData[] => {
-  const data: DayData[] = [];
+export function getTotalWeeks(days: number) {
+  return Math.ceil(days / 7);
+}
+
+export const generateStreakData = (days: number = 120): (DayData|null)[] => {
+  const totalWeeks = getTotalWeeks(days);
+  const totalCells = totalWeeks * 7;
+  const data: (DayData|null)[] = [];
   const today = new Date();
   const random = new SeededRandom(STATIC_SEED);
-  
+
+  // Fill with nulls for padding if needed
+  const padDays = totalCells - days;
+  for (let i = 0; i < padDays; i++) {
+    data.push(null);
+  }
+  // Fill the rest with real data
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
@@ -53,38 +65,38 @@ export const generateStreakData = (days: number = 90): DayData[] => {
       interviews,
       callsTarget: 5,
       profilesTarget: 4,
-      interviewsTarget: 2
+      interviewsTarget: 2,
     });
   }
   
   return data;
 };
 
-export const calculateCurrentStreak = (streakData: DayData[]): number => {
+export const calculateCurrentStreak = (streakData: (DayData|null)[]): number => {
   let streak = 0;
-  
   // Calculate from the most recent day backwards
   for (let i = streakData.length - 1; i >= 0; i--) {
     const day = streakData[i];
+    if (!day) continue;
     const hasActivity = day.calls > 0 || day.profiles > 0 || day.interviews > 0;
-    
     if (hasActivity) {
       streak++;
     } else {
       break;
     }
   }
-  
   return streak;
 };
 
-export const calculateLongestStreak = (streakData: DayData[]): number => {
+export const calculateLongestStreak = (streakData: (DayData|null)[]): number => {
   let longestStreak = 0;
   let currentStreak = 0;
-  
   streakData.forEach(day => {
+    if (!day) {
+      currentStreak = 0;
+      return;
+    }
     const hasActivity = day.calls > 0 || day.profiles > 0 || day.interviews > 0;
-    
     if (hasActivity) {
       currentStreak++;
       longestStreak = Math.max(longestStreak, currentStreak);
@@ -92,7 +104,6 @@ export const calculateLongestStreak = (streakData: DayData[]): number => {
       currentStreak = 0;
     }
   });
-  
   return longestStreak;
 };
 

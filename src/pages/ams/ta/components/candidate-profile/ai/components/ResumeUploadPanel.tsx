@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Box, Typography, Button, Paper, LinearProgress, Alert } from '@mui/material';
 import { CloudUpload, Description, Psychology } from '@mui/icons-material';
@@ -134,11 +133,11 @@ export const ResumeUploadPanel: React.FC<ResumeUploadPanelProps> = ({
             <Alert severity="success" sx={{ mb: 2 }}>
               <Typography variant="body2">
                 Resume analysis complete! AI has extracted {
-                  Object.keys(resumeData.extractedData).filter(key => 
-                    resumeData.extractedData[key as keyof typeof resumeData.extractedData]
+                  Object.keys(resumeData.personalInfo).filter(key => 
+                    resumeData.personalInfo[key as keyof typeof resumeData.personalInfo]
                   ).length
-                } data fields, {resumeData.extractedData.skills?.length || 0} technical skills, 
-                and {resumeData.extractedData.projects?.length || 0} projects.
+                } personal details, {resumeData.skills.technical.length} technical skills, 
+                and {resumeData.experience.previousRoles.length} work experiences.
               </Typography>
             </Alert>
           )}

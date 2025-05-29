@@ -14,25 +14,18 @@ interface DayData {
 }
 
 interface StreakGridProps {
-  streakData: DayData[];
+  streakData: (DayData|null)[];
+  totalWeeks: number;
 }
 
-export const StreakGrid: React.FC<StreakGridProps> = ({ streakData }) => {
-  // Create a proper grid with exactly 90 days
-  // GitHub-style: 13 weeks × 7 days = 91, but we'll use 90 days
+export const StreakGrid: React.FC<StreakGridProps> = ({ streakData, totalWeeks }) => {
+  // Always create a grid with totalWeeks columns (weeks) and 7 rows (days)
   const weeks = [];
-  const totalWeeks = 13; // 13 weeks for better visual layout
-  
-  // Pad the beginning with empty cells if needed
-  const firstDayOfWeek = new Date(streakData[0]?.date).getDay();
-  const paddedData = [...Array(firstDayOfWeek).fill(null), ...streakData];
-  
-  // Group into weeks of 7 days each
   for (let i = 0; i < totalWeeks; i++) {
     const weekData = [];
     for (let j = 0; j < 7; j++) {
       const dataIndex = i * 7 + j;
-      weekData.push(dataIndex < paddedData.length ? paddedData[dataIndex] : null);
+      weekData.push(streakData[dataIndex] || null);
     }
     weeks.push(weekData);
   }

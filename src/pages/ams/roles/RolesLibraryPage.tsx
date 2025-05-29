@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   Search, 
   SlidersHorizontal, 
+  CalendarDays, 
   Plus, 
   Briefcase
 } from 'lucide-react';
@@ -11,17 +11,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { AGGridTable } from "@/components/ag-grid/AGGridTable";
-import { createStandardColumns, commonColumns } from "@/components/ag-grid/utils/columnUtils";
 import RoleCreationDrawer from './components/RoleCreationDrawer';
 import EnhancedGlobalRoleCreationDrawer from './components/drawer/EnhancedGlobalRoleCreationDrawer';
 import { supabase } from "@/integrations/supabase/client";
 import { useKeyboardShortcuts } from '@/contexts/KeyboardShortcutsContext';
 import { useRolesLibraryShortcuts } from '@/hooks/useRolesLibraryShortcuts';
-import { ColDef } from 'ag-grid-community';
 
 interface Role {
   id: string;
@@ -49,7 +47,6 @@ const RoleLibraryPage: React.FC = () => {
   const [globalRoles, setGlobalRoles] = useState<any[]>([]);
   const [popularTags, setPopularTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -251,46 +248,6 @@ const RoleLibraryPage: React.FC = () => {
     });
   };
 
-  // AG Grid row actions
-  const handleRowAction = (action: string, rowData: any) => {
-    switch (action) {
-      case 'view':
-        navigate(`/ams/roles/${rowData.id}`);
-        break;
-      default:
-        console.log(`Action ${action} for role:`, rowData);
-    }
-  };
-
-  // AG Grid column definitions
-  const columnDefs: ColDef[] = [
-    ...createStandardColumns([
-      { field: 'name', headerName: 'Role Name', width: 200 },
-      { field: 'category', headerName: 'Category', width: 150 },
-      { field: 'work_mode', headerName: 'Work Mode', width: 120 },
-      { 
-        field: 'experience_range', 
-        headerName: 'Experience Range', 
-        width: 160,
-        valueFormatter: (params) => {
-          if (params.data.min_experience && params.data.max_experience) {
-            return formatExperienceRange(params.data.min_experience, params.data.max_experience);
-          }
-          return '';
-        }
-      },
-      { 
-        field: 'source', 
-        headerName: 'Type', 
-        width: 100,
-        type: 'status'
-      },
-      { field: 'created_by', headerName: 'Created By', width: 150 },
-      { field: 'usage_count', headerName: 'Usage Count', width: 120, type: 'number' }
-    ]),
-    commonColumns.actions(handleRowAction)
-  ];
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -381,24 +338,55 @@ const RoleLibraryPage: React.FC = () => {
               </Card>
             </div>
 
-            {/* AG Grid Table or Empty State */}
+            {/* Table or Empty State */}
             {loading ? (
               <div className="flex justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
             ) : sortedRoles.length > 0 ? (
-              <AGGridTable
-                title="Roles"
-                rowData={sortedRoles}
-                columnDefs={columnDefs}
-                totalCount={sortedRoles.length}
-                selectedCount={selectedRoles.length}
-                loading={loading}
-                onExport={handleExportRoles}
-                isFilterOpen={filterOpen}
-                onToggleFilter={() => setFilterOpen(!filterOpen)}
-                height="500px"
-              />
+              <div className="border rounded-md overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Role Name</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Work Mode</TableHead>
+                      <TableHead>Experience Range</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Created By</TableHead>
+                      <TableHead>Usage Count</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sortedRoles.map((role) => (
+                      <TableRow key={`${role.source}-${role.id}`}>
+                        <TableCell className="font-medium">{role.name}</TableCell>
+                        <TableCell>{role.category}</TableCell>
+                        <TableCell>{role.work_mode}</TableCell>
+                        <TableCell>{formatExperienceRange(role.min_experience, role.max_experience)}</TableCell>
+                        <TableCell>
+                          <Badge variant={role.source === 'global' ? 'default' : 'secondary'}>
+                            {role.source === 'global' ? 'Global' : 'Template'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{role.created_by || 'System'}</TableCell>
+                        <TableCell>{role.usage_count || 0}</TableCell>
+                        <TableCell>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => navigate(`/ams/roles/${role.id}`)}
+                            className="hover:bg-gray-100"
+                          >
+                            View
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <Briefcase className="h-12 w-12 text-muted-foreground mb-4" />

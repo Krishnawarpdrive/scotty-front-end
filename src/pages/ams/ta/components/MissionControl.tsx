@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { DailyMetrics } from "./DailyMetrics";
 import { ApplicationStages } from "./ApplicationStages";
 import { ApplicationActions } from "./ApplicationActions";
-import { EnhancedAGGridApplicationTable } from "./enhanced/EnhancedAGGridApplicationTable";
+import { EnhancedApplicationTable } from "./enhanced/EnhancedApplicationTable";
 
 export const MissionControl: React.FC = () => {
   return (
@@ -17,7 +17,7 @@ export const MissionControl: React.FC = () => {
       <DailyMetrics />
       <ApplicationStages />
       <ApplicationActions />
-      <EnhancedAGGridApplicationTable />
+      <EnhancedApplicationTable />
     </motion.div>
   );
 };

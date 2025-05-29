@@ -78,7 +78,7 @@ export const DailyMetrics: React.FC = () => {
   
   return (
     <motion.div
-      className="bg-white w-full max-w-[1331px] pt-2.5 pb-5 rounded-md border border-gray-200 hover:shadow-lg transition-shadow duration-300"
+      className="bg-white w-full pt-2.5 pb-5 rounded-md border border-gray-200 hover:shadow-lg transition-shadow duration-300"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -139,37 +139,38 @@ export const DailyMetrics: React.FC = () => {
         />
       )}
       
-      <motion.div 
-        className="flex w-full gap-[11px] flex-wrap mt-[11px] px-5"
+      <motion.div
+        className="flex w-full mt-[11px] px-5 gap-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
       >
         <motion.div
+          className="col-span-1 lg:col-span-2 flex flex-col min-w-0"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
           <EnhancedStreakCard />
         </motion.div>
-        
         <motion.div
+          className="col-span-1 lg:col-span-2 flex flex-col min-w-0"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
           <EnhancedTodaysTargetsCard />
         </motion.div>
-        
         <motion.div
+          className="col-span-1 flex flex-col min-w-0"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
         >
           <EnhancedTimelyTrackCard />
         </motion.div>
-        
         <motion.div
+          className="col-span-1 flex flex-col min-w-0"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}

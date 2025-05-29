@@ -25,18 +25,19 @@ export const EnhancedHiringFunnelCard: React.FC = () => {
       hoverEffect="lift"
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
-      className="border self-stretch flex min-w-60 flex-col items-stretch justify-center grow shrink w-[206px] px-[5px] py-[7px] rounded-lg border-[rgba(246,246,246,1)] border-solid hover:border-[#009933]/30 hover:shadow-lg transition-all duration-300"
+      className="bg-white border min-w-[300px] min-h-[250px] overflow-hidden flex-grow flex-shrink rounded-lg pt-[11px] pb-0.5 px-1 border-[rgba(246,246,246,1)] border-solid hover:border-[#009933]/30 hover:shadow-lg transition-all duration-300"
     >
-      <div className="w-full">
-        <div className="flex min-h-[22px] w-full items-center justify-between">
-          <FunnelHeader isCardHovered={isCardHovered} />
-          <FunnelTimeframePicker 
-            timeframe={timeframe} 
-            onTimeframeChange={handleTimeframeChange} 
-          />
+      <div className="flex w-full items-center gap-[40px_42px] justify-space-between">
+        <div className="flex flex-col w-full">
+          <div className="flex min-h-[22px] w-full items-center justify-between">
+            <FunnelHeader isCardHovered={isCardHovered} />
+            <FunnelTimeframePicker 
+              timeframe={timeframe} 
+              onTimeframeChange={handleTimeframeChange} 
+            />
+          </div>
+          <FunnelStagesList stages={funnelStages} />
         </div>
-        
-        <FunnelStagesList stages={funnelStages} />
       </div>
     </InteractiveCardContainer>
   );
