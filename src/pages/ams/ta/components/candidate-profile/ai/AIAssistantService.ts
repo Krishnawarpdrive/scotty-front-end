@@ -1,4 +1,3 @@
-
 import { Candidate } from '../../types/CandidateTypes';
 
 export interface ResumeParsingResult {
@@ -113,12 +112,16 @@ export class AIAssistantService {
   async analyzeSkillGap(candidate: Candidate, roleRequirements: string[]): Promise<SkillGapAnalysis> {
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    const candidateSkills: string[] = candidate.skills || [];
-    const missingSkills = roleRequirements.filter(skill => 
-      !candidateSkills.some(cs => cs.toLowerCase().includes(skill.toLowerCase()))
+    // Ensure we have arrays to work with
+    const candidateSkills: string[] = Array.isArray(candidate.skills) ? candidate.skills : [];
+    const requirements: string[] = Array.isArray(roleRequirements) ? roleRequirements : [];
+    
+    const missingSkills = requirements.filter((skill: string) => 
+      !candidateSkills.some((cs: string) => cs.toLowerCase().includes(skill.toLowerCase()))
     );
-    const matchingSkills = roleRequirements.filter(skill => 
-      candidateSkills.some(cs => cs.toLowerCase().includes(skill.toLowerCase()))
+    
+    const matchingSkills = requirements.filter((skill: string) => 
+      candidateSkills.some((cs: string) => cs.toLowerCase().includes(skill.toLowerCase()))
     );
 
     return {
@@ -127,7 +130,7 @@ export class AIAssistantService {
       recommendedQuestions: this.generateRecommendedQuestions(missingSkills),
       strengthAreas: this.identifyStrengthAreas(matchingSkills),
       improvementAreas: this.identifyImprovementAreas(missingSkills),
-      overallMatch: Math.round((matchingSkills.length / roleRequirements.length) * 100)
+      overallMatch: requirements.length > 0 ? Math.round((matchingSkills.length / requirements.length) * 100) : 0
     };
   }
 
@@ -204,8 +207,8 @@ export class AIAssistantService {
     }
 
     // Skills-based insights
-    if (roleRequirements && formData.technicalSkills) {
-      const matchCount = roleRequirements.filter(req => 
+    if (roleRequirements && formData.technicalSkills && Array.isArray(formData.technicalSkills)) {
+      const matchCount = roleRequirements.filter((req: string) => 
         formData.technicalSkills.some((skill: string) => 
           skill.toLowerCase().includes(req.toLowerCase())
         )
@@ -231,7 +234,7 @@ export class AIAssistantService {
     }
 
     // Communication insights
-    if (formData.softSkills && formData.softSkills.length > 0) {
+    if (formData.softSkills && Array.isArray(formData.softSkills) && formData.softSkills.length > 0) {
       insights.push({
         type: 'recommendation',
         title: 'Soft Skills Assessment',
