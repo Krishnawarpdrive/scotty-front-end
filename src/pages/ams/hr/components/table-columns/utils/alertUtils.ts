@@ -43,13 +43,13 @@ export const getCTAColor = (priority: 'high' | 'medium' | 'low') => {
 // Create a consistent mapping for each client to prevent continuous changes
 const clientAlertMapping = new Map<string, string>();
 
-export const getClientAlertReason = (clientName: string) => {
-  if (!clientAlertMapping.has(clientName)) {
-    const randomIndex = Math.abs(clientName.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % alertReasons.length;
-    clientAlertMapping.set(clientName, alertReasons[randomIndex]);
-  }
-  return clientAlertMapping.get(clientName)!;
-};
+// export const getClientAlertReason = (clientName: string) => {
+//   if (!clientAlertMapping.has(clientName)) {
+//     const randomIndex = Math.abs(clientName.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % alertReasons.length;
+//     clientAlertMapping.set(clientName, alertReasons[randomIndex]);
+//   }
+//   return clientAlertMapping.get(clientName)!;
+// };
 
 // Deprecated - use getClientAlertReason instead
 export const getRandomAlertReason = () => {
