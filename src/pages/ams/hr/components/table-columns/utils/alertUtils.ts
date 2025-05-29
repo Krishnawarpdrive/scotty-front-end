@@ -15,17 +15,17 @@ export const alertReasonToCta: Record<string, { action: string; priority: 'high'
 };
 
 export const alertReasons = [
-  "No roles created",
-  "Multiple roles pending TA",
-  "Client uncontacted for 14+ days",
-  "Unapproved items pending",
-  "Agreement not uploaded",
-  "Overdue roles for priority client",
-  "Stalled progress on roles",
-  "TA overload/mismatch",
-  "Missing JD",
-  "Frequent rejections"
+  "No roles created"
 ];
+// "Multiple roles pending TA",
+//   "Client uncontacted for 14+ days",
+//   "Unapproved items pending",
+//   "Agreement not uploaded",
+//   "Overdue roles for priority client",
+//   "Stalled progress on roles",
+//   "TA overload/mismatch",
+//   "Missing JD",
+//   "Frequent rejections"
 
 export const getCTAColor = (priority: 'high' | 'medium' | 'low') => {
   switch (priority) {
