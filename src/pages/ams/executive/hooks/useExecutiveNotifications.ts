@@ -48,8 +48,23 @@ export const useExecutiveNotifications = () => {
 
       if (error) throw error;
       
-      setNotifications(data || []);
-      setUnreadCount((data || []).filter(n => !n.is_read).length);
+      const typedNotifications: ExecutiveNotification[] = (data || []).map(notification => ({
+        id: notification.id,
+        type: (notification.type as ExecutiveNotification['type']) || 'info',
+        title: notification.title,
+        message: notification.message,
+        priority: (notification.priority as ExecutiveNotification['priority']) || 'medium',
+        source_type: (notification.source_type as ExecutiveNotification['source_type']) || 'system',
+        source_id: notification.source_id,
+        metadata: notification.metadata,
+        is_read: notification.is_read || false,
+        is_archived: notification.is_archived || false,
+        expires_at: notification.expires_at,
+        created_at: notification.created_at
+      }));
+
+      setNotifications(typedNotifications);
+      setUnreadCount(typedNotifications.filter(n => !n.is_read).length);
     } catch (error) {
       console.error('Error fetching notifications:', error);
     }
@@ -64,7 +79,22 @@ export const useExecutiveNotifications = () => {
         .limit(20);
 
       if (error) throw error;
-      setApprovalWorkflows(data || []);
+      
+      const typedWorkflows: ApprovalWorkflow[] = (data || []).map(workflow => ({
+        id: workflow.id,
+        workflow_type: (workflow.workflow_type as ApprovalWorkflow['workflow_type']) || 'budget_increase',
+        title: workflow.title,
+        description: workflow.description,
+        requester_name: workflow.requester_name,
+        approver_name: workflow.approver_name,
+        status: (workflow.status as ApprovalWorkflow['status']) || 'pending',
+        urgency: (workflow.urgency as ApprovalWorkflow['urgency']) || 'normal',
+        request_data: workflow.request_data,
+        approval_notes: workflow.approval_notes,
+        created_at: workflow.created_at
+      }));
+
+      setApprovalWorkflows(typedWorkflows);
     } catch (error) {
       console.error('Error fetching approval workflows:', error);
     }

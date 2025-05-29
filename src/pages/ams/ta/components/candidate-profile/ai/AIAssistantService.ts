@@ -1,4 +1,3 @@
-
 import { Candidate } from '../../types/CandidateTypes';
 
 export interface ResumeParsingResult {

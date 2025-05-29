@@ -62,26 +62,54 @@ export const useExecutiveClientInsights = () => {
 
       // Combine clients with their insights and generate enhanced data
       const enhancedClients: EnhancedClientData[] = (clients || []).map(client => {
-        const clientInsights = (insights || []).filter(insight => insight.client_id === client.id);
+        const clientInsights = (insights || []).filter(insight => insight.client_id === client.id).map(insight => ({
+          id: insight.id,
+          client_id: insight.client_id || '',
+          insight_type: (insight.insight_type as 'performance' | 'risk' | 'opportunity' | 'alert') || 'alert',
+          insight_data: insight.insight_data,
+          generated_at: insight.generated_at,
+          is_active: insight.is_active || false,
+          priority_score: insight.priority_score || 0,
+          created_at: insight.created_at
+        }));
         
         // Generate risk indicators based on client data and insights
         const risk_indicators = {
           budget_overrun: client.budget_utilized > 80,
-          timeline_delays: clientInsights.some(i => i.insight_type === 'alert' && i.insight_data?.type === 'timeline'),
-          low_satisfaction: client.health_score < 70,
-          communication_gaps: clientInsights.some(i => i.insight_type === 'risk' && i.insight_data?.category === 'communication')
+          timeline_delays: clientInsights.some(i => 
+            i.insight_type === 'alert' && 
+            typeof i.insight_data === 'object' && 
+            i.insight_data && 
+            'type' in i.insight_data && 
+            i.insight_data.type === 'timeline'
+          ),
+          low_satisfaction: (client.health_score || 0) < 70,
+          communication_gaps: clientInsights.some(i => 
+            i.insight_type === 'risk' && 
+            typeof i.insight_data === 'object' && 
+            i.insight_data && 
+            'category' in i.insight_data && 
+            i.insight_data.category === 'communication'
+          )
         };
 
         // Generate performance metrics (mock data - replace with real calculations)
         const performance_metrics = {
-          fulfillment_rate: Math.max(0, Math.min(100, client.health_score + Math.random() * 20 - 10)),
+          fulfillment_rate: Math.max(0, Math.min(100, (client.health_score || 0) + Math.random() * 20 - 10)),
           avg_time_to_fill: 20 + Math.random() * 15,
           cost_efficiency: Math.max(0, Math.min(100, 75 + Math.random() * 25)),
-          quality_score: Math.max(0, Math.min(100, client.health_score + Math.random() * 10 - 5))
+          quality_score: Math.max(0, Math.min(100, (client.health_score || 0) + Math.random() * 10 - 5))
         };
 
         return {
-          ...client,
+          id: client.id,
+          name: client.name,
+          contact: client.contact || '',
+          email: client.email || '',
+          status: client.status || 'active',
+          health_score: client.health_score || 0,
+          total_requirements: client.total_requirements || 0,
+          budget_utilized: client.budget_utilized || 0,
           insights: clientInsights,
           risk_indicators,
           performance_metrics
