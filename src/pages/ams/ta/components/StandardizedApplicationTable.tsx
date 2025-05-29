@@ -57,7 +57,7 @@ export const StandardizedApplicationTable: React.FC = () => {
       years: Math.floor(Math.random() * 10),
       months: Math.floor(Math.random() * 12)
     },
-    score: candidate.overallScore || Math.floor(Math.random() * 100),
+    score: candidate.score || Math.floor(Math.random() * 100),
     assignedTA: {
       name: 'Current User',
       avatar: undefined
