@@ -18,9 +18,9 @@ export const EnhancedTodaysTargetsCard: React.FC = () => {
       hoverEffect="lift"
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
-      className="bg-white border min-w-[350px] min-h-[250px] flex-grow flex-shrink rounded-xl pt-[11px] pb-[19px] px-3.5 border-[rgba(246,246,246,1)] border-solid hover:border-[#009933]/30 hover:shadow-lg transition-all duration-300"
+      className="bg-white border min-w-60 min-h-[198px] grow shrink w-72 pt-[11px] pb-[19px] px-3.5 rounded-xl border-[rgba(246,246,246,1)] border-solid hover:border-[#009933]/30 hover:shadow-lg transition-all duration-300"
     >
-      <div className="flex w-full flex-col items-stretch">
+      <div className="flex w-full max-w-[312px] flex-col items-stretch">
         <motion.div 
           className="flex items-center gap-1 text-black font-medium"
           animate={{ scale: isCardHovered ? 1.02 : 1 }}
