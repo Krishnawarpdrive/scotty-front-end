@@ -1,3 +1,4 @@
+
 import { Candidate } from '../../types/CandidateTypes';
 
 export interface ResumeParsingResult {
@@ -112,15 +113,15 @@ export class AIAssistantService {
   async analyzeSkillGap(candidate: Candidate, roleRequirements: string[]): Promise<SkillGapAnalysis> {
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    // Ensure we have arrays to work with
+    // Ensure we have arrays to work with and provide proper type annotations
     const candidateSkills: string[] = Array.isArray(candidate.skills) ? candidate.skills : [];
     const requirements: string[] = Array.isArray(roleRequirements) ? roleRequirements : [];
     
-    const missingSkills = requirements.filter((skill: string) => 
+    const missingSkills: string[] = requirements.filter((skill: string) => 
       !candidateSkills.some((cs: string) => cs.toLowerCase().includes(skill.toLowerCase()))
     );
     
-    const matchingSkills = requirements.filter((skill: string) => 
+    const matchingSkills: string[] = requirements.filter((skill: string) => 
       candidateSkills.some((cs: string) => cs.toLowerCase().includes(skill.toLowerCase()))
     );
 
@@ -206,15 +207,18 @@ export class AIAssistantService {
       }
     }
 
-    // Skills-based insights
-    if (roleRequirements && formData.technicalSkills && Array.isArray(formData.technicalSkills)) {
-      const matchCount = roleRequirements.filter((req: string) => 
-        formData.technicalSkills.some((skill: string) => 
+    // Skills-based insights with proper type checking
+    if (roleRequirements && Array.isArray(roleRequirements) && formData.technicalSkills && Array.isArray(formData.technicalSkills)) {
+      const requirements: string[] = roleRequirements;
+      const techSkills: string[] = formData.technicalSkills;
+      
+      const matchCount = requirements.filter((req: string) => 
+        techSkills.some((skill: string) => 
           skill.toLowerCase().includes(req.toLowerCase())
         )
       ).length;
       
-      if (matchCount / roleRequirements.length > 0.8) {
+      if (matchCount / requirements.length > 0.8) {
         insights.push({
           type: 'strength',
           title: 'Strong Technical Alignment',
@@ -222,7 +226,7 @@ export class AIAssistantService {
           priority: 'high',
           category: 'skills'
         });
-      } else if (matchCount / roleRequirements.length < 0.5) {
+      } else if (matchCount / requirements.length < 0.5) {
         insights.push({
           type: 'concern',
           title: 'Skill Gap Analysis Needed',
@@ -362,7 +366,7 @@ export class AIAssistantService {
       'Docker', 'Kubernetes', 'Git', 'Jenkins', 'Linux', 'Windows', 'macOS'
     ];
     
-    return techSkills.filter(skill => 
+    return techSkills.filter((skill: string) => 
       text.toLowerCase().includes(skill.toLowerCase())
     );
   }
@@ -373,7 +377,7 @@ export class AIAssistantService {
       'Project Management', 'Time Management', 'Adaptability', 'Creativity', 'Collaboration'
     ];
     
-    return softSkills.filter(skill => 
+    return softSkills.filter((skill: string) => 
       text.toLowerCase().includes(skill.toLowerCase())
     );
   }
@@ -384,7 +388,7 @@ export class AIAssistantService {
       'Photoshop', 'Figma', 'Sketch', 'Postman', 'Swagger', 'Tableau', 'Power BI'
     ];
     
-    return tools.filter(tool => 
+    return tools.filter((tool: string) => 
       text.toLowerCase().includes(tool.toLowerCase())
     );
   }
@@ -469,19 +473,19 @@ export class AIAssistantService {
   }
 
   private generateRecommendedQuestions(missingSkills: string[]): string[] {
-    return missingSkills.map(skill => 
+    return missingSkills.map((skill: string) => 
       `How would you approach learning ${skill} if required for this role?`
     ).slice(0, 5);
   }
 
   private identifyStrengthAreas(matchingSkills: string[]): string[] {
-    return matchingSkills.slice(0, 3).map(skill => 
+    return matchingSkills.slice(0, 3).map((skill: string) => 
       `Strong proficiency in ${skill}`
     );
   }
 
   private identifyImprovementAreas(missingSkills: string[]): string[] {
-    return missingSkills.slice(0, 3).map(skill => 
+    return missingSkills.slice(0, 3).map((skill: string) => 
       `Consider training in ${skill}`
     );
   }
