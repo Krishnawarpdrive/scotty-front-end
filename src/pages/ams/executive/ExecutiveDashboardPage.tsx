@@ -10,9 +10,11 @@ import { DepartmentBreakdown } from './components/DepartmentBreakdown';
 import { HiringProcessPentagon } from './components/HiringProcessPentagon';
 import { TAPerformanceMetrics } from './components/TAPerformanceMetrics';
 import { ClientWiseHiringBreakdown } from './components/ClientWiseHiringBreakdown';
-import { ExecutiveNotificationSidebar } from './components/ExecutiveNotificationSidebar';
+import { EnhancedExecutiveNotificationSidebar } from './components/EnhancedExecutiveNotificationSidebar';
 import { ExecutiveDetailDrawer } from './components/ExecutiveDetailDrawer';
+import { ExecutiveClientInsightsDrawer } from './components/ExecutiveClientInsightsDrawer';
 import { useExecutiveDashboardData } from './hooks/useExecutiveDashboardData';
+import { useExecutiveClientInsights } from './hooks/useExecutiveClientInsights';
 
 const ExecutiveDashboardPage: React.FC = () => {
   const [dateRange, setDateRange] = useState('90');
@@ -20,8 +22,10 @@ const ExecutiveDashboardPage: React.FC = () => {
   const [regionFilter, setRegionFilter] = useState('all');
   const [notificationsPanelOpen, setNotificationsPanelOpen] = useState(false);
   const [detailDrawerOpen, setDetailDrawerOpen] = useState(false);
+  const [clientInsightsDrawerOpen, setClientInsightsDrawerOpen] = useState(false);
   const [drawerType, setDrawerType] = useState<string | null>(null);
   const [drawerData, setDrawerData] = useState<any>(null);
+  const [selectedClientForInsights, setSelectedClientForInsights] = useState<any>(null);
 
   const {
     kpiData,
@@ -38,6 +42,8 @@ const ExecutiveDashboardPage: React.FC = () => {
     regionFilter
   });
 
+  const { clientInsights } = useExecutiveClientInsights();
+
   const handleCardClick = (cardType: string, data: any) => {
     setDrawerType(cardType);
     setDrawerData(data);
@@ -48,6 +54,14 @@ const ExecutiveDashboardPage: React.FC = () => {
     setDetailDrawerOpen(false);
     setDrawerType(null);
     setDrawerData(null);
+  };
+
+  const handleClientInsightsClick = (clientId: string) => {
+    const clientData = clientInsights.find(c => c.id === clientId);
+    if (clientData) {
+      setSelectedClientForInsights(clientData);
+      setClientInsightsDrawerOpen(true);
+    }
   };
 
   const containerVariants = {
@@ -149,7 +163,11 @@ const ExecutiveDashboardPage: React.FC = () => {
               whileHover={{ scale: 1.005 }}
               transition={{ duration: 0.3 }}
             >
-              <ClientWiseHiringBreakdown data={clientHiringData} isLoading={isLoading} />
+              <ClientWiseHiringBreakdown 
+                data={clientHiringData} 
+                isLoading={isLoading}
+                onClientInsightsClick={handleClientInsightsClick}
+              />
             </motion.div>
           </motion.div>
 
@@ -165,7 +183,7 @@ const ExecutiveDashboardPage: React.FC = () => {
 
         <AnimatePresence>
           {notificationsPanelOpen && (
-            <ExecutiveNotificationSidebar 
+            <EnhancedExecutiveNotificationSidebar 
               open={notificationsPanelOpen}
               onClose={() => setNotificationsPanelOpen(false)}
             />
@@ -178,6 +196,12 @@ const ExecutiveDashboardPage: React.FC = () => {
         onClose={handleCloseDrawer}
         drawerType={drawerType}
         drawerData={drawerData}
+      />
+
+      <ExecutiveClientInsightsDrawer
+        open={clientInsightsDrawerOpen}
+        onClose={() => setClientInsightsDrawerOpen(false)}
+        clientData={selectedClientForInsights}
       />
     </div>
   );

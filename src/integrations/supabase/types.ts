@@ -9,6 +9,57 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      approval_workflows: {
+        Row: {
+          approval_notes: string | null
+          approved_at: string | null
+          approver_name: string | null
+          created_at: string
+          description: string | null
+          id: string
+          rejected_at: string | null
+          request_data: Json
+          requester_name: string
+          status: string
+          title: string
+          updated_at: string
+          urgency: string
+          workflow_type: string
+        }
+        Insert: {
+          approval_notes?: string | null
+          approved_at?: string | null
+          approver_name?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          rejected_at?: string | null
+          request_data?: Json
+          requester_name: string
+          status?: string
+          title: string
+          updated_at?: string
+          urgency?: string
+          workflow_type: string
+        }
+        Update: {
+          approval_notes?: string | null
+          approved_at?: string | null
+          approver_name?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          rejected_at?: string | null
+          request_data?: Json
+          requester_name?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          urgency?: string
+          workflow_type?: string
+        }
+        Relationships: []
+      }
       candidate_journey_configs: {
         Row: {
           auto_proceed: boolean | null
@@ -238,6 +289,47 @@ export type Database = {
           },
         ]
       }
+      executive_client_insights: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          generated_at: string
+          id: string
+          insight_data: Json
+          insight_type: string
+          is_active: boolean | null
+          priority_score: number | null
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          generated_at?: string
+          id?: string
+          insight_data?: Json
+          insight_type: string
+          is_active?: boolean | null
+          priority_score?: number | null
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          generated_at?: string
+          id?: string
+          insight_data?: Json
+          insight_type?: string
+          is_active?: boolean | null
+          priority_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "executive_client_insights_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       executive_metrics: {
         Row: {
           client_id: string | null
@@ -288,6 +380,87 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      executive_notifications: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_archived: boolean | null
+          is_read: boolean | null
+          message: string
+          metadata: Json | null
+          priority: string
+          source_id: string | null
+          source_type: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_archived?: boolean | null
+          is_read?: boolean | null
+          message: string
+          metadata?: Json | null
+          priority?: string
+          source_id?: string | null
+          source_type: string
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_archived?: boolean | null
+          is_read?: boolean | null
+          message?: string
+          metadata?: Json | null
+          priority?: string
+          source_id?: string | null
+          source_type?: string
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      executive_preferences: {
+        Row: {
+          created_at: string
+          dashboard_layout: Json | null
+          id: string
+          kpi_preferences: Json | null
+          notification_settings: Json | null
+          theme_settings: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dashboard_layout?: Json | null
+          id?: string
+          kpi_preferences?: Json | null
+          notification_settings?: Json | null
+          theme_settings?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dashboard_layout?: Json | null
+          id?: string
+          kpi_preferences?: Json | null
+          notification_settings?: Json | null
+          theme_settings?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       global_roles: {
         Row: {
@@ -543,6 +716,47 @@ export type Database = {
             columns: ["workflow_stage_id"]
             isOneToOne: false
             referencedRelation: "workflow_stages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      requirement_progress_logs: {
+        Row: {
+          id: string
+          logged_at: string
+          logged_by: string
+          milestone_data: Json | null
+          notes: string | null
+          progress_percentage: number
+          requirement_id: string | null
+          stage_name: string
+        }
+        Insert: {
+          id?: string
+          logged_at?: string
+          logged_by: string
+          milestone_data?: Json | null
+          notes?: string | null
+          progress_percentage: number
+          requirement_id?: string | null
+          stage_name: string
+        }
+        Update: {
+          id?: string
+          logged_at?: string
+          logged_by?: string
+          milestone_data?: Json | null
+          notes?: string | null
+          progress_percentage?: number
+          requirement_id?: string | null
+          stage_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "requirement_progress_logs_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
             referencedColumns: ["id"]
           },
         ]
