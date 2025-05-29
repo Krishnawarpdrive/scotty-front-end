@@ -36,6 +36,9 @@ export const useExecutiveDashboardData = (filters: ExecutiveDashboardFilters) =>
   const [performanceData, setPerformanceData] = useState<any[]>([]);
   const [hiringTrends, setHiringTrends] = useState<any[]>([]);
   const [departmentData, setDepartmentData] = useState<any[]>([]);
+  const [pentagonData, setPentagonData] = useState<any[]>([]);
+  const [taPerformanceData, setTaPerformanceData] = useState<any[]>([]);
+  const [clientHiringData, setClientHiringData] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -118,6 +121,144 @@ export const useExecutiveDashboardData = (filters: ExecutiveDashboardFilters) =>
         }
       ]);
 
+      // Mock pentagon data for hiring process
+      setPentagonData([
+        { name: 'Sourcing', value: 156, color: '#3b82f6', percentage: 85 },
+        { name: 'Screening', value: 98, color: '#10b981', percentage: 63 },
+        { name: 'Interview', value: 67, color: '#f59e0b', percentage: 68 },
+        { name: 'Offer', value: 45, color: '#ef4444', percentage: 67 },
+        { name: 'Onboard', value: 42, color: '#8b5cf6', percentage: 93 }
+      ]);
+
+      // Mock TA performance data
+      setTaPerformanceData([
+        {
+          id: '1',
+          name: 'Sarah Johnson',
+          efficiency: 94,
+          placementsThisMonth: 8,
+          avgTimeToFill: 22,
+          clientSatisfaction: 4.8,
+          activeRoles: 12,
+          trend: 'up',
+          trendValue: 15
+        },
+        {
+          id: '2',
+          name: 'Mike Chen',
+          efficiency: 87,
+          placementsThisMonth: 6,
+          avgTimeToFill: 28,
+          clientSatisfaction: 4.5,
+          activeRoles: 9,
+          trend: 'up',
+          trendValue: 8
+        },
+        {
+          id: '3',
+          name: 'Emma Davis',
+          efficiency: 91,
+          placementsThisMonth: 7,
+          avgTimeToFill: 25,
+          clientSatisfaction: 4.7,
+          activeRoles: 11,
+          trend: 'down',
+          trendValue: 3
+        },
+        {
+          id: '4',
+          name: 'Alex Rodriguez',
+          efficiency: 82,
+          placementsThisMonth: 5,
+          avgTimeToFill: 32,
+          clientSatisfaction: 4.3,
+          activeRoles: 8,
+          trend: 'up',
+          trendValue: 12
+        },
+        {
+          id: '5',
+          name: 'Lisa Wang',
+          efficiency: 89,
+          placementsThisMonth: 9,
+          avgTimeToFill: 26,
+          clientSatisfaction: 4.6,
+          activeRoles: 14,
+          trend: 'up',
+          trendValue: 6
+        }
+      ]);
+
+      // Mock client hiring data
+      setClientHiringData([
+        {
+          id: '1',
+          name: 'TechCorp Inc',
+          totalHires: 45,
+          targetHires: 60,
+          completionRate: 75,
+          averageTimeToHire: 28,
+          activeDepartments: ['Engineering', 'Product', 'Design'],
+          monthlyHires: [
+            { month: 'Jan', hires: 5, target: 10 },
+            { month: 'Feb', hires: 8, target: 10 },
+            { month: 'Mar', hires: 12, target: 10 },
+            { month: 'Apr', hires: 9, target: 10 },
+            { month: 'May', hires: 7, target: 10 },
+            { month: 'Jun', hires: 4, target: 10 }
+          ],
+          departmentBreakdown: [
+            { department: 'Engineering', hires: 25, color: '#3b82f6' },
+            { department: 'Product', hires: 12, color: '#10b981' },
+            { department: 'Design', hires: 8, color: '#f59e0b' }
+          ]
+        },
+        {
+          id: '2',
+          name: 'Global Finance Ltd',
+          totalHires: 32,
+          targetHires: 40,
+          completionRate: 80,
+          averageTimeToHire: 35,
+          activeDepartments: ['Finance', 'Operations', 'Risk'],
+          monthlyHires: [
+            { month: 'Jan', hires: 6, target: 7 },
+            { month: 'Feb', hires: 5, target: 7 },
+            { month: 'Mar', hires: 8, target: 7 },
+            { month: 'Apr', hires: 4, target: 7 },
+            { month: 'May', hires: 6, target: 7 },
+            { month: 'Jun', hires: 3, target: 5 }
+          ],
+          departmentBreakdown: [
+            { department: 'Finance', hires: 18, color: '#3b82f6' },
+            { department: 'Operations', hires: 9, color: '#10b981' },
+            { department: 'Risk', hires: 5, color: '#f59e0b' }
+          ]
+        },
+        {
+          id: '3',
+          name: 'Healthcare Solutions',
+          totalHires: 28,
+          targetHires: 35,
+          completionRate: 80,
+          averageTimeToHire: 42,
+          activeDepartments: ['Clinical', 'Research', 'Admin'],
+          monthlyHires: [
+            { month: 'Jan', hires: 4, target: 6 },
+            { month: 'Feb', hires: 5, target: 6 },
+            { month: 'Mar', hires: 7, target: 6 },
+            { month: 'Apr', hires: 3, target: 6 },
+            { month: 'May', hires: 5, target: 6 },
+            { month: 'Jun', hires: 4, target: 5 }
+          ],
+          departmentBreakdown: [
+            { department: 'Clinical', hires: 15, color: '#3b82f6' },
+            { department: 'Research', hires: 8, color: '#10b981' },
+            { department: 'Admin', hires: 5, color: '#f59e0b' }
+          ]
+        }
+      ]);
+
       setIsLoading(false);
     };
 
@@ -129,6 +270,9 @@ export const useExecutiveDashboardData = (filters: ExecutiveDashboardFilters) =>
     performanceData,
     hiringTrends,
     departmentData,
+    pentagonData,
+    taPerformanceData,
+    clientHiringData,
     isLoading
   };
 };

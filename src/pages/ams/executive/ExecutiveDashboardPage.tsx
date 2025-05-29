@@ -7,6 +7,9 @@ import { ExecutiveFilters } from './components/ExecutiveFilters';
 import { CompanyPerformanceChart } from './components/CompanyPerformanceChart';
 import { HiringTrendsChart } from './components/HiringTrendsChart';
 import { DepartmentBreakdown } from './components/DepartmentBreakdown';
+import { HiringProcessPentagon } from './components/HiringProcessPentagon';
+import { TAPerformanceMetrics } from './components/TAPerformanceMetrics';
+import { ClientWiseHiringBreakdown } from './components/ClientWiseHiringBreakdown';
 import { ExecutiveNotificationSidebar } from './components/ExecutiveNotificationSidebar';
 import { useExecutiveDashboardData } from './hooks/useExecutiveDashboardData';
 
@@ -21,6 +24,9 @@ const ExecutiveDashboardPage: React.FC = () => {
     performanceData,
     hiringTrends,
     departmentData,
+    pentagonData,
+    taPerformanceData,
+    clientHiringData,
     isLoading
   } = useExecutiveDashboardData({
     dateRange,
@@ -72,10 +78,36 @@ const ExecutiveDashboardPage: React.FC = () => {
             </motion.div>
           </div>
 
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <HiringProcessPentagon data={pentagonData} isLoading={isLoading} />
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <TAPerformanceMetrics data={taPerformanceData} isLoading={isLoading} />
+            </motion.div>
+          </div>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <ClientWiseHiringBreakdown data={clientHiringData} isLoading={isLoading} />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
           >
             <DepartmentBreakdown data={departmentData} isLoading={isLoading} />
           </motion.div>

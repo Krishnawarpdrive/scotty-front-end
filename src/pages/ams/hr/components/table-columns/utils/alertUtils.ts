@@ -1,4 +1,3 @@
-
 // Utility functions for alert reasons and CTA logic
 
 export const alertReasonToCta: Record<string, { action: string; priority: 'high' | 'medium' | 'low' }> = {
@@ -15,17 +14,17 @@ export const alertReasonToCta: Record<string, { action: string; priority: 'high'
 };
 
 export const alertReasons = [
-  "No roles created"
+  "No roles created",
+  "Multiple roles pending TA",
+  "Client uncontacted for 14+ days",
+  "Unapproved items pending",
+  "Agreement not uploaded",
+  "Overdue roles for priority client",
+  "Stalled progress on roles",
+  "TA overload/mismatch",
+  "Missing JD",
+  "Frequent rejections"
 ];
-// "Multiple roles pending TA",
-//   "Client uncontacted for 14+ days",
-//   "Unapproved items pending",
-//   "Agreement not uploaded",
-//   "Overdue roles for priority client",
-//   "Stalled progress on roles",
-//   "TA overload/mismatch",
-//   "Missing JD",
-//   "Frequent rejections"
 
 export const getCTAColor = (priority: 'high' | 'medium' | 'low') => {
   switch (priority) {
@@ -40,18 +39,23 @@ export const getCTAColor = (priority: 'high' | 'medium' | 'low') => {
   }
 };
 
-// // Create a consistent mapping for each client to prevent continuous changes
-// const clientAlertMapping = new Map<string, string>();
+// Create a consistent mapping for each client to prevent continuous changes
+const clientAlertMapping = new Map<string, string>();
 
-// export const getClientAlertReason = (clientName: string) => {
-//   if (!clientAlertMapping.has(clientName)) {
-//     const randomIndex = Math.abs(clientName.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % alertReasons.length;
-//     clientAlertMapping.set(clientName, alertReasons[randomIndex]);
-//   }
-//   return clientAlertMapping.get(clientName)!;
-// };
+export const getClientAlertReason = (clientName: string) => {
+  if (!clientAlertMapping.has(clientName)) {
+    // Use client name hash to get consistent index
+    const hash = clientName.split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a;
+    }, 0);
+    const randomIndex = Math.abs(hash) % alertReasons.length;
+    clientAlertMapping.set(clientName, alertReasons[randomIndex]);
+  }
+  return clientAlertMapping.get(clientName)!;
+};
 
-// // Deprecated - use getClientAlertReason instead
-// export const getRandomAlertReason = () => {
-//   return alertReasons[0]; // Return consistent first item to prevent changes
-// };
+// Keep for backward compatibility
+export const getRandomAlertReason = () => {
+  return alertReasons[0];
+};
