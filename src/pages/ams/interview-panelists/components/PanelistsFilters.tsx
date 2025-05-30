@@ -55,7 +55,7 @@ export const PanelistsFilters: React.FC<PanelistsFiltersProps> = ({
             <SelectValue placeholder="Department" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Departments</SelectItem>
+            <SelectItem value="all">All Departments</SelectItem>
             <SelectItem value="Engineering">Engineering</SelectItem>
             <SelectItem value="Product">Product</SelectItem>
             <SelectItem value="Design">Design</SelectItem>
@@ -70,7 +70,7 @@ export const PanelistsFilters: React.FC<PanelistsFiltersProps> = ({
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Status</SelectItem>
+            <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="active">Active</SelectItem>
             <SelectItem value="inactive">Inactive</SelectItem>
             <SelectItem value="on_leave">On Leave</SelectItem>
@@ -101,10 +101,10 @@ export const PanelistsFilters: React.FC<PanelistsFiltersProps> = ({
           {searchQuery && (
             <Badge variant="secondary">Search: {searchQuery}</Badge>
           )}
-          {departmentFilter && (
+          {departmentFilter && departmentFilter !== "all" && (
             <Badge variant="secondary">Department: {departmentFilter}</Badge>
           )}
-          {statusFilter && (
+          {statusFilter && statusFilter !== "all" && (
             <Badge variant="secondary">Status: {statusFilter}</Badge>
           )}
           {skillsFilter.map((skill) => (

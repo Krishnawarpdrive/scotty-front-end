@@ -48,11 +48,11 @@ export const usePanelists = (filters: UsePanelistsParams = {}) => {
         query = query.or(`name.ilike.%${filters.searchQuery}%,title.ilike.%${filters.searchQuery}%,email.ilike.%${filters.searchQuery}%`);
       }
 
-      if (filters.department) {
+      if (filters.department && filters.department !== "all") {
         query = query.eq('department', filters.department);
       }
 
-      if (filters.status) {
+      if (filters.status && filters.status !== "all") {
         query = query.eq('status', filters.status);
       }
 
