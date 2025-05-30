@@ -23,7 +23,20 @@ export const usePanelistDetail = (panelistId: string | null) => {
         throw fetchError;
       }
 
-      setPanelist(data);
+      // Transform the data to match our Panelist interface
+      const transformedData: Panelist = {
+        ...data,
+        skills: Array.isArray(data.skills) ? data.skills : [],
+        certifications: Array.isArray(data.certifications) ? data.certifications : [],
+        languages: Array.isArray(data.languages) ? data.languages : [],
+        interview_types: Array.isArray(data.interview_types) ? data.interview_types : [],
+        preferred_time_slots: typeof data.preferred_time_slots === 'object' ? data.preferred_time_slots : {},
+        seniority_level: data.seniority_level as Panelist['seniority_level'],
+        status: data.status as Panelist['status'],
+        availability_status: data.availability_status as Panelist['availability_status']
+      };
+
+      setPanelist(transformedData);
     } catch (err) {
       console.error('Error fetching panelist detail:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch panelist');

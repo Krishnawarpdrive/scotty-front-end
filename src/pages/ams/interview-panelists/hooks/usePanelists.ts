@@ -12,6 +12,18 @@ export const usePanelists = (filters: UsePanelistsParams = {}) => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
+  const transformPanelistData = (data: any): Panelist => ({
+    ...data,
+    skills: Array.isArray(data.skills) ? data.skills : [],
+    certifications: Array.isArray(data.certifications) ? data.certifications : [],
+    languages: Array.isArray(data.languages) ? data.languages : [],
+    interview_types: Array.isArray(data.interview_types) ? data.interview_types : [],
+    preferred_time_slots: typeof data.preferred_time_slots === 'object' ? data.preferred_time_slots : {},
+    seniority_level: data.seniority_level as Panelist['seniority_level'],
+    status: data.status as Panelist['status'],
+    availability_status: data.availability_status as Panelist['availability_status']
+  });
+
   const fetchPanelists = async () => {
     try {
       setIsLoading(true);
@@ -49,10 +61,10 @@ export const usePanelists = (filters: UsePanelistsParams = {}) => {
         throw fetchError;
       }
 
-      // Filter by skills if provided
-      let filteredData = data || [];
+      // Transform and filter by skills if provided
+      let transformedData = (data || []).map(transformPanelistData);
       if (filters.skills && filters.skills.length > 0) {
-        filteredData = filteredData.filter(panelist => {
+        transformedData = transformedData.filter(panelist => {
           const panelistSkills = Array.isArray(panelist.skills) ? panelist.skills : [];
           return filters.skills!.some(skill => 
             panelistSkills.some((pSkill: string) => 
@@ -62,7 +74,7 @@ export const usePanelists = (filters: UsePanelistsParams = {}) => {
         });
       }
 
-      setPanelists(filteredData);
+      setPanelists(transformedData);
     } catch (err) {
       console.error('Error fetching panelists:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch panelists');
@@ -83,14 +95,15 @@ export const usePanelists = (filters: UsePanelistsParams = {}) => {
         throw createError;
       }
 
-      setPanelists(prev => [newPanelist, ...prev]);
+      const transformedPanelist = transformPanelistData(newPanelist);
+      setPanelists(prev => [transformedPanelist, ...prev]);
       
       toast({
         title: "Success",
         description: "Panelist created successfully",
       });
 
-      return newPanelist;
+      return transformedPanelist;
     } catch (err) {
       console.error('Error creating panelist:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to create panelist';
@@ -118,9 +131,10 @@ export const usePanelists = (filters: UsePanelistsParams = {}) => {
         throw updateError;
       }
 
+      const transformedPanelist = transformPanelistData(updatedPanelist);
       setPanelists(prev => 
         prev.map(panelist => 
-          panelist.id === id ? updatedPanelist : panelist
+          panelist.id === id ? transformedPanelist : panelist
         )
       );
 

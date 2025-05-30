@@ -28,9 +28,10 @@ import {
   Zap,
   BookOpen,
   UserCog,
-  PresentationChart,
+  Presentation,
   Crown,
-  UserCircle
+  UserCircle,
+  HandHeart
 } from "lucide-react";
 
 const AMSSidebar: React.FC = () => {
@@ -156,7 +157,7 @@ const AMSSidebar: React.FC = () => {
         { 
           title: "Vendor Management", 
           path: "/ams/vendor-management", 
-          icon: Handshake,
+          icon: HandHeart,
           description: "Vendor portal"
         },
       ]
@@ -175,7 +176,7 @@ const AMSSidebar: React.FC = () => {
         { 
           title: "Executive Clients", 
           path: "/ams/executive/clients", 
-          icon: PresentationChart,
+          icon: Presentation,
           description: "Client analytics"
         },
       ]

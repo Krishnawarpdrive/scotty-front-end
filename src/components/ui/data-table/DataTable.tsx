@@ -15,12 +15,16 @@ export interface DataTableProps<T> {
   data: T[];
   columns: DataTableColumn<T>[];
   onRowClick?: (item: T) => void;
+  isLoading?: boolean;
+  searchPlaceholder?: string;
 }
 
 export function DataTable<T extends Record<string, any>>({ 
   data, 
   columns,
-  onRowClick 
+  onRowClick,
+  isLoading = false,
+  searchPlaceholder = "Search..."
 }: DataTableProps<T>) {
   const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
   const [activeColumnFilter, setActiveColumnFilter] = useState<string | null>(null);
@@ -44,6 +48,50 @@ export function DataTable<T extends Record<string, any>>({
   
   // Final data after applying both filtering and sorting
   const finalData = sortedData;
+  
+  if (isLoading) {
+    return (
+      <div className="border rounded-md overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {columns.map((column) => (
+                  <DataTableHeader
+                    key={column.id}
+                    column={column}
+                    sortConfig={sortConfig}
+                    handleSort={handleSort}
+                    activeColumnFilter={activeColumnFilter}
+                    setActiveColumnFilter={setActiveColumnFilter}
+                    hoveredColumn={hoveredColumn}
+                    setHoveredColumn={setHoveredColumn}
+                    filters={filters}
+                    columnValues={new Set()}
+                    selectedFilterValues={[]}
+                    handleFilterChange={handleFilterChange}
+                    toggleFilterValue={toggleFilterValue}
+                    clearFilter={clearFilter}
+                  />
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={index}>
+                  {columns.map((column) => (
+                    <TableCell key={column.id} className="h-[60px]">
+                      <div className="bg-gray-200 h-4 rounded animate-pulse"></div>
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-4">
