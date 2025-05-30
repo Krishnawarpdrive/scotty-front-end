@@ -241,7 +241,7 @@ export const EnhancedTechnicalInterviewForm: React.FC<EnhancedTechnicalInterview
             'Database Design',
             'System Architecture',
             'Problem Solving'
-          ].map((skill, index) => (
+          ].map((skill) => (
             <div key={skill} className="space-y-2">
               <label className="block text-sm font-medium">{skill}</label>
               <select
