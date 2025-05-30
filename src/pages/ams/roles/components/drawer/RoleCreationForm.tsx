@@ -28,7 +28,7 @@ const RoleCreationForm: React.FC<RoleCreationFormProps> = ({
         <RoleBasicInfo form={form} />
         <RoleDetails form={form} />
         <RoleRequirements form={form} />
-        <RoleSkills form={form} />
+        <RoleSkills />
         <RoleCertifications form={form} />
       </div>
       
