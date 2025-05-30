@@ -27,6 +27,17 @@ export const usePanelistTableColumns = ({
 }: UsePanelistTableColumnsProps): DataTableColumn<Panelist>[] => {
   return [
     {
+      id: "panelist_id",
+      header: "ID",
+      accessorKey: "panelist_id",
+      cell: (panelist) => (
+        <div className="font-mono text-sm text-muted-foreground">
+          {panelist.panelist_id}
+        </div>
+      ),
+      enableSorting: true,
+    },
+    {
       id: "panelist",
       header: "Panelist",
       cell: (panelist) => (
@@ -75,6 +86,25 @@ export const usePanelistTableColumns = ({
       enableSorting: true,
     },
     {
+      id: "authorization",
+      header: "Auth Level",
+      accessorKey: "interview_authorization_level",
+      cell: (panelist) => {
+        const authColorMap = {
+          basic: "bg-gray-100 text-gray-800",
+          intermediate: "bg-blue-100 text-blue-800",
+          advanced: "bg-purple-100 text-purple-800",
+          expert: "bg-green-100 text-green-800"
+        };
+        return (
+          <Badge className={authColorMap[panelist.interview_authorization_level]}>
+            {panelist.interview_authorization_level}
+          </Badge>
+        );
+      },
+      enableSorting: true,
+    },
+    {
       id: "rating",
       header: "Rating",
       accessorKey: "rating",
@@ -85,6 +115,18 @@ export const usePanelistTableColumns = ({
           <span className="text-sm text-muted-foreground">
             ({panelist.total_interviews})
           </span>
+        </div>
+      ),
+      enableSorting: true,
+    },
+    {
+      id: "allocation",
+      header: "Daily Allocation",
+      accessorKey: "interviews_allocated_per_day",
+      cell: (panelist) => (
+        <div className="text-center">
+          <div className="font-medium">{panelist.interviews_allocated_per_day}</div>
+          <div className="text-xs text-muted-foreground">per day</div>
         </div>
       ),
       enableSorting: true,

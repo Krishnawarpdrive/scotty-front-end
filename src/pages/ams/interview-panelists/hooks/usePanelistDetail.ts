@@ -38,12 +38,21 @@ export const usePanelistDetail = (panelistId: string | null) => {
         interview_types: Array.isArray(data.interview_types) && data.interview_types.every(item => typeof item === 'string') 
           ? data.interview_types as string[] 
           : [],
+        projects_worked_on: Array.isArray(data.projects_worked_on) && data.projects_worked_on.every(item => typeof item === 'string') 
+          ? data.projects_worked_on as string[] 
+          : [],
+        tools_used: Array.isArray(data.tools_used) && data.tools_used.every(item => typeof item === 'string') 
+          ? data.tools_used as string[] 
+          : [],
         preferred_time_slots: typeof data.preferred_time_slots === 'object' && data.preferred_time_slots !== null && !Array.isArray(data.preferred_time_slots)
           ? data.preferred_time_slots as Record<string, string[]>
           : {},
         seniority_level: data.seniority_level as Panelist['seniority_level'],
         status: data.status as Panelist['status'],
-        availability_status: data.availability_status as Panelist['availability_status']
+        availability_status: data.availability_status as Panelist['availability_status'],
+        interview_authorization_level: data.interview_authorization_level as Panelist['interview_authorization_level'],
+        interviews_allocated_per_day: data.interviews_allocated_per_day || 2,
+        interviews_converted_to_offers: data.interviews_converted_to_offers || 0
       };
 
       setPanelist(transformedData);

@@ -606,18 +606,24 @@ export type Database = {
           email: string
           feedback_score: number | null
           id: string
+          interview_authorization_level: string | null
           interview_types: Json | null
+          interviews_allocated_per_day: number | null
+          interviews_converted_to_offers: number | null
           languages: Json | null
           location: string | null
           max_interviews_per_week: number | null
           name: string
+          panelist_id: string
           phone: string | null
           preferred_time_slots: Json | null
+          projects_worked_on: Json | null
           rating: number | null
           seniority_level: string
           skills: Json | null
           status: string
           title: string
+          tools_used: Json | null
           total_interviews: number | null
           updated_at: string
         }
@@ -631,18 +637,24 @@ export type Database = {
           email: string
           feedback_score?: number | null
           id?: string
+          interview_authorization_level?: string | null
           interview_types?: Json | null
+          interviews_allocated_per_day?: number | null
+          interviews_converted_to_offers?: number | null
           languages?: Json | null
           location?: string | null
           max_interviews_per_week?: number | null
           name: string
+          panelist_id: string
           phone?: string | null
           preferred_time_slots?: Json | null
+          projects_worked_on?: Json | null
           rating?: number | null
           seniority_level?: string
           skills?: Json | null
           status?: string
           title: string
+          tools_used?: Json | null
           total_interviews?: number | null
           updated_at?: string
         }
@@ -656,18 +668,24 @@ export type Database = {
           email?: string
           feedback_score?: number | null
           id?: string
+          interview_authorization_level?: string | null
           interview_types?: Json | null
+          interviews_allocated_per_day?: number | null
+          interviews_converted_to_offers?: number | null
           languages?: Json | null
           location?: string | null
           max_interviews_per_week?: number | null
           name?: string
+          panelist_id?: string
           phone?: string | null
           preferred_time_slots?: Json | null
+          projects_worked_on?: Json | null
           rating?: number | null
           seniority_level?: string
           skills?: Json | null
           status?: string
           title?: string
+          tools_used?: Json | null
           total_interviews?: number | null
           updated_at?: string
         }

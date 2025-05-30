@@ -15,6 +15,8 @@ export const InterviewPanelistLibrary: React.FC = () => {
   const [departmentFilter, setDepartmentFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [skillsFilter, setSkillsFilter] = useState<string[]>([]);
+  const [availabilityFilter, setAvailabilityFilter] = useState("");
+  const [seniorityFilter, setSeniorityFilter] = useState("");
 
   const {
     panelists,
@@ -27,7 +29,9 @@ export const InterviewPanelistLibrary: React.FC = () => {
     searchQuery,
     department: departmentFilter,
     status: statusFilter,
-    skills: skillsFilter
+    skills: skillsFilter,
+    availability: availabilityFilter,
+    seniority: seniorityFilter
   });
 
   return (
@@ -48,6 +52,10 @@ export const InterviewPanelistLibrary: React.FC = () => {
         onStatusChange={setStatusFilter}
         skillsFilter={skillsFilter}
         onSkillsChange={setSkillsFilter}
+        availabilityFilter={availabilityFilter}
+        onAvailabilityChange={setAvailabilityFilter}
+        seniorityFilter={seniorityFilter}
+        onSeniorityChange={setSeniorityFilter}
       />
 
       <PanelistsTable

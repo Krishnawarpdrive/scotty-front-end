@@ -16,6 +16,10 @@ interface PanelistsFiltersProps {
   onStatusChange: (value: string) => void;
   skillsFilter: string[];
   onSkillsChange: (skills: string[]) => void;
+  availabilityFilter: string;
+  onAvailabilityChange: (value: string) => void;
+  seniorityFilter: string;
+  onSeniorityChange: (value: string) => void;
 }
 
 export const PanelistsFilters: React.FC<PanelistsFiltersProps> = ({
@@ -26,21 +30,27 @@ export const PanelistsFilters: React.FC<PanelistsFiltersProps> = ({
   statusFilter,
   onStatusChange,
   skillsFilter,
-  onSkillsChange
+  onSkillsChange,
+  availabilityFilter,
+  onAvailabilityChange,
+  seniorityFilter,
+  onSeniorityChange
 }) => {
   const clearFilters = () => {
     onSearchChange("");
     onDepartmentChange("");
     onStatusChange("");
     onSkillsChange([]);
+    onAvailabilityChange("");
+    onSeniorityChange("");
   };
 
-  const hasActiveFilters = searchQuery || departmentFilter || statusFilter || skillsFilter.length > 0;
+  const hasActiveFilters = searchQuery || departmentFilter || statusFilter || skillsFilter.length > 0 || availabilityFilter || seniorityFilter;
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1">
+      <div className="flex items-center gap-4 flex-wrap">
+        <div className="relative flex-1 min-w-[300px]">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search panelists by name, title, or skills..."
@@ -77,6 +87,32 @@ export const PanelistsFilters: React.FC<PanelistsFiltersProps> = ({
           </SelectContent>
         </Select>
 
+        <Select value={availabilityFilter} onValueChange={onAvailabilityChange}>
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder="Availability" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Availability</SelectItem>
+            <SelectItem value="available">Available</SelectItem>
+            <SelectItem value="busy">Busy</SelectItem>
+            <SelectItem value="unavailable">Unavailable</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={seniorityFilter} onValueChange={onSeniorityChange}>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Seniority" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Levels</SelectItem>
+            <SelectItem value="junior">Junior</SelectItem>
+            <SelectItem value="mid">Mid</SelectItem>
+            <SelectItem value="senior">Senior</SelectItem>
+            <SelectItem value="principal">Principal</SelectItem>
+            <SelectItem value="executive">Executive</SelectItem>
+          </SelectContent>
+        </Select>
+
         {hasActiveFilters && (
           <Button variant="outline" onClick={clearFilters} className="flex items-center gap-2">
             <X className="h-4 w-4" />
@@ -106,6 +142,12 @@ export const PanelistsFilters: React.FC<PanelistsFiltersProps> = ({
           )}
           {statusFilter && statusFilter !== "all" && (
             <Badge variant="secondary">Status: {statusFilter}</Badge>
+          )}
+          {availabilityFilter && availabilityFilter !== "all" && (
+            <Badge variant="secondary">Availability: {availabilityFilter}</Badge>
+          )}
+          {seniorityFilter && seniorityFilter !== "all" && (
+            <Badge variant="secondary">Seniority: {seniorityFilter}</Badge>
           )}
           {skillsFilter.map((skill) => (
             <Badge key={skill} variant="secondary">Skill: {skill}</Badge>
