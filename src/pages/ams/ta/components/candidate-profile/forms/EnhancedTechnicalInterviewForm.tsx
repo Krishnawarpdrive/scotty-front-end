@@ -79,7 +79,7 @@ export const EnhancedTechnicalInterviewForm: React.FC<EnhancedTechnicalInterview
       <InterviewSchedulingDrawer
         open={schedulingDrawerOpen}
         onClose={() => setSchedulingDrawerOpen(false)}
-        candidateId={candidate.id}
+        candidateId={candidate.id.toString()}
         candidateName={candidate.name}
         onScheduleComplete={handleScheduleComplete}
       />
