@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -30,7 +31,20 @@ const InterviewPanelistLibrary: React.FC = () => {
         .select('*');
 
       if (error) throw error;
-      setPanelists(data || []);
+      
+      // Transform the data to match Panelist interface
+      const transformedData: Panelist[] = (data || []).map(item => ({
+        ...item,
+        skills: Array.isArray(item.skills) ? item.skills.map(s => String(s)) : [],
+        certifications: Array.isArray(item.certifications) ? item.certifications.map(c => String(c)) : [],
+        languages: Array.isArray(item.languages) ? item.languages.map(l => String(l)) : [],
+        interview_types: Array.isArray(item.interview_types) ? item.interview_types.map(t => String(t)) : [],
+        preferred_time_slots: item.preferred_time_slots as Record<string, any> || {},
+        projects_worked_on: Array.isArray(item.projects_worked_on) ? item.projects_worked_on.map(p => String(p)) : [],
+        tools_used: Array.isArray(item.tools_used) ? item.tools_used.map(t => String(t)) : []
+      }));
+      
+      setPanelists(transformedData);
     } catch (error) {
       console.error('Error loading panelists:', error);
     } finally {
@@ -42,8 +56,8 @@ const InterviewPanelistLibrary: React.FC = () => {
     loadPanelists();
   }, [loadPanelists]);
 
-  const handleCreatePanelist = (newPanelist: Panelist) => {
-    setPanelists(prev => [...prev, newPanelist]);
+  const handleCreateSuccess = () => {
+    loadPanelists();
   };
 
   const filteredPanelists = panelists.filter(panelist =>
@@ -74,7 +88,7 @@ const InterviewPanelistLibrary: React.FC = () => {
       <PanelistCreationDrawer
         open={showCreateDrawer}
         onClose={() => setShowCreateDrawer(false)}
-        onCreate={handleCreatePanelist}
+        onSuccess={handleCreateSuccess}
       />
 
       <Table>

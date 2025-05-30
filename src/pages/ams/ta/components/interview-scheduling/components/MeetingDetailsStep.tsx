@@ -3,13 +3,15 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Video, MapPin } from 'lucide-react';
 
+interface MeetingDetailsFormData {
+  meeting_link: string;
+  location: string;
+  notes: string;
+}
+
 interface MeetingDetailsStepProps {
-  formData: {
-    meeting_link: string;
-    location: string;
-    notes: string;
-  };
-  onFormDataChange: (updates: Partial<typeof formData>) => void;
+  formData: MeetingDetailsFormData;
+  onFormDataChange: (updates: Partial<MeetingDetailsFormData>) => void;
   onBack: () => void;
   onContinue: () => void;
 }

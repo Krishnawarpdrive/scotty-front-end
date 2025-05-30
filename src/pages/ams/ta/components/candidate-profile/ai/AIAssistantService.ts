@@ -64,7 +64,7 @@ export const aiAssistant = {
     ];
   },
 
-  async parseResume(file: File): Promise<ResumeParsingResult> {
+  async parseResume(resumeText: string): Promise<ResumeParsingResult> {
     // Mock implementation - replace with actual parsing service
     return {
       personalInfo: {
@@ -79,8 +79,9 @@ export const aiAssistant = {
     };
   },
 
-  async analyzeSkillGap(candidateSkills: string[], requiredSkills: string[]): Promise<SkillGapAnalysis> {
-    const matchedSkills = candidateSkills.filter(skill => 
+  async analyzeSkillGap(candidate: any, requiredSkills: string[]): Promise<SkillGapAnalysis> {
+    const candidateSkills = candidate.skills || [];
+    const matchedSkills = candidateSkills.filter((skill: string) => 
       requiredSkills.some(req => req.toLowerCase().includes(skill.toLowerCase()))
     );
     
@@ -89,14 +90,18 @@ export const aiAssistant = {
       candidateSkills,
       matchedSkills,
       missingSkills: requiredSkills.filter(skill => !matchedSkills.includes(skill)),
-      additionalSkills: candidateSkills.filter(skill => !matchedSkills.includes(skill)),
+      additionalSkills: candidateSkills.filter((skill: string) => !matchedSkills.includes(skill)),
       overallMatch: matchedSkills.length / requiredSkills.length,
       recommendations: []
     };
   },
 
-  async suggestFormCompletion(formData: any, roleData: any): Promise<FormSuggestion[]> {
+  async generateFormSuggestions(candidate: any, resumeData?: ResumeParsingResult): Promise<FormSuggestion[]> {
     // Mock implementation
     return [];
+  },
+
+  async generateAIInsights(candidate: any, formData: any, roleRequirements?: string[]): Promise<AIInsight[]> {
+    return this.generateInsights(candidate, { requirements: roleRequirements });
   }
 };

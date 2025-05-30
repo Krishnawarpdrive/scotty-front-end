@@ -93,7 +93,7 @@ export const useAIAssistant = (candidate: Candidate): UseAIAssistantReturn => {
       
       // Filter out dismissed suggestions
       const filteredSuggestions = suggestions.filter(suggestion => 
-        !dismissedSuggestions.has(`${suggestion.field}-${suggestion.suggestedValue}`)
+        !dismissedSuggestions.has(`${suggestion.field}-${suggestion.suggestion}`)
       );
       
       setFormSuggestions(filteredSuggestions);
@@ -119,15 +119,15 @@ export const useAIAssistant = (candidate: Candidate): UseAIAssistantReturn => {
   }, [candidate]);
 
   const dismissSuggestion = useCallback((suggestion: FormSuggestion) => {
-    const suggestionKey = `${suggestion.field}-${suggestion.suggestedValue}`;
+    const suggestionKey = `${suggestion.field}-${suggestion.suggestion}`;
     setDismissedSuggestions(prev => new Set([...prev, suggestionKey]));
     setFormSuggestions(prev => prev.filter(s => 
-      `${s.field}-${s.suggestedValue}` !== suggestionKey
+      `${s.field}-${s.suggestion}` !== suggestionKey
     ));
   }, []);
 
   const isDismissedSuggestion = useCallback((suggestion: FormSuggestion) => {
-    const suggestionKey = `${suggestion.field}-${suggestion.suggestedValue}`;
+    const suggestionKey = `${suggestion.field}-${suggestion.suggestion}`;
     return dismissedSuggestions.has(suggestionKey);
   }, [dismissedSuggestions]);
 

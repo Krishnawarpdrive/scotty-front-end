@@ -1,15 +1,12 @@
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { interviewSchedulingService, InterviewSchedule, InterviewTemplate } from '../InterviewSchedulingService';
+import React, { useState } from 'react';
 import { SchedulerProgress } from './SchedulerProgress';
 import { TemplateSelectionStep } from './TemplateSelectionStep';
 import { PanelistSelectionStep } from './PanelistSelectionStep';
 import { DateTimeSelectionStep } from './DateTimeSelectionStep';
 import { MeetingDetailsStep } from './MeetingDetailsStep';
-import { ReviewConfirmStep } from './ReviewConfirmStep';
+import { Button } from '@/components/ui/button';
+import type { InterviewSchedule, InterviewTemplate } from '../InterviewSchedulingService';
 
 interface InterviewSchedulerCoreProps {
   candidateId: string;
@@ -25,165 +22,169 @@ export const InterviewSchedulerCore: React.FC<InterviewSchedulerCoreProps> = ({
   onCancel
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [templates, setTemplates] = useState<InterviewTemplate[]>([]);
-
-  const [formData, setFormData] = useState({
-    interview_type: 'technical',
-    duration_minutes: 60,
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    scheduled_date: '',
-    panelist_id: '',
+  const [selectedTemplate, setSelectedTemplate] = useState<InterviewTemplate | null>(null);
+  const [selectedPanelistId, setSelectedPanelistId] = useState<string>('');
+  const [selectedSlot, setSelectedSlot] = useState<{ start: string; end: string } | null>(null);
+  const [timezone, setTimezone] = useState('America/New_York');
+  const [meetingDetails, setMeetingDetails] = useState({
     meeting_link: '',
     location: '',
-    notes: '',
-    template_id: ''
+    notes: ''
   });
 
-  useEffect(() => {
-    loadInterviewTemplates();
-  }, []);
+  const steps = [
+    { id: 1, title: 'Template', description: 'Choose interview type' },
+    { id: 2, title: 'Interviewer', description: 'Select panelist' },
+    { id: 3, title: 'Date & Time', description: 'Pick schedule' },
+    { id: 4, title: 'Details', description: 'Meeting info' },
+    { id: 5, title: 'Review', description: 'Confirm & schedule' }
+  ];
 
-  const loadInterviewTemplates = async () => {
-    try {
-      const data = await interviewSchedulingService.getInterviewTemplates();
-      setTemplates(data);
-    } catch (error) {
-      console.error('Error loading templates:', error);
+  const mockTemplates: InterviewTemplate[] = [
+    {
+      id: '1',
+      name: 'Technical Interview',
+      interview_type: 'technical',
+      duration_minutes: 60,
+      questions: ['Coding problem', 'System design'],
+      checklist_items: ['Technical skills', 'Problem solving'],
+      required_skills: ['JavaScript', 'React'],
+      is_active: true,
+      created_by: 'system',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     }
-  };
+  ];
 
   const handleTemplateSelect = (template: InterviewTemplate) => {
-    setFormData(prev => ({
-      ...prev,
-      interview_type: template.interview_type,
-      duration_minutes: template.duration_minutes,
-      template_id: template.id
-    }));
+    setSelectedTemplate(template);
     setCurrentStep(2);
   };
 
   const handlePanelistSelect = (panelistId: string) => {
-    setFormData(prev => ({ ...prev, panelist_id: panelistId }));
+    setSelectedPanelistId(panelistId);
     setCurrentStep(3);
   };
 
   const handleSlotSelect = (slot: { start: string; end: string }) => {
-    setFormData(prev => ({ ...prev, scheduled_date: slot.start }));
+    setSelectedSlot(slot);
     setCurrentStep(4);
   };
 
-  const handleFormDataChange = (updates: Partial<typeof formData>) => {
-    setFormData(prev => ({ ...prev, ...updates }));
+  const handleMeetingDetailsContinue = () => {
+    setCurrentStep(5);
   };
 
-  const handleScheduleInterview = async () => {
-    setLoading(true);
-    try {
-      const schedule = await interviewSchedulingService.createInterviewSchedule({
+  const handleScheduleConfirm = () => {
+    if (selectedTemplate && selectedPanelistId && selectedSlot) {
+      const schedule: InterviewSchedule = {
+        id: `schedule_${Date.now()}`,
         candidate_id: candidateId,
         requirement_id: requirementId,
-        panelist_id: formData.panelist_id,
-        scheduled_date: formData.scheduled_date,
-        duration_minutes: formData.duration_minutes,
-        interview_type: formData.interview_type,
+        panelist_id: selectedPanelistId,
+        scheduled_date: selectedSlot.start,
+        duration_minutes: selectedTemplate.duration_minutes,
+        interview_type: selectedTemplate.interview_type,
         status: 'scheduled',
-        timezone: formData.timezone,
-        meeting_link: formData.meeting_link,
-        location: formData.location,
-        notes: formData.notes,
-        created_by: 'current-user', // Replace with actual user
-        metadata: { template_id: formData.template_id }
-      });
-
+        timezone,
+        meeting_link: meetingDetails.meeting_link,
+        location: meetingDetails.location,
+        notes: meetingDetails.notes,
+        created_by: 'current_user',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
       onScheduleComplete?.(schedule);
-    } catch (error) {
-      console.error('Error scheduling interview:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const steps = [
-    { id: 1, title: 'Interview Type', description: 'Select interview template' },
-    { id: 2, title: 'Panelist', description: 'Choose interviewer' },
-    { id: 3, title: 'Date & Time', description: 'Pick schedule' },
-    { id: 4, title: 'Details', description: 'Final details' },
-    { id: 5, title: 'Review', description: 'Confirm booking' }
-  ];
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <TemplateSelectionStep
+            templates={mockTemplates}
+            onTemplateSelect={handleTemplateSelect}
+          />
+        );
+      case 2:
+        return selectedTemplate ? (
+          <PanelistSelectionStep
+            interviewType={selectedTemplate.interview_type}
+            onPanelistSelect={handlePanelistSelect}
+          />
+        ) : null;
+      case 3:
+        return selectedTemplate && selectedPanelistId ? (
+          <DateTimeSelectionStep
+            panelistId={selectedPanelistId}
+            duration={selectedTemplate.duration_minutes}
+            timezone={timezone}
+            onTimezoneChange={setTimezone}
+            onSlotSelect={handleSlotSelect}
+          />
+        ) : null;
+      case 4:
+        return (
+          <MeetingDetailsStep
+            formData={meetingDetails}
+            onFormDataChange={(updates) => setMeetingDetails(prev => ({ ...prev, ...updates }))}
+            onBack={() => setCurrentStep(3)}
+            onContinue={handleMeetingDetailsContinue}
+          />
+        );
+      case 5:
+        return (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Review & Confirm</h3>
+            <div className="space-y-2">
+              <p><strong>Template:</strong> {selectedTemplate?.name}</p>
+              <p><strong>Duration:</strong> {selectedTemplate?.duration_minutes} minutes</p>
+              <p><strong>Date:</strong> {selectedSlot?.start}</p>
+              <p><strong>Timezone:</strong> {timezone}</p>
+              {meetingDetails.meeting_link && (
+                <p><strong>Meeting Link:</strong> {meetingDetails.meeting_link}</p>
+              )}
+              {meetingDetails.location && (
+                <p><strong>Location:</strong> {meetingDetails.location}</p>
+              )}
+              {meetingDetails.notes && (
+                <p><strong>Notes:</strong> {meetingDetails.notes}</p>
+              )}
+            </div>
+            <div className="flex justify-between">
+              <Button variant="outline" onClick={() => setCurrentStep(4)}>
+                Back
+              </Button>
+              <Button onClick={handleScheduleConfirm}>
+                Confirm & Schedule
+              </Button>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Calendar className="h-5 w-5" />
-          Schedule Interview
-        </CardTitle>
-        <CardDescription>
-          Enhanced scheduling with conflict detection and smart suggestions
-        </CardDescription>
-        
-        <SchedulerProgress currentStep={currentStep} steps={steps} />
-      </CardHeader>
-
-      <CardContent>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentStep}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            {currentStep === 1 && (
-              <TemplateSelectionStep
-                templates={templates}
-                onTemplateSelect={handleTemplateSelect}
-              />
-            )}
-
-            {currentStep === 2 && (
-              <PanelistSelectionStep
-                interviewType={formData.interview_type}
-                onPanelistSelect={handlePanelistSelect}
-              />
-            )}
-
-            {currentStep === 3 && (
-              <DateTimeSelectionStep
-                panelistId={formData.panelist_id}
-                duration={formData.duration_minutes}
-                timezone={formData.timezone}
-                onTimezoneChange={(timezone) => handleFormDataChange({ timezone })}
-                onSlotSelect={handleSlotSelect}
-              />
-            )}
-
-            {currentStep === 4 && (
-              <MeetingDetailsStep
-                formData={{
-                  meeting_link: formData.meeting_link,
-                  location: formData.location,
-                  notes: formData.notes
-                }}
-                onFormDataChange={handleFormDataChange}
-                onBack={() => setCurrentStep(3)}
-                onContinue={() => setCurrentStep(5)}
-              />
-            )}
-
-            {currentStep === 5 && (
-              <ReviewConfirmStep
-                formData={formData}
-                loading={loading}
-                onBack={() => setCurrentStep(4)}
-                onCancel={onCancel}
-                onConfirm={handleScheduleInterview}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <SchedulerProgress currentStep={currentStep} steps={steps} />
+      {renderCurrentStep()}
+      
+      {currentStep > 1 && currentStep < 5 && (
+        <div className="flex justify-between">
+          <Button variant="outline" onClick={() => setCurrentStep(currentStep - 1)}>
+            Back
+          </Button>
+          {onCancel && (
+            <Button variant="ghost" onClick={onCancel}>
+              Cancel
+            </Button>
+          )}
+        </div>
+      )}
+    </div>
   );
 };

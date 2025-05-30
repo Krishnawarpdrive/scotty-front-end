@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,14 +24,14 @@ import type { Candidate } from '../../types/CandidateTypes';
 import type { InterviewSchedule } from '../../interview-scheduling/InterviewSchedulingService';
 
 interface EnhancedTechnicalInterviewFormProps {
-  candidateData: Candidate;
-  onSave: (formData: any) => void;
-  onNext: () => void;
-  onBack: () => void;
+  candidate: Candidate;
+  onSave?: (formData: any) => void;
+  onNext?: () => void;
+  onBack?: () => void;
 }
 
 export const EnhancedTechnicalInterviewForm: React.FC<EnhancedTechnicalInterviewFormProps> = ({
-  candidateData,
+  candidate,
   onSave,
   onNext,
   onBack
@@ -38,7 +39,7 @@ export const EnhancedTechnicalInterviewForm: React.FC<EnhancedTechnicalInterview
   const [schedulingDrawerOpen, setSchedulingDrawerOpen] = useState(false);
   const [interviewScheduled, setInterviewScheduled] = useState(false);
   const [formData, setFormData] = useState({
-    skillsAssessment: {}
+    skillsAssessment: {} as Record<string, string>
   });
 
   const handleScheduleComplete = (schedule: InterviewSchedule) => {
@@ -84,8 +85,8 @@ export const EnhancedTechnicalInterviewForm: React.FC<EnhancedTechnicalInterview
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <User className="h-8 w-8 mx-auto text-blue-600 mb-2" />
-              <h3 className="font-semibold text-gray-900">{candidateData.name}</h3>
-              <p className="text-sm text-gray-600">{candidateData.appliedRole}</p>
+              <h3 className="font-semibold text-gray-900">{candidate.name}</h3>
+              <p className="text-sm text-gray-600">{candidate.appliedRole}</p>
             </div>
             <div className="text-center p-4 bg-green-50 rounded-lg">
               <Clock className="h-8 w-8 mx-auto text-green-600 mb-2" />
@@ -269,8 +270,8 @@ export const EnhancedTechnicalInterviewForm: React.FC<EnhancedTechnicalInterview
       <InterviewSchedulingDrawer
         open={schedulingDrawerOpen}
         onClose={() => setSchedulingDrawerOpen(false)}
-        candidateId={candidateData.id}
-        candidateName={candidateData.name}
+        candidateId={candidate.id}
+        candidateName={candidate.name}
         onScheduleComplete={handleScheduleComplete}
       />
     </div>
