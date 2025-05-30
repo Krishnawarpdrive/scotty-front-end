@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, Filter, X } from "lucide-react";
-import { TagsInput } from "@/components/shared/TagsInput";
+import TagsInput from "@/components/shared/TagsInput";
 
 interface PanelistsFiltersProps {
   searchQuery: string;

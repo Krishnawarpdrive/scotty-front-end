@@ -23,14 +23,24 @@ export const usePanelistDetail = (panelistId: string | null) => {
         throw fetchError;
       }
 
-      // Transform the data to match our Panelist interface
+      // Transform the data to match our Panelist interface with proper type handling
       const transformedData: Panelist = {
         ...data,
-        skills: Array.isArray(data.skills) ? data.skills : [],
-        certifications: Array.isArray(data.certifications) ? data.certifications : [],
-        languages: Array.isArray(data.languages) ? data.languages : [],
-        interview_types: Array.isArray(data.interview_types) ? data.interview_types : [],
-        preferred_time_slots: typeof data.preferred_time_slots === 'object' ? data.preferred_time_slots : {},
+        skills: Array.isArray(data.skills) && data.skills.every(item => typeof item === 'string') 
+          ? data.skills as string[] 
+          : [],
+        certifications: Array.isArray(data.certifications) && data.certifications.every(item => typeof item === 'string') 
+          ? data.certifications as string[] 
+          : [],
+        languages: Array.isArray(data.languages) && data.languages.every(item => typeof item === 'string') 
+          ? data.languages as string[] 
+          : [],
+        interview_types: Array.isArray(data.interview_types) && data.interview_types.every(item => typeof item === 'string') 
+          ? data.interview_types as string[] 
+          : [],
+        preferred_time_slots: typeof data.preferred_time_slots === 'object' && data.preferred_time_slots !== null && !Array.isArray(data.preferred_time_slots)
+          ? data.preferred_time_slots as Record<string, string[]>
+          : {},
         seniority_level: data.seniority_level as Panelist['seniority_level'],
         status: data.status as Panelist['status'],
         availability_status: data.availability_status as Panelist['availability_status']
