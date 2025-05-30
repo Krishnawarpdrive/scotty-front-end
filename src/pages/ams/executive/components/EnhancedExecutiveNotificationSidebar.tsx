@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -330,7 +329,7 @@ export const EnhancedExecutiveNotificationSidebar: React.FC<EnhancedExecutiveNot
             </ScrollArea>
           </TabsContent>
         </Tabs>
-      </div>
+      </motion.div>
 
       <Dialog open={selectedApproval !== null} onOpenChange={() => setSelectedApproval(null)}>
         <DialogContent>
