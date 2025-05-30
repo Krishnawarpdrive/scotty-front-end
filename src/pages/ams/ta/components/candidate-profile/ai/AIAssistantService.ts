@@ -112,19 +112,23 @@ export class AIAssistantService {
   async analyzeSkillGap(candidate: Candidate, roleRequirements: string[]): Promise<SkillGapAnalysis> {
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    // Ensure we have arrays to work with and provide proper type annotations
-    const candidateSkills: string[] = Array.isArray(candidate.skills) ? candidate.skills : [];
-    const requirements: string[] = Array.isArray(roleRequirements) ? roleRequirements : [];
+    // Ensure we have valid arrays with proper type assertions
+    const candidateSkills: string[] = Array.isArray(candidate.skills) 
+      ? candidate.skills.filter((skill): skill is string => typeof skill === 'string')
+      : [];
+    const requirements: string[] = Array.isArray(roleRequirements) 
+      ? roleRequirements.filter((req): req is string => typeof req === 'string')
+      : [];
     
-    const missingSkills: string[] = requirements.filter((skill: string) => {
+    const missingSkills: string[] = requirements.filter((requirement: string) => {
       return !candidateSkills.some((candidateSkill: string) => 
-        candidateSkill.toLowerCase().includes(skill.toLowerCase())
+        candidateSkill.toLowerCase().includes(requirement.toLowerCase())
       );
     });
     
-    const matchingSkills: string[] = requirements.filter((skill: string) => {
+    const matchingSkills: string[] = requirements.filter((requirement: string) => {
       return candidateSkills.some((candidateSkill: string) => 
-        candidateSkill.toLowerCase().includes(skill.toLowerCase())
+        candidateSkill.toLowerCase().includes(requirement.toLowerCase())
       );
     });
 
@@ -210,10 +214,10 @@ export class AIAssistantService {
       }
     }
 
-    // Skills-based insights with proper type checking
+    // Skills-based insights with proper type checking and filtering
     if (roleRequirements && Array.isArray(roleRequirements) && formData.technicalSkills && Array.isArray(formData.technicalSkills)) {
-      const requirements: string[] = roleRequirements;
-      const techSkills: string[] = formData.technicalSkills;
+      const requirements: string[] = roleRequirements.filter((req): req is string => typeof req === 'string');
+      const techSkills: string[] = formData.technicalSkills.filter((skill): skill is string => typeof skill === 'string');
       
       const matchCount = requirements.filter((req: string) => {
         return techSkills.some((skill: string) => 
@@ -221,22 +225,25 @@ export class AIAssistantService {
         );
       }).length;
       
-      if (matchCount / requirements.length > 0.8) {
-        insights.push({
-          type: 'strength',
-          title: 'Strong Technical Alignment',
-          description: 'Candidate has most required technical skills.',
-          priority: 'high',
-          category: 'skills'
-        });
-      } else if (matchCount / requirements.length < 0.5) {
-        insights.push({
-          type: 'concern',
-          title: 'Skill Gap Analysis Needed',
-          description: 'Significant gaps in required technical skills. Consider training potential.',
-          priority: 'high',
-          category: 'skills'
-        });
+      if (requirements.length > 0) {
+        const matchPercentage = matchCount / requirements.length;
+        if (matchPercentage > 0.8) {
+          insights.push({
+            type: 'strength',
+            title: 'Strong Technical Alignment',
+            description: 'Candidate has most required technical skills.',
+            priority: 'high',
+            category: 'skills'
+          });
+        } else if (matchPercentage < 0.5) {
+          insights.push({
+            type: 'concern',
+            title: 'Skill Gap Analysis Needed',
+            description: 'Significant gaps in required technical skills. Consider training potential.',
+            priority: 'high',
+            category: 'skills'
+          });
+        }
       }
     }
 
