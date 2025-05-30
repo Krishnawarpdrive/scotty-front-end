@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExecutiveDashboardHeader } from './components/ExecutiveDashboardHeader';
 import { EnhancedExecutiveKPICards } from './components/EnhancedExecutiveKPICards';
@@ -10,11 +10,9 @@ import { DepartmentBreakdown } from './components/DepartmentBreakdown';
 import { HiringProcessPentagon } from './components/HiringProcessPentagon';
 import { TAPerformanceMetrics } from './components/TAPerformanceMetrics';
 import { ClientWiseHiringBreakdown } from './components/ClientWiseHiringBreakdown';
-import { EnhancedExecutiveNotificationSidebar } from './components/EnhancedExecutiveNotificationSidebar';
+import { ExecutiveNotificationSidebar } from './components/ExecutiveNotificationSidebar';
 import { ExecutiveDetailDrawer } from './components/ExecutiveDetailDrawer';
-import { ExecutiveClientInsightsDrawer } from './components/ExecutiveClientInsightsDrawer';
 import { useExecutiveDashboardData } from './hooks/useExecutiveDashboardData';
-import { useExecutiveClientInsights } from './hooks/useExecutiveClientInsights';
 
 const ExecutiveDashboardPage: React.FC = () => {
   const [dateRange, setDateRange] = useState('90');
@@ -22,10 +20,14 @@ const ExecutiveDashboardPage: React.FC = () => {
   const [regionFilter, setRegionFilter] = useState('all');
   const [notificationsPanelOpen, setNotificationsPanelOpen] = useState(false);
   const [detailDrawerOpen, setDetailDrawerOpen] = useState(false);
-  const [clientInsightsDrawerOpen, setClientInsightsDrawerOpen] = useState(false);
   const [drawerType, setDrawerType] = useState<string | null>(null);
   const [drawerData, setDrawerData] = useState<any>(null);
-  const [selectedClientForInsights, setSelectedClientForInsights] = useState<any>(null);
+
+  const filters = useMemo(() => ({
+    dateRange,
+    departmentFilter,
+    regionFilter
+  }), [dateRange, departmentFilter, regionFilter]);
 
   const {
     kpiData,
@@ -36,33 +38,19 @@ const ExecutiveDashboardPage: React.FC = () => {
     taPerformanceData,
     clientHiringData,
     isLoading
-  } = useExecutiveDashboardData({
-    dateRange,
-    departmentFilter,
-    regionFilter
-  });
+  } = useExecutiveDashboardData(filters);
 
-  const { clientInsights } = useExecutiveClientInsights();
-
-  const handleCardClick = (cardType: string, data: any) => {
+  const handleCardClick = useCallback((cardType: string, data: any) => {
     setDrawerType(cardType);
     setDrawerData(data);
     setDetailDrawerOpen(true);
-  };
+  }, []);
 
-  const handleCloseDrawer = () => {
+  const handleCloseDrawer = useCallback(() => {
     setDetailDrawerOpen(false);
     setDrawerType(null);
     setDrawerData(null);
-  };
-
-  const handleClientInsightsClick = (clientId: string) => {
-    const clientData = clientInsights.find(c => c.id === clientId);
-    if (clientData) {
-      setSelectedClientForInsights(clientData);
-      setClientInsightsDrawerOpen(true);
-    }
-  };
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -122,7 +110,6 @@ const ExecutiveDashboardPage: React.FC = () => {
 
           <motion.div 
             className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-            variants={sectionVariants}
           >
             <motion.div
               whileHover={{ scale: 1.01 }}
@@ -141,7 +128,6 @@ const ExecutiveDashboardPage: React.FC = () => {
 
           <motion.div 
             className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-            variants={sectionVariants}
           >
             <motion.div
               whileHover={{ scale: 1.01 }}
@@ -163,11 +149,7 @@ const ExecutiveDashboardPage: React.FC = () => {
               whileHover={{ scale: 1.005 }}
               transition={{ duration: 0.3 }}
             >
-              <ClientWiseHiringBreakdown 
-                data={clientHiringData} 
-                isLoading={isLoading}
-                onClientInsightsClick={handleClientInsightsClick}
-              />
+              <ClientWiseHiringBreakdown data={clientHiringData} isLoading={isLoading} />
             </motion.div>
           </motion.div>
 
@@ -183,7 +165,7 @@ const ExecutiveDashboardPage: React.FC = () => {
 
         <AnimatePresence>
           {notificationsPanelOpen && (
-            <EnhancedExecutiveNotificationSidebar 
+            <ExecutiveNotificationSidebar 
               open={notificationsPanelOpen}
               onClose={() => setNotificationsPanelOpen(false)}
             />
@@ -196,12 +178,6 @@ const ExecutiveDashboardPage: React.FC = () => {
         onClose={handleCloseDrawer}
         drawerType={drawerType}
         drawerData={drawerData}
-      />
-
-      <ExecutiveClientInsightsDrawer
-        open={clientInsightsDrawerOpen}
-        onClose={() => setClientInsightsDrawerOpen(false)}
-        clientData={selectedClientForInsights}
       />
     </div>
   );

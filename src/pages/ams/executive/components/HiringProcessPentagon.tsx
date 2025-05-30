@@ -30,7 +30,7 @@ export const HiringProcessPentagon: React.FC<HiringProcessPentagonProps> = ({
 
   if (isLoading) {
     return (
-      <Card className="h-96">
+      <Card className="h-96 overflow-hidden">
         <CardHeader>
           <CardTitle>Hiring Process Flow</CardTitle>
           <CardDescription>Pentagon visualization of hiring stages</CardDescription>
@@ -49,13 +49,13 @@ export const HiringProcessPentagon: React.FC<HiringProcessPentagonProps> = ({
   ).join(' ') + ' Z';
 
   return (
-    <Card className="h-96">
+    <Card className="h-96 overflow-hidden">
       <CardHeader>
         <CardTitle>Hiring Process Flow</CardTitle>
         <CardDescription>Pentagon visualization of hiring stages</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col items-center">
-        <div className="relative w-80 h-64">
+        <div className="relative w-80 h-48">
           <svg viewBox="0 0 300 250" className="w-full h-full">
             {/* Pentagon outline */}
             <motion.path

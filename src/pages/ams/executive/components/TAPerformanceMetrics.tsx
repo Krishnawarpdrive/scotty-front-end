@@ -41,7 +41,7 @@ export const TAPerformanceMetrics: React.FC<TAPerformanceMetricsProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <Card className="h-96">
+      <Card className="h-96 overflow-hidden">
         <CardHeader>
           <CardTitle>TA Performance Metrics</CardTitle>
           <CardDescription>Top 5 performance parameters for Talent Acquisition</CardDescription>
@@ -74,7 +74,7 @@ export const TAPerformanceMetrics: React.FC<TAPerformanceMetricsProps> = ({
   };
 
   return (
-    <Card className="h-96">
+    <Card className="h-96 overflow-hidden">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div>

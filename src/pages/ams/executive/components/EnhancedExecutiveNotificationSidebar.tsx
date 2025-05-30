@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -118,19 +118,12 @@ export const EnhancedExecutiveNotificationSidebar: React.FC<EnhancedExecutiveNot
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+      <div
         className="fixed inset-0 bg-black/20 z-50"
         onClick={onClose}
       />
       
-      <motion.div
-        initial={{ x: '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '100%' }}
-        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+      <div
         className="fixed right-0 top-0 h-full w-96 bg-white shadow-2xl z-50 flex flex-col"
       >
         <div className="flex items-center justify-between p-6 border-b">
@@ -171,18 +164,13 @@ export const EnhancedExecutiveNotificationSidebar: React.FC<EnhancedExecutiveNot
           <TabsContent value="notifications" className="flex-1 px-6 pb-6">
             <ScrollArea className="h-full">
               <div className="space-y-3">
-                <AnimatePresence>
-                  {notifications.map((notification, index) => {
+                {notifications.map((notification, index) => {
                     const Icon = getNotificationIcon(notification.type);
                     return (
-                      <motion.div
+                      <div
                         key={notification.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, x: -100 }}
-                        transition={{ delay: index * 0.1 }}
                       >
-                        <Card className={`cursor-pointer transition-all hover:shadow-md ${
+                        <Card className={`cursor-pointer hover:shadow-md ${
                           !notification.is_read ? 'border-l-4 border-l-blue-500' : ''
                         } ${getNotificationColor(notification.priority)}`}>
                           <CardContent className="p-4">
@@ -229,10 +217,10 @@ export const EnhancedExecutiveNotificationSidebar: React.FC<EnhancedExecutiveNot
                             </div>
                           </CardContent>
                         </Card>
-                      </motion.div>
+                      </div>
                     );
                   })}
-                </AnimatePresence>
+                
                 
                 {notifications.length === 0 && !loading && (
                   <div className="text-center py-8">
@@ -247,15 +235,15 @@ export const EnhancedExecutiveNotificationSidebar: React.FC<EnhancedExecutiveNot
           <TabsContent value="approvals" className="flex-1 px-6 pb-6">
             <ScrollArea className="h-full">
               <div className="space-y-3">
-                <AnimatePresence>
+                
                   {pendingApprovals.map((workflow, index) => {
                     const Icon = getWorkflowIcon(workflow.workflow_type);
                     return (
-                      <motion.div
+                      <div
                         key={workflow.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
+                        
+                        
+                        
                       >
                         <Card className="border-l-4 border-l-orange-500 hover:shadow-md transition-all">
                           <CardContent className="p-4">
@@ -314,10 +302,10 @@ export const EnhancedExecutiveNotificationSidebar: React.FC<EnhancedExecutiveNot
                             </div>
                           </CardContent>
                         </Card>
-                      </motion.div>
+                      </div>
                     );
                   })}
-                </AnimatePresence>
+                
                 
                 {pendingApprovals.length === 0 && !loading && (
                   <div className="text-center py-8">
@@ -329,7 +317,7 @@ export const EnhancedExecutiveNotificationSidebar: React.FC<EnhancedExecutiveNot
             </ScrollArea>
           </TabsContent>
         </Tabs>
-      </motion.div>
+      </div>
 
       <Dialog open={selectedApproval !== null} onOpenChange={() => setSelectedApproval(null)}>
         <DialogContent>

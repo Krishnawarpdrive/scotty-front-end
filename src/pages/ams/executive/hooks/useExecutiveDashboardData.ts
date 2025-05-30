@@ -263,7 +263,7 @@ export const useExecutiveDashboardData = (filters: ExecutiveDashboardFilters) =>
     };
 
     fetchData();
-  }, [filters]);
+  }, [filters.dateRange, filters.departmentFilter, filters.regionFilter]);
 
   return {
     kpiData,
