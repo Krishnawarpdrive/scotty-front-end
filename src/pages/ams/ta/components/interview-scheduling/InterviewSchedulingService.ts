@@ -1,8 +1,8 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { InterviewSchedule, InterviewTemplate, CandidatePreferences, PanelistAvailability } from './types/InterviewTypes';
+import type { InterviewSchedule, InterviewTemplate, CandidatePreferences, PanelistAvailability } from './types/InterviewTypes';
 
-export { InterviewSchedule, InterviewTemplate, CandidatePreferences, PanelistAvailability };
+export type { InterviewSchedule, InterviewTemplate, CandidatePreferences, PanelistAvailability };
 
 export const interviewSchedulingService = {
   // Interview Schedules
@@ -110,9 +110,9 @@ export const interviewSchedulingService = {
     if (error) throw error;
     return (data || []).map(item => ({
       ...item,
-      questions: Array.isArray(item.questions) ? item.questions : [],
-      checklist_items: Array.isArray(item.checklist_items) ? item.checklist_items : [],
-      required_skills: Array.isArray(item.required_skills) ? item.required_skills : []
+      questions: Array.isArray(item.questions) ? item.questions.map(q => String(q)) : [],
+      checklist_items: Array.isArray(item.checklist_items) ? item.checklist_items.map(c => String(c)) : [],
+      required_skills: Array.isArray(item.required_skills) ? item.required_skills.map(s => String(s)) : []
     }));
   },
 
@@ -126,9 +126,9 @@ export const interviewSchedulingService = {
     if (error) throw error;
     return {
       ...data,
-      questions: Array.isArray(data.questions) ? data.questions : [],
-      checklist_items: Array.isArray(data.checklist_items) ? data.checklist_items : [],
-      required_skills: Array.isArray(data.required_skills) ? data.required_skills : []
+      questions: Array.isArray(data.questions) ? data.questions.map(q => String(q)) : [],
+      checklist_items: Array.isArray(data.checklist_items) ? data.checklist_items.map(c => String(c)) : [],
+      required_skills: Array.isArray(data.required_skills) ? data.required_skills.map(s => String(s)) : []
     };
   },
 
@@ -145,9 +145,9 @@ export const interviewSchedulingService = {
     
     return {
       ...data,
-      preferred_days: Array.isArray(data.preferred_days) ? data.preferred_days : [],
-      preferred_time_slots: Array.isArray(data.preferred_time_slots) ? data.preferred_time_slots : [],
-      blackout_dates: Array.isArray(data.blackout_dates) ? data.blackout_dates : [],
+      preferred_days: Array.isArray(data.preferred_days) ? data.preferred_days.map(d => Number(d)) : [],
+      preferred_time_slots: Array.isArray(data.preferred_time_slots) ? data.preferred_time_slots as Array<{ start: string; end: string }> : [],
+      blackout_dates: Array.isArray(data.blackout_dates) ? data.blackout_dates.map(d => String(d)) : [],
       communication_preferences: data.communication_preferences as Record<string, any> || {}
     };
   },
@@ -162,9 +162,9 @@ export const interviewSchedulingService = {
     if (error) throw error;
     return {
       ...data,
-      preferred_days: Array.isArray(data.preferred_days) ? data.preferred_days : [],
-      preferred_time_slots: Array.isArray(data.preferred_time_slots) ? data.preferred_time_slots : [],
-      blackout_dates: Array.isArray(data.blackout_dates) ? data.blackout_dates : [],
+      preferred_days: Array.isArray(data.preferred_days) ? data.preferred_days.map(d => Number(d)) : [],
+      preferred_time_slots: Array.isArray(data.preferred_time_slots) ? data.preferred_time_slots as Array<{ start: string; end: string }> : [],
+      blackout_dates: Array.isArray(data.blackout_dates) ? data.blackout_dates.map(d => String(d)) : [],
       communication_preferences: data.communication_preferences as Record<string, any> || {}
     };
   },

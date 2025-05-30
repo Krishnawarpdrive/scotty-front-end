@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { User, Star, Clock, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
-import { Panelist } from './types/InterviewTypes';
+import type { Panelist } from './types/InterviewTypes';
 
 interface PanelistSelectorProps {
   interviewType: string;
@@ -39,13 +39,13 @@ export const PanelistSelector: React.FC<PanelistSelectorProps> = ({
       
       const formattedPanelists: Panelist[] = (data || []).map(item => ({
         ...item,
-        skills: Array.isArray(item.skills) ? item.skills : [],
-        certifications: Array.isArray(item.certifications) ? item.certifications : [],
-        languages: Array.isArray(item.languages) ? item.languages : [],
-        interview_types: Array.isArray(item.interview_types) ? item.interview_types : [],
+        skills: Array.isArray(item.skills) ? item.skills.map(s => String(s)) : [],
+        certifications: Array.isArray(item.certifications) ? item.certifications.map(c => String(c)) : [],
+        languages: Array.isArray(item.languages) ? item.languages.map(l => String(l)) : [],
+        interview_types: Array.isArray(item.interview_types) ? item.interview_types.map(t => String(t)) : [],
         preferred_time_slots: item.preferred_time_slots as Record<string, any> || {},
-        projects_worked_on: Array.isArray(item.projects_worked_on) ? item.projects_worked_on : [],
-        tools_used: Array.isArray(item.tools_used) ? item.tools_used : []
+        projects_worked_on: Array.isArray(item.projects_worked_on) ? item.projects_worked_on.map(p => String(p)) : [],
+        tools_used: Array.isArray(item.tools_used) ? item.tools_used.map(t => String(t)) : []
       }));
       
       setPanelists(formattedPanelists);

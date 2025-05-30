@@ -1,23 +1,27 @@
 
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { 
-  Box, 
-  Typography, 
-  TextField, 
-  Button, 
-  FormControlLabel, 
-  Switch,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Divider,
-  Chip
-} from '@mui/material';
-import { Code, Save, VideoCall, Calendar } from '@mui/icons-material';
-import { Candidate } from '../../types/CandidateTypes';
-import { InterviewSchedulingDrawer } from '../../interview-scheduling/InterviewSchedulingDrawer';
-import { InterviewSchedule } from '../../interview-scheduling/InterviewSchedulingService';
+  User, 
+  Code, 
+  CheckCircle, 
+  Clock, 
+  FileText, 
+  Users, 
+  Star,
+  CalendarDays,
+  MessageSquare,
+  BookOpen,
+  Target,
+  TrendingUp
+} from 'lucide-react';
+import { InterviewSchedulingDrawer } from '../interview-scheduling/InterviewSchedulingDrawer';
+import type { Candidate } from '../../types/CandidateTypes';
+import type { InterviewSchedule } from '../interview-scheduling/InterviewSchedulingService';
 
 interface EnhancedTechnicalInterviewFormProps {
   candidate: Candidate;
@@ -26,247 +30,195 @@ interface EnhancedTechnicalInterviewFormProps {
 export const EnhancedTechnicalInterviewForm: React.FC<EnhancedTechnicalInterviewFormProps> = ({
   candidate
 }) => {
-  const [formData, setFormData] = useState({
-    interviewScheduled: false,
-    interviewType: 'video',
-    outcome: 'pending',
-    technicalSkills: ['React', 'Node.js', 'JavaScript'],
-    codingChallengeCompleted: false,
-    codingScore: '',
-    interviewNotes: '',
-    duration: '60',
-    interviewerName: ''
-  });
-
   const [schedulingDrawerOpen, setSchedulingDrawerOpen] = useState(false);
-  const [scheduledInterviews, setScheduledInterviews] = useState<InterviewSchedule[]>([]);
-
-  const handleFieldChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const addSkill = (skill: string) => {
-    if (skill && !formData.technicalSkills.includes(skill)) {
-      setFormData(prev => ({
-        ...prev,
-        technicalSkills: [...prev.technicalSkills, skill]
-      }));
-    }
-  };
-
-  const removeSkill = (skillToRemove: string) => {
-    setFormData(prev => ({
-      ...prev,
-      technicalSkills: prev.technicalSkills.filter(skill => skill !== skillToRemove)
-    }));
-  };
-
-  const handleScheduleInterview = () => {
-    setSchedulingDrawerOpen(true);
-  };
+  const [interviewScheduled, setInterviewScheduled] = useState(false);
 
   const handleScheduleComplete = (schedule: InterviewSchedule) => {
-    setScheduledInterviews(prev => [...prev, schedule]);
-    setFormData(prev => ({ ...prev, interviewScheduled: true }));
+    setInterviewScheduled(true);
+    console.log('Interview scheduled:', schedule);
   };
 
+  const technicalAreas = [
+    { name: 'Problem Solving', weight: 30, score: 0 },
+    { name: 'Code Quality', weight: 25, score: 0 },
+    { name: 'System Design', weight: 20, score: 0 },
+    { name: 'Technical Communication', weight: 15, score: 0 },
+    { name: 'Best Practices', weight: 10, score: 0 }
+  ];
+
   return (
-    <Box sx={{ p: 3, fontFamily: 'Rubik, sans-serif' }}>
-      <Typography variant="h6" sx={{ 
-        mb: 3, 
-        fontFamily: 'Rubik, sans-serif', 
-        fontWeight: 600 
-      }}>
-        Technical Interview Configuration
-      </Typography>
+    <div className="space-y-6">
+      {/* Header Section */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Code className="h-5 w-5" />
+              Technical Interview Assessment
+            </CardTitle>
+            {!interviewScheduled ? (
+              <Button 
+                onClick={() => setSchedulingDrawerOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <CalendarDays className="h-4 w-4" />
+                Schedule Interview
+              </Button>
+            ) : (
+              <Badge variant="default" className="flex items-center gap-1">
+                <CheckCircle className="h-3 w-3" />
+                Interview Scheduled
+              </Badge>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-blue-50 rounded-lg">
+              <User className="h-8 w-8 mx-auto text-blue-600 mb-2" />
+              <h3 className="font-semibold text-gray-900">{candidate.name}</h3>
+              <p className="text-sm text-gray-600">{candidate.applied_role}</p>
+            </div>
+            <div className="text-center p-4 bg-green-50 rounded-lg">
+              <Clock className="h-8 w-8 mx-auto text-green-600 mb-2" />
+              <h3 className="font-semibold text-gray-900">60 Minutes</h3>
+              <p className="text-sm text-gray-600">Interview Duration</p>
+            </div>
+            <div className="text-center p-4 bg-purple-50 rounded-lg">
+              <Star className="h-8 w-8 mx-auto text-purple-600 mb-2" />
+              <h3 className="font-semibold text-gray-900">Technical Focus</h3>
+              <p className="text-sm text-gray-600">Problem Solving</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Scheduled Interviews Section */}
-      {scheduledInterviews.length > 0 && (
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-            Scheduled Interviews
-          </Typography>
-          {scheduledInterviews.map((interview, index) => (
-            <Box key={interview.id} sx={{ 
-              p: 2, 
-              border: '1px solid #e5e7eb', 
-              borderRadius: 1, 
-              mb: 1,
-              backgroundColor: '#f9fafb'
-            }}>
-              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                {interview.interview_type} Interview
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {new Date(interview.scheduled_date).toLocaleString()} • {interview.duration_minutes} min
-              </Typography>
-              {interview.meeting_link && (
-                <Typography variant="caption" sx={{ display: 'block', color: 'primary.main' }}>
-                  Meeting: {interview.meeting_link}
-                </Typography>
-              )}
-            </Box>
-          ))}
-        </Box>
-      )}
-
-      {/* Interview Scheduling */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Interview Setup
-        </Typography>
-        
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
-          <FormControl fullWidth>
-            <InputLabel>Interview Type</InputLabel>
-            <Select
-              value={formData.interviewType}
-              onChange={(e) => handleFieldChange('interviewType', e.target.value)}
-              label="Interview Type"
-            >
-              <MenuItem value="video">Video Call</MenuItem>
-              <MenuItem value="in-person">In Person</MenuItem>
-              <MenuItem value="phone">Phone</MenuItem>
-            </Select>
-          </FormControl>
-          
-          <TextField
-            label="Duration (minutes)"
-            value={formData.duration}
-            onChange={(e) => handleFieldChange('duration', e.target.value)}
-            type="number"
-          />
-        </Box>
-
-        <TextField
-          label="Interviewer Name"
-          value={formData.interviewerName}
-          onChange={(e) => handleFieldChange('interviewerName', e.target.value)}
-          fullWidth
-          sx={{ mb: 2 }}
-        />
-
-        <FormControlLabel
-          control={
-            <Switch
-              checked={formData.interviewScheduled}
-              onChange={(e) => handleFieldChange('interviewScheduled', e.target.checked)}
-            />
-          }
-          label="Interview Scheduled"
-          sx={{ fontFamily: 'Rubik, sans-serif' }}
-        />
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      {/* Technical Skills Assessment */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
-          Technical Skills Assessment
-        </Typography>
-        
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="caption" sx={{ mb: 1, display: 'block', fontFamily: 'Rubik, sans-serif' }}>
-            Skills to Evaluate
-          </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-            {formData.technicalSkills.map((skill, index) => (
-              <Chip
-                key={index}
-                label={skill}
-                onDelete={() => removeSkill(skill)}
-                color="primary"
-                variant="outlined"
-                size="small"
-              />
+      {/* Technical Assessment Areas */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            Assessment Areas
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {technicalAreas.map((area, index) => (
+              <motion.div
+                key={area.name}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="flex items-center justify-between p-4 border rounded-lg"
+              >
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium text-gray-900">{area.name}</h4>
+                    <Badge variant="outline">{area.weight}% weight</Badge>
+                  </div>
+                  <Progress value={area.score} className="h-2" />
+                </div>
+                <div className="ml-4 text-right">
+                  <span className="text-lg font-semibold text-gray-900">{area.score}</span>
+                  <span className="text-sm text-gray-500">/100</span>
+                </div>
+              </motion.div>
             ))}
-          </Box>
-        </Box>
+          </div>
+        </CardContent>
+      </Card>
 
-        <FormControlLabel
-          control={
-            <Switch
-              checked={formData.codingChallengeCompleted}
-              onChange={(e) => handleFieldChange('codingChallengeCompleted', e.target.checked)}
+      {/* Interview Questions */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MessageSquare className="h-5 w-5" />
+            Interview Questions
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="p-4 border rounded-lg">
+              <h4 className="font-medium text-gray-900 mb-2">Technical Problem Solving</h4>
+              <p className="text-sm text-gray-600 mb-3">
+                Present a coding problem that requires algorithmic thinking and optimization.
+              </p>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm">Add Notes</Button>
+                <Button variant="outline" size="sm">Record Answer</Button>
+              </div>
+            </div>
+            
+            <div className="p-4 border rounded-lg">
+              <h4 className="font-medium text-gray-900 mb-2">System Design</h4>
+              <p className="text-sm text-gray-600 mb-3">
+                Discuss how they would design a scalable system for a given use case.
+              </p>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm">Add Notes</Button>
+                <Button variant="outline" size="sm">Record Answer</Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Overall Assessment */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            Overall Assessment
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Technical Rating
+              </label>
+              <div className="flex items-center gap-2">
+                <Progress value={0} className="flex-1 h-3" />
+                <span className="text-sm font-medium">0/10</span>
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Communication Rating
+              </label>
+              <div className="flex items-center gap-2">
+                <Progress value={0} className="flex-1 h-3" />
+                <span className="text-sm font-medium">0/10</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Interview Notes
+            </label>
+            <textarea
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows={4}
+              placeholder="Record detailed observations, strengths, and areas for improvement..."
             />
-          }
-          label="Coding Challenge Completed"
-          sx={{ fontFamily: 'Rubik, sans-serif', mb: 2 }}
-        />
+          </div>
+          
+          <div className="flex justify-end gap-2 mt-6">
+            <Button variant="outline">Save Draft</Button>
+            <Button>Complete Assessment</Button>
+          </div>
+        </CardContent>
+      </Card>
 
-        {formData.codingChallengeCompleted && (
-          <TextField
-            label="Coding Challenge Score (%)"
-            value={formData.codingScore}
-            onChange={(e) => handleFieldChange('codingScore', e.target.value)}
-            type="number"
-            fullWidth
-            sx={{ mb: 2 }}
-          />
-        )}
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      {/* Interview Outcome */}
-      <Box sx={{ mb: 3 }}>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>Interview Outcome</InputLabel>
-          <Select
-            value={formData.outcome}
-            onChange={(e) => handleFieldChange('outcome', e.target.value)}
-            label="Interview Outcome"
-          >
-            <MenuItem value="pending">Pending</MenuItem>
-            <MenuItem value="pass">Pass</MenuItem>
-            <MenuItem value="fail">Fail</MenuItem>
-            <MenuItem value="strong-pass">Strong Pass</MenuItem>
-          </Select>
-        </FormControl>
-
-        <TextField
-          label="Interview Notes"
-          value={formData.interviewNotes}
-          onChange={(e) => handleFieldChange('interviewNotes', e.target.value)}
-          fullWidth
-          multiline
-          rows={4}
-          placeholder="Technical competency, problem-solving approach, communication..."
-        />
-      </Box>
-
-      {/* Action Buttons */}
-      <Box sx={{ display: 'flex', gap: 2, mt: 4 }}>
-        <Button
-          variant="contained"
-          startIcon={<Save />}
-          sx={{ 
-            bgcolor: '#009933', 
-            '&:hover': { bgcolor: '#00a341' },
-            flex: 1
-          }}
-        >
-          Save Progress
-        </Button>
-        <Button
-          variant="outlined"
-          startIcon={<Calendar />}
-          onClick={handleScheduleInterview}
-          sx={{ flex: 1 }}
-        >
-          Schedule Interview
-        </Button>
-      </Box>
-
-      {/* Interview Scheduling Drawer */}
       <InterviewSchedulingDrawer
         open={schedulingDrawerOpen}
         onClose={() => setSchedulingDrawerOpen(false)}
-        candidateId={candidate.id.toString()}
+        candidateId={candidate.id}
         candidateName={candidate.name}
         onScheduleComplete={handleScheduleComplete}
       />
-    </Box>
+    </div>
   );
 };
