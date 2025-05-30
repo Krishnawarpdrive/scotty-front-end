@@ -21,9 +21,12 @@ import {
   User,
   DollarSign,
   Calendar,
-  Sparkles
+  Sparkles,
+  Building2,
+  Eye
 } from 'lucide-react';
 import { useExecutiveNotifications } from '../hooks/useExecutiveNotifications';
+import { useNavigate } from 'react-router-dom';
 
 interface EnhancedExecutiveNotificationSidebarProps {
   open: boolean;
@@ -34,6 +37,7 @@ export const EnhancedExecutiveNotificationSidebar: React.FC<EnhancedExecutiveNot
   open,
   onClose
 }) => {
+  const navigate = useNavigate();
   const {
     notifications,
     approvalWorkflows,
@@ -101,6 +105,12 @@ export const EnhancedExecutiveNotificationSidebar: React.FC<EnhancedExecutiveNot
     setSelectedApproval(null);
     setApprovalNotes('');
     setApprovalAction(null);
+  };
+
+  const handleApprovalReview = (workflow: any) => {
+    // Navigate to client management for approval review
+    onClose();
+    navigate(`/ams/executive/clients?from=approval&type=${workflow.workflow_type}&workflow=${workflow.id}`);
   };
 
   const pendingApprovals = approvalWorkflows.filter(w => w.status === 'pending');
@@ -272,14 +282,22 @@ export const EnhancedExecutiveNotificationSidebar: React.FC<EnhancedExecutiveNot
                                 <div className="flex items-center gap-2">
                                   <Button
                                     size="sm"
+                                    variant="outline"
+                                    onClick={() => handleApprovalReview(workflow)}
+                                    className="flex-1 h-8 text-xs"
+                                  >
+                                    <Building2 className="h-3 w-3 mr-1" />
+                                    Review Client
+                                  </Button>
+                                  <Button
+                                    size="sm"
                                     onClick={() => {
                                       setSelectedApproval(workflow);
                                       setApprovalAction('approve');
                                     }}
-                                    className="flex-1 h-8 text-xs"
+                                    className="h-8 text-xs px-3"
                                   >
-                                    <Check className="h-3 w-3 mr-1" />
-                                    Approve
+                                    <Check className="h-3 w-3" />
                                   </Button>
                                   <Button
                                     size="sm"
@@ -288,10 +306,9 @@ export const EnhancedExecutiveNotificationSidebar: React.FC<EnhancedExecutiveNot
                                       setSelectedApproval(workflow);
                                       setApprovalAction('reject');
                                     }}
-                                    className="flex-1 h-8 text-xs"
+                                    className="h-8 text-xs px-3"
                                   >
-                                    <X className="h-3 w-3 mr-1" />
-                                    Reject
+                                    <X className="h-3 w-3" />
                                   </Button>
                                 </div>
                               </div>
@@ -313,7 +330,7 @@ export const EnhancedExecutiveNotificationSidebar: React.FC<EnhancedExecutiveNot
             </ScrollArea>
           </TabsContent>
         </Tabs>
-      </motion.div>
+      </div>
 
       <Dialog open={selectedApproval !== null} onOpenChange={() => setSelectedApproval(null)}>
         <DialogContent>

@@ -13,8 +13,10 @@ import {
   DollarSign,
   AlertTriangle,
   Eye,
-  BarChart3
+  BarChart3,
+  ExternalLink
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface ClientHiringData {
   client: string;
@@ -41,6 +43,7 @@ export const ClientWiseHiringBreakdown: React.FC<ClientWiseHiringBreakdownProps>
   isLoading, 
   onClientInsightsClick 
 }) => {
+  const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<'progress' | 'healthScore' | 'totalHires'>('progress');
 
   if (isLoading) {
@@ -175,6 +178,24 @@ export const ClientWiseHiringBreakdown: React.FC<ClientWiseHiringBreakdownProps>
     return 'text-red-600';
   };
 
+  const handleClientInsights = (clientName: string) => {
+    if (onClientInsightsClick) {
+      onClientInsightsClick(clientName);
+    }
+  };
+
+  const handleClientManagement = (clientName: string) => {
+    // Navigate to executive client management page
+    navigate('/ams/executive/clients');
+  };
+
+  const handleViewClientDetail = (clientName: string) => {
+    // Navigate directly to individual client page
+    // Using client name as ID for demo purposes
+    const clientId = clientName.toLowerCase().replace(/\s+/g, '-');
+    navigate(`/ams/executive/clients/${clientId}`);
+  };
+
   return (
     <Card className="col-span-full">
       <CardHeader>
@@ -189,6 +210,15 @@ export const ClientWiseHiringBreakdown: React.FC<ClientWiseHiringBreakdownProps>
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleClientManagement('')}
+              className="flex items-center gap-2"
+            >
+              <ExternalLink className="h-4 w-4" />
+              Manage Clients
+            </Button>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
@@ -228,13 +258,17 @@ export const ClientWiseHiringBreakdown: React.FC<ClientWiseHiringBreakdownProps>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => onClientInsightsClick?.(client.client)}
+                    onClick={() => handleClientInsights(client.client)}
                     className="flex items-center gap-1"
                   >
                     <Eye className="h-3 w-3" />
                     Insights
                   </Button>
-                  <Button variant="ghost" size="sm">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => handleViewClientDetail(client.client)}
+                  >
                     <BarChart3 className="h-4 w-4" />
                   </Button>
                 </div>
