@@ -9,6 +9,12 @@ import { SkillsAssessmentSection } from './components/SkillsAssessmentSection';
 import type { Candidate } from '../../types/CandidateTypes';
 import type { InterviewSchedule } from '../../interview-scheduling/InterviewSchedulingService';
 
+interface TechnicalArea {
+  name: string;
+  weight: number;
+  score: string;
+}
+
 interface EnhancedTechnicalInterviewFormProps {
   candidate: Candidate;
   onSave?: (formData: any) => void;
@@ -43,7 +49,7 @@ export const EnhancedTechnicalInterviewForm: React.FC<EnhancedTechnicalInterview
     }));
   };
 
-  const technicalAreas = [
+  const technicalAreas: TechnicalArea[] = [
     { name: 'Problem Solving', weight: 30, score: "0" },
     { name: 'Code Quality', weight: 25, score: "0" },
     { name: 'System Design', weight: 20, score: "0" },
