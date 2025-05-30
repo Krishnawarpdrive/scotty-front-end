@@ -595,6 +595,181 @@ export type Database = {
         }
         Relationships: []
       }
+      interview_panelists: {
+        Row: {
+          availability_status: string
+          avatar_url: string | null
+          bio: string | null
+          certifications: Json | null
+          created_at: string
+          department: string
+          email: string
+          feedback_score: number | null
+          id: string
+          interview_types: Json | null
+          languages: Json | null
+          location: string | null
+          max_interviews_per_week: number | null
+          name: string
+          phone: string | null
+          preferred_time_slots: Json | null
+          rating: number | null
+          seniority_level: string
+          skills: Json | null
+          status: string
+          title: string
+          total_interviews: number | null
+          updated_at: string
+        }
+        Insert: {
+          availability_status?: string
+          avatar_url?: string | null
+          bio?: string | null
+          certifications?: Json | null
+          created_at?: string
+          department: string
+          email: string
+          feedback_score?: number | null
+          id?: string
+          interview_types?: Json | null
+          languages?: Json | null
+          location?: string | null
+          max_interviews_per_week?: number | null
+          name: string
+          phone?: string | null
+          preferred_time_slots?: Json | null
+          rating?: number | null
+          seniority_level?: string
+          skills?: Json | null
+          status?: string
+          title: string
+          total_interviews?: number | null
+          updated_at?: string
+        }
+        Update: {
+          availability_status?: string
+          avatar_url?: string | null
+          bio?: string | null
+          certifications?: Json | null
+          created_at?: string
+          department?: string
+          email?: string
+          feedback_score?: number | null
+          id?: string
+          interview_types?: Json | null
+          languages?: Json | null
+          location?: string | null
+          max_interviews_per_week?: number | null
+          name?: string
+          phone?: string | null
+          preferred_time_slots?: Json | null
+          rating?: number | null
+          seniority_level?: string
+          skills?: Json | null
+          status?: string
+          title?: string
+          total_interviews?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      interview_sessions: {
+        Row: {
+          candidate_name: string
+          candidate_rating: number | null
+          client_name: string
+          created_at: string
+          duration_minutes: number
+          feedback: string | null
+          id: string
+          interview_date: string
+          interview_type: string
+          notes: string | null
+          panelist_id: string
+          panelist_rating: number | null
+          role_name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          candidate_name: string
+          candidate_rating?: number | null
+          client_name: string
+          created_at?: string
+          duration_minutes?: number
+          feedback?: string | null
+          id?: string
+          interview_date: string
+          interview_type: string
+          notes?: string | null
+          panelist_id: string
+          panelist_rating?: number | null
+          role_name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          candidate_name?: string
+          candidate_rating?: number | null
+          client_name?: string
+          created_at?: string
+          duration_minutes?: number
+          feedback?: string | null
+          id?: string
+          interview_date?: string
+          interview_type?: string
+          notes?: string | null
+          panelist_id?: string
+          panelist_rating?: number | null
+          role_name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_sessions_panelist_id_fkey"
+            columns: ["panelist_id"]
+            isOneToOne: false
+            referencedRelation: "interview_panelists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      panelist_skills: {
+        Row: {
+          created_at: string
+          id: string
+          panelist_id: string
+          proficiency_level: string
+          skill_name: string
+          years_experience: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          panelist_id: string
+          proficiency_level?: string
+          skill_name: string
+          years_experience?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          panelist_id?: string
+          proficiency_level?: string
+          skill_name?: string
+          years_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "panelist_skills_panelist_id_fkey"
+            columns: ["panelist_id"]
+            isOneToOne: false
+            referencedRelation: "interview_panelists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pipeline_templates: {
         Row: {
           created_at: string

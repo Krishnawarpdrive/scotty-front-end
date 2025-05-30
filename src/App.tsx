@@ -37,6 +37,7 @@ import VendorDetailPage from "./pages/ams/vendors/VendorDetailPage";
 import ExecutiveDashboardPage from "./pages/ams/executive/ExecutiveDashboardPage";
 import ExecutiveClientManagementPage from "./pages/ams/executive/ExecutiveClientManagementPage";
 import ExecutiveClientPage from "./pages/ams/executive/ExecutiveClientPage";
+import InterviewPanelistLibraryPage from "./pages/ams/InterviewPanelistLibraryPage";
 import { KeyboardShortcutsProvider } from "@/contexts/KeyboardShortcutsContext";
 import { KeyboardShortcutsModal } from "@/components/ui/keyboard-shortcuts-modal";
 import { KeyboardHintsOverlay } from "@/components/ui/keyboard-hints-overlay";
@@ -70,6 +71,7 @@ function AppContent() {
           <Route path="roles" element={<RolesLibraryPage />} />
           <Route path="roles/create" element={<CreateRolePage />} />
           <Route path="roles/library" element={<RoleLibraryPage />} />
+          <Route path="interview-panelists" element={<InterviewPanelistLibraryPage />} />
           <Route path="hr/dashboard" element={<HRDashboardPage />} />
           <Route path="hr/candidate-pool" element={<CandidatePoolPage />} />
           <Route path="hr/role-management" element={<RoleManagementPage />} />
