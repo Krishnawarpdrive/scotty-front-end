@@ -1,56 +1,8 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { InterviewSchedule, InterviewTemplate, CandidatePreferences, PanelistAvailability } from './types/InterviewTypes';
 
-export interface InterviewSchedule {
-  id: string;
-  candidate_id: string;
-  requirement_id?: string;
-  panelist_id?: string;
-  scheduled_date: string;
-  duration_minutes: number;
-  interview_type: string;
-  status: 'scheduled' | 'completed' | 'cancelled' | 'rescheduled';
-  timezone: string;
-  meeting_link?: string;
-  location?: string;
-  notes?: string;
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-  metadata?: any;
-}
-
-export interface PanelistAvailability {
-  id: string;
-  panelist_id: string;
-  day_of_week: number;
-  start_time: string;
-  end_time: string;
-  timezone: string;
-  is_active: boolean;
-}
-
-export interface InterviewTemplate {
-  id: string;
-  name: string;
-  interview_type: string;
-  duration_minutes: number;
-  questions: string[];
-  checklist_items: string[];
-  required_skills: string[];
-  is_active: boolean;
-  created_by: string;
-}
-
-export interface CandidatePreferences {
-  id: string;
-  candidate_id: string;
-  preferred_timezone: string;
-  preferred_days: number[];
-  preferred_time_slots: Array<{ start: string; end: string }>;
-  blackout_dates: string[];
-  communication_preferences: any;
-}
+export { InterviewSchedule, InterviewTemplate, CandidatePreferences, PanelistAvailability };
 
 export const interviewSchedulingService = {
   // Interview Schedules
@@ -75,7 +27,12 @@ export const interviewSchedulingService = {
 
     const { data, error } = await query;
     if (error) throw error;
-    return data || [];
+    
+    return (data || []).map(item => ({
+      ...item,
+      status: item.status as 'scheduled' | 'completed' | 'cancelled' | 'rescheduled',
+      metadata: item.metadata as Record<string, any> || {}
+    }));
   },
 
   async createInterviewSchedule(schedule: Omit<InterviewSchedule, 'id' | 'created_at' | 'updated_at'>): Promise<InterviewSchedule> {
@@ -86,7 +43,11 @@ export const interviewSchedulingService = {
       .single();
     
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      status: data.status as 'scheduled' | 'completed' | 'cancelled' | 'rescheduled',
+      metadata: data.metadata as Record<string, any> || {}
+    };
   },
 
   async updateInterviewSchedule(id: string, updates: Partial<InterviewSchedule>): Promise<InterviewSchedule> {
@@ -98,7 +59,11 @@ export const interviewSchedulingService = {
       .single();
     
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      status: data.status as 'scheduled' | 'completed' | 'cancelled' | 'rescheduled',
+      metadata: data.metadata as Record<string, any> || {}
+    };
   },
 
   async deleteInterviewSchedule(id: string): Promise<void> {
@@ -143,7 +108,12 @@ export const interviewSchedulingService = {
       .order('name');
     
     if (error) throw error;
-    return data || [];
+    return (data || []).map(item => ({
+      ...item,
+      questions: Array.isArray(item.questions) ? item.questions : [],
+      checklist_items: Array.isArray(item.checklist_items) ? item.checklist_items : [],
+      required_skills: Array.isArray(item.required_skills) ? item.required_skills : []
+    }));
   },
 
   async createInterviewTemplate(template: Omit<InterviewTemplate, 'id' | 'created_at' | 'updated_at'>): Promise<InterviewTemplate> {
@@ -154,7 +124,12 @@ export const interviewSchedulingService = {
       .single();
     
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      questions: Array.isArray(data.questions) ? data.questions : [],
+      checklist_items: Array.isArray(data.checklist_items) ? data.checklist_items : [],
+      required_skills: Array.isArray(data.required_skills) ? data.required_skills : []
+    };
   },
 
   // Candidate Preferences
@@ -166,7 +141,15 @@ export const interviewSchedulingService = {
       .maybeSingle();
     
     if (error) throw error;
-    return data;
+    if (!data) return null;
+    
+    return {
+      ...data,
+      preferred_days: Array.isArray(data.preferred_days) ? data.preferred_days : [],
+      preferred_time_slots: Array.isArray(data.preferred_time_slots) ? data.preferred_time_slots : [],
+      blackout_dates: Array.isArray(data.blackout_dates) ? data.blackout_dates : [],
+      communication_preferences: data.communication_preferences as Record<string, any> || {}
+    };
   },
 
   async upsertCandidatePreferences(preferences: Omit<CandidatePreferences, 'id' | 'created_at' | 'updated_at'>): Promise<CandidatePreferences> {
@@ -177,12 +160,17 @@ export const interviewSchedulingService = {
       .single();
     
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      preferred_days: Array.isArray(data.preferred_days) ? data.preferred_days : [],
+      preferred_time_slots: Array.isArray(data.preferred_time_slots) ? data.preferred_time_slots : [],
+      blackout_dates: Array.isArray(data.blackout_dates) ? data.blackout_dates : [],
+      communication_preferences: data.communication_preferences as Record<string, any> || {}
+    };
   },
 
   // Conflict Detection
   async detectConflicts(panelistId: string, scheduledDate: string, duration: number): Promise<any[]> {
-    // Check for existing interviews at the same time
     const endDate = new Date(new Date(scheduledDate).getTime() + duration * 60000).toISOString();
     
     const { data, error } = await supabase
@@ -214,12 +202,10 @@ export const interviewSchedulingService = {
       const startTime = new Date(`${date}T${slot.start_time}`);
       const endTime = new Date(`${date}T${slot.end_time}`);
       
-      // Generate 30-minute intervals
       let currentTime = new Date(startTime);
       while (currentTime.getTime() + duration * 60000 <= endTime.getTime()) {
         const slotEnd = new Date(currentTime.getTime() + duration * 60000);
         
-        // Check if this slot conflicts with existing interviews
         const hasConflict = existingInterviews.some(interview => {
           const interviewStart = new Date(interview.scheduled_date);
           const interviewEnd = new Date(interviewStart.getTime() + interview.duration_minutes * 60000);
@@ -234,7 +220,6 @@ export const interviewSchedulingService = {
           });
         }
         
-        // Move to next 30-minute slot
         currentTime = new Date(currentTime.getTime() + 30 * 60000);
       }
     }

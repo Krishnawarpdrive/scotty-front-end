@@ -6,19 +6,7 @@ import { Button } from '@/components/ui/button';
 import { User, Star, Clock, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
-
-interface Panelist {
-  id: string;
-  panelist_id: string;
-  name: string;
-  title: string;
-  department: string;
-  rating: number;
-  total_interviews: number;
-  availability_status: string;
-  skills: string[];
-  interview_types: string[];
-}
+import { Panelist } from './types/InterviewTypes';
 
 interface PanelistSelectorProps {
   interviewType: string;
@@ -48,7 +36,19 @@ export const PanelistSelector: React.FC<PanelistSelectorProps> = ({
         .contains('interview_types', [interviewType]);
 
       if (error) throw error;
-      setPanelists(data || []);
+      
+      const formattedPanelists: Panelist[] = (data || []).map(item => ({
+        ...item,
+        skills: Array.isArray(item.skills) ? item.skills : [],
+        certifications: Array.isArray(item.certifications) ? item.certifications : [],
+        languages: Array.isArray(item.languages) ? item.languages : [],
+        interview_types: Array.isArray(item.interview_types) ? item.interview_types : [],
+        preferred_time_slots: item.preferred_time_slots as Record<string, any> || {},
+        projects_worked_on: Array.isArray(item.projects_worked_on) ? item.projects_worked_on : [],
+        tools_used: Array.isArray(item.tools_used) ? item.tools_used : []
+      }));
+      
+      setPanelists(formattedPanelists);
     } catch (error) {
       console.error('Error loading panelists:', error);
     } finally {
