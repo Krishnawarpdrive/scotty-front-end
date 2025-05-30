@@ -107,6 +107,42 @@ export type Database = {
           },
         ]
       }
+      candidate_scheduling_preferences: {
+        Row: {
+          blackout_dates: Json | null
+          candidate_id: string
+          communication_preferences: Json | null
+          created_at: string
+          id: string
+          preferred_days: Json | null
+          preferred_time_slots: Json | null
+          preferred_timezone: string
+          updated_at: string
+        }
+        Insert: {
+          blackout_dates?: Json | null
+          candidate_id: string
+          communication_preferences?: Json | null
+          created_at?: string
+          id?: string
+          preferred_days?: Json | null
+          preferred_time_slots?: Json | null
+          preferred_timezone?: string
+          updated_at?: string
+        }
+        Update: {
+          blackout_dates?: Json | null
+          candidate_id?: string
+          communication_preferences?: Json | null
+          created_at?: string
+          id?: string
+          preferred_days?: Json | null
+          preferred_time_slots?: Json | null
+          preferred_timezone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       certification_library: {
         Row: {
           created_at: string
@@ -595,6 +631,119 @@ export type Database = {
         }
         Relationships: []
       }
+      interview_conflicts: {
+        Row: {
+          conflict_description: string
+          conflict_type: string
+          created_at: string
+          id: string
+          interview_schedule_id: string
+          resolved: boolean | null
+          resolved_at: string | null
+          suggested_alternatives: Json | null
+        }
+        Insert: {
+          conflict_description: string
+          conflict_type: string
+          created_at?: string
+          id?: string
+          interview_schedule_id: string
+          resolved?: boolean | null
+          resolved_at?: string | null
+          suggested_alternatives?: Json | null
+        }
+        Update: {
+          conflict_description?: string
+          conflict_type?: string
+          created_at?: string
+          id?: string
+          interview_schedule_id?: string
+          resolved?: boolean | null
+          resolved_at?: string | null
+          suggested_alternatives?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_conflicts_interview_schedule_id_fkey"
+            columns: ["interview_schedule_id"]
+            isOneToOne: false
+            referencedRelation: "interview_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interview_feedback: {
+        Row: {
+          answers_received: Json | null
+          areas_for_improvement: string | null
+          candidate_rating: number | null
+          communication_score: number | null
+          created_at: string
+          cultural_fit_score: number | null
+          detailed_feedback: string | null
+          id: string
+          interview_schedule_id: string
+          overall_recommendation: string | null
+          panelist_id: string
+          questions_asked: Json | null
+          strengths: string | null
+          submitted_at: string | null
+          technical_score: number | null
+          updated_at: string
+        }
+        Insert: {
+          answers_received?: Json | null
+          areas_for_improvement?: string | null
+          candidate_rating?: number | null
+          communication_score?: number | null
+          created_at?: string
+          cultural_fit_score?: number | null
+          detailed_feedback?: string | null
+          id?: string
+          interview_schedule_id: string
+          overall_recommendation?: string | null
+          panelist_id: string
+          questions_asked?: Json | null
+          strengths?: string | null
+          submitted_at?: string | null
+          technical_score?: number | null
+          updated_at?: string
+        }
+        Update: {
+          answers_received?: Json | null
+          areas_for_improvement?: string | null
+          candidate_rating?: number | null
+          communication_score?: number | null
+          created_at?: string
+          cultural_fit_score?: number | null
+          detailed_feedback?: string | null
+          id?: string
+          interview_schedule_id?: string
+          overall_recommendation?: string | null
+          panelist_id?: string
+          questions_asked?: Json | null
+          strengths?: string | null
+          submitted_at?: string | null
+          technical_score?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_feedback_interview_schedule_id_fkey"
+            columns: ["interview_schedule_id"]
+            isOneToOne: false
+            referencedRelation: "interview_schedules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interview_feedback_panelist_id_fkey"
+            columns: ["panelist_id"]
+            isOneToOne: false
+            referencedRelation: "interview_panelists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       interview_panelists: {
         Row: {
           availability_status: string
@@ -691,6 +840,78 @@ export type Database = {
         }
         Relationships: []
       }
+      interview_schedules: {
+        Row: {
+          candidate_id: string
+          created_at: string
+          created_by: string
+          duration_minutes: number
+          id: string
+          interview_type: string
+          location: string | null
+          meeting_link: string | null
+          metadata: Json | null
+          notes: string | null
+          panelist_id: string | null
+          requirement_id: string | null
+          scheduled_date: string
+          status: string
+          timezone: string
+          updated_at: string
+        }
+        Insert: {
+          candidate_id: string
+          created_at?: string
+          created_by: string
+          duration_minutes?: number
+          id?: string
+          interview_type?: string
+          location?: string | null
+          meeting_link?: string | null
+          metadata?: Json | null
+          notes?: string | null
+          panelist_id?: string | null
+          requirement_id?: string | null
+          scheduled_date: string
+          status?: string
+          timezone?: string
+          updated_at?: string
+        }
+        Update: {
+          candidate_id?: string
+          created_at?: string
+          created_by?: string
+          duration_minutes?: number
+          id?: string
+          interview_type?: string
+          location?: string | null
+          meeting_link?: string | null
+          metadata?: Json | null
+          notes?: string | null
+          panelist_id?: string | null
+          requirement_id?: string | null
+          scheduled_date?: string
+          status?: string
+          timezone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_schedules_panelist_id_fkey"
+            columns: ["panelist_id"]
+            isOneToOne: false
+            referencedRelation: "interview_panelists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interview_schedules_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       interview_sessions: {
         Row: {
           candidate_name: string
@@ -746,6 +967,92 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "interview_sessions_panelist_id_fkey"
+            columns: ["panelist_id"]
+            isOneToOne: false
+            referencedRelation: "interview_panelists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interview_templates: {
+        Row: {
+          checklist_items: Json | null
+          created_at: string
+          created_by: string
+          duration_minutes: number
+          id: string
+          interview_type: string
+          is_active: boolean | null
+          name: string
+          questions: Json | null
+          required_skills: Json | null
+          updated_at: string
+        }
+        Insert: {
+          checklist_items?: Json | null
+          created_at?: string
+          created_by: string
+          duration_minutes?: number
+          id?: string
+          interview_type: string
+          is_active?: boolean | null
+          name: string
+          questions?: Json | null
+          required_skills?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          checklist_items?: Json | null
+          created_at?: string
+          created_by?: string
+          duration_minutes?: number
+          id?: string
+          interview_type?: string
+          is_active?: boolean | null
+          name?: string
+          questions?: Json | null
+          required_skills?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      panelist_availability: {
+        Row: {
+          created_at: string
+          day_of_week: number
+          end_time: string
+          id: string
+          is_active: boolean | null
+          panelist_id: string
+          start_time: string
+          timezone: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: number
+          end_time: string
+          id?: string
+          is_active?: boolean | null
+          panelist_id: string
+          start_time: string
+          timezone?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number
+          end_time?: string
+          id?: string
+          is_active?: boolean | null
+          panelist_id?: string
+          start_time?: string
+          timezone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "panelist_availability_panelist_id_fkey"
             columns: ["panelist_id"]
             isOneToOne: false
             referencedRelation: "interview_panelists"
