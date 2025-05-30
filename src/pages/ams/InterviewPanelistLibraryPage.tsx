@@ -1,6 +1,6 @@
 
 import React from "react";
-import { InterviewPanelistLibrary } from "./interview-panelists/components/InterviewPanelistLibrary";
+import InterviewPanelistLibrary from "./interview-panelists/components/InterviewPanelistLibrary";
 
 const InterviewPanelistLibraryPage: React.FC = () => {
   return (
