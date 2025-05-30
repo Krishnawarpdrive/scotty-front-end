@@ -9,7 +9,7 @@ import { Target } from 'lucide-react';
 interface TechnicalArea {
   name: string;
   weight: number;
-  score: number;
+  score: string;
 }
 
 interface TechnicalAssessmentAreasProps {
@@ -42,7 +42,7 @@ export const TechnicalAssessmentAreas: React.FC<TechnicalAssessmentAreasProps> =
                   <h4 className="font-medium text-gray-900">{area.name}</h4>
                   <Badge variant="outline">{area.weight}% weight</Badge>
                 </div>
-                <Progress value={area.score} className="h-2" />
+                <Progress value={parseInt(area.score)} className="h-2" />
               </div>
               <div className="ml-4 text-right">
                 <span className="text-lg font-semibold text-gray-900">{area.score}</span>

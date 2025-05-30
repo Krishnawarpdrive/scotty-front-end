@@ -44,11 +44,11 @@ export const EnhancedTechnicalInterviewForm: React.FC<EnhancedTechnicalInterview
   };
 
   const technicalAreas = [
-    { name: 'Problem Solving', weight: 30, score: 0 },
-    { name: 'Code Quality', weight: 25, score: 0 },
-    { name: 'System Design', weight: 20, score: 0 },
-    { name: 'Technical Communication', weight: 15, score: 0 },
-    { name: 'Best Practices', weight: 10, score: 0 }
+    { name: 'Problem Solving', weight: 30, score: "0" },
+    { name: 'Code Quality', weight: 25, score: "0" },
+    { name: 'System Design', weight: 20, score: "0" },
+    { name: 'Technical Communication', weight: 15, score: "0" },
+    { name: 'Best Practices', weight: 10, score: "0" }
   ];
 
   return (
