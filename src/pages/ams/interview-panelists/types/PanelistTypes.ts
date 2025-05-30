@@ -1,4 +1,3 @@
-
 export interface Panelist {
   id: string;
   panelist_id: string; // New field
@@ -76,6 +75,7 @@ export interface PanelistFilters {
 }
 
 export interface CreatePanelistData {
+  panelist_id: string;
   name: string;
   email: string;
   phone?: string;
@@ -83,15 +83,15 @@ export interface CreatePanelistData {
   department: string;
   location?: string;
   bio?: string;
-  seniority_level: Panelist['seniority_level'];
+  seniority_level: string;
   skills: string[];
   certifications: string[];
   languages: string[];
   interview_types: string[];
-  preferred_time_slots: Record<string, string[]>;
+  preferred_time_slots: Record<string, any>;
   max_interviews_per_week: number;
-  interviews_allocated_per_day: number; // New field
-  projects_worked_on: string[]; // New field
-  tools_used: string[]; // New field
-  interview_authorization_level: Panelist['interview_authorization_level']; // New field
+  interviews_allocated_per_day: number;
+  projects_worked_on: string[];
+  tools_used: string[];
+  interview_authorization_level?: string;
 }

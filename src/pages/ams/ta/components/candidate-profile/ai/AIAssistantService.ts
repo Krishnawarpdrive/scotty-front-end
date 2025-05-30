@@ -1,507 +1,451 @@
-import { Candidate } from '../../types/CandidateTypes';
-
-export interface ResumeParsingResult {
-  personalInfo: {
-    name: string;
-    email: string;
-    phone: string;
-    location: string;
-    linkedinUrl?: string;
-    githubUrl?: string;
-    portfolioUrl?: string;
-  };
-  experience: {
-    totalYears: string;
-    currentRole: string;
-    currentCompany: string;
-    previousRoles: Array<{
-      title: string;
-      company: string;
-      duration: string;
-      description: string;
-    }>;
-  };
-  skills: {
-    technical: string[];
-    soft: string[];
-    tools: string[];
-  };
-  education: {
-    degree: string;
-    university: string;
-    graduationYear: string;
-    specialization: string;
-  };
-  certifications: string[];
-  projects: string[];
-  achievements: string[];
+interface AIAssistant {
+  generateCandidateInsights(candidateData: any): Promise<AIInsight[]>;
+  suggestInterviewQuestions(candidateData: any, roleRequirements: any): Promise<string[]>;
+  analyzeCandidateMatch(candidateData: any, roleRequirements: any): Promise<AIInsight[]>;
+  identifySkillGaps(candidateSkills: string[], requiredSkills: string[]): Promise<SkillGap[]>;
+  suggestFormImprovements(formData: any, formType: string): Promise<FormSuggestion[]>;
 }
 
-export interface SkillGapAnalysis {
-  missingSkills: string[];
-  matchingSkills: string[];
-  recommendedQuestions: string[];
-  strengthAreas: string[];
-  improvementAreas: string[];
-  overallMatch: number; // percentage
-}
-
-export interface FormSuggestion {
-  field: string;
-  suggestedValue: string;
+interface AIInsight {
+  type: string;
   confidence: number;
-  reasoning: string;
-}
-
-export interface AIInsight {
-  type: 'strength' | 'concern' | 'question' | 'recommendation';
   title: string;
   description: string;
-  priority: 'high' | 'medium' | 'low';
-  category: string;
+  actionable: boolean;
+  details?: any;
 }
 
-export class AIAssistantService {
-  private static instance: AIAssistantService;
+interface SkillGap {
+  skill: string;
+  importance: 'critical' | 'high' | 'medium' | 'low';
+  trainingResources?: string[];
+}
 
-  public static getInstance(): AIAssistantService {
-    if (!AIAssistantService.instance) {
-      AIAssistantService.instance = new AIAssistantService();
-    }
-    return AIAssistantService.instance;
-  }
+interface FormSuggestion {
+  field: string;
+  suggestion: string;
+  reason: string;
+  priority: 'high' | 'medium' | 'low';
+}
 
-  async parseResume(resumeText: string): Promise<ResumeParsingResult> {
-    // Simulate AI resume parsing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Mock parsing result based on resume content analysis
-    return {
-      personalInfo: {
-        name: this.extractName(resumeText),
-        email: this.extractEmail(resumeText),
-        phone: this.extractPhone(resumeText),
-        location: this.extractLocation(resumeText),
-        linkedinUrl: this.extractLinkedIn(resumeText),
-        githubUrl: this.extractGitHub(resumeText),
-        portfolioUrl: this.extractPortfolio(resumeText)
-      },
-      experience: {
-        totalYears: this.extractTotalExperience(resumeText),
-        currentRole: this.extractCurrentRole(resumeText),
-        currentCompany: this.extractCurrentCompany(resumeText),
-        previousRoles: this.extractPreviousRoles(resumeText)
-      },
-      skills: {
-        technical: this.extractTechnicalSkills(resumeText),
-        soft: this.extractSoftSkills(resumeText),
-        tools: this.extractTools(resumeText)
-      },
-      education: {
-        degree: this.extractDegree(resumeText),
-        university: this.extractUniversity(resumeText),
-        graduationYear: this.extractGraduationYear(resumeText),
-        specialization: this.extractSpecialization(resumeText)
-      },
-      certifications: this.extractCertifications(resumeText),
-      projects: this.extractProjects(resumeText),
-      achievements: this.extractAchievements(resumeText)
-    };
-  }
-
-  async analyzeSkillGap(candidate: Candidate, roleRequirements: string[]): Promise<SkillGapAnalysis> {
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Ensure we have valid arrays with proper type assertions
-    const candidateSkills: string[] = Array.isArray(candidate.skills) 
-      ? candidate.skills.filter((skill): skill is string => typeof skill === 'string')
-      : [];
-    const requirements: string[] = Array.isArray(roleRequirements) 
-      ? roleRequirements.filter((req): req is string => typeof req === 'string')
-      : [];
-    
-    const missingSkills: string[] = requirements.filter((requirement: string) => {
-      return !candidateSkills.some((candidateSkill: string) => 
-        candidateSkill.toLowerCase().includes(requirement.toLowerCase())
-      );
-    });
-    
-    const matchingSkills: string[] = requirements.filter((requirement: string) => {
-      return candidateSkills.some((candidateSkill: string) => 
-        candidateSkill.toLowerCase().includes(requirement.toLowerCase())
-      );
-    });
-
-    return {
-      missingSkills,
-      matchingSkills,
-      recommendedQuestions: this.generateRecommendedQuestions(missingSkills),
-      strengthAreas: this.identifyStrengthAreas(matchingSkills),
-      improvementAreas: this.identifyImprovementAreas(missingSkills),
-      overallMatch: requirements.length > 0 ? Math.round((matchingSkills.length / requirements.length) * 100) : 0
-    };
-  }
-
-  async generateFormSuggestions(
-    candidate: Candidate, 
-    resumeData?: ResumeParsingResult
-  ): Promise<FormSuggestion[]> {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const suggestions: FormSuggestion[] = [];
-
-    if (resumeData) {
-      // Generate suggestions based on resume data
-      if (resumeData.personalInfo.email && !candidate.email) {
-        suggestions.push({
-          field: 'email',
-          suggestedValue: resumeData.personalInfo.email,
-          confidence: 0.95,
-          reasoning: 'Extracted from resume'
-        });
-      }
-
-      if (resumeData.experience.currentRole) {
-        suggestions.push({
-          field: 'currentRole',
-          suggestedValue: resumeData.experience.currentRole,
-          confidence: 0.90,
-          reasoning: 'Current position from resume'
-        });
-      }
-
-      if (resumeData.experience.totalYears) {
-        suggestions.push({
-          field: 'experienceYears',
-          suggestedValue: resumeData.experience.totalYears,
-          confidence: 0.85,
-          reasoning: 'Calculated from work history'
-        });
-      }
-    }
-
-    return suggestions;
-  }
-
-  async generateAIInsights(
-    candidate: Candidate, 
-    formData: any,
-    roleRequirements?: string[]
-  ): Promise<AIInsight[]> {
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    const insights: AIInsight[] = [];
-
-    // Experience-based insights
-    if (formData.experienceYears) {
-      const years = parseInt(formData.experienceYears);
-      if (years > 8) {
-        insights.push({
-          type: 'strength',
-          title: 'Extensive Experience',
-          description: `${years} years of experience indicates strong domain knowledge and leadership potential.`,
-          priority: 'high',
-          category: 'experience'
-        });
-      } else if (years < 2) {
-        insights.push({
-          type: 'question',
-          title: 'Early Career Focus',
-          description: 'Consider asking about learning agility and growth mindset.',
-          priority: 'medium',
-          category: 'experience'
-        });
-      }
-    }
-
-    // Skills-based insights with proper type checking and filtering
-    if (roleRequirements && Array.isArray(roleRequirements) && formData.technicalSkills && Array.isArray(formData.technicalSkills)) {
-      const requirements: string[] = roleRequirements.filter((req): req is string => typeof req === 'string');
-      const techSkills: string[] = formData.technicalSkills.filter((skill): skill is string => typeof skill === 'string');
+export class AIAssistantService implements AIAssistant {
+  async generateCandidateInsights(candidateData: any): Promise<AIInsight[]> {
+    try {
+      const insights: AIInsight[] = [];
       
-      const matchCount = requirements.filter((req: string) => {
-        return techSkills.some((skill: string) => 
-          skill.toLowerCase().includes(req.toLowerCase())
+      // Experience analysis
+      if (candidateData.experience) {
+        const experienceYears = this.calculateTotalExperience(candidateData.experience);
+        let experienceConfidence = 0;
+        
+        if (experienceYears > 10) experienceConfidence = 95;
+        else if (experienceYears > 5) experienceConfidence = 80;
+        else if (experienceYears > 2) experienceConfidence = 60;
+        else experienceConfidence = 40;
+        
+        insights.push({
+          type: 'experience',
+          confidence: experienceConfidence,
+          title: 'Experience Analysis',
+          description: `Candidate has ${experienceYears} years of relevant experience`,
+          actionable: experienceYears < 2,
+          details: {
+            years: experienceYears,
+            companies: candidateData.experience.length
+          }
+        });
+      }
+      
+      // Education analysis
+      if (candidateData.education) {
+        const highestDegree = this.getHighestDegree(candidateData.education);
+        let educationConfidence = 0;
+        
+        if (highestDegree === 'PhD') educationConfidence = 95;
+        else if (highestDegree === 'Masters') educationConfidence = 85;
+        else if (highestDegree === 'Bachelors') educationConfidence = 75;
+        else educationConfidence = 50;
+        
+        insights.push({
+          type: 'education',
+          confidence: educationConfidence,
+          title: 'Education Analysis',
+          description: `Candidate's highest degree: ${highestDegree}`,
+          actionable: false,
+          details: {
+            degree: highestDegree,
+            institutions: candidateData.education.map((edu: any) => edu.institution)
+          }
+        });
+      }
+      
+      // Skills analysis
+      if (candidateData.skills && candidateData.skills.length > 0) {
+        const skillsConfidence = Math.min(candidateData.skills.length * 10, 90);
+        
+        insights.push({
+          type: 'skills',
+          confidence: skillsConfidence,
+          title: 'Skills Analysis',
+          description: `Candidate has ${candidateData.skills.length} relevant skills`,
+          actionable: candidateData.skills.length < 3,
+          details: {
+            skills: candidateData.skills,
+            recommendation: candidateData.skills.length < 3 ? 'Consider candidates with more skills' : ''
+          }
+        });
+      }
+      
+      return insights;
+    } catch (error) {
+      console.error('Error generating candidate insights:', error);
+      return [];
+    }
+  }
+  
+  async suggestInterviewQuestions(candidateData: any, roleRequirements: any): Promise<string[]> {
+    try {
+      const questions: string[] = [];
+      
+      // Experience-based questions
+      if (candidateData.experience && candidateData.experience.length > 0) {
+        const latestJob = candidateData.experience[0];
+        questions.push(`Can you describe your responsibilities as a ${latestJob.title} at ${latestJob.company}?`);
+        questions.push(`What were the biggest challenges you faced at ${latestJob.company} and how did you overcome them?`);
+      }
+      
+      // Skills-based questions
+      if (roleRequirements.skills && roleRequirements.skills.length > 0) {
+        for (const skill of roleRequirements.skills.slice(0, 3)) {
+          questions.push(`Can you describe a project where you used ${skill}?`);
+          questions.push(`How would you rate your proficiency in ${skill} and why?`);
+        }
+      }
+      
+      // Role-specific questions
+      if (roleRequirements.role) {
+        questions.push(`Why are you interested in the ${roleRequirements.role} position?`);
+        questions.push(`What do you think are the most important qualities for success as a ${roleRequirements.role}?`);
+      }
+      
+      // Behavioral questions
+      questions.push("Describe a situation where you had to work under pressure to meet a deadline.");
+      questions.push("Tell me about a time when you had to resolve a conflict within your team.");
+      questions.push("How do you prioritize tasks when you have multiple deadlines?");
+      
+      return questions;
+    } catch (error) {
+      console.error('Error suggesting interview questions:', error);
+      return [];
+    }
+  }
+
+  async analyzeCandidateMatch(candidateData: any, roleRequirements: any): Promise<AIInsight[]> {
+    try {
+      const insights: AIInsight[] = [];
+      
+      // Safe access to skills with proper type checking
+      const candidateSkills = Array.isArray(candidateData.skills) ? candidateData.skills : [];
+      const requiredSkills = Array.isArray(roleRequirements.skills) ? roleRequirements.skills : [];
+      const preferredSkills = Array.isArray(roleRequirements.preferredSkills) ? roleRequirements.preferredSkills : [];
+      const certifications = Array.isArray(candidateData.certifications) ? candidateData.certifications : [];
+
+      // Skills analysis
+      if (candidateSkills.length > 0 && requiredSkills.length > 0) {
+        const matchingSkills = candidateSkills.filter((skill: string) => 
+          requiredSkills.includes(skill)
         );
-      }).length;
+        const missingSkills = requiredSkills.filter((skill: string) => 
+          !candidateSkills.includes(skill)
+        );
+        const bonusSkills = candidateSkills.filter((skill: string) => 
+          preferredSkills.includes(skill)
+        );
+        
+        insights.push({
+          type: 'skill_match',
+          confidence: (matchingSkills.length / requiredSkills.length) * 100,
+          title: 'Skills Analysis',
+          description: `Candidate matches ${matchingSkills.length}/${requiredSkills.length} required skills`,
+          actionable: missingSkills.length > 0,
+          details: {
+            matching: matchingSkills,
+            missing: missingSkills,
+            bonus: bonusSkills
+          }
+        });
+      }
       
-      if (requirements.length > 0) {
-        const matchPercentage = matchCount / requirements.length;
-        if (matchPercentage > 0.8) {
-          insights.push({
-            type: 'strength',
-            title: 'Strong Technical Alignment',
-            description: 'Candidate has most required technical skills.',
-            priority: 'high',
-            category: 'skills'
-          });
-        } else if (matchPercentage < 0.5) {
-          insights.push({
-            type: 'concern',
-            title: 'Skill Gap Analysis Needed',
-            description: 'Significant gaps in required technical skills. Consider training potential.',
-            priority: 'high',
-            category: 'skills'
+      // Experience analysis
+      if (candidateData.experience && roleRequirements.minYearsExperience) {
+        const experienceYears = this.calculateTotalExperience(candidateData.experience);
+        const meetsMinExperience = experienceYears >= roleRequirements.minYearsExperience;
+        
+        insights.push({
+          type: 'experience_match',
+          confidence: meetsMinExperience ? 100 : (experienceYears / roleRequirements.minYearsExperience) * 100,
+          title: 'Experience Match',
+          description: `Candidate has ${experienceYears} years of experience (${roleRequirements.minYearsExperience} required)`,
+          actionable: !meetsMinExperience,
+          details: {
+            candidate: experienceYears,
+            required: roleRequirements.minYearsExperience,
+            gap: !meetsMinExperience ? roleRequirements.minYearsExperience - experienceYears : 0
+          }
+        });
+      }
+      
+      // Education match
+      if (candidateData.education && roleRequirements.education) {
+        const highestDegree = this.getHighestDegree(candidateData.education);
+        const requiredDegree = roleRequirements.education.degree;
+        const meetsEducation = this.isEqualOrHigherDegree(highestDegree, requiredDegree);
+        
+        insights.push({
+          type: 'education_match',
+          confidence: meetsEducation ? 100 : 50,
+          title: 'Education Match',
+          description: `Candidate has ${highestDegree} degree (${requiredDegree} required)`,
+          actionable: !meetsEducation,
+          details: {
+            candidate: highestDegree,
+            required: requiredDegree,
+            meets: meetsEducation
+          }
+        });
+      }
+      
+      // Certification match
+      if (certifications.length > 0 && roleRequirements.certifications) {
+        const requiredCerts = roleRequirements.certifications;
+        const matchingCerts = certifications.filter((cert: string) => 
+          requiredCerts.includes(cert)
+        );
+        
+        insights.push({
+          type: 'certification_match',
+          confidence: requiredCerts.length > 0 ? (matchingCerts.length / requiredCerts.length) * 100 : 100,
+          title: 'Certification Match',
+          description: `Candidate has ${matchingCerts.length}/${requiredCerts.length} required certifications`,
+          actionable: matchingCerts.length < requiredCerts.length,
+          details: {
+            matching: matchingCerts,
+            missing: requiredCerts.filter((cert: string) => !certifications.includes(cert))
+          }
+        });
+      }
+      
+      // Overall match score
+      const overallScore = insights.reduce((sum, insight) => sum + insight.confidence, 0) / insights.length;
+      insights.push({
+        type: 'overall_match',
+        confidence: overallScore,
+        title: 'Overall Match Score',
+        description: `Candidate is a ${Math.round(overallScore)}% match for this role`,
+        actionable: overallScore < 70,
+        details: {
+          score: Math.round(overallScore),
+          recommendation: overallScore >= 80 ? 'Strong match' : overallScore >= 60 ? 'Potential match' : 'Not recommended'
+        }
+      });
+      
+      return insights;
+    } catch (error) {
+      console.error('Error analyzing candidate match:', error);
+      return [];
+    }
+  }
+  
+  async identifySkillGaps(candidateSkills: string[], requiredSkills: string[]): Promise<SkillGap[]> {
+    try {
+      const gaps: SkillGap[] = [];
+      
+      for (const skill of requiredSkills) {
+        if (!candidateSkills.includes(skill)) {
+          gaps.push({
+            skill,
+            importance: this.determineSkillImportance(skill, requiredSkills),
+            trainingResources: this.suggestTrainingResources(skill)
           });
         }
       }
+      
+      return gaps;
+    } catch (error) {
+      console.error('Error identifying skill gaps:', error);
+      return [];
     }
-
-    // Communication insights
-    if (formData.softSkills && Array.isArray(formData.softSkills) && formData.softSkills.length > 0) {
-      insights.push({
-        type: 'recommendation',
-        title: 'Soft Skills Assessment',
-        description: 'Strong soft skills profile. Focus on behavioral questions.',
-        priority: 'medium',
-        category: 'communication'
-      });
+  }
+  
+  async suggestFormImprovements(formData: any, formType: string): Promise<FormSuggestion[]> {
+    try {
+      const suggestions: FormSuggestion[] = [];
+      
+      if (formType === 'candidate') {
+        if (!formData.name || formData.name.length < 3) {
+          suggestions.push({
+            field: 'name',
+            suggestion: 'Add candidate full name',
+            reason: 'Name is required for identification',
+            priority: 'high'
+          });
+        }
+        
+        if (!formData.email || !formData.email.includes('@')) {
+          suggestions.push({
+            field: 'email',
+            suggestion: 'Add valid email address',
+            reason: 'Email is required for communication',
+            priority: 'high'
+          });
+        }
+        
+        if (!formData.skills || formData.skills.length === 0) {
+          suggestions.push({
+            field: 'skills',
+            suggestion: 'Add candidate skills',
+            reason: 'Skills are essential for matching to roles',
+            priority: 'high'
+          });
+        }
+        
+        if (!formData.experience || formData.experience.length === 0) {
+          suggestions.push({
+            field: 'experience',
+            suggestion: 'Add work experience details',
+            reason: 'Experience helps evaluate candidate qualifications',
+            priority: 'medium'
+          });
+        }
+      } else if (formType === 'job') {
+        if (!formData.title || formData.title.length < 3) {
+          suggestions.push({
+            field: 'title',
+            suggestion: 'Add job title',
+            reason: 'Title is required for job posting',
+            priority: 'high'
+          });
+        }
+        
+        if (!formData.description || formData.description.length < 50) {
+          suggestions.push({
+            field: 'description',
+            suggestion: 'Add detailed job description',
+            reason: 'Description helps candidates understand the role',
+            priority: 'high'
+          });
+        }
+        
+        if (!formData.skills || formData.skills.length === 0) {
+          suggestions.push({
+            field: 'skills',
+            suggestion: 'Add required skills',
+            reason: 'Skills are essential for candidate matching',
+            priority: 'high'
+          });
+        }
+      }
+      
+      return suggestions;
+    } catch (error) {
+      console.error('Error suggesting form improvements:', error);
+      return [];
     }
-
-    return insights;
   }
-
-  private extractName(text: string): string {
-    // Simple name extraction logic
-    const lines = text.split('\n').filter(line => line.trim());
-    return lines[0]?.trim() || '';
-  }
-
-  private extractEmail(text: string): string {
-    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
-    const match = text.match(emailRegex);
-    return match ? match[0] : '';
-  }
-
-  private extractPhone(text: string): string {
-    const phoneRegex = /[\+]?[1-9]?[\d\s\-\(\)]{10,}/;
-    const match = text.match(phoneRegex);
-    return match ? match[0].trim() : '';
-  }
-
-  private extractLocation(text: string): string {
-    // Look for common location patterns
-    const locationPatterns = [
-      /(?:Location|Address|Based in):?\s*([^\n]+)/i,
-      /([A-Za-z\s]+,\s*[A-Za-z\s]+,?\s*\d{5,6})/,
-      /([A-Za-z\s]+,\s*[A-Z]{2,3})/
-    ];
+  
+  private calculateTotalExperience(experience: any[]): number {
+    let totalYears = 0;
     
-    for (const pattern of locationPatterns) {
-      const match = text.match(pattern);
-      if (match) return match[1].trim();
+    for (const job of experience) {
+      const startDate = new Date(job.startDate);
+      const endDate = job.endDate ? new Date(job.endDate) : new Date();
+      const years = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 365);
+      totalYears += years;
     }
-    return '';
-  }
-
-  private extractLinkedIn(text: string): string {
-    const linkedinRegex = /(?:linkedin\.com\/in\/|linkedin\.com\/profile\/view\?id=)([a-zA-Z0-9\-]+)/;
-    const match = text.match(linkedinRegex);
-    return match ? `https://linkedin.com/in/${match[1]}` : '';
-  }
-
-  private extractGitHub(text: string): string {
-    const githubRegex = /(?:github\.com\/)([a-zA-Z0-9\-]+)/;
-    const match = text.match(githubRegex);
-    return match ? `https://github.com/${match[1]}` : '';
-  }
-
-  private extractPortfolio(text: string): string {
-    const urlRegex = /https?:\/\/[^\s]+/g;
-    const urls = text.match(urlRegex) || [];
-    // Filter out common social media and find portfolio-like URLs
-    return urls.find(url => 
-      !url.includes('linkedin.com') && 
-      !url.includes('github.com') && 
-      !url.includes('facebook.com') &&
-      !url.includes('twitter.com')
-    ) || '';
-  }
-
-  private extractTotalExperience(text: string): string {
-    const expPatterns = [
-      /(\d+)\+?\s*years?\s*of\s*experience/i,
-      /(\d+)\+?\s*years?\s*experience/i,
-      /experience\s*:?\s*(\d+)\+?\s*years?/i
-    ];
     
-    for (const pattern of expPatterns) {
-      const match = text.match(pattern);
-      if (match) return `${match[1]} years`;
-    }
-    return '';
+    return Math.round(totalYears * 10) / 10; // Round to 1 decimal place
   }
-
-  private extractCurrentRole(text: string): string {
-    const lines = text.split('\n');
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (line.match(/\b(Senior|Lead|Principal|Manager|Director|Engineer|Developer|Analyst|Specialist)\b/i)) {
-        return line;
+  
+  private getHighestDegree(education: any[]): string {
+    const degreeRanking = {
+      'High School': 1,
+      'Associate': 2,
+      'Bachelors': 3,
+      'Masters': 4,
+      'PhD': 5
+    };
+    
+    let highestDegree = 'High School';
+    let highestRank = 0;
+    
+    for (const edu of education) {
+      const degree = edu.degree;
+      const rank = degreeRanking[degree as keyof typeof degreeRanking] || 0;
+      
+      if (rank > highestRank) {
+        highestRank = rank;
+        highestDegree = degree;
       }
     }
-    return '';
-  }
-
-  private extractCurrentCompany(text: string): string {
-    // Look for company patterns after role titles
-    const companyPatterns = [
-      /at\s+([A-Za-z\s&]+)(?:\s*\||\s*-|\s*,|\s*\n|$)/,
-      /@\s+([A-Za-z\s&]+)(?:\s*\||\s*-|\s*,|\s*\n|$)/
-    ];
     
-    for (const pattern of companyPatterns) {
-      const match = text.match(pattern);
-      if (match) return match[1].trim();
-    }
-    return '';
+    return highestDegree;
   }
-
-  private extractPreviousRoles(text: string): Array<{title: string, company: string, duration: string, description: string}> {
-    // Simplified extraction - in real implementation would be more sophisticated
-    return [
-      {
-        title: 'Software Engineer',
-        company: 'Previous Company',
-        duration: '2020-2022',
-        description: 'Developed web applications'
-      }
-    ];
-  }
-
-  private extractTechnicalSkills(text: string): string[] {
-    const techSkills: string[] = [
-      'JavaScript', 'TypeScript', 'React', 'Node.js', 'Python', 'Java', 'C++', 'C#',
-      'Angular', 'Vue.js', 'HTML', 'CSS', 'SQL', 'MongoDB', 'PostgreSQL', 'AWS',
-      'Docker', 'Kubernetes', 'Git', 'Jenkins', 'Linux', 'Windows', 'macOS'
-    ];
+  
+  private isEqualOrHigherDegree(candidateDegree: string, requiredDegree: string): boolean {
+    const degreeRanking = {
+      'High School': 1,
+      'Associate': 2,
+      'Bachelors': 3,
+      'Masters': 4,
+      'PhD': 5
+    };
     
-    const textLower = text.toLowerCase();
-    return techSkills.filter((skill: string) => 
-      textLower.includes(skill.toLowerCase())
-    );
-  }
-
-  private extractSoftSkills(text: string): string[] {
-    const softSkills: string[] = [
-      'Leadership', 'Communication', 'Teamwork', 'Problem Solving', 'Critical Thinking',
-      'Project Management', 'Time Management', 'Adaptability', 'Creativity', 'Collaboration'
-    ];
+    const candidateRank = degreeRanking[candidateDegree as keyof typeof degreeRanking] || 0;
+    const requiredRank = degreeRanking[requiredDegree as keyof typeof degreeRanking] || 0;
     
-    const textLower = text.toLowerCase();
-    return softSkills.filter((skill: string) => 
-      textLower.includes(skill.toLowerCase())
-    );
+    return candidateRank >= requiredRank;
   }
-
-  private extractTools(text: string): string[] {
-    const tools: string[] = [
-      'VS Code', 'IntelliJ', 'Eclipse', 'Jira', 'Confluence', 'Slack', 'Teams',
-      'Photoshop', 'Figma', 'Sketch', 'Postman', 'Swagger', 'Tableau', 'Power BI'
-    ];
+  
+  private determineSkillImportance(skill: string, allRequiredSkills: string[]): 'critical' | 'high' | 'medium' | 'low' {
+    // This is a simplified implementation
+    // In a real system, this would use more sophisticated logic or external data
+    const criticalSkills = ['JavaScript', 'Python', 'Java', 'React', 'AWS'];
+    const highSkills = ['TypeScript', 'Node.js', 'SQL', 'Docker', 'Kubernetes'];
     
-    const textLower = text.toLowerCase();
-    return tools.filter((tool: string) => 
-      textLower.includes(tool.toLowerCase())
-    );
+    if (criticalSkills.includes(skill)) return 'critical';
+    if (highSkills.includes(skill)) return 'high';
+    if (allRequiredSkills.indexOf(skill) < allRequiredSkills.length / 2) return 'medium';
+    return 'low';
   }
-
-  private extractDegree(text: string): string {
-    const degreePatterns = [
-      /\b(Bachelor|Master|PhD|B\.?Tech|M\.?Tech|B\.?E|M\.?E|B\.?S|M\.?S|MBA)\b[^.\n]*/i
-    ];
+  
+  private suggestTrainingResources(skill: string): string[] {
+    // This is a simplified implementation
+    // In a real system, this would use a database of training resources
+    const resources: Record<string, string[]> = {
+      'JavaScript': [
+        'JavaScript: The Good Parts by Douglas Crockford',
+        'MDN Web Docs - JavaScript',
+        'Codecademy JavaScript Course'
+      ],
+      'Python': [
+        'Python Crash Course by Eric Matthes',
+        'Official Python Documentation',
+        'Coursera - Python for Everybody'
+      ],
+      'React': [
+        'React Documentation',
+        'React for Beginners by Wes Bos',
+        'Udemy - React - The Complete Guide'
+      ],
+      'AWS': [
+        'AWS Documentation',
+        'A Cloud Guru - AWS Certified Solutions Architect',
+        'AWS Certified Cloud Practitioner Training'
+      ]
+    };
     
-    for (const pattern of degreePatterns) {
-      const match = text.match(pattern);
-      if (match) return match[0].trim();
-    }
-    return '';
-  }
-
-  private extractUniversity(text: string): string {
-    const universityPatterns = [
-      /(?:University|College|Institute)\s+of\s+[A-Za-z\s]+/i,
-      /[A-Za-z\s]+\s+(?:University|College|Institute)/i
-    ];
-    
-    for (const pattern of universityPatterns) {
-      const match = text.match(pattern);
-      if (match) return match[0].trim();
-    }
-    return '';
-  }
-
-  private extractGraduationYear(text: string): string {
-    const yearPattern = /\b(19|20)\d{2}\b/g;
-    const years = text.match(yearPattern);
-    if (years) {
-      // Return the most recent year that's not in the future
-      const currentYear = new Date().getFullYear();
-      const validYears = years.map(y => parseInt(y)).filter(y => y <= currentYear);
-      return Math.max(...validYears).toString();
-    }
-    return '';
-  }
-
-  private extractSpecialization(text: string): string {
-    const specializationPatterns = [
-      /(?:Computer Science|Information Technology|Software Engineering|Data Science|Artificial Intelligence)/i
-    ];
-    
-    for (const pattern of specializationPatterns) {
-      const match = text.match(pattern);
-      if (match) return match[0];
-    }
-    return '';
-  }
-
-  private extractCertifications(text: string): string[] {
-    const certPatterns = [
-      /AWS\s+Certified/i,
-      /Microsoft\s+Certified/i,
-      /Google\s+Cloud/i,
-      /Cisco\s+Certified/i,
-      /Oracle\s+Certified/i,
-      /Scrum\s+Master/i,
-      /PMP/i
-    ];
-    
-    const certifications: string[] = [];
-    certPatterns.forEach(pattern => {
-      const match = text.match(pattern);
-      if (match) certifications.push(match[0]);
-    });
-    
-    return certifications;
-  }
-
-  private extractProjects(text: string): string[] {
-    // Simplified project extraction
-    return ['E-commerce Platform', 'Mobile App Development', 'Data Analytics Dashboard'];
-  }
-
-  private extractAchievements(text: string): string[] {
-    // Simplified achievement extraction
-    return ['Employee of the Month', 'Led successful project delivery', 'Improved system performance by 40%'];
-  }
-
-  private generateRecommendedQuestions(missingSkills: string[]): string[] {
-    return missingSkills.map((skill: string) => 
-      `How would you approach learning ${skill} if required for this role?`
-    ).slice(0, 5);
-  }
-
-  private identifyStrengthAreas(matchingSkills: string[]): string[] {
-    return matchingSkills.slice(0, 3).map((skill: string) => 
-      `Strong proficiency in ${skill}`
-    );
-  }
-
-  private identifyImprovementAreas(missingSkills: string[]): string[] {
-    return missingSkills.slice(0, 3).map((skill: string) => 
-      `Consider training in ${skill}`
-    );
+    return resources[skill] || ['Online courses on Udemy or Coursera', 'Official documentation', 'Practice projects on GitHub'];
   }
 }
 
-export const aiAssistant = AIAssistantService.getInstance();
+export const aiAssistantService = new AIAssistantService();

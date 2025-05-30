@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Panelist, PanelistFilters, CreatePanelistData } from "../types/PanelistTypes";
@@ -10,6 +9,7 @@ export const usePanelists = (filters: UsePanelistsParams = {}) => {
   const [panelists, setPanelists] = useState<Panelist[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   const transformPanelistData = (data: any): Panelist => ({
@@ -102,38 +102,24 @@ export const usePanelists = (filters: UsePanelistsParams = {}) => {
     }
   };
 
-  const createPanelist = async (data: CreatePanelistData) => {
+  const createPanelist = async (panelistData: CreatePanelistData) => {
     try {
-      const { data: newPanelist, error: createError } = await supabase
+      setLoading(true);
+      const { data, error } = await supabase
         .from('interview_panelists')
-        .insert([data])
+        .insert([panelistData])
         .select()
         .single();
-
-      if (createError) {
-        throw createError;
-      }
-
-      const transformedPanelist = transformPanelistData(newPanelist);
-      setPanelists(prev => [transformedPanelist, ...prev]);
       
-      toast({
-        title: "Success",
-        description: "Panelist created successfully",
-      });
-
-      return transformedPanelist;
-    } catch (err) {
-      console.error('Error creating panelist:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create panelist';
+      if (error) throw error;
       
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
-      
-      throw err;
+      await loadPanelists();
+      return data;
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to create panelist');
+      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -206,8 +192,12 @@ export const usePanelists = (filters: UsePanelistsParams = {}) => {
     }
   };
 
+  const loadPanelists = async () => {
+    await fetchPanelists();
+  };
+
   useEffect(() => {
-    fetchPanelists();
+    loadPanelists();
   }, [filters.searchQuery, filters.department, filters.status, filters.availability, filters.seniority, JSON.stringify(filters.skills)]);
 
   return {
@@ -217,6 +207,6 @@ export const usePanelists = (filters: UsePanelistsParams = {}) => {
     createPanelist,
     updatePanelist,
     deletePanelist,
-    refetch: fetchPanelists
+    refetch: loadPanelists
   };
 };

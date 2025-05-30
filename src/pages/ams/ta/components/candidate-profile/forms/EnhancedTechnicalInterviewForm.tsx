@@ -19,9 +19,9 @@ import {
   Target,
   TrendingUp
 } from 'lucide-react';
-import { InterviewSchedulingDrawer } from '../interview-scheduling/InterviewSchedulingDrawer';
+import { InterviewSchedulingDrawer } from '../../interview-scheduling/InterviewSchedulingDrawer';
 import type { Candidate } from '../../types/CandidateTypes';
-import type { InterviewSchedule } from '../interview-scheduling/InterviewSchedulingService';
+import type { InterviewSchedule } from '../../interview-scheduling/InterviewSchedulingService';
 
 interface EnhancedTechnicalInterviewFormProps {
   candidate: Candidate;
@@ -77,7 +77,7 @@ export const EnhancedTechnicalInterviewForm: React.FC<EnhancedTechnicalInterview
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <User className="h-8 w-8 mx-auto text-blue-600 mb-2" />
               <h3 className="font-semibold text-gray-900">{candidate.name}</h3>
-              <p className="text-sm text-gray-600">{candidate.applied_role}</p>
+              <p className="text-sm text-gray-600">{candidate.appliedRole}</p>
             </div>
             <div className="text-center p-4 bg-green-50 rounded-lg">
               <Clock className="h-8 w-8 mx-auto text-green-600 mb-2" />

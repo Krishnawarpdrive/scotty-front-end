@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -11,68 +10,81 @@ import { CreatePanelistData } from "../types/PanelistTypes";
 import { useToast } from "@/hooks/use-toast";
 
 interface PanelistCreationDrawerProps {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
-  onCreate: (data: CreatePanelistData) => Promise<any>;
+  onSuccess: () => void;
 }
 
 export const PanelistCreationDrawer: React.FC<PanelistCreationDrawerProps> = ({
-  isOpen,
+  open,
   onClose,
-  onCreate
+  onSuccess
 }) => {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<CreatePanelistData>({
-    name: "",
-    email: "",
-    phone: "",
-    title: "",
-    department: "",
-    location: "",
-    bio: "",
-    seniority_level: "mid",
+    panelist_id: `panelist_${Date.now()}`,
+    name: '',
+    email: '',
+    phone: '',
+    title: '',
+    department: '',
+    location: '',
+    bio: '',
+    seniority_level: 'mid',
     skills: [],
     certifications: [],
     languages: [],
     interview_types: [],
     preferred_time_slots: {},
-    max_interviews_per_week: 5
+    max_interviews_per_week: 5,
+    interviews_allocated_per_day: 2,
+    projects_worked_on: [],
+    tools_used: [],
+    interview_authorization_level: 'basic'
   });
+
+  const resetForm = () => {
+    setFormData({
+      panelist_id: `panelist_${Date.now()}`,
+      name: '',
+      email: '',
+      phone: '',
+      title: '',
+      department: '',
+      location: '',
+      bio: '',
+      seniority_level: 'mid',
+      skills: [],
+      certifications: [],
+      languages: [],
+      interview_types: [],
+      preferred_time_slots: {},
+      max_interviews_per_week: 5,
+      interviews_allocated_per_day: 2,
+      projects_worked_on: [],
+      tools_used: [],
+      interview_authorization_level: 'basic'
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setLoading(true);
 
     try {
-      await onCreate(formData);
+      await onSuccess();
       onClose();
-      // Reset form
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        title: "",
-        department: "",
-        location: "",
-        bio: "",
-        seniority_level: "mid",
-        skills: [],
-        certifications: [],
-        languages: [],
-        interview_types: [],
-        preferred_time_slots: {},
-        max_interviews_per_week: 5
-      });
+      resetForm();
     } catch (error) {
-      // Error handling is done in the onCreate function
+      // Error handling is done in the onSuccess function
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={onClose}>
+    <Sheet open={open} onOpenChange={onClose}>
       <SheetContent className="w-[600px] sm:w-[700px] overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Add New Panelist</SheetTitle>
@@ -202,8 +214,8 @@ export const PanelistCreationDrawer: React.FC<PanelistCreationDrawerProps> = ({
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Creating..." : "Create Panelist"}
+            <Button type="submit" disabled={loading}>
+              {loading ? "Creating..." : "Create Panelist"}
             </Button>
           </div>
         </form>
