@@ -4,7 +4,7 @@ import { UseFormReturn } from 'react-hook-form';
 import { RoleFormValues } from '../types/roleTypes';
 import RoleBasicInfo from './RoleBasicInfo';
 import RoleDetails from './RoleDetails';
-import RoleSkills from './RoleSkills';
+import { RoleSkills } from './RoleSkills';
 import RoleCertifications from './RoleCertifications';
 import RoleRequirements from './RoleRequirements';
 import RoleFormActions from './RoleFormActions';
