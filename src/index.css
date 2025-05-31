@@ -12,7 +12,7 @@
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 142 71% 20%; /* #009933 - Your custom green */
+    --primary: 142 71% 20%; /* #009933 - Green primary */
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
@@ -40,7 +40,7 @@
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 142 71% 25%;
+    --primary: 142 71% 25%; /* Slightly lighter green for dark mode */
     --primary-foreground: 0 0% 9%;
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
@@ -68,24 +68,27 @@
   body {
     @apply bg-background text-foreground font-rubik;
     font-feature-settings: "rlig" 1, "calt" 1;
-    font-size: 12px; /* Base 12px font size */
-    line-height: 1.5;
+    font-size: 13px; /* Base 13px font size */
   }
   
-  /* Typography System - Rubik with 12px base */
-  h1 { @apply text-xl font-semibold; } /* 16px */
-  h2 { @apply text-lg font-semibold; } /* 14px */
-  h3 { @apply text-base font-medium; } /* 12px */
-  h4 { @apply text-sm font-medium; } /* 11px */
+  /* Typography System - Rubik with 13px base */
+  h1 { @apply text-xl font-semibold; } /* 20px */
+  h2 { @apply text-lg font-semibold; } /* 18px */
+  h3 { @apply text-base font-medium; } /* 16px */
+  h4 { @apply text-sm font-medium; } /* 14px */
   
-  /* Body text - 12px base */
-  .text-body { @apply text-base; } /* 12px */
-  .text-body-sm { @apply text-sm; } /* 11px */
-  .text-body-lg { @apply text-lg; } /* 14px */
+  /* Body text - 13px base */
+  .text-body { @apply text-[13px]; }
+  .text-body-sm { @apply text-xs; } /* 12px */
+  .text-body-lg { @apply text-sm; } /* 14px */
   
   /* Caption and label text */
-  .text-caption { @apply text-xs text-gray-600; } /* 10px */
-  .text-label { @apply text-base font-medium; } /* 12px */
+  .text-caption { @apply text-[11px] text-gray-600; }
+  .text-label { @apply text-[13px] font-medium; }
+  
+  /* Table specific styling */
+  .table-text { @apply text-xs; }
+  .table-header { @apply text-xs font-medium uppercase tracking-wide; }
 }
 
 @layer utilities {
@@ -94,35 +97,190 @@
     font-family: 'Rubik', system-ui, -apple-system, sans-serif;
   }
   
-  /* Component spacing */
+  /* Spacing system */
   .space-section { @apply space-y-6; }
   .space-group { @apply space-y-4; }
   .space-item { @apply space-y-2; }
   
-  /* Button hierarchy with #009933 primary */
-  .btn-primary { 
-    background-color: #009933;
-    color: white;
-  }
-  .btn-primary:hover { 
-    background-color: #007728;
-  }
-  .btn-secondary { @apply bg-gray-100 hover:bg-gray-200 text-gray-900; }
+  /* Component spacing */
+  .padding-section { @apply p-6; }
+  .padding-group { @apply p-4; }
+  .padding-item { @apply p-2; }
   
-  /* Status indicators with custom green */
-  .status-active { 
-    background-color: #e6f7e6;
-    color: #009933;
-  }
-  .status-success {
-    background-color: #e6f7e6;
-    color: #009933;
-  }
+  /* Card improvements */
+  .card-elevated { @apply shadow-sm border; }
+  .card-interactive { @apply hover:shadow-md transition-shadow; }
+  
+  /* Button hierarchy with correct green primary */
+  .btn-primary { @apply bg-primary hover:bg-primary/90 text-primary-foreground; }
+  .btn-secondary { @apply bg-gray-100 hover:bg-gray-200 text-gray-900; }
+  .btn-danger { @apply bg-red-600 hover:bg-red-700 text-white; }
+  
+  /* Progress indicators */
+  .progress-low { @apply bg-red-100 text-red-800; }
+  .progress-medium { @apply bg-amber-100 text-amber-800; }
+  .progress-high { @apply bg-green-100 text-green-800; }
+  
+  /* Status indicators */
+  .status-active { @apply bg-green-100 text-green-800; }
+  .status-inactive { @apply bg-gray-100 text-gray-800; }
+  .status-warning { @apply bg-amber-100 text-amber-800; }
+  .status-error { @apply bg-red-100 text-red-800; }
   
   /* Interactive elements */
   .interactive-hover { @apply hover:bg-gray-50 transition-colors; }
-  .interactive-focus { 
-    @apply focus:ring-2 focus:ring-offset-2;
-    --tw-ring-color: #009933;
+  .interactive-focus { @apply focus:ring-2 focus:ring-primary focus:ring-offset-2; }
+  
+  /* Table row height consistency */
+  .table-row-height { @apply h-[60px]; }
+  
+  /* Chip improvements */
+  .chip-sm { @apply inline-flex items-center px-2 py-1 rounded text-xs font-medium; }
+  .chip-md { @apply inline-flex items-center px-3 py-1 rounded-md text-sm font-medium; }
+  
+  /* Better scrollbar styling */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(203 213 225) transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgb(203 213 225);
+    border-radius: 3px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(148 163 184);
+  }
+}
+
+/* Custom animations */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.animate-slide-out-right {
+  animation: slideOutRight 0.3s ease-in;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+/* Fix for drawer overlays and ensure proper layering */
+.drawer-overlay {
+  z-index: 50;
+}
+
+.drawer-content {
+  z-index: 51;
+}
+
+/* Ensure consistent button sizing with 13px text */
+.btn-sm {
+  @apply h-8 px-3 text-[13px];
+}
+
+.btn-md {
+  @apply h-10 px-4 text-[13px];
+}
+
+.btn-lg {
+  @apply h-12 px-6 text-sm;
+}
+
+/* Toast positioning fixes */
+.toast-viewport {
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: 1rem;
+  z-index: 100;
+}
+
+/* Enhanced card animations and micro-interactions */
+.card-hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Pulse animation for important elements */
+.pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.6);
+  }
+}
+
+/* Stagger animation utility */
+.stagger-children > * {
+  animation: fadeInUp 0.6s ease-out both;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
