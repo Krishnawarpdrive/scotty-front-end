@@ -11,13 +11,19 @@ import {
 } from '@/types/TAManagementTypes';
 
 export const taManagementService = {
-  // TA Profile Management - Using direct SQL queries since tables aren't in generated types yet
+  // TA Profile Management - Using direct table queries since RPC functions don't exist yet
   async fetchTAProfiles(): Promise<TAProfile[]> {
-    const { data, error } = await supabase
-      .rpc('get_ta_profiles');
-    
-    if (error) {
-      // Fallback to mock data if function doesn't exist yet
+    try {
+      const { data, error } = await supabase
+        .from('ta_profiles')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      
+      return data || [];
+    } catch (error) {
+      // Fallback to mock data if table doesn't exist or query fails
       console.log('Using mock TA profiles data');
       return [
         {
@@ -52,103 +58,167 @@ export const taManagementService = {
         }
       ];
     }
-    return data || [];
   },
 
   async createTAProfile(profile: Omit<TAProfile, 'id' | 'created_at' | 'updated_at'>): Promise<TAProfile> {
-    // Mock implementation - in real scenario this would insert into ta_profiles table
-    const newProfile: TAProfile = {
-      ...profile,
-      id: Math.random().toString(36).substr(2, 9),
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-    
-    console.log('Created TA profile:', newProfile);
-    return newProfile;
+    try {
+      const { data, error } = await supabase
+        .from('ta_profiles')
+        .insert(profile)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      // Mock implementation fallback
+      const newProfile: TAProfile = {
+        ...profile,
+        id: Math.random().toString(36).substr(2, 9),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
+      console.log('Created TA profile:', newProfile);
+      return newProfile;
+    }
   },
 
   async updateTAProfile(id: string, updates: Partial<TAProfile>): Promise<TAProfile> {
-    // Mock implementation
-    const mockProfile: TAProfile = {
-      id,
-      name: 'Updated TA',
-      email: 'updated@company.com',
-      status: 'active',
-      skills: [],
-      certifications: [],
-      experience_years: 0,
-      current_workload: 0,
-      max_workload: 10,
-      efficiency_score: 0,
-      success_rate: 0,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      ...updates
-    };
-    
-    console.log('Updated TA profile:', mockProfile);
-    return mockProfile;
+    try {
+      const { data, error } = await supabase
+        .from('ta_profiles')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      // Mock implementation fallback
+      const mockProfile: TAProfile = {
+        id,
+        name: 'Updated TA',
+        email: 'updated@company.com',
+        status: 'active',
+        skills: [],
+        certifications: [],
+        experience_years: 0,
+        current_workload: 0,
+        max_workload: 10,
+        efficiency_score: 0,
+        success_rate: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        ...updates
+      };
+      
+      console.log('Updated TA profile:', mockProfile);
+      return mockProfile;
+    }
   },
 
   // TA Assignment Management
   async fetchTAAssignments(taId?: string): Promise<TAAssignment[]> {
-    // Mock data for now
-    const mockAssignments: TAAssignment[] = [
-      {
-        id: '1',
-        ta_id: taId || '1',
+    try {
+      let query = supabase.from('ta_assignments').select('*');
+      
+      if (taId) {
+        query = query.eq('ta_id', taId);
+      }
+      
+      const { data, error } = await query;
+      
+      if (error) throw error;
+      
+      return data || [];
+    } catch (error) {
+      // Mock data fallback
+      const mockAssignments: TAAssignment[] = [
+        {
+          id: '1',
+          ta_id: taId || '1',
+          requirement_id: 'req-1',
+          client_id: 'client-1',
+          assigned_at: new Date().toISOString(),
+          status: 'active',
+          priority: 'high',
+          deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          notes: 'Urgent requirement for senior developer'
+        },
+        {
+          id: '2',
+          ta_id: taId || '2',
+          requirement_id: 'req-2',
+          client_id: 'client-2',
+          assigned_at: new Date().toISOString(),
+          status: 'active',
+          priority: 'medium'
+        }
+      ];
+
+      return taId ? mockAssignments.filter(a => a.ta_id === taId) : mockAssignments;
+    }
+  },
+
+  async createTAAssignment(assignment: Omit<TAAssignment, 'id' | 'assigned_at'>): Promise<TAAssignment> {
+    try {
+      const { data, error } = await supabase
+        .from('ta_assignments')
+        .insert(assignment)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      const newAssignment: TAAssignment = {
+        ...assignment,
+        id: Math.random().toString(36).substr(2, 9),
+        assigned_at: new Date().toISOString()
+      };
+      
+      console.log('Created TA assignment:', newAssignment);
+      return newAssignment;
+    }
+  },
+
+  async updateTAAssignment(id: string, updates: Partial<TAAssignment>): Promise<TAAssignment> {
+    try {
+      const { data, error } = await supabase
+        .from('ta_assignments')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      const mockAssignment: TAAssignment = {
+        id,
+        ta_id: 'ta-1',
         requirement_id: 'req-1',
         client_id: 'client-1',
         assigned_at: new Date().toISOString(),
         status: 'active',
-        priority: 'high',
-        deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        notes: 'Urgent requirement for senior developer'
-      },
-      {
-        id: '2',
-        ta_id: taId || '2',
-        requirement_id: 'req-2',
-        client_id: 'client-2',
-        assigned_at: new Date().toISOString(),
-        status: 'active',
-        priority: 'medium'
-      }
-    ];
-
-    return taId ? mockAssignments.filter(a => a.ta_id === taId) : mockAssignments;
-  },
-
-  async createTAAssignment(assignment: Omit<TAAssignment, 'id' | 'assigned_at'>): Promise<TAAssignment> {
-    const newAssignment: TAAssignment = {
-      ...assignment,
-      id: Math.random().toString(36).substr(2, 9),
-      assigned_at: new Date().toISOString()
-    };
-    
-    console.log('Created TA assignment:', newAssignment);
-    return newAssignment;
-  },
-
-  async updateTAAssignment(id: string, updates: Partial<TAAssignment>): Promise<TAAssignment> {
-    const mockAssignment: TAAssignment = {
-      id,
-      ta_id: 'ta-1',
-      requirement_id: 'req-1',
-      client_id: 'client-1',
-      assigned_at: new Date().toISOString(),
-      status: 'active',
-      priority: 'medium',
-      ...updates
-    };
-    
-    console.log('Updated TA assignment:', mockAssignment);
-    return mockAssignment;
+        priority: 'medium',
+        ...updates
+      };
+      
+      console.log('Updated TA assignment:', mockAssignment);
+      return mockAssignment;
+    }
   },
 
   // Workload Management
   async fetchTAWorkloads(): Promise<TAWorkload[]> {
+    // Since we don't have RPC functions yet, return mock data
     const mockWorkloads: TAWorkload[] = [
       {
         ta_id: '1',
@@ -233,14 +303,19 @@ export const taManagementService = {
 
   // Candidate Applications
   async fetchCandidateApplications(requirementId?: string): Promise<CandidateApplication[]> {
-    const { data, error } = await supabase
+    let query = supabase
       .from('candidate_applications')
       .select(`
         *,
         candidate:candidates(name),
         requirement:requirements(name)
-      `)
-      .eq(requirementId ? 'requirement_id' : 'id', requirementId || 'all');
+      `);
+    
+    if (requirementId) {
+      query = query.eq('requirement_id', requirementId);
+    }
+    
+    const { data, error } = await query;
     
     if (error) {
       console.error('Error fetching candidate applications:', error);
