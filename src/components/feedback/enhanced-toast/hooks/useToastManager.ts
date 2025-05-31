@@ -156,9 +156,11 @@ export const useToastManager = () => {
             : { ...result, type: 'success' as const };
         } else if (typeof options.success === 'string') {
           successOptions = { title: options.success, type: 'success' as const };
-        } else {
-          // options.success is ToastOptions object
+        } else if (typeof options.success === 'object' && options.success !== null) {
           successOptions = { ...options.success, type: 'success' as const };
+        } else {
+          // Fallback for any other case
+          successOptions = { title: 'Success', type: 'success' as const };
         }
 
         showToast(successOptions);
@@ -175,9 +177,11 @@ export const useToastManager = () => {
             : { ...result, type: 'error' as const };
         } else if (typeof options.error === 'string') {
           errorOptions = { title: options.error, type: 'error' as const };
-        } else {
-          // options.error is ToastOptions object
+        } else if (typeof options.error === 'object' && options.error !== null) {
           errorOptions = { ...options.error, type: 'error' as const };
+        } else {
+          // Fallback for any other case
+          errorOptions = { title: 'Error', type: 'error' as const };
         }
 
         showToast(errorOptions);
