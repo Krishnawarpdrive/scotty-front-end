@@ -75,7 +75,7 @@ export const useTAManagement = () => {
     }
   };
 
-  const updateAssignmentStatus = async (id: string, status: string) => {
+  const updateAssignmentStatus = async (id: string, status: 'active' | 'completed' | 'on_hold') => {
     try {
       const updatedAssignment = await taManagementService.updateTAAssignment(id, { status });
       setAssignments(prev => 

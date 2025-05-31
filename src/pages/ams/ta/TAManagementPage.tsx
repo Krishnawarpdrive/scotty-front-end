@@ -8,7 +8,7 @@ export const TAManagementPage: React.FC = () => {
     <div className="space-y-6">
       <PageHeader
         title="TA Management"
-        description="Comprehensive talent acquisition team management and workload optimization"
+        subtitle="Comprehensive talent acquisition team management and workload optimization"
       />
       
       <TAManagementDashboard />
