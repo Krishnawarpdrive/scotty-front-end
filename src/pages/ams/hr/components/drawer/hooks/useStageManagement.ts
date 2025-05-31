@@ -40,12 +40,11 @@ export const useStageManagement = (
   }, [pipelineStages, setPipelineStages]);
 
   const updateStageConfig = useCallback((stageId: string, config: any) => {
-    setPipelineStages((stages: Stage[]) =>
-      stages.map(stage =>
-        stage.id === stageId ? { ...stage, config } : stage
-      )
+    const updatedStages = pipelineStages.map(stage =>
+      stage.id === stageId ? { ...stage, config } : stage
     );
-  }, [setPipelineStages]);
+    setPipelineStages(updatedStages);
+  }, [pipelineStages, setPipelineStages]);
 
   return {
     addStageToPipeline,

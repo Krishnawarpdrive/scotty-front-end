@@ -11,7 +11,7 @@ import { Plus, Download, Filter, TrendingUp, Users, Star, AlertTriangle } from '
 import { Vendor } from '../../types/VendorTypes';
 
 export function EnhancedVendorDashboard() {
-  const { vendors, loading, refetch } = useVendors();
+  const { vendors, isLoading, updateVendorStatus } = useVendors();
   const toast = useEnhancedToast();
   const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
 
@@ -68,6 +68,13 @@ export function EnhancedVendorDashboard() {
     a.download = 'vendors-export.csv';
     a.click();
     window.URL.revokeObjectURL(url);
+  };
+
+  // Create a mock refetch function since it's not available from the hook
+  const handleRefresh = () => {
+    // This would trigger a refetch in a real implementation
+    console.log('Refreshing vendors...');
+    window.location.reload(); // Simple refresh for now
   };
 
   // Calculate dashboard metrics
@@ -166,8 +173,8 @@ export function EnhancedVendorDashboard() {
       {/* Enhanced Vendors Table */}
       <EnhancedVendorsTable
         vendors={vendors}
-        loading={loading}
-        onRefresh={refetch}
+        loading={isLoading}
+        onRefresh={handleRefresh}
         onViewDetails={handleViewDetails}
         onEditVendor={handleEditVendor}
         onDeleteVendor={handleDeleteVendor}

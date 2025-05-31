@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { EnhancedDataTable, Column, TableAction, BulkAction } from '@/components/enhanced-tables';
 import { Badge } from '@/components/ui/badge';
@@ -167,13 +166,13 @@ export function EnhancedVendorsTable({
       label: 'View',
       icon: <Eye className="h-4 w-4" />,
       onClick: (vendor) => onViewDetails?.(vendor),
-      variant: 'ghost',
+      variant: 'outline',
     },
     {
       label: 'Edit',
       icon: <Edit className="h-4 w-4" />,
       onClick: (vendor) => onEditVendor?.(vendor),
-      variant: 'ghost',
+      variant: 'outline',
     },
     {
       label: 'Delete',
@@ -187,7 +186,7 @@ export function EnhancedVendorsTable({
           });
         }
       },
-      variant: 'ghost',
+      variant: 'outline',
       condition: (vendor) => vendor.status !== 'Active',
     },
   ];

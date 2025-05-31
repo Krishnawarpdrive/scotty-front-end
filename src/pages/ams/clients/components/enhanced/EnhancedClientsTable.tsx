@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { EnhancedDataTable, Column, TableAction, BulkAction } from '@/components/enhanced-tables';
 import { Badge } from '@/components/ui/badge';
@@ -183,19 +182,19 @@ export function EnhancedClientsTable({
       label: 'View',
       icon: <Eye className="h-4 w-4" />,
       onClick: (client) => onViewDetails?.(client),
-      variant: 'ghost',
+      variant: 'outline',
     },
     {
       label: 'Edit',
       icon: <Edit className="h-4 w-4" />,
       onClick: (client) => onEditClient?.(client),
-      variant: 'ghost',
+      variant: 'outline',
     },
     {
       label: 'New Requirement',
       icon: <Users className="h-4 w-4" />,
       onClick: (client) => onCreateRequirement?.(client),
-      variant: 'ghost',
+      variant: 'outline',
       condition: (client) => client.status === 'Active',
     },
   ];

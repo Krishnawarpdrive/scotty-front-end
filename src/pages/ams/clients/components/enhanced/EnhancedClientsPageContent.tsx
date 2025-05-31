@@ -9,9 +9,30 @@ import { useClients } from '../../hooks/useClients';
 import { useEnhancedToast } from '@/components/feedback/EnhancedToast';
 import { Plus, Download, Filter, Building2, Users, DollarSign, Activity } from 'lucide-react';
 import { UnifiedClient } from '@/data/unified-types';
+import { Client } from '../../types/ClientTypes';
+
+// Helper function to convert Client to UnifiedClient
+const convertClientToUnified = (client: Client): UnifiedClient => ({
+  id: client.id,
+  name: client.name,
+  email: client.email,
+  contact: client.contact,
+  status: client.status as any,
+  hiring_status: client.hiringStatus as any,
+  total_requirements: client.totalRequirements,
+  budget_utilized: client.budgetUtilized,
+  health_score: client.healthScore,
+  last_activity_date: client.lastActivity ? new Date().toISOString() : new Date().toISOString(),
+  assigned_hr: client.assignedHR,
+  client_tier: client.clientTier,
+  notes: client.notes,
+  created_at: client.createdOn,
+  updated_at: client.createdOn,
+  account_type: client.accountType,
+});
 
 export function EnhancedClientsPageContent() {
-  const { clients, loading, refetch } = useClients();
+  const { clients, isLoading, fetchClients } = useClients();
   const toast = useEnhancedToast();
 
   const handleViewDetails = (client: UnifiedClient) => {
@@ -67,17 +88,20 @@ export function EnhancedClientsPageContent() {
     window.URL.revokeObjectURL(url);
   };
 
+  // Convert clients to unified format
+  const unifiedClients = clients.map(convertClientToUnified);
+
   // Calculate dashboard metrics
   const metrics = React.useMemo(() => {
-    if (!clients.length) return { active: 0, hiring: 0, totalBudget: 0, totalRequirements: 0 };
+    if (!unifiedClients.length) return { active: 0, hiring: 0, totalBudget: 0, totalRequirements: 0 };
     
     return {
-      active: clients.filter(c => c.status === 'Active').length,
-      hiring: clients.filter(c => c.hiring_status === 'Active').length,
-      totalBudget: clients.reduce((sum, c) => sum + c.budget_utilized, 0),
-      totalRequirements: clients.reduce((sum, c) => sum + c.total_requirements, 0)
+      active: unifiedClients.filter(c => c.status === 'Active').length,
+      hiring: unifiedClients.filter(c => c.hiring_status === 'Active').length,
+      totalBudget: unifiedClients.reduce((sum, c) => sum + c.budget_utilized, 0),
+      totalRequirements: unifiedClients.reduce((sum, c) => sum + c.total_requirements, 0)
     };
-  }, [clients]);
+  }, [unifiedClients]);
 
   const pageActions = (
     <>
@@ -85,7 +109,7 @@ export function EnhancedClientsPageContent() {
         <Filter className="h-4 w-4 mr-2" />
         Advanced Filters
       </Button>
-      <Button variant="outline" size="sm" onClick={() => handleExportClients(clients)}>
+      <Button variant="outline" size="sm" onClick={() => handleExportClients(unifiedClients)}>
         <Download className="h-4 w-4 mr-2" />
         Export All
       </Button>
@@ -162,9 +186,9 @@ export function EnhancedClientsPageContent() {
 
       {/* Enhanced Clients Table */}
       <EnhancedClientsTable
-        clients={clients}
-        loading={loading}
-        onRefresh={refetch}
+        clients={unifiedClients}
+        loading={isLoading}
+        onRefresh={fetchClients}
         onViewDetails={handleViewDetails}
         onEditClient={handleEditClient}
         onCreateRequirement={handleCreateRequirement}
