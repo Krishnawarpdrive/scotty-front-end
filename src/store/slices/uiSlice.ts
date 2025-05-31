@@ -1,3 +1,4 @@
+
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { UIState, DrawerState, ModalState, NotificationState } from '../types/uiTypes';
 
@@ -79,7 +80,7 @@ const uiSlice = createSlice({
       state.modal.data = null;
     },
 
-    // Enhanced notification actions
+    // Notification actions
     addNotification: (state, action: PayloadAction<Omit<NotificationState, 'id' | 'isVisible' | 'createdAt'>>) => {
       const notification: NotificationState = {
         ...action.payload,
@@ -87,12 +88,7 @@ const uiSlice = createSlice({
         isVisible: true,
         createdAt: new Date().toISOString(),
       };
-      state.notifications.unshift(notification); // Add to beginning for latest first
-      
-      // Keep only last 10 notifications
-      if (state.notifications.length > 10) {
-        state.notifications = state.notifications.slice(0, 10);
-      }
+      state.notifications.push(notification);
     },
     
     removeNotification: (state, action: PayloadAction<string>) => {
@@ -110,7 +106,7 @@ const uiSlice = createSlice({
       state.notifications = [];
     },
 
-    // Enhanced loading actions
+    // Loading actions
     setGlobalLoading: (state, action: PayloadAction<boolean>) => {
       state.globalLoading = action.payload;
     },
@@ -119,7 +115,7 @@ const uiSlice = createSlice({
       state.pageLoading = action.payload;
     },
 
-    // Enhanced page context actions
+    // Page context actions
     setCurrentPage: (state, action: PayloadAction<string>) => {
       state.currentPage = action.payload;
     },
@@ -128,7 +124,7 @@ const uiSlice = createSlice({
       state.breadcrumbs = action.payload;
     },
 
-    // Enhanced filter and search actions
+    // Filter and search actions
     setFilters: (state, action: PayloadAction<Record<string, any>>) => {
       state.filters = action.payload;
     },
@@ -145,7 +141,7 @@ const uiSlice = createSlice({
       state.searchQuery = action.payload;
     },
 
-    // Enhanced selection actions
+    // Selection actions
     setSelectedItems: (state, action: PayloadAction<string[]>) => {
       state.selectedItems = action.payload;
     },
@@ -160,26 +156,17 @@ const uiSlice = createSlice({
       }
     },
     
-    selectAllItems: (state, action: PayloadAction<string[]>) => {
-      state.selectedItems = [...action.payload];
-    },
-    
     clearSelection: (state) => {
       state.selectedItems = [];
     },
 
-    // Theme and UX actions
+    // Theme actions
     setTheme: (state, action: PayloadAction<'light' | 'dark' | 'system'>) => {
       state.theme = action.payload;
     },
     
     toggleCompactMode: (state) => {
       state.compactMode = !state.compactMode;
-    },
-
-    // Bulk actions for better UX
-    bulkUpdateUI: (state, action: PayloadAction<Partial<UIState>>) => {
-      Object.assign(state, action.payload);
     },
   },
 });
@@ -207,11 +194,9 @@ export const {
   setSearchQuery,
   setSelectedItems,
   toggleItemSelection,
-  selectAllItems,
   clearSelection,
   setTheme,
   toggleCompactMode,
-  bulkUpdateUI,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;

@@ -20,18 +20,14 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        sans: ['Rubik', 'system-ui', 'sans-serif'],
-        rubik: ['Rubik', 'system-ui', 'sans-serif'],
+        sans: ['Rubik'],
+        rubik: ['Rubik'],
       },
       fontSize: {
-        'xs': '10px',
-        'sm': '11px',
-        'base': '12px', // 12px base font size
-        'lg': '14px',
-        'xl': '16px',
-        '2xl': '18px',
-        '3xl': '20px',
-        '4xl': '24px',
+        'label': '11px',
+        'body': '13px',
+        'section': '14px',
+        'table': '12px',
       },
       boxShadow: {
         'card': '0 2px 8px rgba(0, 0, 0, 0.08)',
@@ -43,7 +39,7 @@ const config: Config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#009933", // Your custom green color
+          DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
