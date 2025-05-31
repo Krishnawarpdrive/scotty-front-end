@@ -30,3 +30,18 @@ export {
   shouldGroupToasts,
   formatToastMessage
 } from './utils/ToastUtils';
+
+// Preset exports
+export {
+  createSuccessToast,
+  createErrorToast,
+  createWarningToast,
+  createInfoToast,
+  createLoadingToast,
+  createUploadToast,
+  createDownloadToast,
+  createSaveToast,
+  createDeleteToast,
+  createUserActionToast,
+  createSystemToast
+} from './presets';

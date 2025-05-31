@@ -21,6 +21,19 @@ export const useToastManager = () => {
     }
   }, []);
 
+  const dismissToast = useCallback((id: string) => {
+    setToasts(prev => {
+      const toast = prev.find(t => t.id === id);
+      if (toast) {
+        toast.onDismiss?.();
+      }
+      return prev.filter(t => t.id !== id);
+    });
+    
+    clearTimer(id);
+    pausedTimersRef.current.delete(id);
+  }, [clearTimer]);
+
   const startTimer = useCallback((toast: ToastInstance) => {
     if (toast.persistent || toast.duration === 0) return;
 
@@ -34,7 +47,7 @@ export const useToastManager = () => {
     }, duration);
 
     timersRef.current.set(toast.id, timer);
-  }, []);
+  }, [dismissToast]);
 
   const showToast = useCallback((options: ToastOptions): string => {
     const id = generateToastId();
@@ -64,19 +77,6 @@ export const useToastManager = () => {
 
     return id;
   }, [startTimer]);
-
-  const dismissToast = useCallback((id: string) => {
-    setToasts(prev => {
-      const toast = prev.find(t => t.id === id);
-      if (toast) {
-        toast.onDismiss?.();
-      }
-      return prev.filter(t => t.id !== id);
-    });
-    
-    clearTimer(id);
-    pausedTimersRef.current.delete(id);
-  }, [clearTimer]);
 
   const dismissAll = useCallback(() => {
     setToasts(prev => {

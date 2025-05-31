@@ -33,7 +33,7 @@ export const useSuperEnhancedToast = () => {
   const success = (options: SuperEnhancedToastOptions | string) => {
     const toastOptions = typeof options === 'string' 
       ? createSuccessToast(options)
-      : createSuccessToast(options.title, options.description);
+      : createSuccessToast(options.title, { description: options.description });
     
     if (typeof options === 'object' && options.action) {
       toastOptions.actions = [{
@@ -53,7 +53,7 @@ export const useSuperEnhancedToast = () => {
   const error = (options: SuperEnhancedToastOptions | string) => {
     const toastOptions = typeof options === 'string' 
       ? createErrorToast(options)
-      : createErrorToast(options.title, options.description);
+      : createErrorToast(options.title, { description: options.description });
     
     if (typeof options === 'object' && options.action) {
       toastOptions.actions = [{
@@ -73,7 +73,7 @@ export const useSuperEnhancedToast = () => {
   const warning = (options: SuperEnhancedToastOptions | string) => {
     const toastOptions = typeof options === 'string' 
       ? createWarningToast(options)
-      : createWarningToast(options.title, options.description);
+      : createWarningToast(options.title, { description: options.description });
     
     if (typeof options === 'object' && options.action) {
       toastOptions.actions = [{
@@ -93,7 +93,7 @@ export const useSuperEnhancedToast = () => {
   const info = (options: SuperEnhancedToastOptions | string) => {
     const toastOptions = typeof options === 'string' 
       ? createInfoToast(options)
-      : createInfoToast(options.title, options.description);
+      : createInfoToast(options.title, { description: options.description });
     
     if (typeof options === 'object' && options.action) {
       toastOptions.actions = [{
@@ -111,12 +111,12 @@ export const useSuperEnhancedToast = () => {
   };
 
   const loading = (title: string, description?: string) => {
-    return showToast(createLoadingToast(title, description));
+    return showToast(createLoadingToast(title, { description }));
   };
 
   // Specialized action toasts
   const upload = (filename: string, progress?: number) => {
-    return showToast(createUploadToast(filename, progress));
+    return showToast(createUploadToast(filename, { data: { progress } }));
   };
 
   const download = (filename: string) => {
@@ -125,14 +125,26 @@ export const useSuperEnhancedToast = () => {
 
   const save = (itemName: string, onUndo?: () => void) => {
     const toastOptions = createSaveToast(itemName);
-    if (onUndo && toastOptions.actions) {
-      toastOptions.actions[0].onClick = onUndo;
+    if (onUndo) {
+      toastOptions.actions = [{
+        label: 'Undo',
+        onClick: onUndo,
+        variant: 'outline'
+      }];
     }
     return showToast(toastOptions);
   };
 
   const remove = (itemName: string, onUndo?: () => void) => {
-    return showToast(createDeleteToast(itemName, onUndo));
+    const toastOptions = createDeleteToast(itemName);
+    if (onUndo) {
+      toastOptions.actions = [{
+        label: 'Undo',
+        onClick: onUndo,
+        variant: 'outline'
+      }];
+    }
+    return showToast(toastOptions);
   };
 
   const userAction = (action: string, userName: string) => {
@@ -140,12 +152,12 @@ export const useSuperEnhancedToast = () => {
   };
 
   const system = (message: string, isError = false) => {
-    return showToast(createSystemToast(message, isError));
+    return showToast(createSystemToast(message, { type: isError ? 'error' : 'info' }));
   };
 
   // Advanced promise handling
   const promiseWithToast = <T,>(
-    promise: Promise<T>,
+    promiseInstance: Promise<T>,
     {
       loading: loadingMessage,
       success: successMessage,
@@ -156,7 +168,7 @@ export const useSuperEnhancedToast = () => {
       error: string | ((error: any) => string);
     }
   ) => {
-    return promise({
+    return promise(promiseInstance, {
       loading: loadingMessage,
       success: successMessage,
       error: errorMessage
