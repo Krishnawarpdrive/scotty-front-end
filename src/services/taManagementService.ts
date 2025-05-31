@@ -10,6 +10,12 @@ import {
   TADashboardData 
 } from '@/types/TAManagementTypes';
 
+// Helper function to convert Json array to string array
+const jsonArrayToStringArray = (jsonArray: any): string[] => {
+  if (!Array.isArray(jsonArray)) return [];
+  return jsonArray.map(item => String(item)).filter(item => item !== 'null' && item !== 'undefined');
+};
+
 export const taManagementService = {
   // TA Profile Management - Using direct table queries since RPC functions don't exist yet
   async fetchTAProfiles(): Promise<TAProfile[]> {
@@ -21,12 +27,12 @@ export const taManagementService = {
       
       if (error) throw error;
       
-      // Type-cast the data to ensure status field compatibility
+      // Type-cast the data to ensure proper field compatibility
       return (data || []).map(profile => ({
         ...profile,
         status: profile.status as TAProfile['status'],
-        skills: Array.isArray(profile.skills) ? profile.skills : [],
-        certifications: Array.isArray(profile.certifications) ? profile.certifications : []
+        skills: jsonArrayToStringArray(profile.skills),
+        certifications: jsonArrayToStringArray(profile.certifications)
       }));
     } catch (error) {
       // Fallback to mock data if table doesn't exist or query fails
@@ -79,8 +85,8 @@ export const taManagementService = {
       return {
         ...data,
         status: data.status as TAProfile['status'],
-        skills: Array.isArray(data.skills) ? data.skills : [],
-        certifications: Array.isArray(data.certifications) ? data.certifications : []
+        skills: jsonArrayToStringArray(data.skills),
+        certifications: jsonArrayToStringArray(data.certifications)
       };
     } catch (error) {
       // Mock implementation fallback
@@ -110,8 +116,8 @@ export const taManagementService = {
       return {
         ...data,
         status: data.status as TAProfile['status'],
-        skills: Array.isArray(data.skills) ? data.skills : [],
-        certifications: Array.isArray(data.certifications) ? data.certifications : []
+        skills: jsonArrayToStringArray(data.skills),
+        certifications: jsonArrayToStringArray(data.certifications)
       };
     } catch (error) {
       // Mock implementation fallback
