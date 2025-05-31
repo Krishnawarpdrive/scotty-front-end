@@ -2,7 +2,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { CalendarDays, Clock } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 
 interface SmartScheduleButtonProps {
   isScheduled: boolean;
