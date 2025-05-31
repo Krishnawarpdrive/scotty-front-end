@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useSuperEnhancedToast } from './super-enhanced-toast';
+import { useSuperEnhancedToast, useEnhancedToast as useNewEnhancedToast } from './super-enhanced-toast';
 
 interface ToastOptions {
   title: string;
@@ -12,7 +12,7 @@ interface ToastOptions {
   duration?: number;
 }
 
-// Backward compatibility layer
+// Backward compatibility layer with enhanced features
 export const useEnhancedToast = () => {
   const toast = useSuperEnhancedToast();
 
@@ -49,7 +49,12 @@ export const useEnhancedToast = () => {
     info: showInfo,
     warning: showWarning,
     promise: showPromise,
-    // Expose new enhanced methods
+    // Expose all enhanced methods
     ...toast
   };
+};
+
+// New enhanced toast hook with all Phase 5 features
+export const useEnhancedToastV2 = () => {
+  return useNewEnhancedToast();
 };
