@@ -148,11 +148,17 @@ export const useToastManager = () => {
       .then((data) => {
         dismissToast(loadingId);
         
-        const successOptions = typeof options.success === 'function'
-          ? options.success(data)
-          : typeof options.success === 'string'
-          ? { title: options.success, type: 'success' as const }
-          : { ...options.success, type: 'success' as const };
+        let successOptions: ToastOptions;
+        if (typeof options.success === 'function') {
+          const result = options.success(data);
+          successOptions = typeof result === 'string' 
+            ? { title: result, type: 'success' as const }
+            : { ...result, type: 'success' as const };
+        } else if (typeof options.success === 'string') {
+          successOptions = { title: options.success, type: 'success' as const };
+        } else {
+          successOptions = { ...options.success, type: 'success' as const };
+        }
 
         showToast(successOptions);
         return data;
@@ -160,11 +166,17 @@ export const useToastManager = () => {
       .catch((error) => {
         dismissToast(loadingId);
         
-        const errorOptions = typeof options.error === 'function'
-          ? options.error(error)
-          : typeof options.error === 'string'
-          ? { title: options.error, type: 'error' as const }
-          : { ...options.error, type: 'error' as const };
+        let errorOptions: ToastOptions;
+        if (typeof options.error === 'function') {
+          const result = options.error(error);
+          errorOptions = typeof result === 'string'
+            ? { title: result, type: 'error' as const }
+            : { ...result, type: 'error' as const };
+        } else if (typeof options.error === 'string') {
+          errorOptions = { title: options.error, type: 'error' as const };
+        } else {
+          errorOptions = { ...options.error, type: 'error' as const };
+        }
 
         showToast(errorOptions);
         throw error;
