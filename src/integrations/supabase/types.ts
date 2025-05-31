@@ -9,6 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          action_description: string
+          action_type: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          metadata: Json | null
+          performed_by: string
+        }
+        Insert: {
+          action_description: string
+          action_type: string
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          metadata?: Json | null
+          performed_by: string
+        }
+        Update: {
+          action_description?: string
+          action_type?: string
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          metadata?: Json | null
+          performed_by?: string
+        }
+        Relationships: []
+      }
       approval_workflows: {
         Row: {
           approval_notes: string | null
@@ -107,6 +140,50 @@ export type Database = {
           },
         ]
       }
+      candidate_progress: {
+        Row: {
+          candidate_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          progress_percentage: number | null
+          stage_name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          candidate_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          progress_percentage?: number | null
+          stage_name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          candidate_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          progress_percentage?: number | null
+          stage_name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_progress_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       candidate_scheduling_preferences: {
         Row: {
           blackout_dates: Json | null
@@ -142,6 +219,90 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      candidates: {
+        Row: {
+          applied_date: string | null
+          created_at: string
+          current_employer: string | null
+          current_position: string | null
+          current_stage: string
+          email: string
+          embedding: string | null
+          experience_years: number | null
+          id: string
+          last_updated: string | null
+          metadata: Json | null
+          name: string
+          phone: string | null
+          requirement_id: string | null
+          resume_url: string | null
+          skills: Json | null
+          source: string
+          status: string
+          updated_at: string
+          vendor_id: string | null
+        }
+        Insert: {
+          applied_date?: string | null
+          created_at?: string
+          current_employer?: string | null
+          current_position?: string | null
+          current_stage?: string
+          email: string
+          embedding?: string | null
+          experience_years?: number | null
+          id?: string
+          last_updated?: string | null
+          metadata?: Json | null
+          name: string
+          phone?: string | null
+          requirement_id?: string | null
+          resume_url?: string | null
+          skills?: Json | null
+          source?: string
+          status?: string
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Update: {
+          applied_date?: string | null
+          created_at?: string
+          current_employer?: string | null
+          current_position?: string | null
+          current_stage?: string
+          email?: string
+          embedding?: string | null
+          experience_years?: number | null
+          id?: string
+          last_updated?: string | null
+          metadata?: Json | null
+          name?: string
+          phone?: string | null
+          requirement_id?: string | null
+          resume_url?: string | null
+          skills?: Json | null
+          source?: string
+          status?: string
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidates_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidates_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       certification_library: {
         Row: {
@@ -324,6 +485,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      entity_comments: {
+        Row: {
+          comment_text: string
+          comment_type: string | null
+          created_at: string
+          created_by: string
+          entity_id: string
+          entity_type: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          comment_text: string
+          comment_type?: string | null
+          created_at?: string
+          created_by: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          comment_text?: string
+          comment_type?: string | null
+          created_at?: string
+          created_by?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       executive_client_insights: {
         Row: {
@@ -1606,6 +1800,75 @@ export type Database = {
           created_at?: string | null
           id?: string
           name?: string
+        }
+        Relationships: []
+      }
+      vendors: {
+        Row: {
+          active_requirements: number | null
+          address: string | null
+          billing_info: Json | null
+          contact_email: string
+          contact_phone: string | null
+          contract_status: string | null
+          created_at: string
+          embedding: string | null
+          id: string
+          last_active_date: string | null
+          name: string
+          performance_metrics: Json | null
+          primary_contact: string
+          rating: number | null
+          roles_assigned: number | null
+          sla_status: string | null
+          status: string
+          tier: string
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          active_requirements?: number | null
+          address?: string | null
+          billing_info?: Json | null
+          contact_email: string
+          contact_phone?: string | null
+          contract_status?: string | null
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          last_active_date?: string | null
+          name: string
+          performance_metrics?: Json | null
+          primary_contact: string
+          rating?: number | null
+          roles_assigned?: number | null
+          sla_status?: string | null
+          status?: string
+          tier?: string
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          active_requirements?: number | null
+          address?: string | null
+          billing_info?: Json | null
+          contact_email?: string
+          contact_phone?: string | null
+          contract_status?: string | null
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          last_active_date?: string | null
+          name?: string
+          performance_metrics?: Json | null
+          primary_contact?: string
+          rating?: number | null
+          roles_assigned?: number | null
+          sla_status?: string | null
+          status?: string
+          tier?: string
+          updated_at?: string
+          vendor_id?: string
         }
         Relationships: []
       }
