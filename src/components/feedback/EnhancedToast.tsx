@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useSuperEnhancedToast, useEnhancedToast as useNewEnhancedToast } from './super-enhanced-toast';
+import { useSuperEnhancedToast } from './super-enhanced-toast';
 
 interface ToastOptions {
   title: string;
@@ -56,5 +56,5 @@ export const useEnhancedToast = () => {
 
 // New enhanced toast hook with all Phase 5 features
 export const useEnhancedToastV2 = () => {
-  return useNewEnhancedToast();
+  return useSuperEnhancedToast();
 };
