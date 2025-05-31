@@ -193,19 +193,19 @@ export function EnhancedCandidateTable({
       label: 'View Profile',
       icon: <Eye className="h-4 w-4" />,
       onClick: (candidate) => onViewProfile?.(candidate),
-      variant: 'ghost',
+      variant: 'outline',
     },
     {
       label: 'Edit',
       icon: <Edit className="h-4 w-4" />,
       onClick: (candidate) => onEditCandidate?.(candidate),
-      variant: 'ghost',
+      variant: 'outline',
     },
     {
       label: 'Schedule Interview',
       icon: <Clock className="h-4 w-4" />,
       onClick: (candidate) => onScheduleInterview?.(candidate),
-      variant: 'ghost',
+      variant: 'outline',
       condition: (candidate) => candidate.status === 'Active',
     },
   ];
