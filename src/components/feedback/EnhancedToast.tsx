@@ -1,8 +1,6 @@
 
 import React from 'react';
-import { 
-  useSuperEnhancedToast
-} from './SuperEnhancedToast';
+import { useSuperEnhancedToast } from './super-enhanced-toast';
 
 interface ToastOptions {
   title: string;
