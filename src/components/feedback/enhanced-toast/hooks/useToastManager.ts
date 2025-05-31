@@ -157,6 +157,7 @@ export const useToastManager = () => {
         } else if (typeof options.success === 'string') {
           successOptions = { title: options.success, type: 'success' as const };
         } else {
+          // options.success is ToastOptions object
           successOptions = { ...options.success, type: 'success' as const };
         }
 
@@ -175,6 +176,7 @@ export const useToastManager = () => {
         } else if (typeof options.error === 'string') {
           errorOptions = { title: options.error, type: 'error' as const };
         } else {
+          // options.error is ToastOptions object
           errorOptions = { ...options.error, type: 'error' as const };
         }
 
