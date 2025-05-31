@@ -93,6 +93,57 @@ export type Database = {
         }
         Relationships: []
       }
+      candidate_applications: {
+        Row: {
+          application_date: string | null
+          candidate_id: string
+          created_at: string | null
+          id: string
+          notes: string | null
+          requirement_id: string
+          source_type: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          application_date?: string | null
+          candidate_id: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          requirement_id: string
+          source_type?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          application_date?: string | null
+          candidate_id?: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          requirement_id?: string
+          source_type?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_applications_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_applications_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       candidate_journey_configs: {
         Row: {
           auto_proceed: boolean | null
@@ -302,6 +353,20 @@ export type Database = {
             referencedRelation: "vendors"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_candidates_requirement_id"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_candidates_vendor_id"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
         ]
       }
       certification_library: {
@@ -357,6 +422,42 @@ export type Database = {
           type?: string
         }
         Relationships: []
+      }
+      client_roles: {
+        Row: {
+          client_id: string
+          created_at: string | null
+          id: string
+          role_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string | null
+          id?: string
+          role_id: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string | null
+          id?: string
+          role_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_roles_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_roles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       clients: {
         Row: {
@@ -479,6 +580,13 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "custom_fields_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_custom_fields_role_id"
             columns: ["role_id"]
             isOneToOne: false
             referencedRelation: "roles"
@@ -1515,6 +1623,20 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_requirements_client_id"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_requirements_role_id"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "requirements_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
@@ -1548,6 +1670,20 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_role_skills_role_id"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_role_skills_skill_id"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "role_skills_role_id_fkey"
             columns: ["role_id"]
             isOneToOne: false
@@ -1580,6 +1716,20 @@ export type Database = {
           tag_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_role_tags_role_id"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_role_tags_tag_id"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "role_tags_role_id_fkey"
             columns: ["role_id"]
