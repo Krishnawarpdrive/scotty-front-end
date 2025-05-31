@@ -21,7 +21,13 @@ export const taManagementService = {
       
       if (error) throw error;
       
-      return data || [];
+      // Type-cast the data to ensure status field compatibility
+      return (data || []).map(profile => ({
+        ...profile,
+        status: profile.status as TAProfile['status'],
+        skills: Array.isArray(profile.skills) ? profile.skills : [],
+        certifications: Array.isArray(profile.certifications) ? profile.certifications : []
+      }));
     } catch (error) {
       // Fallback to mock data if table doesn't exist or query fails
       console.log('Using mock TA profiles data');
@@ -70,7 +76,12 @@ export const taManagementService = {
       
       if (error) throw error;
       
-      return data;
+      return {
+        ...data,
+        status: data.status as TAProfile['status'],
+        skills: Array.isArray(data.skills) ? data.skills : [],
+        certifications: Array.isArray(data.certifications) ? data.certifications : []
+      };
     } catch (error) {
       // Mock implementation fallback
       const newProfile: TAProfile = {
@@ -96,7 +107,12 @@ export const taManagementService = {
       
       if (error) throw error;
       
-      return data;
+      return {
+        ...data,
+        status: data.status as TAProfile['status'],
+        skills: Array.isArray(data.skills) ? data.skills : [],
+        certifications: Array.isArray(data.certifications) ? data.certifications : []
+      };
     } catch (error) {
       // Mock implementation fallback
       const mockProfile: TAProfile = {
@@ -134,7 +150,12 @@ export const taManagementService = {
       
       if (error) throw error;
       
-      return data || [];
+      // Type-cast the data to ensure status and priority field compatibility
+      return (data || []).map(assignment => ({
+        ...assignment,
+        status: assignment.status as TAAssignment['status'],
+        priority: assignment.priority as TAAssignment['priority']
+      }));
     } catch (error) {
       // Mock data fallback
       const mockAssignments: TAAssignment[] = [
@@ -174,7 +195,11 @@ export const taManagementService = {
       
       if (error) throw error;
       
-      return data;
+      return {
+        ...data,
+        status: data.status as TAAssignment['status'],
+        priority: data.priority as TAAssignment['priority']
+      };
     } catch (error) {
       const newAssignment: TAAssignment = {
         ...assignment,
@@ -198,7 +223,11 @@ export const taManagementService = {
       
       if (error) throw error;
       
-      return data;
+      return {
+        ...data,
+        status: data.status as TAAssignment['status'],
+        priority: data.priority as TAAssignment['priority']
+      };
     } catch (error) {
       const mockAssignment: TAAssignment = {
         id,
@@ -331,8 +360,8 @@ export const taManagementService = {
       role_name: 'Unknown Role', // This would need to be joined through requirements
       client_name: 'Unknown Client', // This would need to be joined through requirements
       application_date: item.application_date,
-      status: item.status as any,
-      source_type: item.source_type as any,
+      status: item.status as CandidateApplication['status'],
+      source_type: item.source_type as CandidateApplication['source_type'],
       notes: item.notes,
       current_stage: 'Applied' // This would need to be calculated
     }));
@@ -361,8 +390,8 @@ export const taManagementService = {
       role_name: 'Unknown Role',
       client_name: 'Unknown Client',
       application_date: data.application_date,
-      status: data.status as any,
-      source_type: data.source_type as any,
+      status: data.status as CandidateApplication['status'],
+      source_type: data.source_type as CandidateApplication['source_type'],
       notes: data.notes,
       current_stage: 'Applied'
     };
