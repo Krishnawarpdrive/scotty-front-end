@@ -9,6 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          action_description: string
+          action_type: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          metadata: Json | null
+          performed_by: string
+        }
+        Insert: {
+          action_description: string
+          action_type: string
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          metadata?: Json | null
+          performed_by: string
+        }
+        Update: {
+          action_description?: string
+          action_type?: string
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          metadata?: Json | null
+          performed_by?: string
+        }
+        Relationships: []
+      }
       approval_workflows: {
         Row: {
           approval_notes: string | null
@@ -60,6 +93,57 @@ export type Database = {
         }
         Relationships: []
       }
+      candidate_applications: {
+        Row: {
+          application_date: string | null
+          candidate_id: string
+          created_at: string | null
+          id: string
+          notes: string | null
+          requirement_id: string
+          source_type: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          application_date?: string | null
+          candidate_id: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          requirement_id: string
+          source_type?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          application_date?: string | null
+          candidate_id?: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          requirement_id?: string
+          source_type?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_applications_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_applications_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       candidate_journey_configs: {
         Row: {
           auto_proceed: boolean | null
@@ -107,6 +191,50 @@ export type Database = {
           },
         ]
       }
+      candidate_progress: {
+        Row: {
+          candidate_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          progress_percentage: number | null
+          stage_name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          candidate_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          progress_percentage?: number | null
+          stage_name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          candidate_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          progress_percentage?: number | null
+          stage_name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_progress_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       candidate_scheduling_preferences: {
         Row: {
           blackout_dates: Json | null
@@ -142,6 +270,104 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      candidates: {
+        Row: {
+          applied_date: string | null
+          created_at: string
+          current_employer: string | null
+          current_position: string | null
+          current_stage: string
+          email: string
+          embedding: string | null
+          experience_years: number | null
+          id: string
+          last_updated: string | null
+          metadata: Json | null
+          name: string
+          phone: string | null
+          requirement_id: string | null
+          resume_url: string | null
+          skills: Json | null
+          source: string
+          status: string
+          updated_at: string
+          vendor_id: string | null
+        }
+        Insert: {
+          applied_date?: string | null
+          created_at?: string
+          current_employer?: string | null
+          current_position?: string | null
+          current_stage?: string
+          email: string
+          embedding?: string | null
+          experience_years?: number | null
+          id?: string
+          last_updated?: string | null
+          metadata?: Json | null
+          name: string
+          phone?: string | null
+          requirement_id?: string | null
+          resume_url?: string | null
+          skills?: Json | null
+          source?: string
+          status?: string
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Update: {
+          applied_date?: string | null
+          created_at?: string
+          current_employer?: string | null
+          current_position?: string | null
+          current_stage?: string
+          email?: string
+          embedding?: string | null
+          experience_years?: number | null
+          id?: string
+          last_updated?: string | null
+          metadata?: Json | null
+          name?: string
+          phone?: string | null
+          requirement_id?: string | null
+          resume_url?: string | null
+          skills?: Json | null
+          source?: string
+          status?: string
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidates_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidates_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_candidates_requirement_id"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_candidates_vendor_id"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       certification_library: {
         Row: {
@@ -196,6 +422,42 @@ export type Database = {
           type?: string
         }
         Relationships: []
+      }
+      client_roles: {
+        Row: {
+          client_id: string
+          created_at: string | null
+          id: string
+          role_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string | null
+          id?: string
+          role_id: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string | null
+          id?: string
+          role_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_roles_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_roles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       clients: {
         Row: {
@@ -323,7 +585,47 @@ export type Database = {
             referencedRelation: "roles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_custom_fields_role_id"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      entity_comments: {
+        Row: {
+          comment_text: string
+          comment_type: string | null
+          created_at: string
+          created_by: string
+          entity_id: string
+          entity_type: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          comment_text: string
+          comment_type?: string | null
+          created_at?: string
+          created_by: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          comment_text?: string
+          comment_type?: string | null
+          created_at?: string
+          created_by?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       executive_client_insights: {
         Row: {
@@ -1321,6 +1623,20 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_requirements_client_id"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_requirements_role_id"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "requirements_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
@@ -1354,6 +1670,20 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_role_skills_role_id"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_role_skills_skill_id"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "role_skills_role_id_fkey"
             columns: ["role_id"]
             isOneToOne: false
@@ -1386,6 +1716,20 @@ export type Database = {
           tag_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_role_tags_role_id"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_role_tags_tag_id"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "role_tags_role_id_fkey"
             columns: ["role_id"]
@@ -1591,6 +1935,118 @@ export type Database = {
         }
         Relationships: []
       }
+      ta_assignments: {
+        Row: {
+          assigned_at: string | null
+          client_id: string
+          created_at: string | null
+          deadline: string | null
+          id: string
+          notes: string | null
+          priority: string
+          requirement_id: string
+          status: string
+          ta_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_at?: string | null
+          client_id: string
+          created_at?: string | null
+          deadline?: string | null
+          id?: string
+          notes?: string | null
+          priority?: string
+          requirement_id: string
+          status?: string
+          ta_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_at?: string | null
+          client_id?: string
+          created_at?: string | null
+          deadline?: string | null
+          id?: string
+          notes?: string | null
+          priority?: string
+          requirement_id?: string
+          status?: string
+          ta_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ta_assignments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ta_assignments_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ta_assignments_ta_id_fkey"
+            columns: ["ta_id"]
+            isOneToOne: false
+            referencedRelation: "ta_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ta_profiles: {
+        Row: {
+          certifications: Json | null
+          created_at: string | null
+          current_workload: number | null
+          efficiency_score: number | null
+          email: string
+          experience_years: number | null
+          id: string
+          max_workload: number | null
+          name: string
+          skills: Json | null
+          status: string
+          success_rate: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          certifications?: Json | null
+          created_at?: string | null
+          current_workload?: number | null
+          efficiency_score?: number | null
+          email: string
+          experience_years?: number | null
+          id?: string
+          max_workload?: number | null
+          name: string
+          skills?: Json | null
+          status?: string
+          success_rate?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          certifications?: Json | null
+          created_at?: string | null
+          current_workload?: number | null
+          efficiency_score?: number | null
+          email?: string
+          experience_years?: number | null
+          id?: string
+          max_workload?: number | null
+          name?: string
+          skills?: Json | null
+          status?: string
+          success_rate?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       tags: {
         Row: {
           created_at: string | null
@@ -1606,6 +2062,75 @@ export type Database = {
           created_at?: string | null
           id?: string
           name?: string
+        }
+        Relationships: []
+      }
+      vendors: {
+        Row: {
+          active_requirements: number | null
+          address: string | null
+          billing_info: Json | null
+          contact_email: string
+          contact_phone: string | null
+          contract_status: string | null
+          created_at: string
+          embedding: string | null
+          id: string
+          last_active_date: string | null
+          name: string
+          performance_metrics: Json | null
+          primary_contact: string
+          rating: number | null
+          roles_assigned: number | null
+          sla_status: string | null
+          status: string
+          tier: string
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          active_requirements?: number | null
+          address?: string | null
+          billing_info?: Json | null
+          contact_email: string
+          contact_phone?: string | null
+          contract_status?: string | null
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          last_active_date?: string | null
+          name: string
+          performance_metrics?: Json | null
+          primary_contact: string
+          rating?: number | null
+          roles_assigned?: number | null
+          sla_status?: string | null
+          status?: string
+          tier?: string
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          active_requirements?: number | null
+          address?: string | null
+          billing_info?: Json | null
+          contact_email?: string
+          contact_phone?: string | null
+          contract_status?: string | null
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          last_active_date?: string | null
+          name?: string
+          performance_metrics?: Json | null
+          primary_contact?: string
+          rating?: number | null
+          roles_assigned?: number | null
+          sla_status?: string | null
+          status?: string
+          tier?: string
+          updated_at?: string
+          vendor_id?: string
         }
         Relationships: []
       }

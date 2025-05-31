@@ -1,13 +1,9 @@
 
-import React from "react";
-import { MissionControl } from "./components/MissionControl";
+import React from 'react';
+import { EnhancedTAMissionControl } from './components/enhanced/EnhancedTAMissionControl';
 
 const TAMissionControlPage: React.FC = () => {
-  return (
-    <main className="min-h-screen p-6">
-      <MissionControl />
-    </main>
-  );
+  return <EnhancedTAMissionControl />;
 };
 
 export default TAMissionControlPage;
