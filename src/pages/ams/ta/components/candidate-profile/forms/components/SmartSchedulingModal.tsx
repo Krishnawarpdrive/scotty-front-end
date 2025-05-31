@@ -9,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar, Clock, User, Video, Mail, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useEnhancedToast } from '@/components/feedback/EnhancedToast';
 import type { Candidate } from '../../../types/CandidateTypes';
 
 interface SchedulingData {
@@ -52,6 +53,9 @@ export const SmartSchedulingModal: React.FC<SmartSchedulingModalProps> = ({
       notes: ''
     }
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const toast = useEnhancedToast();
 
   const availableInterviewers = [
     { id: '1', name: 'Sarah Johnson', title: 'Senior Engineer', available: true },
@@ -63,9 +67,32 @@ export const SmartSchedulingModal: React.FC<SmartSchedulingModalProps> = ({
     '09:00', '10:00', '11:00', '14:00', '15:00', '16:00'
   ];
 
-  const handleSubmit = () => {
-    onSchedule(formData);
-    onClose();
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      onSchedule(formData);
+      onClose();
+      
+      toast.success({
+        title: existingSchedule ? 'Interview rescheduled' : 'Interview scheduled',
+        description: `${candidate.name}'s interview has been ${existingSchedule ? 'rescheduled' : 'scheduled'} successfully`,
+        action: {
+          label: 'View Calendar',
+          onClick: () => console.log('Open calendar')
+        }
+      });
+    } catch (error) {
+      toast.error({
+        title: 'Scheduling failed',
+        description: 'Unable to schedule the interview. Please try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const isFormValid = formData.date && formData.time && 
@@ -265,10 +292,15 @@ export const SmartSchedulingModal: React.FC<SmartSchedulingModalProps> = ({
             </Button>
             <Button 
               onClick={handleSubmit} 
-              disabled={!isFormValid}
+              disabled={!isFormValid || isSubmitting}
               className="flex-1"
             >
-              {existingSchedule ? 'Update Schedule' : 'Schedule Interview'}
+              {isSubmitting 
+                ? 'Scheduling...' 
+                : existingSchedule 
+                  ? 'Update Schedule' 
+                  : 'Schedule Interview'
+              }
             </Button>
           </div>
         </div>
