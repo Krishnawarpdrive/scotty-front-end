@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { toast } from 'sonner';
-import { CheckCircle, AlertCircle, Info, X, Clock } from 'lucide-react';
+import { 
+  useSuperEnhancedToast
+} from './SuperEnhancedToast';
 
 interface ToastOptions {
   title: string;
@@ -13,53 +14,24 @@ interface ToastOptions {
   duration?: number;
 }
 
+// Backward compatibility layer
 export const useEnhancedToast = () => {
+  const toast = useSuperEnhancedToast();
+
   const showSuccess = (options: ToastOptions) => {
-    toast.success(options.title, {
-      description: options.description,
-      duration: options.duration || 4000,
-      icon: <CheckCircle className="h-4 w-4" />,
-      action: options.action ? {
-        label: options.action.label,
-        onClick: options.action.onClick,
-      } : undefined,
-    });
+    return toast.success(options);
   };
 
   const showError = (options: ToastOptions) => {
-    toast.error(options.title, {
-      description: options.description,
-      duration: options.duration || 6000,
-      icon: <AlertCircle className="h-4 w-4" />,
-      action: options.action ? {
-        label: options.action.label,
-        onClick: options.action.onClick,
-      } : undefined,
-    });
+    return toast.error(options);
   };
 
   const showInfo = (options: ToastOptions) => {
-    toast.info(options.title, {
-      description: options.description,
-      duration: options.duration || 4000,
-      icon: <Info className="h-4 w-4" />,
-      action: options.action ? {
-        label: options.action.label,
-        onClick: options.action.onClick,
-      } : undefined,
-    });
+    return toast.info(options);
   };
 
   const showWarning = (options: ToastOptions) => {
-    toast.warning(options.title, {
-      description: options.description,
-      duration: options.duration || 5000,
-      icon: <Clock className="h-4 w-4" />,
-      action: options.action ? {
-        label: options.action.label,
-        onClick: options.action.onClick,
-      } : undefined,
-    });
+    return toast.warning(options);
   };
 
   const showPromise = <T,>(
@@ -70,11 +42,7 @@ export const useEnhancedToast = () => {
       error: string | ((error: any) => string);
     }
   ) => {
-    return toast.promise(promise, {
-      loading: options.loading,
-      success: options.success,
-      error: options.error,
-    });
+    return toast.promise(promise, options);
   };
 
   return {
@@ -83,5 +51,7 @@ export const useEnhancedToast = () => {
     info: showInfo,
     warning: showWarning,
     promise: showPromise,
+    // Expose new enhanced methods
+    ...toast
   };
 };
