@@ -5,7 +5,7 @@ import { TAManagementDashboard } from './components/enhanced/TAManagementDashboa
 
 export const TAManagementPage: React.FC = () => {
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6">
       <PageHeader
         title="TA Management"
         subtitle="Comprehensive talent acquisition team management and workload optimization"

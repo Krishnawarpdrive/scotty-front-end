@@ -1,3 +1,4 @@
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -8,9 +9,8 @@ import Index from './pages/Index';
 import { AuthLayout } from './components/layout/AuthLayout';
 import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
-import { MainLayout } from './components/layout/MainLayout';
+import AMSLayout from './layouts/AMSLayout';
 import { Dashboard } from './pages/Dashboard';
-import { RequireAuth } from './components/auth/RequireAuth';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor } from './store/index';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
@@ -22,6 +22,7 @@ import { VendorsPage } from './pages/ams/vendors';
 import { TalentAcquisitionPage } from './pages/ams/ta';
 import { HumanResourcesPage } from './pages/ams/hr';
 import { GamificationPage } from './pages/gamification';
+import TAManagementPage from './pages/ams/ta/TAManagementPage';
 
 const queryClient = new QueryClient();
 
@@ -35,7 +36,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Index />} />
                 
-                {/* Auth Routes */}
+                {/* Auth Routes - No actual authentication required */}
                 <Route element={<AuthLayout />}>
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
@@ -44,18 +45,15 @@ function App() {
                   <Route path="/verify-email/:token" element={<EmailVerification />} />
                 </Route>
 
-                {/* Main App Routes */}
-                <Route element={<RequireAuth><MainLayout /></RequireAuth>}>
+                {/* AMS Routes with Sidebar */}
+                <Route element={<AMSLayout />}>
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/onboarding" element={<Onboarding />} />
-
-                  {/* AMS Routes */}
                   <Route path="/ams/clients" element={<ClientsPage />} />
                   <Route path="/ams/vendors" element={<VendorsPage />} />
                   <Route path="/ams/talent-acquisition" element={<TalentAcquisitionPage />} />
+                  <Route path="/ams/ta/management" element={<TAManagementPage />} />
                   <Route path="/ams/human-resources" element={<HumanResourcesPage />} />
-
-                  {/* Gamification Route */}
                   <Route path="/gamification" element={<GamificationPage />} />
                 </Route>
               </Routes>

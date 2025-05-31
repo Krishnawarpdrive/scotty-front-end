@@ -1,258 +1,164 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useTAManagement } from '@/hooks/useTAManagement';
-import { Users, UserCheck, Clock, TrendingUp, AlertCircle, Plus } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Users, Target, Clock, TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react';
+import { TAAssignmentManager } from './TAAssignmentManager';
 
-interface TAManagementDashboardProps {
-  className?: string;
-}
+export const TAManagementDashboard: React.FC = () => {
+  return (
+    <div className="space-y-6">
+      {/* Overview Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <Users className="w-5 h-5 text-[#009933]" />
+              <div>
+                <p className="text-sm text-gray-600">Active TAs</p>
+                <p className="text-xl font-bold">12</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-export const TAManagementDashboard: React.FC<TAManagementDashboardProps> = ({ className }) => {
-  const { taProfiles, workloads, loading, error } = useTAManagement();
-  const [selectedTA, setSelectedTA] = useState<string | null>(null);
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <Target className="w-5 h-5 text-blue-600" />
+              <div>
+                <p className="text-sm text-gray-600">Open Requirements</p>
+                <p className="text-xl font-bold">28</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <div className="h-32 bg-gray-100 rounded-lg animate-pulse" />
-        <div className="h-64 bg-gray-100 rounded-lg animate-pulse" />
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <Clock className="w-5 h-5 text-orange-600" />
+              <div>
+                <p className="text-sm text-gray-600">Avg. Time to Fill</p>
+                <p className="text-xl font-bold">14.2d</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <TrendingUp className="w-5 h-5 text-[#009933]" />
+              <div>
+                <p className="text-sm text-gray-600">Success Rate</p>
+                <p className="text-xl font-bold">87%</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    );
-  }
 
-  if (error) {
-    return (
+      {/* Quick Actions */}
       <Card>
-        <CardContent className="p-6">
-          <div className="text-center text-red-600">
-            <AlertCircle className="w-8 h-8 mx-auto mb-2" />
-            <p>Error loading TA management data: {error}</p>
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-3">
+            <Button className="bg-[#009933] hover:bg-[#007728]">
+              New Assignment
+            </Button>
+            <Button variant="outline">
+              View Workloads
+            </Button>
+            <Button variant="outline">
+              Performance Report
+            </Button>
+            <Button variant="outline">
+              TA Analytics
+            </Button>
           </div>
         </CardContent>
       </Card>
-    );
-  }
 
-  const totalTAs = taProfiles.length;
-  const activeTAs = taProfiles.filter(ta => ta.status === 'active').length;
-  const averageUtilization = workloads.reduce((sum, w) => sum + w.utilization_percentage, 0) / workloads.length || 0;
-  const overloadedTAs = workloads.filter(w => w.utilization_percentage > 90).length;
-
-  return (
-    <div className={`space-y-6 ${className}`}>
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Recent Activities */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total TAs</p>
-                <p className="text-2xl font-bold">{totalTAs}</p>
+          <CardHeader>
+            <CardTitle>Recent Activities</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3 p-3 border rounded-lg">
+                <CheckCircle className="w-4 h-4 text-[#009933]" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Assignment Completed</p>
+                  <p className="text-xs text-gray-600">John Doe completed React Developer role</p>
+                </div>
+                <Badge>Today</Badge>
               </div>
-              <Users className="w-8 h-8 text-blue-600" />
+              <div className="flex items-center space-x-3 p-3 border rounded-lg">
+                <AlertTriangle className="w-4 h-4 text-orange-600" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Deadline Approaching</p>
+                  <p className="text-xs text-gray-600">Senior Engineer role due in 2 days</p>
+                </div>
+                <Badge variant="destructive">Urgent</Badge>
+              </div>
+              <div className="flex items-center space-x-3 p-3 border rounded-lg">
+                <Users className="w-4 h-4 text-blue-600" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium">New Requirement</p>
+                  <p className="text-xs text-gray-600">Product Manager at TechCorp</p>
+                </div>
+                <Badge variant="secondary">New</Badge>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Active TAs</p>
-                <p className="text-2xl font-bold text-green-600">{activeTAs}</p>
+          <CardHeader>
+            <CardTitle>Team Performance</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm">John Doe</span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-20 bg-gray-200 rounded-full h-2">
+                    <div className="bg-[#009933] h-2 rounded-full" style={{ width: '85%' }}></div>
+                  </div>
+                  <span className="text-sm">85%</span>
+                </div>
               </div>
-              <UserCheck className="w-8 h-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Avg. Utilization</p>
-                <p className="text-2xl font-bold">{averageUtilization.toFixed(1)}%</p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Jane Smith</span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-20 bg-gray-200 rounded-full h-2">
+                    <div className="bg-[#009933] h-2 rounded-full" style={{ width: '92%' }}></div>
+                  </div>
+                  <span className="text-sm">92%</span>
+                </div>
               </div>
-              <TrendingUp className="w-8 h-8 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Overloaded</p>
-                <p className="text-2xl font-bold text-red-600">{overloadedTAs}</p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Mike Johnson</span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-20 bg-gray-200 rounded-full h-2">
+                    <div className="bg-[#009933] h-2 rounded-full" style={{ width: '78%' }}></div>
+                  </div>
+                  <span className="text-sm">78%</span>
+                </div>
               </div>
-              <AlertCircle className="w-8 h-8 text-red-600" />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Main Content */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <div className="flex items-center justify-between">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="workload">Workload</TabsTrigger>
-            <TabsTrigger value="performance">Performance</TabsTrigger>
-            <TabsTrigger value="assignments">Assignments</TabsTrigger>
-          </TabsList>
-          
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Add TA
-          </Button>
-        </div>
-
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* TA Profiles Overview */}
-            <Card>
-              <CardHeader>
-                <CardTitle>TA Profiles</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {taProfiles.slice(0, 5).map((ta) => (
-                    <div key={ta.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-medium text-blue-600">
-                            {ta.name.charAt(0)}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-medium">{ta.name}</p>
-                          <p className="text-sm text-gray-600">{ta.email}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge variant={ta.status === 'active' ? 'default' : 'secondary'}>
-                          {ta.status}
-                        </Badge>
-                        <span className="text-sm text-gray-600">
-                          {ta.efficiency_score}% efficiency
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Workload Distribution */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Workload Distribution</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {workloads.slice(0, 5).map((workload) => (
-                    <div key={workload.ta_id} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">{workload.ta_name}</span>
-                        <span className="text-sm text-gray-600">
-                          {workload.active_assignments}/{workload.total_capacity}
-                        </span>
-                      </div>
-                      <Progress value={workload.utilization_percentage} className="h-2" />
-                      <div className="flex items-center justify-between text-xs text-gray-500">
-                        <span>{workload.utilization_percentage.toFixed(1)}% utilized</span>
-                        {workload.overdue_tasks > 0 && (
-                          <Badge variant="destructive" className="text-xs">
-                            {workload.overdue_tasks} overdue
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="workload" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>TA Workload Management</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {workloads.map((workload) => (
-                  <Card key={workload.ta_id} className="border">
-                    <CardContent className="p-4">
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-medium">{workload.ta_name}</h3>
-                          <Badge variant={workload.utilization_percentage > 90 ? 'destructive' : 'default'}>
-                            {workload.utilization_percentage.toFixed(1)}%
-                          </Badge>
-                        </div>
-                        
-                        <Progress value={workload.utilization_percentage} className="h-2" />
-                        
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                          <div>
-                            <span className="text-gray-600">Active:</span>
-                            <span className="ml-1 font-medium">{workload.active_assignments}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">Capacity:</span>
-                            <span className="ml-1 font-medium">{workload.total_capacity}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">Upcoming:</span>
-                            <span className="ml-1 font-medium">{workload.upcoming_deadlines}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">Overdue:</span>
-                            <span className="ml-1 font-medium text-red-600">{workload.overdue_tasks}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="performance" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Performance Metrics</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center text-gray-500 py-8">
-                Performance metrics will be displayed here based on individual TA data.
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="assignments" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>TA Assignments</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center text-gray-500 py-8">
-                Assignment management interface will be displayed here.
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      {/* Assignment Manager */}
+      <TAAssignmentManager />
     </div>
   );
 };
