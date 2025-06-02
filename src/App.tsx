@@ -18,6 +18,7 @@ import { ResetPassword } from './pages/auth/ResetPassword';
 import { EmailVerification } from './pages/auth/EmailVerification';
 import { Onboarding } from './pages/Onboarding';
 import { ClientsPage } from './pages/ams/clients';
+import ClientDetailsPage from './pages/ams/clients/ClientDetailsPage';
 import { VendorsPage } from './pages/ams/vendors';
 import { TalentAcquisitionPage } from './pages/ams/ta';
 import { HumanResourcesPage } from './pages/ams/hr';
@@ -64,6 +65,7 @@ function App() {
                   <Route path="/ams/dashboard" element={<Dashboard />} />
                   <Route path="/onboarding" element={<Onboarding />} />
                   <Route path="/ams/clients" element={<ClientsPage />} />
+                  <Route path="/ams/clients/:clientId" element={<ClientDetailsPage />} />
                   <Route path="/ams/requirements" element={<RequirementsPage />} />
                   <Route path="/ams/roles" element={<RolesLibraryPage />} />
                   <Route path="/ams/skills/library" element={<SkillsPage />} />

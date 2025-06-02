@@ -59,7 +59,15 @@ export function EnhancedCandidateTable({
             </div>
           </div>
           <div>
-            <div className="font-medium text-gray-900">{candidate.name}</div>
+            <div 
+              className="font-medium text-gray-900 cursor-pointer hover:text-blue-600 hover:underline"
+              onClick={(e) => {
+                e.stopPropagation();
+                onViewProfile?.(candidate);
+              }}
+            >
+              {candidate.name}
+            </div>
             <div className="text-sm text-gray-500 flex items-center space-x-2">
               <Mail className="h-3 w-3" />
               <span>{candidate.email}</span>
