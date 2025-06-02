@@ -9,12 +9,27 @@ import { Input } from '@/components/ui/input';
 import { Candidate } from './types';
 
 interface CandidatePoolContentProps {
+  candidates?: Candidate[];
+  selectedCandidates?: string[];
+  showFilters?: boolean;
+  filters?: any;
+  onCandidateSelect?: (candidateId: string, selected: boolean) => void;
+  onSelectAll?: () => void;
   onCandidateClick: (candidate: Candidate) => void;
+  onQuickAction?: (action: string, candidateIds: string[]) => void;
+  onFilterChange?: (key: string, value: any) => void;
+  onClearFilter?: (key: string) => void;
+  onClearAllFilters?: () => void;
+  onBulkAction?: (action: string, candidateIds: string[]) => void;
+  setSelectedCandidates?: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-export const CandidatePoolContent: React.FC<CandidatePoolContentProps> = ({ onCandidateClick }) => {
-  // Mock candidates data
-  const candidates: Candidate[] = [
+export const CandidatePoolContent: React.FC<CandidatePoolContentProps> = ({ 
+  candidates = [],
+  onCandidateClick 
+}) => {
+  // Mock candidates data if none provided
+  const defaultCandidates: Candidate[] = [
     {
       id: '1',
       name: 'Sarah Johnson',
@@ -50,6 +65,8 @@ export const CandidatePoolContent: React.FC<CandidatePoolContentProps> = ({ onCa
       notes: 'Strong problem-solving skills, eager to learn new technologies.'
     }
   ];
+
+  const candidateList = candidates.length > 0 ? candidates : defaultCandidates;
 
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
@@ -105,7 +122,7 @@ export const CandidatePoolContent: React.FC<CandidatePoolContentProps> = ({ onCa
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Candidates</p>
-                <p className="text-2xl font-bold">{candidates.length}</p>
+                <p className="text-2xl font-bold">{candidateList.length}</p>
               </div>
               <Users className="h-8 w-8 text-blue-600" />
             </div>
@@ -117,7 +134,7 @@ export const CandidatePoolContent: React.FC<CandidatePoolContentProps> = ({ onCa
               <div>
                 <p className="text-sm text-gray-600">Active</p>
                 <p className="text-2xl font-bold">
-                  {candidates.filter(c => c.status === 'Active').length}
+                  {candidateList.filter(c => c.status === 'Active').length}
                 </p>
               </div>
               <Users className="h-8 w-8 text-green-600" />
@@ -130,7 +147,7 @@ export const CandidatePoolContent: React.FC<CandidatePoolContentProps> = ({ onCa
               <div>
                 <p className="text-sm text-gray-600">In Review</p>
                 <p className="text-2xl font-bold">
-                  {candidates.filter(c => c.currentStage && c.currentStage !== 'Applied').length}
+                  {candidateList.filter(c => c.currentStage && c.currentStage !== 'Applied').length}
                 </p>
               </div>
               <Users className="h-8 w-8 text-yellow-600" />
@@ -152,7 +169,7 @@ export const CandidatePoolContent: React.FC<CandidatePoolContentProps> = ({ onCa
 
       {/* Candidates List */}
       <div className="grid grid-cols-1 gap-4">
-        {candidates.map((candidate) => (
+        {candidateList.map((candidate) => (
           <Card 
             key={candidate.id} 
             className="cursor-pointer hover:shadow-lg transition-shadow duration-200"

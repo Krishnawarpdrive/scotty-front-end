@@ -29,7 +29,6 @@ export const usePanelistTableColumns = ({
     {
       id: "panelist_id",
       header: "ID",
-      accessorKey: "panelist_id",
       cell: (panelist) => (
         <div className="font-mono text-sm text-muted-foreground">
           {panelist.panelist_id}
@@ -68,7 +67,6 @@ export const usePanelistTableColumns = ({
     {
       id: "seniority",
       header: "Seniority",
-      accessorKey: "seniority_level",
       cell: (panelist) => {
         const colorMap = {
           junior: "bg-blue-100 text-blue-800",
@@ -88,7 +86,6 @@ export const usePanelistTableColumns = ({
     {
       id: "authorization",
       header: "Auth Level",
-      accessorKey: "interview_authorization_level",
       cell: (panelist) => {
         const authColorMap = {
           basic: "bg-gray-100 text-gray-800",
@@ -122,7 +119,6 @@ export const usePanelistTableColumns = ({
     {
       id: "allocation",
       header: "Daily Allocation",
-      accessorKey: "interviews_allocated_per_day",
       cell: (panelist) => (
         <div className="text-center">
           <div className="font-medium">{panelist.interviews_allocated_per_day}</div>

@@ -37,6 +37,9 @@ export const useCandidateDetailDrawer = () => {
     isOpen: state.isOpen,
     candidateId: state.candidateId,
     selectedCandidate: state.selectedCandidate,
+    drawerOpen: state.isOpen,
+    handleCandidateClick: openDrawer,
+    handleCloseDrawer: closeDrawer,
     openDrawer,
     closeDrawer
   };

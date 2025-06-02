@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Panelist, PanelistFilters, CreatePanelistData } from "../types/PanelistTypes";
@@ -40,7 +41,9 @@ export const usePanelists = (filters: UsePanelistsParams = {}) => {
     availability_status: data.availability_status as Panelist['availability_status'],
     interview_authorization_level: data.interview_authorization_level as Panelist['interview_authorization_level'],
     interviews_allocated_per_day: data.interviews_allocated_per_day || 2,
-    interviews_converted_to_offers: data.interviews_converted_to_offers || 0
+    interviews_converted_to_offers: data.interviews_converted_to_offers || 0,
+    feedback_score: data.feedback_score || 0,
+    max_interviews_per_week: data.max_interviews_per_week || 5
   });
 
   const fetchPanelists = async () => {
@@ -70,7 +73,7 @@ export const usePanelists = (filters: UsePanelistsParams = {}) => {
         query = query.eq('availability_status', filters.availability);
       }
 
-      if (filters.seniority) {
+      if (filters.seniority && filters.seniority !== "all") {
         query = query.eq('seniority_level', filters.seniority);
       }
 
@@ -107,7 +110,27 @@ export const usePanelists = (filters: UsePanelistsParams = {}) => {
       setLoading(true);
       const { data, error } = await supabase
         .from('interview_panelists')
-        .insert([panelistData])
+        .insert([{
+          panelist_id: panelistData.panelist_id,
+          name: panelistData.name,
+          email: panelistData.email,
+          phone: panelistData.phone,
+          title: panelistData.title,
+          department: panelistData.department,
+          location: panelistData.location,
+          bio: panelistData.bio,
+          seniority_level: panelistData.seniority_level,
+          skills: panelistData.skills,
+          certifications: panelistData.certifications,
+          languages: panelistData.languages,
+          interview_types: panelistData.interview_types,
+          preferred_time_slots: panelistData.preferred_time_slots,
+          max_interviews_per_week: panelistData.max_interviews_per_week,
+          interviews_allocated_per_day: panelistData.interviews_allocated_per_day,
+          projects_worked_on: panelistData.projects_worked_on,
+          tools_used: panelistData.tools_used,
+          interview_authorization_level: panelistData.interview_authorization_level
+        }])
         .select()
         .single();
       
