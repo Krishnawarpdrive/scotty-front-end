@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { EnhancedCandidateDetailDrawer as HRCandidateDetailDrawer } from '@/pages/ams/hr/components/candidate-pool/EnhancedCandidateDetailDrawer';
+import { MultiPipelineCandidateDetailDrawer } from './MultiPipelineCandidateDetailDrawer';
 
 interface TAEnhancedCandidateDetailDrawerProps {
   open: boolean;
@@ -14,11 +14,10 @@ export const EnhancedCandidateDetailDrawer: React.FC<TAEnhancedCandidateDetailDr
   candidate
 }) => {
   return (
-    <HRCandidateDetailDrawer
+    <MultiPipelineCandidateDetailDrawer
       open={open}
       onClose={onClose}
       candidateId={candidate?.id || null}
-      userRole="ta"
     />
   );
 };

@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { EnhancedCandidateTable } from './EnhancedCandidateTable';
-import { EnhancedCandidateDetailDrawer } from '@/pages/ams/hr/components/candidate-pool/EnhancedCandidateDetailDrawer';
+import { EnhancedCandidateDetailDrawer } from '../candidate-detail/EnhancedCandidateDetailDrawer';
 import { useEnhancedToast } from '@/components/feedback/EnhancedToast';
 import { Plus, Download, Filter, Users, Calendar, CheckCircle, Clock } from 'lucide-react';
 
@@ -128,11 +127,11 @@ export function EnhancedTAMissionControl() {
   const toast = useEnhancedToast();
   const [loading, setLoading] = useState(false);
   const [candidateDetailOpen, setCandidateDetailOpen] = useState(false);
-  const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);
+  const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
 
   const handleViewProfile = (candidate: any) => {
     console.log('View candidate profile:', candidate);
-    setSelectedCandidateId(candidate.id);
+    setSelectedCandidate(candidate);
     setCandidateDetailOpen(true);
   };
 
@@ -197,7 +196,7 @@ export function EnhancedTAMissionControl() {
 
   const handleCloseCandidateDetail = () => {
     setCandidateDetailOpen(false);
-    setSelectedCandidateId(null);
+    setSelectedCandidate(null);
   };
 
   // Calculate metrics
@@ -301,12 +300,11 @@ export function EnhancedTAMissionControl() {
         onExportCandidates={handleExportCandidates}
       />
 
-      {/* Enhanced Candidate Detail Drawer with Stage Management */}
+      {/* Enhanced Multi-Pipeline Candidate Detail Drawer */}
       <EnhancedCandidateDetailDrawer
         open={candidateDetailOpen}
         onClose={handleCloseCandidateDetail}
-        candidateId={selectedCandidateId}
-        userRole="ta"
+        candidate={selectedCandidate}
       />
     </motion.div>
   );
