@@ -52,7 +52,9 @@ export const usePanelistDetail = (panelistId: string | null) => {
         availability_status: data.availability_status as Panelist['availability_status'],
         interview_authorization_level: data.interview_authorization_level as Panelist['interview_authorization_level'],
         interviews_allocated_per_day: data.interviews_allocated_per_day || 2,
-        interviews_converted_to_offers: data.interviews_converted_to_offers || 0
+        interviews_converted_to_offers: data.interviews_converted_to_offers || 0,
+        timezone: data.timezone || 'UTC',
+        years_experience: data.years_experience || 0
       };
 
       setPanelist(transformedData);
