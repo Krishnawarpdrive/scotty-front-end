@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,8 @@ export const PanelistCreationDrawer: React.FC<PanelistCreationDrawerProps> = ({
     department: '',
     location: '',
     bio: '',
+    status: 'active',
+    availability_status: 'available',
     seniority_level: 'mid',
     skills: [],
     certifications: [],
@@ -41,7 +44,9 @@ export const PanelistCreationDrawer: React.FC<PanelistCreationDrawerProps> = ({
     interviews_allocated_per_day: 2,
     projects_worked_on: [],
     tools_used: [],
-    interview_authorization_level: 'basic'
+    interview_authorization_level: 'basic',
+    timezone: 'UTC',
+    years_experience: 0
   });
 
   const resetForm = () => {
@@ -54,6 +59,8 @@ export const PanelistCreationDrawer: React.FC<PanelistCreationDrawerProps> = ({
       department: '',
       location: '',
       bio: '',
+      status: 'active',
+      availability_status: 'available',
       seniority_level: 'mid',
       skills: [],
       certifications: [],
@@ -64,7 +71,9 @@ export const PanelistCreationDrawer: React.FC<PanelistCreationDrawerProps> = ({
       interviews_allocated_per_day: 2,
       projects_worked_on: [],
       tools_used: [],
-      interview_authorization_level: 'basic'
+      interview_authorization_level: 'basic',
+      timezone: 'UTC',
+      years_experience: 0
     });
   };
 
