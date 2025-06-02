@@ -1397,6 +1397,33 @@ export type Database = {
           },
         ]
       }
+      permissions: {
+        Row: {
+          action: string
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          resource: string
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          resource: string
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          resource?: string
+        }
+        Relationships: []
+      }
       pipeline_templates: {
         Row: {
           created_at: string
@@ -1648,6 +1675,35 @@ export type Database = {
             columns: ["role_id"]
             isOneToOne: false
             referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      role_permissions: {
+        Row: {
+          created_at: string | null
+          id: string
+          permission_id: string | null
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          permission_id?: string | null
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          permission_id?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_permission_id_fkey"
+            columns: ["permission_id"]
+            isOneToOne: false
+            referencedRelation: "permissions"
             referencedColumns: ["id"]
           },
         ]
@@ -2065,6 +2121,87 @@ export type Database = {
         }
         Relationships: []
       }
+      user_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          department: string | null
+          email: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          phone: string | null
+          preferences: Json | null
+          timezone: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          department?: string | null
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          preferences?: Json | null
+          timezone?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          department?: string | null
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          preferences?: Json | null
+          timezone?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          assigned_at: string | null
+          assigned_by: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          metadata: Json | null
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       vendors: {
         Row: {
           active_requirements: number | null
@@ -2234,6 +2371,10 @@ export type Database = {
         Args: { "": string } | { "": unknown }
         Returns: unknown
       }
+      get_user_roles: {
+        Args: { user_uuid?: string }
+        Returns: Database["public"]["Enums"]["app_role"][]
+      }
       halfvec_avg: {
         Args: { "": number[] }
         Returns: unknown
@@ -2249,6 +2390,24 @@ export type Database = {
       halfvec_typmod_in: {
         Args: { "": unknown[] }
         Returns: number
+      }
+      has_any_role: {
+        Args: {
+          user_uuid: string
+          check_roles: Database["public"]["Enums"]["app_role"][]
+        }
+        Returns: boolean
+      }
+      has_permission: {
+        Args: { user_uuid: string; resource_name: string; action_name: string }
+        Returns: boolean
+      }
+      has_role: {
+        Args: {
+          user_uuid: string
+          check_role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
       }
       hnsw_bit_support: {
         Args: { "": unknown }
@@ -2324,7 +2483,15 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "ams"
+        | "hr"
+        | "ta"
+        | "candidate"
+        | "vendor"
+        | "interviewer"
+        | "client-hr"
+        | "bo"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2439,6 +2606,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: [
+        "ams",
+        "hr",
+        "ta",
+        "candidate",
+        "vendor",
+        "interviewer",
+        "client-hr",
+        "bo",
+      ],
+    },
   },
 } as const

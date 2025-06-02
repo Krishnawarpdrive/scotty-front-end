@@ -5,6 +5,8 @@ import { Provider } from 'react-redux';
 import { store } from './store';
 import { ToastProvider } from './components/feedback/enhanced-toast';
 import { Toaster } from '@/components/ui/sonner';
+import { AuthProvider } from './contexts/AuthContext';
+import { PermissionsProvider } from './contexts/PermissionsContext';
 import Index from './pages/Index';
 import { AuthLayout } from './components/layout/AuthLayout';
 import { Login } from './pages/auth/Login';
@@ -44,56 +46,63 @@ function App() {
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <ToastProvider position="top-right" maxToasts={5}>
-          <PersistGate loading={null} persistor={persistor}>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                
-                {/* Auth Routes - No actual authentication required */}
-                <Route element={<AuthLayout />}>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/reset-password/:token" element={<ResetPassword />} />
-                  <Route path="/verify-email/:token" element={<EmailVerification />} />
-                </Route>
+        <AuthProvider>
+          <PermissionsProvider>
+            <ToastProvider position="top-right" maxToasts={5}>
+              <PersistGate loading={null} persistor={persistor}>
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    
+                    {/* Auth Routes - No actual authentication required */}
+                    <Route element={<AuthLayout />}>
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/register" element={<Register />} />
+                      <Route path="/forgot-password" element={<ForgotPassword />} />
+                      <Route path="/reset-password/:token" element={<ResetPassword />} />
+                      <Route path="/verify-email/:token" element={<EmailVerification />} />
+                    </Route>
 
-                {/* AMS Routes with Sidebar */}
-                <Route element={<AMSLayout />}>
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/ams/dashboard" element={<Dashboard />} />
-                  <Route path="/onboarding" element={<Onboarding />} />
-                  <Route path="/ams/clients" element={<ClientsPage />} />
-                  <Route path="/ams/clients/:clientId" element={<ClientDetailsPage />} />
-                  <Route path="/ams/requirements" element={<RequirementsPage />} />
-                  <Route path="/ams/roles" element={<RolesLibraryPage />} />
-                  <Route path="/ams/skills/library" element={<SkillsPage />} />
-                  <Route path="/ams/vendors" element={<VendorsPage />} />
-                  <Route path="/ams/talent-acquisition" element={<TalentAcquisitionPage />} />
-                  <Route path="/ams/ta/management" element={<TAManagementPage />} />
-                  <Route path="/ams/ta/mission-control" element={<TalentAcquisitionPage />} />
-                  <Route path="/ams/human-resources" element={<HumanResourcesPage />} />
-                  <Route path="/ams/hr/dashboard" element={<HRDashboardPage />} />
-                  <Route path="/ams/hr/candidate-pool" element={<CandidatePoolPage />} />
-                  <Route path="/ams/hr/role-management" element={<RoleManagementPage />} />
-                  <Route path="/ams/candidate-dashboard" element={<CandidatePoolPage />} />
-                  <Route path="/ams/executive/dashboard" element={<ExecutiveDashboardPage />} />
-                  <Route path="/ams/executive/clients" element={<ExecutiveClientPage />} />
-                  <Route path="/ams/checklist-bar" element={<ChecklistsPage />} />
-                  <Route path="/ams/interview-panelists" element={<InterviewPanelistLibraryPage />} />
-                  <Route path="/ams/checklists" element={<ChecklistsPage />} />
-                  <Route path="/ams/certifications" element={<CertificationsPage />} />
-                  <Route path="/ams/vendor-management" element={<VendorManagementPage />} />
-                  <Route path="/ams/commissions" element={<CommissionsPage />} />
-                  <Route path="/ams/analytics" element={<Dashboard />} />
-                  <Route path="/gamification" element={<GamificationPage />} />
-                </Route>
-              </Routes>
-              <Toaster />
-            </BrowserRouter>
-          </PersistGate>
-        </ToastProvider>
+                    {/* AMS Routes with Sidebar */}
+                    <Route element={<AMSLayout />}>
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/ams/dashboard" element={<Dashboard />} />
+                      <Route path="/onboarding" element={<Onboarding />} />
+                      <Route path="/ams/clients" element={<ClientsPage />} />
+                      <Route path="/ams/clients/:clientId" element={<ClientDetailsPage />} />
+                      <Route path="/ams/requirements" element={<RequirementsPage />} />
+                      <Route path="/ams/roles" element={<RolesLibraryPage />} />
+                      <Route path="/ams/skills/library" element={<SkillsPage />} />
+                      <Route path="/ams/vendors" element={<VendorsPage />} />
+                      <Route path="/ams/talent-acquisition" element={<TalentAcquisitionPage />} />
+                      <Route path="/ams/ta/management" element={<TAManagementPage />} />
+                      <Route path="/ams/ta/mission-control" element={<TalentAcquisitionPage />} />
+                      <Route path="/ams/human-resources" element={<HumanResourcesPage />} />
+                      <Route path="/ams/hr/dashboard" element={<HRDashboardPage />} />
+                      <Route path="/ams/hr/candidate-pool" element={<CandidatePoolPage />} />
+                      <Route path="/ams/hr/role-management" element={<RoleManagementPage />} />
+                      <Route path="/ams/candidate-dashboard" element={<CandidatePoolPage />} />
+                      <Route path="/ams/executive/dashboard" element={<ExecutiveDashboardPage />} />
+                      <Route path="/ams/executive/clients" element={<ExecutiveClientPage />} />
+                      <Route path="/ams/checklist-bar" element={<ChecklistsPage />} />
+                      <Route path="/ams/interview-panelists" element={<InterviewPanelistLibraryPage />} />
+                      <Route path="/ams/checklists" element={<ChecklistsPage />} />
+                      <Route path="/ams/certifications" element={<CertificationsPage />} />
+                      <Route path="/ams/vendor-management" element={<VendorManagementPage />} />
+                      <Route path="/ams/commissions" element={<CommissionsPage />} />
+                      <Route path="/ams/analytics" element={<Dashboard />} />
+                      <Route path="/ams/admin/users" element={
+                        React.lazy(() => import('./pages/ams/admin/UserManagementPage'))
+                      } />
+                      <Route path="/gamification" element={<GamificationPage />} />
+                    </Route>
+                  </Routes>
+                  <Toaster />
+                </BrowserRouter>
+              </PersistGate>
+            </ToastProvider>
+          </PermissionsProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </Provider>
   );
