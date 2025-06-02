@@ -16,7 +16,7 @@ export const useCandidateDetailDrawer = () => {
   });
 
   const openDrawer = (candidate: Candidate) => {
-    console.log('Opening candidate detail drawer for:', candidate.id);
+    console.log('Opening enhanced candidate detail drawer for:', candidate.id);
     setState({
       isOpen: true,
       candidateId: candidate.id,
@@ -25,7 +25,7 @@ export const useCandidateDetailDrawer = () => {
   };
 
   const closeDrawer = () => {
-    console.log('Closing candidate detail drawer');
+    console.log('Closing enhanced candidate detail drawer');
     setState({
       isOpen: false,
       candidateId: null,
