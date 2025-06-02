@@ -1,25 +1,37 @@
 
 import { useState } from 'react';
-import { Candidate } from './CandidateTable';
+
+export interface CandidateDetailDrawerState {
+  isOpen: boolean;
+  candidateId: string | null;
+}
 
 export const useCandidateDetailDrawer = () => {
-  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [state, setState] = useState<CandidateDetailDrawerState>({
+    isOpen: false,
+    candidateId: null
+  });
 
-  const handleCandidateClick = (candidate: Candidate) => {
-    setSelectedCandidate(candidate);
-    setDrawerOpen(true);
+  const openDrawer = (candidateId: string) => {
+    console.log('Opening candidate detail drawer for:', candidateId);
+    setState({
+      isOpen: true,
+      candidateId
+    });
   };
 
-  const handleCloseDrawer = () => {
-    setDrawerOpen(false);
-    setSelectedCandidate(null);
+  const closeDrawer = () => {
+    console.log('Closing candidate detail drawer');
+    setState({
+      isOpen: false,
+      candidateId: null
+    });
   };
 
   return {
-    selectedCandidate,
-    drawerOpen,
-    handleCandidateClick,
-    handleCloseDrawer,
+    isOpen: state.isOpen,
+    candidateId: state.candidateId,
+    openDrawer,
+    closeDrawer
   };
 };

@@ -23,6 +23,19 @@ import { TalentAcquisitionPage } from './pages/ams/ta';
 import { HumanResourcesPage } from './pages/ams/hr';
 import { GamificationPage } from './pages/gamification';
 import TAManagementPage from './pages/ams/ta/TAManagementPage';
+import InterviewPanelistLibraryPage from './pages/ams/InterviewPanelistLibraryPage';
+import RequirementsPage from './pages/ams/RequirementsPage';
+import RolesLibraryPage from './pages/ams/RolesLibraryPage';
+import SkillsPage from './pages/ams/SkillsPage';
+import ChecklistsPage from './pages/ams/ChecklistsPage';
+import CertificationsPage from './pages/ams/CertificationsPage';
+import VendorManagementPage from './pages/ams/VendorManagementPage';
+import CommissionsPage from './pages/ams/CommissionsPage';
+import CandidatePoolPage from './pages/ams/hr/CandidatePoolPage';
+import RoleManagementPage from './pages/ams/hr/RoleManagementPage';
+import HRDashboardPage from './pages/ams/hr/HRDashboardPage';
+import ExecutiveDashboardPage from './pages/ams/executive/ExecutiveDashboardPage';
+import ExecutiveClientPage from './pages/ams/executive/ExecutiveClientPage';
 
 const queryClient = new QueryClient();
 
@@ -48,12 +61,30 @@ function App() {
                 {/* AMS Routes with Sidebar */}
                 <Route element={<AMSLayout />}>
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/ams/dashboard" element={<Dashboard />} />
                   <Route path="/onboarding" element={<Onboarding />} />
                   <Route path="/ams/clients" element={<ClientsPage />} />
+                  <Route path="/ams/requirements" element={<RequirementsPage />} />
+                  <Route path="/ams/roles" element={<RolesLibraryPage />} />
+                  <Route path="/ams/skills/library" element={<SkillsPage />} />
                   <Route path="/ams/vendors" element={<VendorsPage />} />
                   <Route path="/ams/talent-acquisition" element={<TalentAcquisitionPage />} />
                   <Route path="/ams/ta/management" element={<TAManagementPage />} />
+                  <Route path="/ams/ta/mission-control" element={<TalentAcquisitionPage />} />
                   <Route path="/ams/human-resources" element={<HumanResourcesPage />} />
+                  <Route path="/ams/hr/dashboard" element={<HRDashboardPage />} />
+                  <Route path="/ams/hr/candidate-pool" element={<CandidatePoolPage />} />
+                  <Route path="/ams/hr/role-management" element={<RoleManagementPage />} />
+                  <Route path="/ams/candidate-dashboard" element={<CandidatePoolPage />} />
+                  <Route path="/ams/executive/dashboard" element={<ExecutiveDashboardPage />} />
+                  <Route path="/ams/executive/clients" element={<ExecutiveClientPage />} />
+                  <Route path="/ams/checklist-bar" element={<ChecklistsPage />} />
+                  <Route path="/ams/interview-panelists" element={<InterviewPanelistLibraryPage />} />
+                  <Route path="/ams/checklists" element={<ChecklistsPage />} />
+                  <Route path="/ams/certifications" element={<CertificationsPage />} />
+                  <Route path="/ams/vendor-management" element={<VendorManagementPage />} />
+                  <Route path="/ams/commissions" element={<CommissionsPage />} />
+                  <Route path="/ams/analytics" element={<Dashboard />} />
                   <Route path="/gamification" element={<GamificationPage />} />
                 </Route>
               </Routes>

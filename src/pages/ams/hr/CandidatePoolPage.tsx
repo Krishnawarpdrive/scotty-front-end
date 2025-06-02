@@ -1,9 +1,22 @@
 
 import React from 'react';
-import { CandidatePoolPage } from './components/CandidatePoolPage';
+import { CandidatePoolContent } from './components/candidate-pool/CandidatePoolContent';
+import { CandidateDetailDrawer } from './components/candidate-pool/CandidateDetailDrawer';
+import { useCandidateDetailDrawer } from './components/candidate-pool/useCandidateDetailDrawer';
 
-const CandidatePoolPageWrapper: React.FC = () => {
-  return <CandidatePoolPage />;
+const CandidatePoolPage: React.FC = () => {
+  const { isOpen, candidateId, openDrawer, closeDrawer } = useCandidateDetailDrawer();
+
+  return (
+    <>
+      <CandidatePoolContent onCandidateClick={openDrawer} />
+      <CandidateDetailDrawer
+        open={isOpen}
+        onClose={closeDrawer}
+        candidateId={candidateId}
+      />
+    </>
+  );
 };
 
-export default CandidatePoolPageWrapper;
+export default CandidatePoolPage;
