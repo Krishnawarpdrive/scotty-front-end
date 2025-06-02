@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -39,6 +40,7 @@ import RoleManagementPage from './pages/ams/hr/RoleManagementPage';
 import HRDashboardPage from './pages/ams/hr/HRDashboardPage';
 import ExecutiveDashboardPage from './pages/ams/executive/ExecutiveDashboardPage';
 import ExecutiveClientPage from './pages/ams/executive/ExecutiveClientPage';
+import UserManagementPage from './pages/ams/admin/UserManagementPage';
 
 const queryClient = new QueryClient();
 
@@ -91,9 +93,7 @@ function App() {
                       <Route path="/ams/vendor-management" element={<VendorManagementPage />} />
                       <Route path="/ams/commissions" element={<CommissionsPage />} />
                       <Route path="/ams/analytics" element={<Dashboard />} />
-                      <Route path="/ams/admin/users" element={
-                        React.lazy(() => import('./pages/ams/admin/UserManagementPage'))
-                      } />
+                      <Route path="/ams/admin/users" element={<UserManagementPage />} />
                       <Route path="/gamification" element={<GamificationPage />} />
                     </Route>
                   </Routes>

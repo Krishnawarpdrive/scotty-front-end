@@ -12,7 +12,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnhancedToast } from '@/components/feedback/EnhancedToast';
 import { Users, UserPlus, Search, Filter } from 'lucide-react';
-import { AppRole } from '@/hooks/useAuth';
+import { AppRole } from '@/contexts/AuthContext';
 
 interface UserWithProfile {
   id: string;
@@ -55,40 +55,51 @@ export default function UserManagementPage() {
     try {
       setLoading(true);
       
-      // Note: In a real app, you'd need a view or function to join auth.users with your tables
-      // For now, we'll fetch from user_profiles and user_roles
+      // First fetch user profiles
       const { data: profiles, error: profilesError } = await supabase
         .from('user_profiles')
-        .select(`
-          user_id,
-          first_name,
-          last_name,
-          email,
-          department,
-          user_roles!inner (
-            role,
-            is_active,
-            assigned_at
-          )
-        `);
+        .select('*');
 
       if (profilesError) {
         throw profilesError;
       }
 
-      // Transform the data to match our interface
-      const transformedUsers = profiles?.map(profile => ({
-        id: profile.user_id,
-        email: profile.email || '',
-        user_profiles: {
-          first_name: profile.first_name,
-          last_name: profile.last_name,
-          department: profile.department
-        },
-        user_roles: profile.user_roles || []
-      })) || [];
+      // Then fetch user roles for each user
+      const usersWithRoles = await Promise.all(
+        (profiles || []).map(async (profile) => {
+          const { data: rolesData, error: rolesError } = await supabase
+            .from('user_roles')
+            .select('role, is_active, assigned_at')
+            .eq('user_id', profile.user_id);
 
-      setUsers(transformedUsers);
+          if (rolesError) {
+            console.error('Error fetching roles for user:', profile.user_id, rolesError);
+            return {
+              id: profile.user_id,
+              email: profile.email || '',
+              user_profiles: {
+                first_name: profile.first_name,
+                last_name: profile.last_name,
+                department: profile.department
+              },
+              user_roles: []
+            };
+          }
+
+          return {
+            id: profile.user_id,
+            email: profile.email || '',
+            user_profiles: {
+              first_name: profile.first_name,
+              last_name: profile.last_name,
+              department: profile.department
+            },
+            user_roles: rolesData || []
+          };
+        })
+      );
+
+      setUsers(usersWithRoles);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast.error({

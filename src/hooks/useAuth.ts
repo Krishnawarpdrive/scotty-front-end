@@ -78,7 +78,14 @@ export function useAuth() {
       if (profileError && profileError.code !== 'PGRST116') {
         console.error('Error fetching profile:', profileError);
       } else {
-        setProfile(profileData);
+        // Handle preferences type conversion
+        const processedProfile = profileData ? {
+          ...profileData,
+          preferences: typeof profileData.preferences === 'string' 
+            ? JSON.parse(profileData.preferences) 
+            : (profileData.preferences || {})
+        } : null;
+        setProfile(processedProfile);
       }
 
       // Fetch user roles
