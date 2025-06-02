@@ -31,13 +31,18 @@ import {
   Presentation,
   Crown,
   UserCircle,
-  HandHeart
+  HandHeart,
+  ClipboardList,
+  Database
 } from "lucide-react";
 
 const AMSSidebar: React.FC = () => {
   const location = useLocation();
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     core: true,
+    specialized: true,
+    libraries: true,
+    analytics: true,
   });
 
   const toggleSection = (sectionKey: string) => {
@@ -57,7 +62,7 @@ const AMSSidebar: React.FC = () => {
       icon: LayoutDashboard,
       items: [
         { 
-          title: "Dashboard", 
+          title: "AMS Dashboard", 
           path: "/ams/dashboard", 
           icon: LayoutDashboard,
           description: "Main overview"
@@ -112,6 +117,12 @@ const AMSSidebar: React.FC = () => {
           description: "Role configuration"
         },
         { 
+          title: "TA Management", 
+          path: "/ams/ta/management", 
+          icon: Target,
+          description: "TA operations"
+        },
+        { 
           title: "TA Mission Control", 
           path: "/ams/ta/mission-control", 
           icon: Target,
@@ -136,6 +147,12 @@ const AMSSidebar: React.FC = () => {
       title: "Resource Libraries",
       icon: BookOpen,
       items: [
+        { 
+          title: "Checklist Bar", 
+          path: "/ams/checklist-bar", 
+          icon: ClipboardList,
+          description: "Process checklists"
+        },
         { 
           title: "Interview Panelists", 
           path: "/ams/interview-panelists", 
@@ -179,15 +196,21 @@ const AMSSidebar: React.FC = () => {
           icon: Presentation,
           description: "Client analytics"
         },
+        { 
+          title: "Data Analytics", 
+          path: "/ams/analytics", 
+          icon: Database,
+          description: "System analytics"
+        },
       ]
     }
   ];
 
   return (
-    <div className="flex h-full w-64 flex-col bg-white shadow-lg border-r">
+    <div className="flex h-full w-64 flex-col bg-white shadow-lg border-r font-rubik">
       {/* Header */}
-      <div className="flex h-16 items-center justify-center border-b bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="flex items-center gap-3">
+      <div className="flex h-16 items-center justify-center border-b" style={{ backgroundColor: '#009933' }}>
+        <div className="flex items-center gap-3 text-white">
           <Zap className="h-8 w-8" />
           <span className="text-xl font-bold">AMS</span>
         </div>
@@ -205,7 +228,7 @@ const AMSSidebar: React.FC = () => {
               <CollapsibleTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="w-full justify-between text-left font-medium"
+                  className="w-full justify-between text-left font-medium text-xs"
                 >
                   <div className="flex items-center gap-2">
                     <section.icon className="h-4 w-4" />
@@ -226,10 +249,11 @@ const AMSSidebar: React.FC = () => {
                     to={item.path}
                     className={({ isActive }) =>
                       cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-gray-100",
+                        "flex items-center gap-3 rounded-lg px-3 py-2 text-xs transition-all hover:bg-gray-100",
                         isActive
-                          ? "bg-blue-50 text-blue-700 border-l-4 border-blue-700"
-                          : "text-gray-600 hover:text-gray-900"
+                          ? "text-white border-l-4" 
+                          : "text-gray-600 hover:text-gray-900",
+                        isActive && "bg-[#009933] border-[#007728]"
                       )
                     }
                   >
@@ -250,9 +274,9 @@ const AMSSidebar: React.FC = () => {
 
       {/* Footer */}
       <div className="border-t p-4">
-        <div className="flex items-center gap-3 text-sm text-gray-600">
-          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-            <UserCheck className="h-4 w-4" />
+        <div className="flex items-center gap-3 text-xs text-gray-600">
+          <div className="h-8 w-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#009933' }}>
+            <UserCheck className="h-4 w-4 text-white" />
           </div>
           <div>
             <div className="font-medium">System User</div>

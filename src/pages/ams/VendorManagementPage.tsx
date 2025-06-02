@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { VendorDashboard } from './vendors/components/VendorDashboard';
+import { EnhancedVendorDashboard } from './vendors/components/enhanced/EnhancedVendorDashboard';
 
 const VendorManagementPage: React.FC = () => {
-  return <VendorDashboard />;
+  return <EnhancedVendorDashboard />;
 };
 
 export default VendorManagementPage;
