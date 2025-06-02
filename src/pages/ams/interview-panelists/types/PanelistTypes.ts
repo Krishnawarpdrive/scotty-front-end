@@ -42,6 +42,8 @@ export interface CreatePanelistData {
   department: string;
   location: string;
   bio: string;
+  status: 'active' | 'inactive' | 'on_leave';
+  availability_status: 'available' | 'busy' | 'unavailable';
   seniority_level: 'junior' | 'mid' | 'senior' | 'principal' | 'executive';
   skills: string[];
   certifications: string[];
@@ -53,6 +55,8 @@ export interface CreatePanelistData {
   projects_worked_on: string[];
   tools_used: string[];
   interview_authorization_level: 'basic' | 'intermediate' | 'advanced' | 'expert';
+  timezone: string;
+  years_experience: number;
 }
 
 export interface PanelistFilters {

@@ -22,17 +22,28 @@ export const CreatePanelistDrawer: React.FC<CreatePanelistDrawerProps> = ({
   onSubmit
 }) => {
   const [formData, setFormData] = useState<CreatePanelistData>({
+    panelist_id: "",
     name: "",
     email: "",
     phone: "",
     title: "",
     department: "",
     location: "",
+    bio: "",
     status: "active",
     availability_status: "available",
+    seniority_level: "mid",
     skills: [],
+    certifications: [],
     languages: [],
-    timezone: "",
+    interview_types: [],
+    preferred_time_slots: {},
+    max_interviews_per_week: 5,
+    interviews_allocated_per_day: 2,
+    projects_worked_on: [],
+    tools_used: [],
+    interview_authorization_level: "basic",
+    timezone: "UTC",
     years_experience: 0
   });
 
@@ -88,17 +99,28 @@ export const CreatePanelistDrawer: React.FC<CreatePanelistDrawerProps> = ({
       await onSubmit(formData);
       // Reset form
       setFormData({
+        panelist_id: "",
         name: "",
         email: "",
         phone: "",
         title: "",
         department: "",
         location: "",
+        bio: "",
         status: "active",
         availability_status: "available",
+        seniority_level: "mid",
         skills: [],
+        certifications: [],
         languages: [],
-        timezone: "",
+        interview_types: [],
+        preferred_time_slots: {},
+        max_interviews_per_week: 5,
+        interviews_allocated_per_day: 2,
+        projects_worked_on: [],
+        tools_used: [],
+        interview_authorization_level: "basic",
+        timezone: "UTC",
         years_experience: 0
       });
     } catch (error) {
@@ -229,14 +251,14 @@ export const CreatePanelistDrawer: React.FC<CreatePanelistDrawerProps> = ({
               
               <div>
                 <Label htmlFor="status">Status</Label>
-                <Select value={formData.status} onValueChange={(value: 'active' | 'inactive' | 'busy') => handleInputChange('status', value)}>
+                <Select value={formData.status} onValueChange={(value: 'active' | 'inactive' | 'on_leave') => handleInputChange('status', value)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="active">Active</SelectItem>
                     <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="busy">Busy</SelectItem>
+                    <SelectItem value="on_leave">On Leave</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

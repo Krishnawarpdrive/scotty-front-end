@@ -72,6 +72,18 @@ export const CandidatePoolPage: React.FC = () => {
     // Implementation for import
   };
 
+  // Create wrapper functions to match expected signatures
+  const handleSelectAllWrapper = () => {
+    handleSelectAll(true);
+  };
+
+  const handleQuickActionWrapper = (action: string, candidateIds: string[]) => {
+    // Handle the array of candidateIds appropriately
+    candidateIds.forEach(candidateId => {
+      handleQuickAction(action, candidateId);
+    });
+  };
+
   // Register candidate pool specific shortcuts
   useCandidatePoolShortcuts({
     onAddCandidate: handleAddCandidate,
@@ -102,9 +114,9 @@ export const CandidatePoolPage: React.FC = () => {
         showFilters={showFilters}
         filters={filters}
         onCandidateSelect={handleCandidateSelect}
-        onSelectAll={handleSelectAll}
+        onSelectAll={handleSelectAllWrapper}
         onCandidateClick={handleCandidateClick}
-        onQuickAction={handleQuickAction}
+        onQuickAction={handleQuickActionWrapper}
         onFilterChange={handleFilterChange}
         onClearFilter={handleClearFilter}
         onClearAllFilters={handleClearAllFilters}
