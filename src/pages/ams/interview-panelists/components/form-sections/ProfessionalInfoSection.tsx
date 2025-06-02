@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import TagsInput from "@/components/shared/TagsInput";
-import { CreatePanelistData } from "../../../types/PanelistTypes";
+import { CreatePanelistData } from "../../types/PanelistTypes";
 
 interface ProfessionalInfoSectionProps {
   formData: CreatePanelistData;
