@@ -4,9 +4,10 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X, Save } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { X, Plus } from "lucide-react";
 import { CreatePanelistData } from "../types/PanelistTypes";
 
 interface CreatePanelistDrawerProps {
@@ -20,88 +21,91 @@ export const CreatePanelistDrawer: React.FC<CreatePanelistDrawerProps> = ({
   onClose,
   onSubmit
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<CreatePanelistData>({
-    panelist_id: '',
-    name: '',
-    email: '',
-    phone: '',
-    title: '',
-    department: '',
-    location: '',
-    bio: '',
-    seniority_level: 'mid',
-    status: 'active',
-    availability_status: 'available',
-    interview_authorization_level: 'basic',
+    name: "",
+    email: "",
+    phone: "",
+    title: "",
+    department: "",
+    location: "",
+    status: "active",
+    availability_status: "available",
     skills: [],
-    certifications: [],
     languages: [],
-    interview_types: [],
-    preferred_time_slots: {},
-    max_interviews_per_week: 5,
-    rating: 0,
-    total_interviews: 0,
-    feedback_score: 0,
-    interviews_converted_to_offers: 0,
-    interviews_allocated_per_day: 2,
-    projects_worked_on: [],
-    tools_used: []
+    timezone: "",
+    years_experience: 0
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    try {
-      // Generate unique panelist_id if not provided
-      const dataToSubmit = {
-        ...formData,
-        panelist_id: formData.panelist_id || `PAN-${Date.now()}`
-      };
-      
-      await onSubmit(dataToSubmit);
-      
-      // Reset form
-      setFormData({
-        panelist_id: '',
-        name: '',
-        email: '',
-        phone: '',
-        title: '',
-        department: '',
-        location: '',
-        bio: '',
-        seniority_level: 'mid',
-        status: 'active',
-        availability_status: 'available',
-        interview_authorization_level: 'basic',
-        skills: [],
-        certifications: [],
-        languages: [],
-        interview_types: [],
-        preferred_time_slots: {},
-        max_interviews_per_week: 5,
-        rating: 0,
-        total_interviews: 0,
-        feedback_score: 0,
-        interviews_converted_to_offers: 0,
-        interviews_allocated_per_day: 2,
-        projects_worked_on: [],
-        tools_used: []
-      });
-    } catch (error) {
-      console.error('Error creating panelist:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [currentSkill, setCurrentSkill] = useState("");
+  const [currentLanguage, setCurrentLanguage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: keyof CreatePanelistData, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
+  };
+
+  const addSkill = () => {
+    if (currentSkill.trim() && !formData.skills.includes(currentSkill.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        skills: [...prev.skills, currentSkill.trim()]
+      }));
+      setCurrentSkill("");
+    }
+  };
+
+  const removeSkill = (skillToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      skills: prev.skills.filter(skill => skill !== skillToRemove)
+    }));
+  };
+
+  const addLanguage = () => {
+    if (currentLanguage.trim() && !formData.languages.includes(currentLanguage.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        languages: [...prev.languages, currentLanguage.trim()]
+      }));
+      setCurrentLanguage("");
+    }
+  };
+
+  const removeLanguage = (languageToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      languages: prev.languages.filter(language => language !== languageToRemove)
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await onSubmit(formData);
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        title: "",
+        department: "",
+        location: "",
+        status: "active",
+        availability_status: "available",
+        skills: [],
+        languages: [],
+        timezone: "",
+        years_experience: 0
+      });
+    } catch (error) {
+      console.error('Error creating panelist:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -110,7 +114,7 @@ export const CreatePanelistDrawer: React.FC<CreatePanelistDrawerProps> = ({
         <DrawerHeader className="border-b">
           <div className="flex items-center justify-between">
             <div>
-              <DrawerTitle>Add New Panelist</DrawerTitle>
+              <DrawerTitle>Add New Interview Panelist</DrawerTitle>
               <DrawerDescription>
                 Create a new interview panelist profile
               </DrawerDescription>
@@ -121,192 +125,246 @@ export const CreatePanelistDrawer: React.FC<CreatePanelistDrawerProps> = ({
           </div>
         </DrawerHeader>
         
-        <div className="flex-1 overflow-y-auto p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Basic Information */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Basic Information</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name *</Label>
-                  <Input
-                    id="name"
-                    required
-                    value={formData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
-                    placeholder="Enter full name"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    placeholder="Enter email address"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    id="phone"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    placeholder="Enter phone number"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="title">Job Title *</Label>
-                  <Input
-                    id="title"
-                    required
-                    value={formData.title}
-                    onChange={(e) => handleInputChange('title', e.target.value)}
-                    placeholder="Enter job title"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="department">Department *</Label>
-                  <Select value={formData.department} onValueChange={(value) => handleInputChange('department', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select department" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Engineering">Engineering</SelectItem>
-                      <SelectItem value="Product">Product</SelectItem>
-                      <SelectItem value="Design">Design</SelectItem>
-                      <SelectItem value="Marketing">Marketing</SelectItem>
-                      <SelectItem value="Sales">Sales</SelectItem>
-                      <SelectItem value="HR">Human Resources</SelectItem>
-                      <SelectItem value="Finance">Finance</SelectItem>
-                      <SelectItem value="Operations">Operations</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input
-                    id="location"
-                    value={formData.location}
-                    onChange={(e) => handleInputChange('location', e.target.value)}
-                    placeholder="Enter location"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Professional Details */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Professional Details</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="seniority_level">Seniority Level</Label>
-                  <Select value={formData.seniority_level} onValueChange={(value) => handleInputChange('seniority_level', value)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="junior">Junior</SelectItem>
-                      <SelectItem value="mid">Mid-Level</SelectItem>
-                      <SelectItem value="senior">Senior</SelectItem>
-                      <SelectItem value="lead">Lead</SelectItem>
-                      <SelectItem value="principal">Principal</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="status">Status</Label>
-                  <Select value={formData.status} onValueChange={(value) => handleInputChange('status', value)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="availability_status">Availability</Label>
-                  <Select value={formData.availability_status} onValueChange={(value) => handleInputChange('availability_status', value)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="available">Available</SelectItem>
-                      <SelectItem value="busy">Busy</SelectItem>
-                      <SelectItem value="unavailable">Unavailable</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
+          {/* Basic Information */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Basic Information</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="name">Full Name *</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  placeholder="Enter full name"
+                  required
+                />
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="bio">Bio</Label>
-                <Textarea
-                  id="bio"
-                  value={formData.bio}
-                  onChange={(e) => handleInputChange('bio', e.target.value)}
-                  placeholder="Enter a brief bio or description"
-                  rows={3}
+              <div>
+                <Label htmlFor="email">Email *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  placeholder="Enter email address"
+                  required
                 />
               </div>
             </div>
 
-            {/* Interview Settings */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Interview Settings</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  placeholder="Enter phone number"
+                />
+              </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="max_interviews_per_week">Max Interviews Per Week</Label>
-                  <Input
-                    id="max_interviews_per_week"
-                    type="number"
-                    min="1"
-                    max="20"
-                    value={formData.max_interviews_per_week}
-                    onChange={(e) => handleInputChange('max_interviews_per_week', parseInt(e.target.value) || 5)}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="interviews_allocated_per_day">Max Interviews Per Day</Label>
-                  <Input
-                    id="interviews_allocated_per_day"
-                    type="number"
-                    min="1"
-                    max="5"
-                    value={formData.interviews_allocated_per_day}
-                    onChange={(e) => handleInputChange('interviews_allocated_per_day', parseInt(e.target.value) || 2)}
-                  />
-                </div>
+              <div>
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  placeholder="Enter location"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Professional Information */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Professional Information</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="title">Job Title *</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => handleInputChange('title', e.target.value)}
+                  placeholder="Enter job title"
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="department">Department *</Label>
+                <Select value={formData.department} onValueChange={(value) => handleInputChange('department', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="engineering">Engineering</SelectItem>
+                    <SelectItem value="product">Product</SelectItem>
+                    <SelectItem value="design">Design</SelectItem>
+                    <SelectItem value="marketing">Marketing</SelectItem>
+                    <SelectItem value="sales">Sales</SelectItem>
+                    <SelectItem value="hr">Human Resources</SelectItem>
+                    <SelectItem value="finance">Finance</SelectItem>
+                    <SelectItem value="operations">Operations</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
-            {/* Submit Button */}
-            <div className="flex justify-end space-x-3 pt-4 border-t">
-              <Button type="button" variant="outline" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isLoading}>
-                <Save className="h-4 w-4 mr-2" />
-                {isLoading ? 'Creating...' : 'Create Panelist'}
-              </Button>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="years_experience">Years of Experience</Label>
+                <Input
+                  id="years_experience"
+                  type="number"
+                  min="0"
+                  value={formData.years_experience}
+                  onChange={(e) => handleInputChange('years_experience', parseInt(e.target.value) || 0)}
+                  placeholder="0"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="status">Status</Label>
+                <Select value={formData.status} onValueChange={(value: 'active' | 'inactive' | 'busy') => handleInputChange('status', value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="busy">Busy</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="availability_status">Availability</Label>
+                <Select value={formData.availability_status} onValueChange={(value: 'available' | 'busy' | 'unavailable') => handleInputChange('availability_status', value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="available">Available</SelectItem>
+                    <SelectItem value="busy">Busy</SelectItem>
+                    <SelectItem value="unavailable">Unavailable</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </form>
-        </div>
+          </div>
+
+          {/* Skills */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Skills & Expertise</h3>
+            
+            <div>
+              <Label htmlFor="currentSkill">Add Skills</Label>
+              <div className="flex space-x-2">
+                <Input
+                  id="currentSkill"
+                  value={currentSkill}
+                  onChange={(e) => setCurrentSkill(e.target.value)}
+                  placeholder="Enter a skill"
+                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
+                />
+                <Button type="button" onClick={addSkill} size="sm">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              {formData.skills.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.skills.map((skill, index) => (
+                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                      {skill}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-auto p-0 ml-1"
+                        onClick={() => removeSkill(skill)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Languages */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Languages</h3>
+            
+            <div>
+              <Label htmlFor="currentLanguage">Add Languages</Label>
+              <div className="flex space-x-2">
+                <Input
+                  id="currentLanguage"
+                  value={currentLanguage}
+                  onChange={(e) => setCurrentLanguage(e.target.value)}
+                  placeholder="Enter a language"
+                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addLanguage())}
+                />
+                <Button type="button" onClick={addLanguage} size="sm">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              {formData.languages.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.languages.map((language, index) => (
+                    <Badge key={index} variant="outline" className="flex items-center gap-1">
+                      {language}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-auto p-0 ml-1"
+                        onClick={() => removeLanguage(language)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="timezone">Timezone</Label>
+              <Select value={formData.timezone} onValueChange={(value) => handleInputChange('timezone', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select timezone" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="UTC">UTC</SelectItem>
+                  <SelectItem value="EST">Eastern Time (EST)</SelectItem>
+                  <SelectItem value="CST">Central Time (CST)</SelectItem>
+                  <SelectItem value="MST">Mountain Time (MST)</SelectItem>
+                  <SelectItem value="PST">Pacific Time (PST)</SelectItem>
+                  <SelectItem value="IST">India Standard Time (IST)</SelectItem>
+                  <SelectItem value="CET">Central European Time (CET)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Form Actions */}
+          <div className="flex justify-end space-x-3 pt-6 border-t">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Creating...' : 'Create Panelist'}
+            </Button>
+          </div>
+        </form>
       </DrawerContent>
     </Drawer>
   );

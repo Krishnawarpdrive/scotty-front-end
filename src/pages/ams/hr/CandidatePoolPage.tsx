@@ -5,7 +5,7 @@ import { CandidateDetailDrawer } from './components/candidate-pool/CandidateDeta
 import { useCandidateDetailDrawer } from './components/candidate-pool/useCandidateDetailDrawer';
 
 const CandidatePoolPage: React.FC = () => {
-  const { isOpen, candidateId, openDrawer, closeDrawer } = useCandidateDetailDrawer();
+  const { isOpen, candidateId, selectedCandidate, openDrawer, closeDrawer } = useCandidateDetailDrawer();
 
   return (
     <>

@@ -21,7 +21,7 @@ import { ClientsPage } from './pages/ams/clients';
 import { VendorsPage } from './pages/ams/vendors';
 import { TalentAcquisitionPage } from './pages/ams/ta';
 import { HumanResourcesPage } from './pages/ams/hr';
-import { GamificationPage } from './pages/gamification';
+import GamificationPage from './pages/gamification';
 import TAManagementPage from './pages/ams/ta/TAManagementPage';
 import InterviewPanelistLibraryPage from './pages/ams/InterviewPanelistLibraryPage';
 import RequirementsPage from './pages/ams/RequirementsPage';
