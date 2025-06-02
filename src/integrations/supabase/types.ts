@@ -1073,10 +1073,12 @@ export type Database = {
           seniority_level: string
           skills: Json | null
           status: string
+          timezone: string | null
           title: string
           tools_used: Json | null
           total_interviews: number | null
           updated_at: string
+          years_experience: number | null
         }
         Insert: {
           availability_status?: string
@@ -1104,10 +1106,12 @@ export type Database = {
           seniority_level?: string
           skills?: Json | null
           status?: string
+          timezone?: string | null
           title: string
           tools_used?: Json | null
           total_interviews?: number | null
           updated_at?: string
+          years_experience?: number | null
         }
         Update: {
           availability_status?: string
@@ -1135,10 +1139,12 @@ export type Database = {
           seniority_level?: string
           skills?: Json | null
           status?: string
+          timezone?: string | null
           title?: string
           tools_used?: Json | null
           total_interviews?: number | null
           updated_at?: string
+          years_experience?: number | null
         }
         Relationships: []
       }
