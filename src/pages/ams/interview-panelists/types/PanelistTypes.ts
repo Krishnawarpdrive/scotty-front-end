@@ -29,6 +29,28 @@ export interface Panelist extends CreatePanelistData {
   id: string;
   created_at: string;
   updated_at: string;
+  rating: number;
+  avatar_url?: string;
+  total_interviews: number;
+  feedback_score: number;
+  interviews_converted_to_offers: number;
 }
 
 export interface PanelistFormData extends CreatePanelistData {}
+
+export interface PanelistFilters {
+  searchQuery?: string;
+  department?: string;
+  status?: string;
+  availability?: string;
+  seniority?: string;
+  skills?: string[];
+}
+
+export interface PanelistStats {
+  totalPanelists: number;
+  activePanelists: number;
+  averageRating: number;
+  interviewsThisWeek: number;
+  utilizationRate: number;
+}
