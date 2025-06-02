@@ -5,7 +5,7 @@ import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { EnhancedCandidateTable } from './EnhancedCandidateTable';
-import { EnhancedCandidateDetailDrawer } from '../candidate-detail/EnhancedCandidateDetailDrawer';
+import { EnhancedCandidateDetailDrawer } from '@/pages/ams/hr/components/candidate-pool/EnhancedCandidateDetailDrawer';
 import { useEnhancedToast } from '@/components/feedback/EnhancedToast';
 import { Plus, Download, Filter, Users, Calendar, CheckCircle, Clock } from 'lucide-react';
 
@@ -127,12 +127,12 @@ const mockCandidates = [
 export function EnhancedTAMissionControl() {
   const toast = useEnhancedToast();
   const [loading, setLoading] = useState(false);
-  const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
   const [candidateDetailOpen, setCandidateDetailOpen] = useState(false);
+  const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);
 
   const handleViewProfile = (candidate: any) => {
     console.log('View candidate profile:', candidate);
-    setSelectedCandidate(candidate);
+    setSelectedCandidateId(candidate.id);
     setCandidateDetailOpen(true);
   };
 
@@ -197,7 +197,7 @@ export function EnhancedTAMissionControl() {
 
   const handleCloseCandidateDetail = () => {
     setCandidateDetailOpen(false);
-    setSelectedCandidate(null);
+    setSelectedCandidateId(null);
   };
 
   // Calculate metrics
@@ -301,11 +301,12 @@ export function EnhancedTAMissionControl() {
         onExportCandidates={handleExportCandidates}
       />
 
-      {/* Enhanced Candidate Detail Drawer */}
+      {/* Enhanced Candidate Detail Drawer with Stage Management */}
       <EnhancedCandidateDetailDrawer
         open={candidateDetailOpen}
         onClose={handleCloseCandidateDetail}
-        candidate={selectedCandidate}
+        candidateId={selectedCandidateId}
+        userRole="ta"
       />
     </motion.div>
   );
