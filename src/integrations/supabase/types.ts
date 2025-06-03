@@ -370,6 +370,62 @@ export type Database = {
           },
         ]
       }
+      candidate_dashboard_data: {
+        Row: {
+          active_applications: number | null
+          candidate_id: string
+          created_at: string
+          documents_uploaded: number | null
+          documents_verified: number | null
+          id: string
+          interviews_completed: number | null
+          interviews_scheduled: number | null
+          last_activity_date: string | null
+          pending_assessments: number | null
+          profile_completion_percentage: number | null
+          total_applications: number | null
+          updated_at: string
+        }
+        Insert: {
+          active_applications?: number | null
+          candidate_id: string
+          created_at?: string
+          documents_uploaded?: number | null
+          documents_verified?: number | null
+          id?: string
+          interviews_completed?: number | null
+          interviews_scheduled?: number | null
+          last_activity_date?: string | null
+          pending_assessments?: number | null
+          profile_completion_percentage?: number | null
+          total_applications?: number | null
+          updated_at?: string
+        }
+        Update: {
+          active_applications?: number | null
+          candidate_id?: string
+          created_at?: string
+          documents_uploaded?: number | null
+          documents_verified?: number | null
+          id?: string
+          interviews_completed?: number | null
+          interviews_scheduled?: number | null
+          last_activity_date?: string | null
+          pending_assessments?: number | null
+          profile_completion_percentage?: number | null
+          total_applications?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_candidate_dashboard_candidate"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       candidate_documents: {
         Row: {
           candidate_id: string
@@ -478,6 +534,103 @@ export type Database = {
             columns: ["role_id"]
             isOneToOne: false
             referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      candidate_messages: {
+        Row: {
+          candidate_id: string
+          created_at: string
+          id: string
+          is_read: boolean | null
+          message_body: string
+          message_type: string | null
+          parent_message_id: string | null
+          sender_name: string
+          sender_role: string | null
+          subject: string
+        }
+        Insert: {
+          candidate_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message_body: string
+          message_type?: string | null
+          parent_message_id?: string | null
+          sender_name: string
+          sender_role?: string | null
+          subject: string
+        }
+        Update: {
+          candidate_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message_body?: string
+          message_type?: string | null
+          parent_message_id?: string | null
+          sender_name?: string
+          sender_role?: string | null
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_candidate_messages_candidate"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      candidate_notifications: {
+        Row: {
+          action_url: string | null
+          candidate_id: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          metadata: Json | null
+          priority: string
+          title: string
+          type: string
+        }
+        Insert: {
+          action_url?: string | null
+          candidate_id: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          metadata?: Json | null
+          priority?: string
+          title: string
+          type?: string
+        }
+        Update: {
+          action_url?: string | null
+          candidate_id?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          metadata?: Json | null
+          priority?: string
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_candidate_notifications_candidate"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
             referencedColumns: ["id"]
           },
         ]

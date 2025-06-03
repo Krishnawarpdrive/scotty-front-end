@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { lazy } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -44,6 +44,9 @@ import ExecutiveClientPage from './pages/ams/executive/ExecutiveClientPage';
 import UserManagementPage from './pages/ams/admin/UserManagementPage';
 import InterviewerDashboardPage from './pages/ams/interviewer/InterviewerDashboardPage';
 
+// Lazy load the candidate dashboard
+const CandidateDashboardPage = lazy(() => import('./pages/ams/candidate/CandidateDashboardPage'));
+
 const queryClient = new QueryClient();
 
 function App() {
@@ -87,6 +90,7 @@ function App() {
                         <Route path="/ams/hr/candidate-pool" element={<CandidatePoolPage />} />
                         <Route path="/ams/hr/role-management" element={<RoleManagementPage />} />
                         <Route path="/ams/candidate-dashboard" element={<CandidatePoolPage />} />
+                        <Route path="/ams/candidate/dashboard" element={<CandidateDashboardPage />} />
                         <Route path="/ams/executive/dashboard" element={<ExecutiveDashboardPage />} />
                         <Route path="/ams/executive/clients" element={<ExecutiveClientPage />} />
                         <Route path="/ams/interviewer/dashboard" element={<InterviewerDashboardPage />} />
