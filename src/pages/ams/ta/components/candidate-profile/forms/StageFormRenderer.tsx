@@ -3,6 +3,7 @@ import React from 'react';
 import { EnhancedPhoneScreeningForm } from './EnhancedPhoneScreeningForm';
 import { ComprehensivePhoneScreeningForm } from './ComprehensivePhoneScreeningForm';
 import { TechnicalInterviewManager } from './components/TechnicalInterviewManager';
+import { AptitudeTestManager } from './components/AptitudeTestManager';
 import { ClientInterviewForm } from './ClientInterviewForm';
 import { BackgroundVerificationForm } from './BackgroundVerificationForm';
 import { FinalReviewForm } from './FinalReviewForm';
@@ -27,6 +28,8 @@ export const StageFormRenderer: React.FC<StageFormRendererProps> = ({
         return <EnhancedPhoneScreeningForm candidate={candidate} />;
       case 'technical':
         return <TechnicalInterviewManager candidate={candidate} />;
+      case 'aptitude-test':
+        return <AptitudeTestManager candidate={candidate} />;
       case 'client-interview':
         return <ClientInterviewForm candidate={candidate} />;
       case 'background-verification':

@@ -1,279 +1,285 @@
 
-import React from 'react';
-import { EnhancedDataTable, Column, TableAction, BulkAction } from '@/components/enhanced-tables';
-import { Badge } from '@/components/ui/badge';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useEnhancedToast } from '@/components/feedback/EnhancedToast';
-import { Eye, Edit, User, Clock, MapPin, Phone, Mail, Calendar } from 'lucide-react';
-
-interface Candidate {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  current_stage: string;
-  source: string;
-  experience_years: number;
-  skills: string[];
-  current_position?: string;
-  current_employer?: string;
-  status: 'Active' | 'Inactive' | 'Hired' | 'Rejected';
-  applied_date: string;
-  last_updated: string;
-}
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { EnhancedDataTable } from '@/components/enhanced-tables/EnhancedDataTable';
+import { Search, Filter, Download, RefreshCw, Eye, Edit, Calendar, MoreHorizontal, Phone, Video, FileText } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface EnhancedCandidateTableProps {
-  candidates: Candidate[];
-  loading?: boolean;
-  onRefresh?: () => void;
-  onViewProfile?: (candidate: Candidate) => void;
-  onEditCandidate?: (candidate: Candidate) => void;
-  onScheduleInterview?: (candidate: Candidate) => void;
-  onMoveToStage?: (candidates: Candidate[], stage: string) => void;
-  onExportCandidates?: (candidates: Candidate[]) => void;
+  candidates: any[];
+  loading: boolean;
+  onRefresh: () => void;
+  onViewProfile: (candidate: any) => void;
+  onEditCandidate: (candidate: any) => void;
+  onScheduleInterview: (candidate: any) => void;
+  onMoveToStage: (candidates: any[], stage: string) => void;
+  onExportCandidates: (candidates: any[]) => void;
 }
 
-export function EnhancedCandidateTable({
+export const EnhancedCandidateTable: React.FC<EnhancedCandidateTableProps> = ({
   candidates,
-  loading = false,
+  loading,
   onRefresh,
   onViewProfile,
   onEditCandidate,
   onScheduleInterview,
   onMoveToStage,
-  onExportCandidates,
-}: EnhancedCandidateTableProps) {
-  const toast = useEnhancedToast();
+  onExportCandidates
+}) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [stageFilter, setStageFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
-  const columns: Column<Candidate>[] = [
+  const getStageColor = (stage: string) => {
+    const colors: Record<string, string> = {
+      'Phone Screening': 'bg-blue-50 text-blue-700 border-blue-200',
+      'Technical Interview': 'bg-purple-50 text-purple-700 border-purple-200',
+      'Aptitude Test': 'bg-orange-50 text-orange-700 border-orange-200',
+      'Final Interview': 'bg-green-50 text-green-700 border-green-200',
+      'Offer Discussion': 'bg-yellow-50 text-yellow-700 border-yellow-200'
+    };
+    return colors[stage] || 'bg-gray-50 text-gray-700 border-gray-200';
+  };
+
+  const getStageAction = (stage: string) => {
+    switch (stage) {
+      case 'Phone Screening':
+        return { label: 'Conduct Call', icon: Phone, variant: 'default' as const };
+      case 'Technical Interview':
+        return { label: 'Schedule Interview', icon: Video, variant: 'default' as const };
+      case 'Aptitude Test':
+        return { label: 'Assign Test', icon: FileText, variant: 'default' as const };
+      case 'Final Interview':
+        return { label: 'Schedule Final', icon: Calendar, variant: 'default' as const };
+      default:
+        return { label: 'Next Step', icon: Calendar, variant: 'outline' as const };
+    }
+  };
+
+  const columns = [
     {
-      key: 'name',
+      id: 'name',
       header: 'Candidate',
-      sortable: true,
-      filterable: true,
-      accessor: (candidate) => (
+      accessorKey: 'name',
+      cell: ({ row }: any) => (
         <div className="flex items-center space-x-3">
-          <div className="flex-shrink-0">
-            <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
-              <User className="h-4 w-4 text-blue-600" />
-            </div>
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+            {row.original.name.charAt(0)}
           </div>
           <div>
-            <div 
-              className="font-medium text-gray-900 cursor-pointer hover:text-blue-600 hover:underline"
-              onClick={(e) => {
-                e.stopPropagation();
-                onViewProfile?.(candidate);
-              }}
-            >
-              {candidate.name}
-            </div>
-            <div className="text-sm text-gray-500 flex items-center space-x-2">
-              <Mail className="h-3 w-3" />
-              <span>{candidate.email}</span>
-            </div>
+            <div className="font-medium text-gray-900">{row.original.name}</div>
+            <div className="text-sm text-gray-500">{row.original.email}</div>
           </div>
         </div>
-      ),
+      )
     },
     {
-      key: 'current_stage',
+      id: 'current_stage',
       header: 'Current Stage',
-      sortable: true,
-      filterable: true,
-      filterType: 'select',
-      filterOptions: [
-        { value: 'Applied', label: 'Applied' },
-        { value: 'Phone Screening', label: 'Phone Screening' },
-        { value: 'Technical Interview', label: 'Technical Interview' },
-        { value: 'Final Interview', label: 'Final Interview' },
-        { value: 'Offer', label: 'Offer' },
-      ],
-      accessor: (candidate) => (
-        <Badge variant="outline">
-          {candidate.current_stage}
+      accessorKey: 'current_stage',
+      cell: ({ row }: any) => (
+        <Badge className={getStageColor(row.original.current_stage)}>
+          {row.original.current_stage}
         </Badge>
-      ),
+      )
     },
     {
-      key: 'status',
-      header: 'Status',
-      sortable: true,
-      filterable: true,
-      filterType: 'select',
-      filterOptions: [
-        { value: 'Active', label: 'Active' },
-        { value: 'Inactive', label: 'Inactive' },
-        { value: 'Hired', label: 'Hired' },
-        { value: 'Rejected', label: 'Rejected' },
-      ],
-      accessor: (candidate) => (
-        <Badge 
-          variant={
-            candidate.status === 'Active' ? 'default' :
-            candidate.status === 'Hired' ? 'default' :
-            candidate.status === 'Rejected' ? 'destructive' : 'secondary'
-          }
-        >
-          {candidate.status}
-        </Badge>
-      ),
-    },
-    {
-      key: 'experience_years',
-      header: 'Experience',
-      sortable: true,
-      align: 'center',
-      accessor: (candidate) => (
-        <span className="font-medium">{candidate.experience_years} years</span>
-      ),
-    },
-    {
-      key: 'current_position',
-      header: 'Current Role',
-      sortable: true,
-      filterable: true,
-      accessor: (candidate) => (
-        <div>
-          {candidate.current_position && (
-            <div className="font-medium text-gray-900">{candidate.current_position}</div>
-          )}
-          {candidate.current_employer && (
-            <div className="text-sm text-gray-500">{candidate.current_employer}</div>
+      id: 'applications',
+      header: 'Active Applications',
+      cell: ({ row }: any) => (
+        <div className="space-y-1">
+          {row.original.role_applications?.slice(0, 2).map((app: any, index: number) => (
+            <div key={index} className="text-sm">
+              <div className="font-medium text-gray-900">{app.role_name}</div>
+              <div className="text-gray-500">{app.client_name}</div>
+            </div>
+          ))}
+          {row.original.role_applications?.length > 2 && (
+            <div className="text-xs text-gray-500">
+              +{row.original.role_applications.length - 2} more
+            </div>
           )}
         </div>
-      ),
+      )
     },
     {
-      key: 'source',
-      header: 'Source',
-      sortable: true,
-      filterable: true,
-      filterType: 'select',
-      filterOptions: [
-        { value: 'Direct', label: 'Direct' },
-        { value: 'Referral', label: 'Referral' },
-        { value: 'Vendor', label: 'Vendor' },
-        { value: 'LinkedIn', label: 'LinkedIn' },
-        { value: 'Job Board', label: 'Job Board' },
-      ],
-      accessor: (candidate) => (
-        <Badge variant="outline">
-          {candidate.source}
-        </Badge>
-      ),
+      id: 'experience',
+      header: 'Experience',
+      accessorKey: 'experience_years',
+      cell: ({ row }: any) => (
+        <div>
+          <div className="text-sm font-medium">{row.original.experience_years} years</div>
+          <div className="text-xs text-gray-500">{row.original.current_position}</div>
+        </div>
+      )
     },
     {
-      key: 'skills',
-      header: 'Key Skills',
-      accessor: (candidate) => (
+      id: 'skills',
+      header: 'Skills',
+      cell: ({ row }: any) => (
         <div className="flex flex-wrap gap-1">
-          {candidate.skills.slice(0, 3).map((skill, index) => (
-            <Badge key={index} variant="secondary" className="text-xs">
+          {row.original.skills?.slice(0, 3).map((skill: string, index: number) => (
+            <Badge key={index} variant="outline" className="text-xs">
               {skill}
             </Badge>
           ))}
-          {candidate.skills.length > 3 && (
+          {row.original.skills?.length > 3 && (
             <Badge variant="outline" className="text-xs">
-              +{candidate.skills.length - 3}
+              +{row.original.skills.length - 3}
             </Badge>
           )}
         </div>
-      ),
+      )
     },
     {
-      key: 'applied_date',
-      header: 'Applied',
-      sortable: true,
-      accessor: (candidate) => (
-        <div className="flex items-center space-x-1">
-          <Calendar className="h-4 w-4 text-gray-400" />
-          <span className="text-sm text-gray-600">
-            {new Date(candidate.applied_date).toLocaleDateString()}
-          </span>
+      id: 'score',
+      header: 'Score',
+      accessorKey: 'overall_score',
+      cell: ({ row }: any) => (
+        <div className="text-center">
+          <div className="text-lg font-bold text-green-600">
+            {row.original.overall_score || '--'}
+          </div>
+          <div className="text-xs text-gray-500">
+            {row.original.overall_score ? '/100' : 'No score'}
+          </div>
         </div>
-      ),
+      )
     },
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }: any) => {
+        const stageAction = getStageAction(row.original.current_stage);
+        const StageIcon = stageAction.icon;
+        
+        return (
+          <div className="flex items-center space-x-2">
+            <Button
+              size="sm"
+              variant={stageAction.variant}
+              onClick={() => onScheduleInterview(row.original)}
+              className="flex items-center gap-1 text-xs"
+            >
+              <StageIcon className="h-3 w-3" />
+              {stageAction.label}
+            </Button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" style={{ zIndex: 9999 }}>
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => onViewProfile(row.original)}>
+                  <Eye className="h-4 w-4 mr-2" />
+                  View Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onEditCandidate(row.original)}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Details
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => onScheduleInterview(row.original)}>
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Schedule Interview
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        );
+      }
+    }
   ];
 
-  const tableActions: TableAction<Candidate>[] = [
-    {
-      label: 'View Profile',
-      icon: <Eye className="h-4 w-4" />,
-      onClick: (candidate) => onViewProfile?.(candidate),
-      variant: 'outline',
-    },
-    {
-      label: 'Edit',
-      icon: <Edit className="h-4 w-4" />,
-      onClick: (candidate) => onEditCandidate?.(candidate),
-      variant: 'outline',
-    },
-    {
-      label: 'Schedule Interview',
-      icon: <Clock className="h-4 w-4" />,
-      onClick: (candidate) => onScheduleInterview?.(candidate),
-      variant: 'outline',
-      condition: (candidate) => candidate.status === 'Active',
-    },
-  ];
-
-  const bulkActions: BulkAction<Candidate>[] = [
-    {
-      label: 'Move to Phone Screening',
-      icon: <Phone className="h-4 w-4 mr-2" />,
-      onClick: (candidates) => {
-        onMoveToStage?.(candidates, 'Phone Screening');
-        toast.success({
-          title: 'Candidates moved',
-          description: `${candidates.length} candidate(s) moved to Phone Screening.`
-        });
-      },
-      variant: 'default',
-      condition: (candidates) => candidates.some(c => c.current_stage === 'Applied'),
-    },
-    {
-      label: 'Schedule Interviews',
-      icon: <Calendar className="h-4 w-4 mr-2" />,
-      onClick: (candidates) => {
-        console.log('Schedule interviews for:', candidates);
-        toast.info({
-          title: 'Schedule Interviews',
-          description: `Opening scheduler for ${candidates.length} candidate(s).`
-        });
-      },
-      variant: 'outline',
-      condition: (candidates) => candidates.every(c => c.status === 'Active'),
-    },
-  ];
+  const filteredCandidates = candidates.filter(candidate => {
+    const matchesSearch = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         candidate.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStage = stageFilter === 'all' || candidate.current_stage === stageFilter;
+    const matchesStatus = statusFilter === 'all' || candidate.status === statusFilter;
+    
+    return matchesSearch && matchesStage && matchesStatus;
+  });
 
   return (
-    <EnhancedDataTable
-      data={candidates}
-      columns={columns}
-      keyField="id"
-      title="Candidate Pipeline"
-      description="Track candidates through your hiring process"
-      searchPlaceholder="Search candidates by name, email, skills, or company..."
-      loading={loading}
-      searchable={true}
-      filterable={true}
-      sortable={true}
-      selectable={true}
-      exportable={true}
-      refreshable={true}
-      pagination={true}
-      pageSize={12}
-      actions={tableActions}
-      bulkActions={bulkActions}
-      onRefresh={onRefresh}
-      onExport={onExportCandidates}
-      onRowClick={onViewProfile}
-      emptyMessage="No candidates found. Start sourcing candidates for your open positions."
-      rowClassName={(candidate) => 
-        candidate.status === 'Hired' ? 'bg-green-50 border-green-200' :
-        candidate.status === 'Rejected' ? 'bg-red-50 border-red-200' : ''
-      }
-    />
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl">Candidate Pipeline</CardTitle>
+          <div className="flex items-center space-x-2">
+            <Button variant="outline" size="sm" onClick={onRefresh} disabled={loading}>
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => onExportCandidates(filteredCandidates)}>
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {/* Filters */}
+        <div className="flex items-center space-x-4 mb-6">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search candidates..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          
+          <Select value={stageFilter} onValueChange={setStageFilter}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Filter by stage" />
+            </SelectTrigger>
+            <SelectContent style={{ zIndex: 9999 }}>
+              <SelectItem value="all">All Stages</SelectItem>
+              <SelectItem value="Phone Screening">Phone Screening</SelectItem>
+              <SelectItem value="Technical Interview">Technical Interview</SelectItem>
+              <SelectItem value="Aptitude Test">Aptitude Test</SelectItem>
+              <SelectItem value="Final Interview">Final Interview</SelectItem>
+              <SelectItem value="Offer Discussion">Offer Discussion</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent style={{ zIndex: 9999 }}>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="Active">Active</SelectItem>
+              <SelectItem value="On Hold">On Hold</SelectItem>
+              <SelectItem value="Rejected">Rejected</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Enhanced Data Table */}
+        <EnhancedDataTable
+          data={filteredCandidates}
+          columns={columns}
+          loading={loading}
+          emptyMessage="No candidates found"
+          className="border-0"
+        />
+      </CardContent>
+    </Card>
   );
-}
+};

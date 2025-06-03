@@ -88,12 +88,37 @@ export const AptitudeTestForm: React.FC<AptitudeTestFormProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent 
+        className="max-w-4xl max-h-[90vh] overflow-y-auto"
+        style={{ zIndex: 9999 }}
+      >
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle className="text-xl font-bold text-purple-900">{title}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+          {/* Prominent CTA Section */}
+          <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg border border-purple-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-purple-900 mb-1">Create New Aptitude Test</h3>
+                <p className="text-sm text-purple-700">Design comprehensive assessments to evaluate candidate skills and abilities</p>
+              </div>
+              <div className="flex gap-2">
+                <Button type="button" variant="outline" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={loading}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  {loading ? 'Creating...' : 'Create Test'}
+                </Button>
+              </div>
+            </div>
+          </div>
+
           {/* Basic Information */}
           <Card>
             <CardHeader>
@@ -119,7 +144,7 @@ export const AptitudeTestForm: React.FC<AptitudeTestFormProps> = ({
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent style={{ zIndex: 10000 }}>
                       <SelectItem value="general">General</SelectItem>
                       <SelectItem value="technical">Technical</SelectItem>
                       <SelectItem value="cognitive">Cognitive</SelectItem>
@@ -191,7 +216,7 @@ export const AptitudeTestForm: React.FC<AptitudeTestFormProps> = ({
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent style={{ zIndex: 10000 }}>
                       <SelectItem value="easy">Easy</SelectItem>
                       <SelectItem value="medium">Medium</SelectItem>
                       <SelectItem value="hard">Hard</SelectItem>
@@ -305,7 +330,7 @@ export const AptitudeTestForm: React.FC<AptitudeTestFormProps> = ({
                               <SelectTrigger>
                                 <SelectValue />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectContent style={{ zIndex: 10000 }}>
                                 <SelectItem value="multiple_choice">Multiple Choice</SelectItem>
                                 <SelectItem value="true_false">True/False</SelectItem>
                                 <SelectItem value="essay">Essay</SelectItem>
@@ -343,13 +368,17 @@ export const AptitudeTestForm: React.FC<AptitudeTestFormProps> = ({
             </CardContent>
           </Card>
 
-          {/* Form Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          {/* Bottom CTA */}
+          <div className="sticky bottom-0 bg-white border-t pt-4 flex justify-end gap-3">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Saving...' : 'Save Test'}
+            <Button 
+              type="submit" 
+              disabled={loading}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              {loading ? 'Creating Test...' : 'Create Test'}
             </Button>
           </div>
         </form>
