@@ -33,8 +33,7 @@ import {
   UserCircle,
   HandHeart,
   ClipboardList,
-  Database,
-  MessageSquare
+  Database
 } from "lucide-react";
 
 const AMSSidebar: React.FC = () => {
@@ -140,12 +139,6 @@ const AMSSidebar: React.FC = () => {
           path: "/ams/executive/dashboard", 
           icon: Crown,
           description: "Executive insights"
-        },
-        { 
-          title: "Interviewer Dashboard", 
-          path: "/ams/interviewer/dashboard", 
-          icon: MessageSquare,
-          description: "Interviewer portal"
         },
       ]
     },
