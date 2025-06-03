@@ -39,9 +39,27 @@ export const useInterviewerData = () => {
         return;
       }
 
-      setInterviewer(panelistData);
-
       if (panelistData) {
+        // Transform the data to match the expected types
+        const transformedPanelist: InterviewPanelist = {
+          ...panelistData,
+          skills: Array.isArray(panelistData.skills) ? panelistData.skills : 
+                  typeof panelistData.skills === 'string' ? JSON.parse(panelistData.skills) : [],
+          certifications: Array.isArray(panelistData.certifications) ? panelistData.certifications : 
+                         typeof panelistData.certifications === 'string' ? JSON.parse(panelistData.certifications) : [],
+          languages: Array.isArray(panelistData.languages) ? panelistData.languages : 
+                    typeof panelistData.languages === 'string' ? JSON.parse(panelistData.languages) : [],
+          interview_types: Array.isArray(panelistData.interview_types) ? panelistData.interview_types : 
+                          typeof panelistData.interview_types === 'string' ? JSON.parse(panelistData.interview_types) : [],
+          preferred_time_slots: typeof panelistData.preferred_time_slots === 'object' ? panelistData.preferred_time_slots : {},
+          projects_worked_on: Array.isArray(panelistData.projects_worked_on) ? panelistData.projects_worked_on : 
+                             typeof panelistData.projects_worked_on === 'string' ? JSON.parse(panelistData.projects_worked_on) : [],
+          tools_used: Array.isArray(panelistData.tools_used) ? panelistData.tools_used : 
+                     typeof panelistData.tools_used === 'string' ? JSON.parse(panelistData.tools_used) : []
+        };
+        
+        setInterviewer(transformedPanelist);
+
         // Fetch metrics
         const { data: metricsData } = await supabase
           .from('interviewer_metrics')
@@ -58,7 +76,16 @@ export const useInterviewerData = () => {
           .eq('panelist_id', panelistData.id)
           .order('unlocked_at', { ascending: false });
 
-        setAchievements(achievementsData || []);
+        if (achievementsData) {
+          // Transform achievements to ensure tier matches the expected union type
+          const transformedAchievements: InterviewerAchievement[] = achievementsData.map(achievement => ({
+            ...achievement,
+            tier: ['bronze', 'silver', 'gold', 'platinum'].includes(achievement.tier) 
+              ? achievement.tier as 'bronze' | 'silver' | 'gold' | 'platinum'
+              : 'bronze'
+          }));
+          setAchievements(transformedAchievements);
+        }
 
         // Fetch current leaderboard
         const { data: leaderboardData } = await supabase
@@ -72,7 +99,29 @@ export const useInterviewerData = () => {
           .order('rank_position', { ascending: true })
           .limit(10);
 
-        setLeaderboard(leaderboardData || []);
+        if (leaderboardData) {
+          // Transform leaderboard data to handle panelist skills
+          const transformedLeaderboard: LeaderboardEntry[] = leaderboardData.map(entry => ({
+            ...entry,
+            panelist: entry.panelist ? {
+              ...entry.panelist,
+              skills: Array.isArray(entry.panelist.skills) ? entry.panelist.skills : 
+                     typeof entry.panelist.skills === 'string' ? JSON.parse(entry.panelist.skills) : [],
+              certifications: Array.isArray(entry.panelist.certifications) ? entry.panelist.certifications : 
+                             typeof entry.panelist.certifications === 'string' ? JSON.parse(entry.panelist.certifications) : [],
+              languages: Array.isArray(entry.panelist.languages) ? entry.panelist.languages : 
+                        typeof entry.panelist.languages === 'string' ? JSON.parse(entry.panelist.languages) : [],
+              interview_types: Array.isArray(entry.panelist.interview_types) ? entry.panelist.interview_types : 
+                              typeof entry.panelist.interview_types === 'string' ? JSON.parse(entry.panelist.interview_types) : [],
+              preferred_time_slots: typeof entry.panelist.preferred_time_slots === 'object' ? entry.panelist.preferred_time_slots : {},
+              projects_worked_on: Array.isArray(entry.panelist.projects_worked_on) ? entry.panelist.projects_worked_on : 
+                                 typeof entry.panelist.projects_worked_on === 'string' ? JSON.parse(entry.panelist.projects_worked_on) : [],
+              tools_used: Array.isArray(entry.panelist.tools_used) ? entry.panelist.tools_used : 
+                         typeof entry.panelist.tools_used === 'string' ? JSON.parse(entry.panelist.tools_used) : []
+            } : undefined
+          }));
+          setLeaderboard(transformedLeaderboard);
+        }
       }
     } catch (error) {
       console.error('Error fetching interviewer data:', error);

@@ -50,8 +50,26 @@ export const InterviewSchedule: React.FC<InterviewScheduleProps> = ({ panelistId
 
       if (error) {
         console.error('Error fetching interviews:', error);
-      } else {
-        setInterviews(data || []);
+      } else if (data) {
+        // Transform the data to match our interface
+        const transformedInterviews: ScheduledInterview[] = data.map(interview => ({
+          id: interview.id,
+          candidate_id: interview.candidate_id,
+          scheduled_date: interview.scheduled_date,
+          duration_minutes: interview.duration_minutes,
+          interview_type: interview.interview_type,
+          status: interview.status,
+          meeting_link: interview.meeting_link || undefined,
+          location: interview.location || undefined,
+          notes: interview.notes || undefined,
+          candidate: interview.candidate && typeof interview.candidate === 'object' && 'name' in interview.candidate 
+            ? {
+                name: interview.candidate.name || 'Unknown Candidate',
+                email: interview.candidate.email || ''
+              } 
+            : undefined
+        }));
+        setInterviews(transformedInterviews);
       }
     } catch (error) {
       console.error('Error:', error);
