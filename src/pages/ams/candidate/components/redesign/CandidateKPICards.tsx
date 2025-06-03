@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Box, Card, CardContent, Typography, Grid, LinearProgress } from '@mui/material';
+import { Box, Card, CardContent, Typography, LinearProgress } from '@mui/material';
 import { 
   Work, 
   Schedule, 
@@ -134,31 +134,45 @@ export const CandidateKPICards: React.FC<CandidateKPICardsProps> = ({ dashboardD
 
   if (isLoading) {
     return (
-      <Grid container spacing={2}>
+      <Box sx={{ 
+        display: 'grid', 
+        gridTemplateColumns: { 
+          xs: 'repeat(1, 1fr)', 
+          sm: 'repeat(2, 1fr)', 
+          md: 'repeat(3, 1fr)', 
+          lg: 'repeat(6, 1fr)' 
+        }, 
+        gap: 2 
+      }}>
         {[1, 2, 3, 4, 5, 6].map((item) => (
-          <Grid item xs={12} sm={6} md={4} lg={2} key={item}>
-            <Card sx={{ height: 120 }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  <Box sx={{ backgroundColor: '#f1f5f9', height: 20, borderRadius: 1 }} />
-                  <Box sx={{ backgroundColor: '#f1f5f9', height: 32, borderRadius: 1 }} />
-                  <Box sx={{ backgroundColor: '#f1f5f9', height: 16, borderRadius: 1 }} />
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+          <Card key={item} sx={{ height: 120 }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Box sx={{ backgroundColor: '#f1f5f9', height: 20, borderRadius: 1 }} />
+                <Box sx={{ backgroundColor: '#f1f5f9', height: 32, borderRadius: 1 }} />
+                <Box sx={{ backgroundColor: '#f1f5f9', height: 16, borderRadius: 1 }} />
+              </Box>
+            </CardContent>
+          </Card>
         ))}
-      </Grid>
+      </Box>
     );
   }
 
   return (
-    <Grid container spacing={2}>
+    <Box sx={{ 
+      display: 'grid', 
+      gridTemplateColumns: { 
+        xs: 'repeat(1, 1fr)', 
+        sm: 'repeat(2, 1fr)', 
+        md: 'repeat(3, 1fr)', 
+        lg: 'repeat(6, 1fr)' 
+      }, 
+      gap: 2 
+    }}>
       {kpiData.map((kpi, index) => (
-        <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
-          <KPICard {...kpi} />
-        </Grid>
+        <KPICard key={index} {...kpi} />
       ))}
-    </Grid>
+    </Box>
   );
 };

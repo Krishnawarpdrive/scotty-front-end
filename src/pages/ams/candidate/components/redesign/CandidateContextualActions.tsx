@@ -6,7 +6,6 @@ import {
   Typography, 
   Box, 
   Button, 
-  Grid,
   Chip
 } from '@mui/material';
 import { 
@@ -119,64 +118,71 @@ export const CandidateContextualActions: React.FC<CandidateContextualActionsProp
           </Button>
         </Box>
 
-        <Grid container spacing={2}>
+        <Box sx={{ 
+          display: 'grid', 
+          gridTemplateColumns: { 
+            xs: 'repeat(1, 1fr)', 
+            sm: 'repeat(2, 1fr)', 
+            md: 'repeat(2, 1fr)' 
+          }, 
+          gap: 2 
+        }}>
           {actions.map((action, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card 
-                variant="outlined" 
-                sx={{ 
-                  height: '100%',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  border: action.urgency ? `2px solid ${action.color}` : '1px solid #e2e8f0',
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    borderColor: action.color
-                  }
-                }}
-                onClick={action.action}
-              >
-                <CardContent sx={{ p: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                    <Box 
-                      sx={{ 
-                        backgroundColor: `${action.color}20`, 
-                        borderRadius: 2, 
-                        p: 1,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {React.cloneElement(action.icon, { 
-                        sx: { color: action.color, fontSize: 20 } 
-                      })}
-                    </Box>
-                    <Box sx={{ flex: 1 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                        <Typography variant="body1" sx={{ fontWeight: 600, fontSize: '14px' }}>
-                          {action.title}
-                        </Typography>
-                        {action.urgency && (
-                          <Chip 
-                            label="Urgent" 
-                            size="small" 
-                            color="error" 
-                            sx={{ height: 16, fontSize: '10px' }}
-                          />
-                        )}
-                      </Box>
-                      <Typography variant="body2" color="text.secondary" sx={{ fontSize: '12px' }}>
-                        {action.description}
-                      </Typography>
-                    </Box>
+            <Card 
+              key={index}
+              variant="outlined" 
+              sx={{ 
+                height: '100%',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                border: action.urgency ? `2px solid ${action.color}` : '1px solid #e2e8f0',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  borderColor: action.color
+                }
+              }}
+              onClick={action.action}
+            >
+              <CardContent sx={{ p: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                  <Box 
+                    sx={{ 
+                      backgroundColor: `${action.color}20`, 
+                      borderRadius: 2, 
+                      p: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    {React.cloneElement(action.icon, { 
+                      sx: { color: action.color, fontSize: 20 } 
+                    })}
                   </Box>
-                </CardContent>
-              </Card>
-            </Grid>
+                  <Box sx={{ flex: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <Typography variant="body1" sx={{ fontWeight: 600, fontSize: '14px' }}>
+                        {action.title}
+                      </Typography>
+                      {action.urgency && (
+                        <Chip 
+                          label="Urgent" 
+                          size="small" 
+                          color="error" 
+                          sx={{ height: 16, fontSize: '10px' }}
+                        />
+                      )}
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: '12px' }}>
+                      {action.description}
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
           ))}
-        </Grid>
+        </Box>
       </CardContent>
     </Card>
   );

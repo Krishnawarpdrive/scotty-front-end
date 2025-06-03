@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { CandidateContextualActions } from './CandidateContextualActions';
 import { CandidateActivityFeed } from './CandidateActivityFeed';
 import { CandidateApplicationsTable } from './CandidateApplicationsTable';
@@ -29,21 +29,21 @@ export const CandidateMainContent: React.FC<CandidateMainContentProps> = ({
       <CandidateKPICards dashboardData={dashboardData} isLoading={isLoading} />
 
       {/* Middle Section: Quick Actions and Activity Feed */}
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+      <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+        <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 66%' }, minWidth: 0 }}>
           <CandidateContextualActions 
             dashboardData={dashboardData}
             candidateId={candidateId}
           />
-        </Grid>
-        <Grid item xs={12} md={4}>
+        </Box>
+        <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 33%' }, minWidth: 0 }}>
           <CandidateActivityFeed 
             notifications={notifications}
             messages={messages}
             isLoading={isLoading}
           />
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       {/* Tables Section */}
       <Box>
