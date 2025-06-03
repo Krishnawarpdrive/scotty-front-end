@@ -33,6 +33,7 @@ export const useInterviewSchedule = (panelistId?: string) => {
           let candidateData: { name: string; email: string } | null = null;
           
           if (interview.candidate && 
+              interview.candidate !== null &&
               typeof interview.candidate === 'object' && 
               'name' in interview.candidate && 
               'email' in interview.candidate) {
