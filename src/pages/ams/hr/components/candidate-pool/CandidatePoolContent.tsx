@@ -48,7 +48,6 @@ export const CandidatePoolContent: React.FC<CandidatePoolContentProps> = ({
   searchTerm,
   metrics,
   activeFilterCount,
-  onCandidateClick,
   onCandidateSelect,
   onSelectAll,
   onQuickAction,

@@ -1,32 +1,32 @@
 
-import React, { useState } from "react";
-import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React, { useState } from 'react';
+import { SideDrawer } from '@/components/ui/side-drawer';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
 import { 
-  X, 
   Mail, 
   Phone, 
   MapPin, 
   Calendar, 
   Briefcase,
-  FileText,
   Star,
   Clock,
   User,
   Download,
   MessageSquare,
   Video,
-  Settings,
-  Users,
-  Route
-} from "lucide-react";
-import { CandidateHiringPipelineTab } from "./tabs/CandidateHiringPipelineTab";
-import { CandidateTAMappingTab } from "./tabs/CandidateTAMappingTab";
-import { CandidateJourneyConfigTab } from "./tabs/CandidateJourneyConfigTab";
+  Building2,
+  CheckCircle,
+  Circle,
+  AlertTriangle,
+  FileText,
+  Edit
+} from 'lucide-react';
+import { Candidate } from './CandidateTable';
 
 interface CandidateDetailDrawerProps {
   open: boolean;
@@ -39,35 +39,41 @@ export const CandidateDetailDrawer: React.FC<CandidateDetailDrawerProps> = ({
   onClose,
   candidateId
 }) => {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState('overview');
 
   // Mock candidate data - replace with actual data fetching
-  const candidate = candidateId ? {
+  const candidate: Candidate | null = candidateId ? {
     id: candidateId,
     name: "Sarah Johnson",
+    candidateId: "CND-001",
     email: "sarah.johnson@email.com",
     phone: "+1 (555) 123-4567",
-    currentPosition: "Senior Frontend Developer",
-    currentEmployer: "TechCorp Inc.",
-    experienceYears: 5,
-    location: "San Francisco, CA",
-    currentStage: "Technical Interview",
+    currentStage: "Phone Interview",
     source: "LinkedIn",
     status: "Active",
-    appliedDate: "2024-01-15",
+    appliedRoles: ["Senior Frontend Developer", "Tech Lead"],
+    experience: {
+      years: 5,
+      months: 6
+    },
+    score: 85,
+    assignedTA: {
+      name: "Mike Chen",
+      avatar: undefined
+    },
+    lastUpdated: "2024-01-15",
+    priority: "High",
+    nextAction: "Schedule technical interview",
+    actionDueDate: "2024-01-20",
     skills: ["React", "TypeScript", "Node.js", "GraphQL", "AWS"],
+    currentRole: "Senior Frontend Developer",
+    currentCompany: "TechCorp Inc.",
+    location: "San Francisco, CA",
+    appliedDate: "2024-01-15",
     resumeUrl: "#",
     notes: "Excellent technical skills, strong communication, looking for remote opportunities.",
-    roleApplications: [
-      {
-        id: "role-1",
-        name: "Senior Frontend Developer",
-        client: "TechCorp Inc.",
-        status: "Active",
-        currentStage: "Technical Interview",
-        appliedDate: "2024-01-15"
-      }
-    ]
+    type: "Experienced",
+    avatar: undefined
   } : null;
 
   if (!candidate) return null;
@@ -76,253 +82,389 @@ export const CandidateDetailDrawer: React.FC<CandidateDetailDrawerProps> = ({
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  const getStageColor = (stage: string) => {
-    switch (stage.toLowerCase()) {
-      case 'applied': return 'bg-blue-100 text-blue-800';
-      case 'screening': return 'bg-yellow-100 text-yellow-800';
-      case 'technical interview': return 'bg-purple-100 text-purple-800';
-      case 'final interview': return 'bg-green-100 text-green-800';
-      case 'offer': return 'bg-emerald-100 text-emerald-800';
-      case 'hired': return 'bg-green-100 text-green-800';
-      case 'rejected': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case 'Active': return 'default';
+      case 'On Hold': return 'secondary';
+      case 'Rejected': return 'destructive';
+      case 'Hired': return 'default';
+      default: return 'outline';
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'on hold': return 'bg-yellow-100 text-yellow-800';
-      case 'rejected': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'High': return 'text-red-600 bg-red-50 border-red-200';
+      case 'Medium': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case 'Low': return 'text-green-600 bg-green-50 border-green-200';
+      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+    }
+  };
+
+  // Mock pipeline data
+  const pipelineStages = [
+    { name: 'Application', status: 'completed', date: candidate.appliedDate },
+    { name: 'Phone Screening', status: 'completed', date: '2024-01-18' },
+    { name: 'Technical Interview', status: 'current', date: '2024-01-22' },
+    { name: 'Manager Interview', status: 'pending', date: null },
+    { name: 'Final Interview', status: 'pending', date: null },
+    { name: 'Offer', status: 'pending', date: null },
+  ];
+
+  const currentStageIndex = pipelineStages.findIndex(stage => stage.status === 'current');
+  const progress = ((currentStageIndex + 1) / pipelineStages.length) * 100;
+
+  const getStageIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
+      case 'current':
+        return <Clock className="h-5 w-5 text-blue-500" />;
+      default:
+        return <Circle className="h-5 w-5 text-gray-300" />;
     }
   };
 
   return (
-    <Drawer open={open} onOpenChange={onClose}>
-      <DrawerContent className="max-h-[90vh] overflow-hidden">
-        <DrawerHeader className="border-b">
-          <div className="flex items-center justify-between">
-            <div>
-              <DrawerTitle>Candidate Profile</DrawerTitle>
-              <DrawerDescription>
-                Detailed information about {candidate.name}
-              </DrawerDescription>
+    <SideDrawer
+      open={open}
+      onOpenChange={onClose}
+      size="xl"
+      title="Candidate Profile"
+      description="Detailed candidate information and progress tracking"
+    >
+      <div className="space-y-6">
+        {/* Candidate Header Card */}
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-6">
+            <div className="flex items-start space-x-4">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={candidate.avatar} alt={candidate.name} />
+                <AvatarFallback className="text-lg bg-blue-100 text-blue-600">
+                  {getInitials(candidate.name)}
+                </AvatarFallback>
+              </Avatar>
+              
+              <div className="flex-1 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">{candidate.name}</h2>
+                    <p className="text-sm text-gray-500">{candidate.candidateId}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Badge variant={getStatusBadgeVariant(candidate.status)}>
+                      {candidate.status}
+                    </Badge>
+                    <Badge className={getPriorityColor(candidate.priority || 'Medium')}>
+                      {candidate.priority || 'Medium'} Priority
+                    </Badge>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <Mail className="h-4 w-4 text-gray-400" />
+                    <span className="text-gray-600">{candidate.email}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Phone className="h-4 w-4 text-gray-400" />
+                    <span className="text-gray-600">{candidate.phone}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <MapPin className="h-4 w-4 text-gray-400" />
+                    <span className="text-gray-600">{candidate.location}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Building2 className="h-4 w-4 text-gray-400" />
+                    <span className="text-gray-600">{candidate.currentCompany}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <Button size="sm" variant="outline">
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Message
+                  </Button>
+                  <Button size="sm" variant="outline">
+                    <Video className="h-4 w-4 mr-2" />
+                    Schedule Interview
+                  </Button>
+                  <Button size="sm" variant="outline">
+                    <Download className="h-4 w-4 mr-2" />
+                    Resume
+                  </Button>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm">
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Message
-              </Button>
-              <Button variant="outline" size="sm">
-                <Video className="h-4 w-4 mr-2" />
-                Schedule Interview
-              </Button>
-              <Button variant="ghost" size="icon" onClick={onClose}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </DrawerHeader>
-        
-        <div className="flex-1 overflow-hidden">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-            <div className="border-b px-6">
-              <TabsList className="h-12">
-                <TabsTrigger value="overview" className="flex items-center space-x-2">
-                  <User className="h-4 w-4" />
-                  <span>Overview</span>
-                </TabsTrigger>
-                <TabsTrigger value="pipeline" className="flex items-center space-x-2">
-                  <Settings className="h-4 w-4" />
-                  <span>Hiring Pipeline</span>
-                </TabsTrigger>
-                <TabsTrigger value="ta-mapping" className="flex items-center space-x-2">
-                  <Users className="h-4 w-4" />
-                  <span>TA Mapping</span>
-                </TabsTrigger>
-                <TabsTrigger value="journey" className="flex items-center space-x-2">
-                  <Route className="h-4 w-4" />
-                  <span>Candidate Journey</span>
-                </TabsTrigger>
-              </TabsList>
+          </CardContent>
+        </Card>
+
+        {/* Tabs Navigation */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 bg-gray-100">
+            <TabsTrigger value="overview" className="flex items-center space-x-2">
+              <User className="h-4 w-4" />
+              <span>Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="pipeline" className="flex items-center space-x-2">
+              <Briefcase className="h-4 w-4" />
+              <span>Hiring Pipeline</span>
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6 mt-6">
+            {/* Quick Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <Star className="h-6 w-6 mx-auto mb-2 text-yellow-500" />
+                  <div className="text-2xl font-bold">{candidate.score || 'N/A'}</div>
+                  <div className="text-sm text-gray-600">Score</div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <Clock className="h-6 w-6 mx-auto mb-2 text-blue-500" />
+                  <div className="text-sm font-semibold">{candidate.currentStage}</div>
+                  <div className="text-sm text-gray-600">Current Stage</div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <User className="h-6 w-6 mx-auto mb-2 text-green-500" />
+                  <div className="text-sm font-semibold">
+                    {candidate.assignedTA ? candidate.assignedTA.name : 'Unassigned'}
+                  </div>
+                  <div className="text-sm text-gray-600">Assigned TA</div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <Briefcase className="h-6 w-6 mx-auto mb-2 text-purple-500" />
+                  <div className="text-sm font-semibold">{candidate.appliedRoles.length}</div>
+                  <div className="text-sm text-gray-600">Applied Roles</div>
+                </CardContent>
+              </Card>
             </div>
 
-            <div className="flex-1 overflow-y-auto">
-              <TabsContent value="overview" className="p-6 space-y-6 m-0">
-                {/* Profile Header */}
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-6">
-                      <Avatar className="h-20 w-20">
-                        <AvatarImage src="" alt={candidate.name} />
-                        <AvatarFallback className="text-lg">{getInitials(candidate.name)}</AvatarFallback>
-                      </Avatar>
-                      
-                      <div className="flex-1">
-                        <h2 className="text-2xl font-bold text-gray-900">{candidate.name}</h2>
-                        <p className="text-lg text-gray-600 mt-1">{candidate.currentPosition}</p>
-                        <p className="text-sm text-gray-500">{candidate.currentEmployer}</p>
-                        
-                        <div className="flex items-center space-x-3 mt-3">
-                          <Badge className={getStageColor(candidate.currentStage)} variant="secondary">
-                            {candidate.currentStage}
-                          </Badge>
-                          <Badge className={getStatusColor(candidate.status)} variant="secondary">
-                            {candidate.status}
-                          </Badge>
-                          <Badge variant="outline">
-                            {candidate.experienceYears} years exp
-                          </Badge>
-                        </div>
-                        
-                        <div className="flex items-center mt-4 space-x-6 text-sm text-gray-600">
-                          <div className="flex items-center">
-                            <Mail className="h-4 w-4 mr-2" />
-                            <span>{candidate.email}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Phone className="h-4 w-4 mr-2" />
-                            <span>{candidate.phone}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <MapPin className="h-4 w-4 mr-2" />
-                            <span>{candidate.location}</span>
-                          </div>
-                        </div>
+            {/* Applied Roles */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Applied Roles</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {candidate.appliedRoles.map((role, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <div className="font-medium">{role}</div>
+                        <div className="text-sm text-gray-600">Applied on {candidate.appliedDate}</div>
+                      </div>
+                      <Badge variant="outline">{candidate.currentStage}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Experience */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Experience</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Total Experience</span>
+                    <span className="font-medium">
+                      {candidate.experience ? `${candidate.experience.years}y ${candidate.experience.months}m` : 'N/A'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Current Role</span>
+                    <span className="font-medium">{candidate.currentRole}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Current Company</span>
+                    <span className="font-medium">{candidate.currentCompany}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Candidate Type</span>
+                    <Badge variant="outline">{candidate.type}</Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Skills */}
+            {candidate.skills && candidate.skills.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Skills</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {candidate.skills.map((skill, index) => (
+                      <Badge key={index} variant="secondary">{skill}</Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Next Action */}
+            {candidate.nextAction && (
+              <Card className="border-orange-200 bg-orange-50">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center space-x-2">
+                    <AlertTriangle className="h-5 w-5 text-orange-500" />
+                    <span>Next Action Required</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <p className="text-gray-700">{candidate.nextAction}</p>
+                    {candidate.actionDueDate && (
+                      <p className="text-sm text-gray-600">
+                        Due: {candidate.actionDueDate}
+                      </p>
+                    )}
+                    <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
+                      Take Action
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Pipeline Tab */}
+          <TabsContent value="pipeline" className="space-y-6 mt-6">
+            {/* Pipeline Overview */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Pipeline Progress</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Stage {currentStageIndex + 1} of {pipelineStages.length}</span>
+                  <span>{Math.round(progress)}% Complete</span>
+                </div>
+                <Progress value={progress} className="h-2" />
+                
+                <div className="grid grid-cols-3 gap-4 mt-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">
+                      {pipelineStages.filter(s => s.status === 'completed').length}
+                    </div>
+                    <div className="text-sm text-gray-500">Completed</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">1</div>
+                    <div className="text-sm text-gray-500">In Progress</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-400">
+                      {pipelineStages.filter(s => s.status === 'pending').length}
+                    </div>
+                    <div className="text-sm text-gray-500">Pending</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Pipeline Stages */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Stage Details</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {pipelineStages.map((stage, index) => (
+                    <div
+                      key={index}
+                      className={`flex items-center space-x-4 p-4 rounded-lg border ${
+                        stage.status === 'current' ? 'bg-blue-50 border-blue-200' : 'bg-gray-50'
+                      }`}
+                    >
+                      <div className="flex-shrink-0">
+                        {getStageIcon(stage.status)}
                       </div>
                       
-                      <div className="text-right">
-                        <Button variant="outline" size="sm">
-                          <Download className="h-4 w-4 mr-2" />
-                          Resume
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-medium">{stage.name}</h4>
+                          <Badge
+                            variant={
+                              stage.status === 'completed' ? 'default' :
+                              stage.status === 'current' ? 'secondary' : 'outline'
+                            }
+                          >
+                            {stage.status === 'completed' ? 'Completed' :
+                             stage.status === 'current' ? 'In Progress' : 'Pending'}
+                          </Badge>
+                        </div>
+                        
+                        {stage.date && (
+                          <div className="flex items-center space-x-1 text-sm text-gray-500 mt-1">
+                            <Calendar className="h-3 w-3" />
+                            <span>{new Date(stage.date).toLocaleDateString()}</span>
+                          </div>
+                        )}
+                        
+                        {stage.status === 'current' && (
+                          <div className="mt-2 flex space-x-2">
+                            <Button size="sm" variant="outline">
+                              Schedule Interview
+                            </Button>
+                            <Button size="sm" variant="outline">
+                              Add Notes
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Role Applications in Pipeline */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Role Applications</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {candidate.appliedRoles.map((role, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <User className="h-4 w-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <div className="font-medium">{role}</div>
+                          <div className="text-sm text-gray-500">Applied {candidate.appliedDate}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline">{candidate.currentStage}</Badge>
+                        <Button size="sm" variant="ghost">
+                          View Details
                         </Button>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-
-                {/* Application Details */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Applied Date</CardTitle>
-                      <Calendar className="h-4 w-4 text-blue-600" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-lg font-bold">{new Date(candidate.appliedDate).toLocaleDateString()}</div>
-                      <p className="text-xs text-muted-foreground">
-                        {Math.floor((Date.now() - new Date(candidate.appliedDate).getTime()) / (1000 * 60 * 60 * 24))} days ago
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Source</CardTitle>
-                      <User className="h-4 w-4 text-green-600" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-lg font-bold">{candidate.source}</div>
-                      <p className="text-xs text-muted-foreground">Application source</p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Experience</CardTitle>
-                      <Briefcase className="h-4 w-4 text-purple-600" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-lg font-bold">{candidate.experienceYears} Years</div>
-                      <p className="text-xs text-muted-foreground">Total experience</p>
-                    </CardContent>
-                  </Card>
+                  ))}
                 </div>
-
-                {/* Skills */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Skills & Technologies</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {candidate.skills.map((skill, index) => (
-                        <Badge key={index} variant="outline">
-                          {skill}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Notes */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Notes</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600">{candidate.notes}</p>
-                  </CardContent>
-                </Card>
-
-                {/* Timeline */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Application Timeline</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
-                        <div className="flex-1">
-                          <p className="font-medium">Application Submitted</p>
-                          <p className="text-sm text-gray-600">{new Date(candidate.appliedDate).toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-3 h-3 bg-yellow-600 rounded-full"></div>
-                        <div className="flex-1">
-                          <p className="font-medium">Initial Screening Completed</p>
-                          <p className="text-sm text-gray-600">2 days ago</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-3 h-3 bg-purple-600 rounded-full"></div>
-                        <div className="flex-1">
-                          <p className="font-medium">Technical Interview Scheduled</p>
-                          <p className="text-sm text-gray-600">Current stage</p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="pipeline" className="p-6 m-0">
-                <CandidateHiringPipelineTab 
-                  candidate={candidate}
-                  roleApplications={candidate.roleApplications}
-                />
-              </TabsContent>
-
-              <TabsContent value="ta-mapping" className="p-6 m-0">
-                <CandidateTAMappingTab 
-                  candidate={candidate}
-                  roleApplications={candidate.roleApplications}
-                />
-              </TabsContent>
-
-              <TabsContent value="journey" className="p-6 m-0">
-                <CandidateJourneyConfigTab 
-                  candidate={candidate}
-                  roleApplications={candidate.roleApplications}
-                />
-              </TabsContent>
-            </div>
-          </Tabs>
-        </div>
-      </DrawerContent>
-    </Drawer>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </SideDrawer>
   );
 };
