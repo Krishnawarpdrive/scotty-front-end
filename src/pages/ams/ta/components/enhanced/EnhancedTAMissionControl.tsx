@@ -1,325 +1,311 @@
-
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent } from '@/components/ui/card';
 import { EnhancedCandidateTable } from './EnhancedCandidateTable';
-import { ApplicationStages } from '../ApplicationStages';
-import { 
-  Users, 
-  Calendar, 
-  TrendingUp, 
-  Clock, 
-  CheckCircle,
-  AlertTriangle,
-  BookOpen,
-  UserCheck,
-  Target,
-  Activity
-} from 'lucide-react';
+import { EnhancedCandidateDetailDrawer } from '../candidate-detail/EnhancedCandidateDetailDrawer';
+import { useEnhancedToast } from '@/components/feedback/EnhancedToast';
+import { Plus, Download, Filter, Users, Calendar, CheckCircle, Clock } from 'lucide-react';
 
-interface EnhancedTAMissionControlProps {
-  onCandidateSelect?: (candidate: any) => void;
-}
+// Mock data for demonstration with role applications
+const mockCandidates = [
+  {
+    id: '1',
+    name: 'John Smith',
+    email: 'john.smith@email.com',
+    phone: '+1 (555) 123-4567',
+    current_stage: 'Phone Screening',
+    source: 'LinkedIn',
+    experience_years: 5,
+    skills: ['React', 'TypeScript', 'Node.js', 'Python'],
+    current_position: 'Senior Frontend Developer',
+    current_employer: 'Tech Corp Inc',
+    status: 'Active' as const,
+    applied_date: '2024-01-15',
+    last_updated: '2024-01-20',
+    location: 'San Francisco, CA',
+    overall_score: 85,
+    role_applications: [
+      {
+        id: 'app1',
+        role_name: 'Senior Frontend Engineer',
+        client_name: 'TechStart Inc',
+        applied_date: '2024-01-15',
+        current_stage: 'Technical Interview',
+        stage_progress: 3,
+        total_stages: 5,
+        status: 'Active' as const,
+        hiring_manager: 'Sarah Johnson',
+        ta_assigned: 'Mike Chen',
+        next_action: 'Schedule final interview',
+        next_action_date: '2024-01-25'
+      },
+      {
+        id: 'app2',
+        role_name: 'Lead Developer',
+        client_name: 'Innovation Labs',
+        applied_date: '2024-01-10',
+        current_stage: 'Phone Screening',
+        stage_progress: 2,
+        total_stages: 4,
+        status: 'Active' as const,
+        hiring_manager: 'David Wilson',
+        ta_assigned: 'Lisa Brown',
+        next_action: 'Technical assessment review',
+        next_action_date: '2024-01-24'
+      }
+    ]
+  },
+  {
+    id: '2',
+    name: 'Sarah Johnson',
+    email: 'sarah.j@email.com',
+    current_stage: 'Technical Interview',
+    source: 'Referral',
+    experience_years: 8,
+    skills: ['Java', 'Spring', 'Microservices', 'AWS'],
+    current_position: 'Backend Engineer',
+    current_employer: 'Enterprise Solutions',
+    status: 'Active' as const,
+    applied_date: '2024-01-10',
+    last_updated: '2024-01-18',
+    location: 'Austin, TX',
+    overall_score: 92,
+    role_applications: [
+      {
+        id: 'app3',
+        role_name: 'Senior Backend Engineer',
+        client_name: 'DataFlow Systems',
+        applied_date: '2024-01-10',
+        current_stage: 'Final Interview',
+        stage_progress: 4,
+        total_stages: 5,
+        status: 'Active' as const,
+        hiring_manager: 'Robert Chen',
+        ta_assigned: 'Emily Davis',
+        next_action: 'Reference check',
+        next_action_date: '2024-01-26'
+      }
+    ]
+  },
+  {
+    id: '3',
+    name: 'Michael Chen',
+    email: 'mchen@email.com',
+    current_stage: 'Final Interview',
+    source: 'Direct',
+    experience_years: 6,
+    skills: ['DevOps', 'Kubernetes', 'Docker', 'CI/CD'],
+    current_position: 'DevOps Engineer',
+    current_employer: 'Cloud Systems',
+    status: 'Active' as const,
+    applied_date: '2024-01-05',
+    last_updated: '2024-01-19',
+    location: 'Seattle, WA',
+    overall_score: 78,
+    role_applications: [
+      {
+        id: 'app4',
+        role_name: 'DevOps Specialist',
+        client_name: 'ScaleUp Corp',
+        applied_date: '2024-01-05',
+        current_stage: 'Offer Discussion',
+        stage_progress: 5,
+        total_stages: 5,
+        status: 'Active' as const,
+        hiring_manager: 'Jennifer Lee',
+        ta_assigned: 'Alex Kumar',
+        next_action: 'Salary negotiation',
+        next_action_date: '2024-01-23'
+      }
+    ]
+  },
+];
 
-export const EnhancedTAMissionControl: React.FC<EnhancedTAMissionControlProps> = ({
-  onCandidateSelect
-}) => {
-  const [activeView, setActiveView] = useState('pipeline');
+export function EnhancedTAMissionControl() {
+  const toast = useEnhancedToast();
+  const [loading, setLoading] = useState(false);
+  const [candidateDetailOpen, setCandidateDetailOpen] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
 
-  // Mock data - replace with actual data
+  const handleViewProfile = (candidate: any) => {
+    console.log('View candidate profile:', candidate);
+    setSelectedCandidate(candidate);
+    setCandidateDetailOpen(true);
+  };
+
+  const handleEditCandidate = (candidate: any) => {
+    console.log('Edit candidate:', candidate);
+    toast.info({
+      title: 'Edit Candidate',
+      description: `Opening edit form for ${candidate.name}`
+    });
+  };
+
+  const handleScheduleInterview = (candidate: any) => {
+    console.log('Schedule interview:', candidate);
+    toast.info({
+      title: 'Schedule Interview',
+      description: `Opening scheduler for ${candidate.name}`
+    });
+  };
+
+  const handleMoveToStage = (candidates: any[], stage: string) => {
+    console.log('Move candidates to stage:', candidates, stage);
+  };
+
+  const handleExportCandidates = (candidates: any[]) => {
+    console.log('Export candidates:', candidates);
+    const csvData = candidates.map(candidate => ({
+      Name: candidate.name,
+      Email: candidate.email,
+      Phone: candidate.phone || '',
+      'Current Stage': candidate.current_stage,
+      Status: candidate.status,
+      'Experience Years': candidate.experience_years,
+      'Current Position': candidate.current_position || '',
+      'Current Employer': candidate.current_employer || '',
+      Source: candidate.source,
+      'Applied Date': candidate.applied_date,
+      Skills: candidate.skills.join('; ')
+    }));
+    
+    const csv = [
+      Object.keys(csvData[0]).join(','),
+      ...csvData.map(row => Object.values(row).join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'candidates-export.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleRefresh = () => {
+    setLoading(true);
+    setTimeout(() => setLoading(false), 1000);
+    toast.success({
+      title: 'Data refreshed',
+      description: 'Candidate data has been updated'
+    });
+  };
+
+  const handleCloseCandidateDetail = () => {
+    setCandidateDetailOpen(false);
+    setSelectedCandidate(null);
+  };
+
+  // Calculate metrics
   const metrics = {
-    totalCandidates: 324,
-    activeInterviews: 18,
-    completedToday: 12,
-    pendingActions: 7,
-    conversion: 78,
-    avgTimeToHire: 14
+    totalCandidates: mockCandidates.length,
+    activeStages: mockCandidates.filter(c => c.status === 'Active').length,
+    interviewsScheduled: mockCandidates.filter(c => c.current_stage.includes('Interview')).length,
+    readyForOffer: mockCandidates.filter(c => c.current_stage === 'Final Interview').length,
   };
 
-  const urgentActions = [
-    {
-      id: 1,
-      type: 'interview',
-      title: 'Technical Interview - Sarah Johnson',
-      description: 'Scheduled for today at 2:00 PM',
-      priority: 'high',
-      dueIn: '2 hours'
-    },
-    {
-      id: 2,
-      type: 'aptitude',
-      title: 'Aptitude Test Results Review',
-      description: '5 candidates awaiting result review',
-      priority: 'medium',
-      dueIn: '4 hours'
-    },
-    {
-      id: 3,
-      type: 'feedback',
-      title: 'Interview Feedback Pending',
-      description: '3 interviews missing feedback forms',
-      priority: 'high',
-      dueIn: '1 day'
-    }
-  ];
-
-  const mockCandidates = [
-    {
-      id: '1',
-      name: 'Sarah Johnson',
-      email: 'sarah.johnson@email.com',
-      phone: '+1 (555) 123-4567',
-      current_stage: 'Technical Interview',
-      source: 'LinkedIn',
-      experience_years: 5,
-      skills: ['React', 'TypeScript', 'Node.js'],
-      current_position: 'Frontend Developer',
-      current_employer: 'TechCorp',
-      status: 'Active' as const,
-      applied_date: '2024-01-15',
-      last_updated: '2024-01-16'
-    },
-    {
-      id: '2',
-      name: 'Michael Chen',
-      email: 'michael.chen@email.com',
-      phone: '+1 (555) 234-5678',
-      current_stage: 'Aptitude Test',
-      source: 'Referral',
-      experience_years: 3,
-      skills: ['Python', 'Django', 'PostgreSQL'],
-      current_position: 'Backend Developer',
-      current_employer: 'StartupXYZ',
-      status: 'Active' as const,
-      applied_date: '2024-01-14',
-      last_updated: '2024-01-16'
-    }
-  ];
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'text-red-600 bg-red-50 border-red-200';
-      case 'medium': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      case 'low': return 'text-green-600 bg-green-50 border-green-200';
-      default: return 'text-gray-600 bg-gray-50 border-gray-200';
-    }
-  };
-
-  const getActionIcon = (type: string) => {
-    switch (type) {
-      case 'interview': return <Calendar className="h-4 w-4" />;
-      case 'aptitude': return <BookOpen className="h-4 w-4" />;
-      case 'feedback': return <UserCheck className="h-4 w-4" />;
-      default: return <AlertTriangle className="h-4 w-4" />;
-    }
-  };
+  const pageActions = (
+    <>
+      <Button variant="outline" size="sm">
+        <Filter className="h-4 w-4 mr-2" />
+        Advanced Filters
+      </Button>
+      <Button variant="outline" size="sm" onClick={() => handleExportCandidates(mockCandidates)}>
+        <Download className="h-4 w-4 mr-2" />
+        Export All
+      </Button>
+      <Button size="sm">
+        <Plus className="h-4 w-4 mr-2" />
+        Add Candidate
+      </Button>
+    </>
+  );
 
   return (
-    <div className="space-y-6 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">TA Mission Control</h1>
-          <p className="text-gray-600">Centralized technical assessment and interview management</p>
-        </div>
-        <div className="flex items-center space-x-3">
-          <Button variant="outline">
-            <Activity className="h-4 w-4 mr-2" />
-            Analytics
-          </Button>
-          <Button>
-            <Calendar className="h-4 w-4 mr-2" />
-            Schedule Interview
-          </Button>
-        </div>
-      </div>
+    <motion.div 
+      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <PageHeader
+        title="TA Mission Control"
+        subtitle="Manage your candidate pipeline and hiring progress"
+        actions={pageActions}
+      />
 
-      {/* Metrics Dashboard */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Users className="h-5 w-5 text-blue-600" />
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-gray-900">{metrics.totalCandidates}</p>
-                <p className="text-xs text-gray-600">Total Candidates</p>
+                <p className="text-sm text-gray-600">Total Candidates</p>
+                <p className="text-2xl font-bold text-blue-600">{metrics.totalCandidates}</p>
               </div>
+              <Users className="h-8 w-8 text-blue-600" />
             </div>
           </CardContent>
         </Card>
-
+        
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Calendar className="h-5 w-5 text-green-600" />
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-gray-900">{metrics.activeInterviews}</p>
-                <p className="text-xs text-gray-600">Active Interviews</p>
+                <p className="text-sm text-gray-600">Active in Pipeline</p>
+                <p className="text-2xl font-bold text-green-600">{metrics.activeStages}</p>
               </div>
+              <Clock className="h-8 w-8 text-green-600" />
             </div>
           </CardContent>
         </Card>
-
+        
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="h-5 w-5 text-emerald-600" />
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-gray-900">{metrics.completedToday}</p>
-                <p className="text-xs text-gray-600">Completed Today</p>
+                <p className="text-sm text-gray-600">Interviews Scheduled</p>
+                <p className="text-2xl font-bold text-purple-600">{metrics.interviewsScheduled}</p>
               </div>
+              <Calendar className="h-8 w-8 text-purple-600" />
             </div>
           </CardContent>
         </Card>
-
+        
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <AlertTriangle className="h-5 w-5 text-amber-600" />
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-gray-900">{metrics.pendingActions}</p>
-                <p className="text-xs text-gray-600">Pending Actions</p>
+                <p className="text-sm text-gray-600">Ready for Offer</p>
+                <p className="text-2xl font-bold text-yellow-600">{metrics.readyForOffer}</p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <TrendingUp className="h-5 w-5 text-purple-600" />
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{metrics.conversion}%</p>
-                <p className="text-xs text-gray-600">Conversion Rate</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-indigo-600" />
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{metrics.avgTimeToHire}d</p>
-                <p className="text-xs text-gray-600">Avg Time to Hire</p>
-              </div>
+              <CheckCircle className="h-8 w-8 text-yellow-600" />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Quick Actions & Urgent Items */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5 text-red-600" />
-                Urgent Actions Required
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {urgentActions.map((action) => (
-                  <div key={action.id} className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex-shrink-0 mt-1">
-                      {getActionIcon(action.type)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-medium text-gray-900">{action.title}</h4>
-                      <p className="text-sm text-gray-600">{action.description}</p>
-                    </div>
-                    <div className="flex-shrink-0">
-                      <Badge className={getPriorityColor(action.priority)}>
-                        Due in {action.dueIn}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      {/* Enhanced Candidate Table */}
+      <EnhancedCandidateTable
+        candidates={mockCandidates}
+        loading={loading}
+        onRefresh={handleRefresh}
+        onViewProfile={handleViewProfile}
+        onEditCandidate={handleEditCandidate}
+        onScheduleInterview={handleScheduleInterview}
+        onMoveToStage={handleMoveToStage}
+        onExportCandidates={handleExportCandidates}
+      />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <Button className="w-full justify-start" variant="outline">
-                <Calendar className="h-4 w-4 mr-2" />
-                Schedule New Interview
-              </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <BookOpen className="h-4 w-4 mr-2" />
-                Create Aptitude Test
-              </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <Users className="h-4 w-4 mr-2" />
-                Add New Candidate
-              </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <Activity className="h-4 w-4 mr-2" />
-                View Analytics
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content Tabs */}
-      <Tabs value={activeView} onValueChange={setActiveView} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="pipeline">Candidate Pipeline</TabsTrigger>
-          <TabsTrigger value="interviews">Interview Management</TabsTrigger>
-          <TabsTrigger value="aptitude">Aptitude Tests</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="pipeline" className="space-y-4">
-          {/* Application Stages */}
-          <Card>
-            <CardContent className="p-0">
-              <ApplicationStages />
-            </CardContent>
-          </Card>
-
-          {/* Enhanced Candidate Table */}
-          <EnhancedCandidateTable
-            candidates={mockCandidates}
-            onViewProfile={onCandidateSelect}
-            onEditCandidate={(candidate) => console.log('Edit candidate:', candidate)}
-            onScheduleInterview={(candidate) => console.log('Schedule interview:', candidate)}
-            onMoveToStage={(candidates, stage) => console.log('Move to stage:', candidates, stage)}
-            onExportCandidates={(candidates) => console.log('Export candidates:', candidates)}
-          />
-        </TabsContent>
-
-        <TabsContent value="interviews" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Interview Management</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600">Interview scheduling and management features coming soon...</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="aptitude" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Aptitude Test Management</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600">Aptitude test creation and management features coming soon...</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+      {/* Enhanced Multi-Pipeline Candidate Detail Drawer */}
+      <EnhancedCandidateDetailDrawer
+        open={candidateDetailOpen}
+        onClose={handleCloseCandidateDetail}
+        candidate={selectedCandidate}
+      />
+    </motion.div>
   );
-};
+}

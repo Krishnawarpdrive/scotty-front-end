@@ -1,20 +1,23 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AptitudeTest, AptitudeTestFormData } from '../types/AptitudeTestTypes';
-import { X, Plus, Trash2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { AptitudeTestFormData } from '../types/AptitudeTestTypes';
+import { Plus, Trash2 } from 'lucide-react';
 
 interface AptitudeTestFormProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (data: AptitudeTestFormData) => Promise<boolean>;
-  initialData?: AptitudeTest;
+  initialData?: Partial<AptitudeTestFormData>;
   title: string;
 }
 
@@ -25,179 +28,131 @@ export const AptitudeTestForm: React.FC<AptitudeTestFormProps> = ({
   initialData,
   title
 }) => {
-  const [formData, setFormData] = useState<AptitudeTestFormData>({
-    test_name: '',
-    description: '',
-    duration_minutes: 60,
-    total_questions: 50,
-    passing_score: 70,
-    category: 'general',
-    difficulty_level: 'medium',
-    skills_assessed: [],
-    instructions: '',
-    is_active: true,
-    sections: []
+  const [loading, setLoading] = useState(false);
+  const [skillInput, setSkillInput] = useState('');
+
+  const { register, control, handleSubmit, watch, setValue, formState: { errors } } = useForm<AptitudeTestFormData>({
+    defaultValues: {
+      test_name: '',
+      description: '',
+      duration_minutes: 60,
+      total_questions: 50,
+      passing_score: 70,
+      category: 'general',
+      difficulty_level: 'medium',
+      skills_assessed: [],
+      instructions: '',
+      is_active: true,
+      sections: [],
+      ...initialData
+    }
   });
 
-  const [newSkill, setNewSkill] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const { fields: sectionFields, append: appendSection, remove: removeSection } = useFieldArray({
+    control,
+    name: 'sections'
+  });
 
-  useEffect(() => {
-    if (initialData) {
-      setFormData({
-        test_name: initialData.test_name,
-        description: initialData.description || '',
-        duration_minutes: initialData.duration_minutes,
-        total_questions: initialData.total_questions,
-        passing_score: initialData.passing_score,
-        category: initialData.category,
-        difficulty_level: initialData.difficulty_level,
-        skills_assessed: initialData.skills_assessed,
-        instructions: initialData.instructions || '',
-        is_active: initialData.is_active,
-        sections: []
-      });
-    } else {
-      setFormData({
-        test_name: '',
-        description: '',
-        duration_minutes: 60,
-        total_questions: 50,
-        passing_score: 70,
-        category: 'general',
-        difficulty_level: 'medium',
-        skills_assessed: [],
-        instructions: '',
-        is_active: true,
-        sections: []
-      });
-    }
-  }, [initialData, open]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    
-    try {
-      const success = await onSubmit(formData);
-      if (success) {
-        onClose();
-      }
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  const watchedSkills = watch('skills_assessed') || [];
 
   const addSkill = () => {
-    if (newSkill.trim() && !formData.skills_assessed.includes(newSkill.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        skills_assessed: [...prev.skills_assessed, newSkill.trim()]
-      }));
-      setNewSkill('');
+    if (skillInput.trim() && !watchedSkills.includes(skillInput.trim())) {
+      setValue('skills_assessed', [...watchedSkills, skillInput.trim()]);
+      setSkillInput('');
     }
   };
 
-  const removeSkill = (skillToRemove: string) => {
-    setFormData(prev => ({
-      ...prev,
-      skills_assessed: prev.skills_assessed.filter(skill => skill !== skillToRemove)
-    }));
+  const removeSkill = (skill: string) => {
+    setValue('skills_assessed', watchedSkills.filter(s => s !== skill));
   };
 
-  const handleInputChange = (field: keyof AptitudeTestFormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const addSection = () => {
+    appendSection({
+      section_name: '',
+      section_type: 'multiple_choice',
+      questions_count: 10,
+      time_limit_minutes: 15,
+      weightage: 1.0,
+      description: ''
+    });
+  };
+
+  const handleFormSubmit = async (data: AptitudeTestFormData) => {
+    setLoading(true);
+    const success = await onSubmit(data);
+    setLoading(false);
+    if (success) {
+      onClose();
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
           {/* Basic Information */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Basic Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="test_name">Test Name *</Label>
-                <Input
-                  id="test_name"
-                  value={formData.test_name}
-                  onChange={(e) => handleInputChange('test_name', e.target.value)}
-                  placeholder="Enter test name"
-                  required
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="test_name">Test Name *</Label>
+                  <Input
+                    id="test_name"
+                    {...register('test_name', { required: 'Test name is required' })}
+                    className={errors.test_name ? 'border-red-500' : ''}
+                  />
+                  {errors.test_name && (
+                    <p className="text-sm text-red-500 mt-1">{errors.test_name.message}</p>
+                  )}
+                </div>
+
+                <div>
+                  <Label htmlFor="category">Category</Label>
+                  <Select onValueChange={(value) => setValue('category', value)} defaultValue={watch('category')}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="general">General</SelectItem>
+                      <SelectItem value="technical">Technical</SelectItem>
+                      <SelectItem value="cognitive">Cognitive</SelectItem>
+                      <SelectItem value="behavioral">Behavioral</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div>
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  placeholder="Describe the test purpose and content"
-                  rows={3}
+                  {...register('description')}
+                  placeholder="Brief description of the test..."
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="category">Category *</Label>
-                  <select
-                    id="category"
-                    value={formData.category}
-                    onChange={(e) => handleInputChange('category', e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
-                    required
-                  >
-                    <option value="general">General</option>
-                    <option value="technical">Technical</option>
-                    <option value="cognitive">Cognitive</option>
-                    <option value="personality">Personality</option>
-                    <option value="domain-specific">Domain Specific</option>
-                  </select>
-                </div>
-
-                <div>
-                  <Label htmlFor="difficulty_level">Difficulty Level *</Label>
-                  <select
-                    id="difficulty_level"
-                    value={formData.difficulty_level}
-                    onChange={(e) => handleInputChange('difficulty_level', e.target.value as 'easy' | 'medium' | 'hard')}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
-                    required
-                  >
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard">Hard</option>
-                  </select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Test Configuration */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Test Configuration</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="duration_minutes">Duration (minutes) *</Label>
                   <Input
                     id="duration_minutes"
                     type="number"
-                    value={formData.duration_minutes}
-                    onChange={(e) => handleInputChange('duration_minutes', parseInt(e.target.value))}
-                    min="1"
-                    required
+                    {...register('duration_minutes', { 
+                      required: 'Duration is required',
+                      min: { value: 1, message: 'Duration must be at least 1 minute' }
+                    })}
+                    className={errors.duration_minutes ? 'border-red-500' : ''}
                   />
+                  {errors.duration_minutes && (
+                    <p className="text-sm text-red-500 mt-1">{errors.duration_minutes.message}</p>
+                  )}
                 </div>
 
                 <div>
@@ -205,82 +160,183 @@ export const AptitudeTestForm: React.FC<AptitudeTestFormProps> = ({
                   <Input
                     id="total_questions"
                     type="number"
-                    value={formData.total_questions}
-                    onChange={(e) => handleInputChange('total_questions', parseInt(e.target.value))}
-                    min="1"
-                    required
+                    {...register('total_questions', { 
+                      required: 'Total questions is required',
+                      min: { value: 1, message: 'Must have at least 1 question' }
+                    })}
+                    className={errors.total_questions ? 'border-red-500' : ''}
                   />
+                  {errors.total_questions && (
+                    <p className="text-sm text-red-500 mt-1">{errors.total_questions.message}</p>
+                  )}
                 </div>
 
                 <div>
-                  <Label htmlFor="passing_score">Passing Score (%) *</Label>
+                  <Label htmlFor="passing_score">Passing Score (%)</Label>
                   <Input
                     id="passing_score"
                     type="number"
-                    value={formData.passing_score}
-                    onChange={(e) => handleInputChange('passing_score', parseInt(e.target.value))}
-                    min="0"
-                    max="100"
-                    required
+                    {...register('passing_score', { 
+                      min: { value: 0, message: 'Score cannot be negative' },
+                      max: { value: 100, message: 'Score cannot exceed 100%' }
+                    })}
                   />
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="instructions">Instructions</Label>
-                <Textarea
-                  id="instructions"
-                  value={formData.instructions}
-                  onChange={(e) => handleInputChange('instructions', e.target.value)}
-                  placeholder="Instructions for test takers"
-                  rows={3}
-                />
-              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="difficulty_level">Difficulty Level</Label>
+                  <Select onValueChange={(value) => setValue('difficulty_level', value as any)} defaultValue={watch('difficulty_level')}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="easy">Easy</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="hard">Hard</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="is_active"
-                  checked={formData.is_active}
-                  onChange={(e) => handleInputChange('is_active', e.target.checked)}
-                  className="rounded border-gray-300"
-                />
-                <Label htmlFor="is_active">Test is active and available for use</Label>
+                <div className="flex items-center space-x-2 pt-6">
+                  <Checkbox
+                    id="is_active"
+                    checked={watch('is_active')}
+                    onCheckedChange={(checked) => setValue('is_active', !!checked)}
+                  />
+                  <Label htmlFor="is_active">Active</Label>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Skills Assessment */}
+          {/* Skills Assessed */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Skills Assessed</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex gap-2">
+            <CardContent>
+              <div className="flex gap-2 mb-3">
                 <Input
-                  value={newSkill}
-                  onChange={(e) => setNewSkill(e.target.value)}
-                  placeholder="Add a skill"
+                  value={skillInput}
+                  onChange={(e) => setSkillInput(e.target.value)}
+                  placeholder="Add a skill..."
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
                 />
                 <Button type="button" onClick={addSkill} variant="outline">
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
+              
+              <div className="flex flex-wrap gap-2">
+                {watchedSkills.map((skill, index) => (
+                  <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                    {skill}
+                    <button
+                      type="button"
+                      onClick={() => removeSkill(skill)}
+                      className="ml-1 hover:text-red-600"
+                    >
+                      ×
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-              {formData.skills_assessed.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {formData.skills_assessed.map((skill) => (
-                    <Badge key={skill} variant="secondary" className="flex items-center gap-1">
-                      {skill}
-                      <button
-                        type="button"
-                        onClick={() => removeSkill(skill)}
-                        className="ml-1 hover:text-red-500"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
+          {/* Test Instructions */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Instructions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                {...register('instructions')}
+                placeholder="Instructions for candidates taking this test..."
+                rows={4}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Test Sections */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-lg">Test Sections</CardTitle>
+              <Button type="button" onClick={addSection} variant="outline" size="sm">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Section
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {sectionFields.length === 0 ? (
+                <p className="text-gray-500 text-center py-4">No sections added yet</p>
+              ) : (
+                <div className="space-y-4">
+                  {sectionFields.map((field, index) => (
+                    <Card key={field.id} className="relative">
+                      <CardHeader className="pb-3">
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-medium">Section {index + 1}</h4>
+                          <Button
+                            type="button"
+                            onClick={() => removeSection(index)}
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label>Section Name</Label>
+                            <Input
+                              {...register(`sections.${index}.section_name`)}
+                              placeholder="e.g., Logical Reasoning"
+                            />
+                          </div>
+                          <div>
+                            <Label>Section Type</Label>
+                            <Select onValueChange={(value) => setValue(`sections.${index}.section_type`, value)}>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="multiple_choice">Multiple Choice</SelectItem>
+                                <SelectItem value="true_false">True/False</SelectItem>
+                                <SelectItem value="essay">Essay</SelectItem>
+                                <SelectItem value="coding">Coding</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label>Questions Count</Label>
+                            <Input
+                              type="number"
+                              {...register(`sections.${index}.questions_count`)}
+                            />
+                          </div>
+                          <div>
+                            <Label>Time Limit (minutes)</Label>
+                            <Input
+                              type="number"
+                              {...register(`sections.${index}.time_limit_minutes`)}
+                            />
+                          </div>
+                        </div>
+                        <div className="mt-4">
+                          <Label>Description</Label>
+                          <Textarea
+                            {...register(`sections.${index}.description`)}
+                            placeholder="Section description..."
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
                   ))}
                 </div>
               )}
@@ -288,12 +344,12 @@ export const AptitudeTestForm: React.FC<AptitudeTestFormProps> = ({
           </Card>
 
           {/* Form Actions */}
-          <div className="flex justify-end space-x-2 pt-4 border-t">
+          <div className="flex justify-end gap-3 pt-4 border-t">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={submitting}>
-              {submitting ? 'Saving...' : (initialData ? 'Update Test' : 'Create Test')}
+            <Button type="submit" disabled={loading}>
+              {loading ? 'Saving...' : 'Save Test'}
             </Button>
           </div>
         </form>
