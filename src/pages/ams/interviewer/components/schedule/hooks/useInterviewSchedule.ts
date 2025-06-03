@@ -32,14 +32,16 @@ export const useInterviewSchedule = (panelistId?: string) => {
           // Handle candidate data with proper null checks
           let candidateData: { name: string; email: string } | null = null;
           
+          // Check if candidate exists and has the expected properties
           if (interview.candidate && 
-              interview.candidate !== null &&
               typeof interview.candidate === 'object' && 
               'name' in interview.candidate && 
               'email' in interview.candidate) {
+            // Store candidate reference safely after confirming it exists
+            const candidate = interview.candidate as { name: string; email: string };
             candidateData = {
-              name: (interview.candidate as any).name || 'Unknown Candidate',
-              email: (interview.candidate as any).email || ''
+              name: candidate.name || 'Unknown Candidate',
+              email: candidate.email || ''
             };
           }
 
