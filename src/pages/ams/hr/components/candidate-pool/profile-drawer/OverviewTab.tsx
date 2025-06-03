@@ -3,7 +3,19 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Mail, Phone, MapPin, Calendar, Briefcase, GraduationCap, FileText, Edit, Star } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { 
+  MapPin, 
+  Calendar, 
+  Building2, 
+  Briefcase, 
+  Mail, 
+  Phone, 
+  User,
+  Star,
+  Clock,
+  CheckCircle
+} from 'lucide-react';
 import { Candidate } from '../CandidateTable';
 
 interface OverviewTabProps {
@@ -11,95 +23,100 @@ interface OverviewTabProps {
 }
 
 export const OverviewTab: React.FC<OverviewTabProps> = ({ candidate }) => {
+  if (!candidate) {
+    return (
+      <div className="p-6 text-center text-gray-500">
+        No candidate selected
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6 space-y-6">
-      {/* Contact Information */}
+    <div className="space-y-6">
+      {/* Header Card */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg">Contact Information</CardTitle>
-          <Button variant="outline" size="sm">
-            <Edit className="h-4 w-4 mr-2" />
-            Edit
-          </Button>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex items-center space-x-3">
-            <Mail className="h-4 w-4 text-gray-500" />
-            <div>
-              <div className="text-sm text-gray-500">Email</div>
-              <div className="font-medium">{candidate.email}</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <Phone className="h-4 w-4 text-gray-500" />
-            <div>
-              <div className="text-sm text-gray-500">Phone</div>
-              <div className="font-medium">{candidate.phone || 'Not provided'}</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <Calendar className="h-4 w-4 text-gray-500" />
-            <div>
-              <div className="text-sm text-gray-500">Last Updated</div>
-              <div className="font-medium">{candidate.lastUpdated}</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <MapPin className="h-4 w-4 text-gray-500" />
-            <div>
-              <div className="text-sm text-gray-500">Source</div>
-              <div className="font-medium">{candidate.source}</div>
+        <CardContent className="p-6">
+          <div className="flex items-start space-x-4">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={candidate.avatar} alt={candidate.name} />
+              <AvatarFallback className="text-lg">
+                {candidate.name.split(' ').map(n => n[0]).join('')}
+              </AvatarFallback>
+            </Avatar>
+            
+            <div className="flex-1 space-y-2">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold">{candidate.name}</h2>
+                <Badge variant={candidate.status === 'Active' ? 'default' : 'secondary'}>
+                  {candidate.status}
+                </Badge>
+              </div>
+              
+              <div className="text-gray-600 space-y-1">
+                <div className="flex items-center space-x-2">
+                  <Mail className="h-4 w-4" />
+                  <span>{candidate.email}</span>
+                </div>
+                {candidate.phone && (
+                  <div className="flex items-center space-x-2">
+                    <Phone className="h-4 w-4" />
+                    <span>{candidate.phone}</span>
+                  </div>
+                )}
+              </div>
+
+              {candidate.experience && (
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Briefcase className="h-4 w-4" />
+                  <span>{candidate.experience.years} years, {candidate.experience.months} months experience</span>
+                </div>
+              )}
+
+              <div className="flex items-center space-x-2">
+                <Badge variant="outline">{candidate.type || 'N/A'}</Badge>
+                <Badge variant="outline">{candidate.source}</Badge>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Professional Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Professional Information</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center space-x-3">
-              <Briefcase className="h-4 w-4 text-gray-500" />
-              <div>
-                <div className="text-sm text-gray-500">Experience</div>
-                <div className="font-medium">
-                  {candidate.experience?.years || 0} years, {candidate.experience?.months || 0} months
-                </div>
-              </div>
+      {/* Quick Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <Star className="h-6 w-6 mx-auto mb-2 text-yellow-500" />
+            <div className="text-2xl font-bold">{candidate.score || 'N/A'}</div>
+            <div className="text-sm text-gray-600">Score</div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4 text-center">
+            <Clock className="h-6 w-6 mx-auto mb-2 text-blue-500" />
+            <div className="text-sm font-semibold">{candidate.currentStage}</div>
+            <div className="text-sm text-gray-600">Current Stage</div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4 text-center">
+            <User className="h-6 w-6 mx-auto mb-2 text-green-500" />
+            <div className="text-sm font-semibold">
+              {candidate.assignedTA ? candidate.assignedTA.name : 'Unassigned'}
             </div>
-            
-            <div className="flex items-center space-x-3">
-              <GraduationCap className="h-4 w-4 text-gray-500" />
-              <div>
-                <div className="text-sm text-gray-500">Type</div>
-                <Badge variant="outline">{candidate.type}</Badge>
-              </div>
-            </div>
-          </div>
-          
-          <div>
-            <div className="text-sm text-gray-500 mb-2">Current Status</div>
-            <div className="flex items-center space-x-2">
-              <Badge 
-                variant={
-                  candidate.status === 'Active' ? 'default' :
-                  candidate.status === 'Hired' ? 'default' :
-                  candidate.status === 'Rejected' ? 'destructive' : 'secondary'
-                }
-              >
-                {candidate.status}
-              </Badge>
-              <span className="text-sm text-gray-600">in {candidate.currentStage}</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            <div className="text-sm text-gray-600">Assigned TA</div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4 text-center">
+            <CheckCircle className="h-6 w-6 mx-auto mb-2 text-purple-500" />
+            <div className="text-sm font-semibold">{candidate.appliedRoles.length}</div>
+            <div className="text-sm text-gray-600">Applied Roles</div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Applied Roles */}
       <Card>
@@ -107,80 +124,54 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ candidate }) => {
           <CardTitle className="text-lg">Applied Roles</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {candidate.appliedRoles.map((role, index) => (
-              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <Briefcase className="h-4 w-4 text-gray-500" />
-                  <div>
-                    <div className="font-medium">{role}</div>
-                    <div className="text-sm text-gray-500">Applied on {candidate.lastUpdated}</div>
-                  </div>
+              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <div className="font-medium">{role}</div>
+                  <div className="text-sm text-gray-600">Priority: {candidate.priority || 'Medium'}</div>
                 </div>
-                <Badge variant="outline">{candidate.currentStage}</Badge>
+                <Badge variant={candidate.priority === 'High' ? 'destructive' : 
+                               candidate.priority === 'Medium' ? 'default' : 'secondary'}>
+                  {candidate.priority || 'Medium'}
+                </Badge>
               </div>
             ))}
           </div>
         </CardContent>
       </Card>
 
-      {/* Assignment */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Assignment & Priority</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-              {candidate.assignedTA.avatar ? (
-                <img src={candidate.assignedTA.avatar} alt="TA" className="w-8 h-8 rounded-full" />
-              ) : (
-                <span className="text-xs font-medium text-green-600">
-                  {candidate.assignedTA.name.split(' ').map(n => n[0]).join('')}
-                </span>
-              )}
+      {/* Skills */}
+      {candidate.skills && candidate.skills.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Skills</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {candidate.skills.map((skill, index) => (
+                <Badge key={index} variant="outline">{skill}</Badge>
+              ))}
             </div>
-            <div>
-              <div className="text-sm text-gray-500">Assigned TA</div>
-              <div className="font-medium">{candidate.assignedTA.name}</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <Star className="h-4 w-4 text-gray-500" />
-            <div>
-              <div className="text-sm text-gray-500">Priority</div>
-              <Badge 
-                variant={
-                  candidate.priority === 'High' ? 'destructive' :
-                  candidate.priority === 'Medium' ? 'secondary' : 'outline'
-                }
-              >
-                {candidate.priority}
-              </Badge>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Next Action */}
       {candidate.nextAction && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Next Action Required</CardTitle>
+            <CardTitle className="text-lg">Next Action</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <FileText className="h-4 w-4 text-blue-600" />
-                <div>
-                  <div className="font-medium">{candidate.nextAction}</div>
-                  {candidate.actionDueDate && (
-                    <div className="text-sm text-gray-500">Due: {candidate.actionDueDate}</div>
-                  )}
-                </div>
-              </div>
-              <Button size="sm">
+            <div className="space-y-2">
+              <p>{candidate.nextAction}</p>
+              {candidate.actionDueDate && (
+                <p className="text-sm text-gray-600">
+                  Due: {candidate.actionDueDate}
+                </p>
+              )}
+              <Button size="sm" className="mt-2">
                 Take Action
               </Button>
             </div>

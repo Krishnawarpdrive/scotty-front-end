@@ -77,11 +77,8 @@ export const CandidatePoolPage: React.FC = () => {
     handleSelectAll(true);
   };
 
-  const handleQuickActionWrapper = (action: string, candidateIds: string[]) => {
-    // Handle the array of candidateIds appropriately
-    candidateIds.forEach(candidateId => {
-      handleQuickAction(action, candidateId);
-    });
+  const handleQuickActionWrapper = (action: string, candidateId: string) => {
+    handleQuickAction(action, candidateId);
   };
 
   // Register candidate pool specific shortcuts
@@ -112,15 +109,14 @@ export const CandidatePoolPage: React.FC = () => {
         candidates={filteredCandidates}
         selectedCandidates={selectedCandidates}
         showFilters={showFilters}
-        filters={filters}
+        searchTerm={searchTerm}
+        metrics={metrics}
+        activeFilterCount={activeFilterCount}
         onCandidateSelect={handleCandidateSelect}
         onSelectAll={handleSelectAllWrapper}
-        onCandidateClick={handleCandidateClick}
         onQuickAction={handleQuickActionWrapper}
-        onFilterChange={handleFilterChange}
-        onClearFilter={handleClearFilter}
-        onClearAllFilters={handleClearAllFilters}
-        onBulkAction={handleBulkAction}
+        setSearchTerm={setSearchTerm}
+        setShowFilters={setShowFilters}
         setSelectedCandidates={setSelectedCandidates}
       />
 

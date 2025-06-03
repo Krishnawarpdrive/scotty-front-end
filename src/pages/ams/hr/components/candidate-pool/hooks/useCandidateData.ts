@@ -27,7 +27,8 @@ const mockCandidates: Candidate[] = [
     experience: {
       years: 5,
       months: 6
-    }
+    },
+    skills: ['React', 'TypeScript', 'Node.js']
   },
   {
     id: '2',
@@ -52,7 +53,8 @@ const mockCandidates: Candidate[] = [
     experience: {
       years: 0,
       months: 6
-    }
+    },
+    skills: ['JavaScript', 'HTML', 'CSS']
   }
 ];
 

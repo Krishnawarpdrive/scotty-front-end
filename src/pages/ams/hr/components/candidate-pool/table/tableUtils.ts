@@ -1,10 +1,40 @@
 
 import { Candidate } from '../CandidateTable';
 
-export const getRowClassName = (candidate: Candidate) => {
-  if (candidate.status === 'Rejected') return 'bg-red-50 hover:bg-red-100';
-  if (candidate.status === 'On Hold') return 'bg-yellow-50 hover:bg-yellow-100';
-  if (candidate.status === 'Hired') return 'bg-blue-50 hover:bg-blue-100';
-  if (candidate.priority === 'High') return 'border-l-4 border-red-400 hover:bg-red-50';
-  return 'hover:bg-gray-50';
+export const formatExperience = (candidate: Candidate): string => {
+  if (candidate.experience) {
+    return `${candidate.experience.years}y ${candidate.experience.months}m`;
+  }
+  if (candidate.experienceYears) {
+    return `${candidate.experienceYears}y`;
+  }
+  return 'N/A';
+};
+
+export const getPriorityColor = (candidate: Candidate): string => {
+  switch (candidate.priority) {
+    case 'High':
+      return 'text-red-600';
+    case 'Medium':
+      return 'text-yellow-600';
+    case 'Low':
+      return 'text-green-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+export const getStatusBadgeVariant = (status: string) => {
+  switch (status) {
+    case 'Active':
+      return 'default';
+    case 'On Hold':
+      return 'secondary';
+    case 'Rejected':
+      return 'destructive';
+    case 'Hired':
+      return 'default';
+    default:
+      return 'outline';
+  }
 };

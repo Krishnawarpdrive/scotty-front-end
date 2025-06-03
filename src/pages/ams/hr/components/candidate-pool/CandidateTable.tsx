@@ -8,16 +8,23 @@ import { CandidateDetailDrawer } from './CandidateDetailDrawer';
 export interface Candidate {
   id: string;
   name: string;
+  candidateId: string;
   email: string;
   phone?: string;
   currentStage: string;
   source: string;
   status: 'Active' | 'On Hold' | 'Rejected' | 'Hired';
   appliedRoles: string[];
-  experience?: string;
+  experience?: {
+    years: number;
+    months: number;
+  };
   experienceYears?: number;
   score?: number;
-  assignedTA?: string;
+  assignedTA?: {
+    name: string;
+    avatar?: string;
+  };
   nextAction?: string;
   actionDueDate?: string;
   lastUpdated: string;
@@ -28,6 +35,9 @@ export interface Candidate {
   appliedDate?: string;
   resumeUrl?: string;
   notes?: string;
+  type?: string;
+  priority?: 'High' | 'Medium' | 'Low';
+  avatar?: string;
 }
 
 interface CandidateTableProps {
@@ -79,7 +89,7 @@ export const CandidateTable: React.FC<CandidateTableProps> = ({
       <CandidateDetailDrawer
         open={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
-        candidate={selectedCandidate}
+        candidateId={selectedCandidate?.id}
       />
     </>
   );

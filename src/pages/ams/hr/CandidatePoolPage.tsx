@@ -1,21 +1,39 @@
 
 import React from 'react';
 import { CandidatePoolContent } from './components/candidate-pool/CandidatePoolContent';
-import { CandidateDetailDrawer } from './components/candidate-pool/CandidateDetailDrawer';
-import { useCandidateDetailDrawer } from './components/candidate-pool/useCandidateDetailDrawer';
+import { useCandidatePool } from './components/candidate-pool/useCandidatePool';
 
 const CandidatePoolPage: React.FC = () => {
-  const { isOpen, candidateId, selectedCandidate, openDrawer, closeDrawer } = useCandidateDetailDrawer();
+  const {
+    candidates,
+    metrics,
+    searchTerm,
+    selectedCandidates,
+    showFilters,
+    activeFilterCount,
+    setSearchTerm,
+    setShowFilters,
+    handleCandidateSelect,
+    handleSelectAll,
+    handleQuickAction,
+    setSelectedCandidates
+  } = useCandidatePool();
 
   return (
-    <>
-      <CandidatePoolContent onCandidateClick={openDrawer} />
-      <CandidateDetailDrawer
-        open={isOpen}
-        onClose={closeDrawer}
-        candidateId={candidateId}
-      />
-    </>
+    <CandidatePoolContent
+      candidates={candidates}
+      selectedCandidates={selectedCandidates}
+      showFilters={showFilters}
+      searchTerm={searchTerm}
+      metrics={metrics}
+      activeFilterCount={activeFilterCount}
+      onCandidateSelect={handleCandidateSelect}
+      onSelectAll={handleSelectAll}
+      onQuickAction={handleQuickAction}
+      setSearchTerm={setSearchTerm}
+      setShowFilters={setShowFilters}
+      setSelectedCandidates={setSelectedCandidates}
+    />
   );
 };
 

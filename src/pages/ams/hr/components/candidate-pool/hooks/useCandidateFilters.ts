@@ -24,7 +24,7 @@ export const useCandidateFilters = (candidates: Candidate[] = [], searchTerm: st
       filtered = filtered.filter(candidate => 
         candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         candidate.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        candidate.phone.includes(searchTerm) ||
+        (candidate.phone && candidate.phone.includes(searchTerm)) ||
         candidate.candidateId.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -46,7 +46,7 @@ export const useCandidateFilters = (candidates: Candidate[] = [], searchTerm: st
     // Apply experience filter
     if (filters.experience.length > 0) {
       filtered = filtered.filter(candidate => 
-        filters.experience.includes(candidate.type)
+        candidate.type && filters.experience.includes(candidate.type)
       );
     }
 
@@ -60,7 +60,7 @@ export const useCandidateFilters = (candidates: Candidate[] = [], searchTerm: st
     // Apply assigned TA filter
     if (filters.assignedTA.length > 0) {
       filtered = filtered.filter(candidate => 
-        filters.assignedTA.includes(candidate.assignedTA.name)
+        candidate.assignedTA && filters.assignedTA.includes(candidate.assignedTA.name)
       );
     }
 
