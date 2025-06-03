@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { Candidate } from '../../../types/CandidateTypes';
 
@@ -87,7 +86,7 @@ export const useComprehensivePhoneScreening = (candidate: Candidate) => {
       totalExperience: candidate.experience || '',
       relevantExperience: '',
       location: candidate.location || '',
-      source: candidate.source || 'Direct',
+      source: 'Direct', // Default value since source doesn't exist on Candidate type
     },
     skillsAssessment: {
       technicalSkills: [],

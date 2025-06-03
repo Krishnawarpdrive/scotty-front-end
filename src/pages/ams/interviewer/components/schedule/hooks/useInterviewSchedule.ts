@@ -30,15 +30,15 @@ export const useInterviewSchedule = (panelistId?: string) => {
         // Transform the data to match our interface
         const transformedInterviews: ScheduledInterview[] = data.map(interview => {
           // Handle candidate data with proper null checks
-          let candidateData = null;
+          let candidateData: { name: string; email: string } | null = null;
           
           if (interview.candidate && 
               typeof interview.candidate === 'object' && 
-              interview.candidate !== null &&
-              'name' in interview.candidate) {
+              'name' in interview.candidate && 
+              'email' in interview.candidate) {
             candidateData = {
-              name: interview.candidate.name || 'Unknown Candidate',
-              email: interview.candidate.email || ''
+              name: (interview.candidate as any).name || 'Unknown Candidate',
+              email: (interview.candidate as any).email || ''
             };
           }
 
