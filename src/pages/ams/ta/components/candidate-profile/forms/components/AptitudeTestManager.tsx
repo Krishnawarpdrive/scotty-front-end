@@ -6,7 +6,6 @@ import {
   Card, 
   CardContent, 
   Button, 
-  Grid,
   Chip,
   LinearProgress,
   Alert,
@@ -193,8 +192,8 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
       </Typography>
 
       {/* Overview Cards */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
+      <Box sx={{ display: 'flex', gap: 3, mb: 3, flexWrap: 'wrap' }}>
+        <Box sx={{ flex: 1, minWidth: 200 }}>
           <Card>
             <CardContent>
               <Typography variant="h4" color="primary">
@@ -205,9 +204,9 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
               </Typography>
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
         
-        <Grid item xs={12} sm={6} md={3}>
+        <Box sx={{ flex: 1, minWidth: 200 }}>
           <Card>
             <CardContent>
               <Typography variant="h4" color="success.main">
@@ -218,9 +217,9 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
               </Typography>
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
         
-        <Grid item xs={12} sm={6} md={3}>
+        <Box sx={{ flex: 1, minWidth: 200 }}>
           <Card>
             <CardContent>
               <Typography variant="h4" color="warning.main">
@@ -231,9 +230,9 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
               </Typography>
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
         
-        <Grid item xs={12} sm={6} md={3}>
+        <Box sx={{ flex: 1, minWidth: 200 }}>
           <Card>
             <CardContent>
               <Typography variant="h4" color="text.primary">
@@ -244,8 +243,8 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
               </Typography>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       {/* Actions */}
       <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
@@ -475,8 +474,8 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
         <DialogContent>
           {resultDialog.result && (
             <Box sx={{ pt: 2 }}>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
+              <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+                <Box sx={{ flex: 1, minWidth: 250 }}>
                   <Typography variant="subtitle2" sx={{ mb: 1 }}>Test Information</Typography>
                   <Typography variant="body2">
                     <strong>Category:</strong> {resultDialog.result.aptitude_tests?.category}
@@ -490,9 +489,9 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
                   <Typography variant="body2">
                     <strong>Passing Score:</strong> {resultDialog.result.aptitude_tests?.passing_score}%
                   </Typography>
-                </Grid>
+                </Box>
                 
-                <Grid item xs={12} sm={6}>
+                <Box sx={{ flex: 1, minWidth: 250 }}>
                   <Typography variant="subtitle2" sx={{ mb: 1 }}>Performance</Typography>
                   <Typography variant="body2">
                     <strong>Final Score:</strong> {resultDialog.result.score}%
@@ -506,8 +505,8 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
                   <Typography variant="body2">
                     <strong>Time Taken:</strong> {resultDialog.result.time_taken_minutes} minutes
                   </Typography>
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
               
               {resultDialog.result.notes && (
                 <Box sx={{ mt: 3 }}>

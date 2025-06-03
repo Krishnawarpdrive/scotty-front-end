@@ -13,8 +13,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
-  Grid
+  DialogActions
 } from '@mui/material';
 import { 
   CloudUpload, 
@@ -209,11 +208,11 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
             Upload New Document
           </Typography>
           
-          <Grid container spacing={2}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
             {DOCUMENT_TYPES.map((docType) => {
               const isUploaded = getUploadedDocumentTypes().includes(docType.value);
               return (
-                <Grid item xs={12} sm={6} md={4} key={docType.value}>
+                <Box key={docType.value} sx={{ flex: '1 1 250px', minWidth: 200 }}>
                   <Button
                     variant={isUploaded ? "outlined" : "contained"}
                     fullWidth
@@ -234,10 +233,10 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
                       <Check sx={{ position: 'absolute', right: 8, color: 'green' }} />
                     )}
                   </Button>
-                </Grid>
+                </Box>
               );
             })}
-          </Grid>
+          </Box>
 
           {uploading && (
             <Box sx={{ mt: 2 }}>
@@ -258,9 +257,9 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
       {documents.length === 0 ? (
         <Alert severity="info">No documents uploaded yet.</Alert>
       ) : (
-        <Grid container spacing={2}>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
           {documents.map((document) => (
-            <Grid item xs={12} sm={6} md={4} key={document.id}>
+            <Box key={document.id} sx={{ flex: '1 1 300px', minWidth: 250 }}>
               <Card sx={{ height: '100%' }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
@@ -300,9 +299,9 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
                   </Box>
                 </CardContent>
               </Card>
-            </Grid>
+            </Box>
           ))}
-        </Grid>
+        </Box>
       )}
 
       {/* Hidden File Input */}
