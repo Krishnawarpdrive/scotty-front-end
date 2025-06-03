@@ -89,8 +89,11 @@ function App() {
                         <Route path="/ams/hr/dashboard" element={<HRDashboardPage />} />
                         <Route path="/ams/hr/candidate-pool" element={<CandidatePoolPage />} />
                         <Route path="/ams/hr/role-management" element={<RoleManagementPage />} />
-                        <Route path="/ams/candidate-dashboard" element={<CandidatePoolPage />} />
+                        
+                        {/* Consolidated candidate dashboard routes - both point to the new candidate dashboard */}
                         <Route path="/ams/candidate/dashboard" element={<CandidateDashboardPage />} />
+                        <Route path="/ams/candidate-dashboard" element={<CandidateDashboardPage />} />
+                        
                         <Route path="/ams/executive/dashboard" element={<ExecutiveDashboardPage />} />
                         <Route path="/ams/executive/clients" element={<ExecutiveClientPage />} />
                         <Route path="/ams/interviewer/dashboard" element={<InterviewerDashboardPage />} />
