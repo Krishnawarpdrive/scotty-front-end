@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Grid, Card, CardContent, Typography, Box, Icon } from '@mui/material';
+import { Card, CardContent, Typography, Box } from '@mui/material';
 import { 
   Work, 
   Schedule, 
@@ -99,12 +99,21 @@ export const CandidateMetricsCards: React.FC<CandidateMetricsCardsProps> = ({ da
   ];
 
   return (
-    <Grid container spacing={2}>
+    <Box sx={{ 
+      display: 'grid', 
+      gridTemplateColumns: { 
+        xs: '1fr', 
+        sm: 'repeat(2, 1fr)', 
+        md: 'repeat(3, 1fr)', 
+        lg: 'repeat(6, 1fr)' 
+      }, 
+      gap: 2 
+    }}>
       {metrics.map((metric, index) => (
-        <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
+        <Box key={index}>
           <MetricCard {...metric} />
-        </Grid>
+        </Box>
       ))}
-    </Grid>
+    </Box>
   );
 };

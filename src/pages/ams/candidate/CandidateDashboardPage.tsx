@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Box, Container, Grid, Typography, Paper } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 import { CandidateMetricsCards } from './components/CandidateMetricsCards';
 import { ApplicationsOverview } from './components/ApplicationsOverview';
 import { InterviewsSchedule } from './components/InterviewsSchedule';
@@ -35,43 +35,49 @@ const CandidateDashboardPage: React.FC = () => {
         </Typography>
       </Box>
 
-      <Grid container spacing={3}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         {/* Top Row - Metrics Cards */}
-        <Grid item xs={12}>
+        <Box>
           <CandidateMetricsCards data={dashboardData} />
-        </Grid>
+        </Box>
 
         {/* Second Row - Quick Actions and Profile Completion */}
-        <Grid item xs={12} md={8}>
-          <QuickActions />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <ProfileCompletionWidget 
-            completionPercentage={dashboardData?.profile_completion_percentage || 0} 
-          />
-        </Grid>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
+          <Box>
+            <QuickActions />
+          </Box>
+          <Box>
+            <ProfileCompletionWidget 
+              completionPercentage={dashboardData?.profile_completion_percentage || 0} 
+            />
+          </Box>
+        </Box>
 
         {/* Third Row - Applications and Interviews */}
-        <Grid item xs={12} md={8}>
-          <ApplicationsOverview candidateId={selectedCandidateId} />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <InterviewsSchedule candidateId={selectedCandidateId} />
-        </Grid>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
+          <Box>
+            <ApplicationsOverview candidateId={selectedCandidateId} />
+          </Box>
+          <Box>
+            <InterviewsSchedule candidateId={selectedCandidateId} />
+          </Box>
+        </Box>
 
         {/* Fourth Row - Documents and Notifications */}
-        <Grid item xs={12} md={6}>
-          <DocumentsStatus candidateId={selectedCandidateId} />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <NotificationsPanel notifications={notifications} />
-        </Grid>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+          <Box>
+            <DocumentsStatus candidateId={selectedCandidateId} />
+          </Box>
+          <Box>
+            <NotificationsPanel notifications={notifications} />
+          </Box>
+        </Box>
 
         {/* Fifth Row - Messages */}
-        <Grid item xs={12}>
+        <Box>
           <MessagesPanel messages={messages} />
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Container>
   );
 };
