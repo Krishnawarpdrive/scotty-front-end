@@ -16,6 +16,7 @@ export const StageDots: React.FC<StageDotsProps> = ({ stage, totalStages = 6 }) 
       'application': 1,
       'phone-screening': 2,
       'technical': 3,
+      'aptitude-test': 3,
       'client-interview': 4,
       'background-verification': 5,
       'final-review': 6

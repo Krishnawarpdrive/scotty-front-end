@@ -88,5 +88,63 @@ export const candidates: Candidate[] = [
     },
     timeSpent: '10 days',
     targetDate: '2024-01-18'
+  },
+  {
+    id: 4,
+    name: 'Vikash Singh',
+    email: 'vikash.singh@email.com',
+    role: 'Data Analyst',
+    status: {
+      text: 'Aptitude Test',
+      type: 'test'
+    },
+    stage: 'aptitude-test',
+    priority: 'Medium',
+    appliedDate: '3 days ago',
+    experience: '2+ years',
+    location: 'Delhi, India',
+    skills: ['SQL', 'Python', 'Tableau', 'Excel'],
+    phone: '+91 98765 43213',
+    score: 70,
+    currentStage: 3,
+    totalStages: 6,
+    timeInStage: '1 day',
+    hiring: 'Data Analyst',
+    interviewing: 'Aptitude Assessment',
+    responsible: {
+      name: 'Sarah Wilson',
+      avatar: ''
+    },
+    timeSpent: '3 days',
+    targetDate: '2024-01-22'
+  },
+  {
+    id: 5,
+    name: 'Ankita Mehta',
+    email: 'ankita.mehta@email.com',
+    role: 'DevOps Engineer',
+    status: {
+      text: 'Test In Progress',
+      type: 'test'
+    },
+    stage: 'aptitude-test',
+    priority: 'High',
+    appliedDate: '4 days ago',
+    experience: '3+ years',
+    location: 'Hyderabad, India',
+    skills: ['AWS', 'Docker', 'Kubernetes', 'Jenkins'],
+    phone: '+91 98765 43214',
+    score: 88,
+    currentStage: 3,
+    totalStages: 6,
+    timeInStage: '2 days',
+    hiring: 'DevOps Engineer',
+    interviewing: 'Technical Assessment',
+    responsible: {
+      name: 'David Chen',
+      avatar: ''
+    },
+    timeSpent: '4 days',
+    targetDate: '2024-01-21'
   }
 ];

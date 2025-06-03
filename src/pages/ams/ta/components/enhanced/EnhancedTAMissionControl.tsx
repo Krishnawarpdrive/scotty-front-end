@@ -8,7 +8,7 @@ import { EnhancedCandidateDetailDrawer } from '../candidate-detail/EnhancedCandi
 import { useEnhancedToast } from '@/components/feedback/EnhancedToast';
 import { Plus, Download, Filter, Users, Calendar, CheckCircle, Clock } from 'lucide-react';
 
-// Mock data for demonstration with role applications
+// Mock data for demonstration with role applications - updated to include aptitude test candidates
 const mockCandidates = [
   {
     id: '1',
@@ -34,7 +34,7 @@ const mockCandidates = [
         applied_date: '2024-01-15',
         current_stage: 'Technical Interview',
         stage_progress: 3,
-        total_stages: 5,
+        total_stages: 6,
         status: 'Active' as const,
         hiring_manager: 'Sarah Johnson',
         ta_assigned: 'Mike Chen',
@@ -48,7 +48,7 @@ const mockCandidates = [
         applied_date: '2024-01-10',
         current_stage: 'Phone Screening',
         stage_progress: 2,
-        total_stages: 4,
+        total_stages: 6,
         status: 'Active' as const,
         hiring_manager: 'David Wilson',
         ta_assigned: 'Lisa Brown',
@@ -79,8 +79,8 @@ const mockCandidates = [
         client_name: 'DataFlow Systems',
         applied_date: '2024-01-10',
         current_stage: 'Final Interview',
-        stage_progress: 4,
-        total_stages: 5,
+        stage_progress: 5,
+        total_stages: 6,
         status: 'Active' as const,
         hiring_manager: 'Robert Chen',
         ta_assigned: 'Emily Davis',
@@ -111,8 +111,8 @@ const mockCandidates = [
         client_name: 'ScaleUp Corp',
         applied_date: '2024-01-05',
         current_stage: 'Offer Discussion',
-        stage_progress: 5,
-        total_stages: 5,
+        stage_progress: 6,
+        total_stages: 6,
         status: 'Active' as const,
         hiring_manager: 'Jennifer Lee',
         ta_assigned: 'Alex Kumar',
@@ -121,6 +121,70 @@ const mockCandidates = [
       }
     ]
   },
+  {
+    id: '4',
+    name: 'Vikash Singh',
+    email: 'vikash.singh@email.com',
+    current_stage: 'Aptitude Test',
+    source: 'Job Portal',
+    experience_years: 2,
+    skills: ['SQL', 'Python', 'Tableau', 'Excel'],
+    current_position: 'Junior Data Analyst',
+    current_employer: 'Analytics Corp',
+    status: 'Active' as const,
+    applied_date: '2024-01-17',
+    last_updated: '2024-01-20',
+    location: 'Delhi, India',
+    overall_score: 70,
+    role_applications: [
+      {
+        id: 'app5',
+        role_name: 'Data Analyst',
+        client_name: 'DataInsights Inc',
+        applied_date: '2024-01-17',
+        current_stage: 'Aptitude Test',
+        stage_progress: 3,
+        total_stages: 6,
+        status: 'Active' as const,
+        hiring_manager: 'Dr. Maria Rodriguez',
+        ta_assigned: 'Sarah Wilson',
+        next_action: 'Complete aptitude assessment',
+        next_action_date: '2024-01-22'
+      }
+    ]
+  },
+  {
+    id: '5',
+    name: 'Ankita Mehta',
+    email: 'ankita.mehta@email.com',
+    current_stage: 'Aptitude Test',
+    source: 'Referral',
+    experience_years: 3,
+    skills: ['AWS', 'Docker', 'Kubernetes', 'Jenkins'],
+    current_position: 'DevOps Associate',
+    current_employer: 'CloudTech Solutions',
+    status: 'Active' as const,
+    applied_date: '2024-01-16',
+    last_updated: '2024-01-20',
+    location: 'Hyderabad, India',
+    overall_score: 88,
+    role_applications: [
+      {
+        id: 'app6',
+        role_name: 'DevOps Engineer',
+        client_name: 'Infrastructure Pro',
+        applied_date: '2024-01-16',
+        current_stage: 'Aptitude Test',
+        stage_progress: 3,
+        total_stages: 6,
+        status: 'Active' as const,
+        hiring_manager: 'James Patterson',
+        ta_assigned: 'David Chen',
+        next_action: 'Review test results',
+        next_action_date: '2024-01-21'
+      }
+    ]
+  }
 ];
 
 export function EnhancedTAMissionControl() {
@@ -199,12 +263,12 @@ export function EnhancedTAMissionControl() {
     setSelectedCandidate(null);
   };
 
-  // Calculate metrics
+  // Calculate metrics - updated to include aptitude test metrics
   const metrics = {
     totalCandidates: mockCandidates.length,
     activeStages: mockCandidates.filter(c => c.status === 'Active').length,
     interviewsScheduled: mockCandidates.filter(c => c.current_stage.includes('Interview')).length,
-    readyForOffer: mockCandidates.filter(c => c.current_stage === 'Final Interview').length,
+    aptitudeTestsPending: mockCandidates.filter(c => c.current_stage === 'Aptitude Test').length,
   };
 
   const pageActions = (
@@ -237,7 +301,7 @@ export function EnhancedTAMissionControl() {
         actions={pageActions}
       />
 
-      {/* KPI Cards */}
+      {/* KPI Cards - updated to include aptitude test metric */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
@@ -279,10 +343,10 @@ export function EnhancedTAMissionControl() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Ready for Offer</p>
-                <p className="text-2xl font-bold text-yellow-600">{metrics.readyForOffer}</p>
+                <p className="text-sm text-gray-600">Aptitude Tests Pending</p>
+                <p className="text-2xl font-bold text-orange-600">{metrics.aptitudeTestsPending}</p>
               </div>
-              <CheckCircle className="h-8 w-8 text-yellow-600" />
+              <CheckCircle className="h-8 w-8 text-orange-600" />
             </div>
           </CardContent>
         </Card>
