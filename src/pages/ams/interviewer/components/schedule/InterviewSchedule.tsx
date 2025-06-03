@@ -23,7 +23,7 @@ interface ScheduledInterview {
   candidate?: {
     name: string;
     email: string;
-  };
+  } | null;
 }
 
 export const InterviewSchedule: React.FC<InterviewScheduleProps> = ({ panelistId }) => {
@@ -67,7 +67,7 @@ export const InterviewSchedule: React.FC<InterviewScheduleProps> = ({ panelistId
                 name: interview.candidate.name || 'Unknown Candidate',
                 email: interview.candidate.email || ''
               } 
-            : undefined
+            : null
         }));
         setInterviews(transformedInterviews);
       }
@@ -110,7 +110,9 @@ export const InterviewSchedule: React.FC<InterviewScheduleProps> = ({ panelistId
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4 text-blue-500" />
-                    <span className="font-semibold">{interview.candidate?.name || 'Unknown Candidate'}</span>
+                    <span className="font-semibold">
+                      {interview.candidate?.name || 'Unknown Candidate'}
+                    </span>
                     <Badge variant="outline" className={getStatusColor(interview.status)}>
                       {interview.status}
                     </Badge>
