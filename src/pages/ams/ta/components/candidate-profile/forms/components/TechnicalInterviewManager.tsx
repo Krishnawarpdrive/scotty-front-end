@@ -6,7 +6,6 @@ import {
   Card, 
   CardContent, 
   Button, 
-  Grid,
   Chip,
   Alert,
   Dialog,
@@ -66,8 +65,8 @@ export const TechnicalInterviewManager: React.FC<TechnicalInterviewManagerProps>
       {/* Interview Status */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+            <Box sx={{ flex: 1, minWidth: 300 }}>
               <Typography variant="subtitle2" sx={{ mb: 2 }}>Interview Status</Typography>
               <Chip label="Scheduled" color="warning" sx={{ mb: 2 }} />
               
@@ -80,9 +79,9 @@ export const TechnicalInterviewManager: React.FC<TechnicalInterviewManagerProps>
               <Typography variant="body2">
                 <strong>Interviewer:</strong> John Smith (Senior Engineer)
               </Typography>
-            </Grid>
+            </Box>
             
-            <Grid item xs={12} md={6}>
+            <Box sx={{ flex: 1, minWidth: 300 }}>
               <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
                 <Button
                   variant="contained"
@@ -111,8 +110,8 @@ export const TechnicalInterviewManager: React.FC<TechnicalInterviewManagerProps>
                   Submit Feedback
                 </Button>
               </Box>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </CardContent>
       </Card>
 
@@ -172,8 +171,8 @@ export const TechnicalInterviewManager: React.FC<TechnicalInterviewManagerProps>
             {/* Rating Scores */}
             <Typography variant="subtitle2" sx={{ mb: 2 }}>Performance Ratings</Typography>
             
-            <Grid container spacing={3} sx={{ mb: 3 }}>
-              <Grid item xs={12} sm={6}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
+              <Box sx={{ flex: 1, minWidth: 250 }}>
                 <Typography variant="body2" sx={{ mb: 1 }}>Technical Skills</Typography>
                 <Rating
                   value={feedback.technical_score}
@@ -182,41 +181,41 @@ export const TechnicalInterviewManager: React.FC<TechnicalInterviewManagerProps>
                   icon={<Star />}
                   emptyIcon={<StarBorder />}
                 />
-              </Grid>
+              </Box>
               
-              <Grid item xs={12} sm={6}>
+              <Box sx={{ flex: 1, minWidth: 250 }}>
                 <Typography variant="body2" sx={{ mb: 1 }}>Communication</Typography>
                 <Rating
                   value={feedback.communication_score}
                   onChange={(_, value) => setFeedback(prev => ({ ...prev, communication_score: value || 0 }))}
                   max={5}
                 />
-              </Grid>
+              </Box>
               
-              <Grid item xs={12} sm={6}>
+              <Box sx={{ flex: 1, minWidth: 250 }}>
                 <Typography variant="body2" sx={{ mb: 1 }}>Problem Solving</Typography>
                 <Rating
                   value={feedback.problem_solving_score}
                   onChange={(_, value) => setFeedback(prev => ({ ...prev, problem_solving_score: value || 0 }))}
                   max={5}
                 />
-              </Grid>
+              </Box>
               
-              <Grid item xs={12} sm={6}>
+              <Box sx={{ flex: 1, minWidth: 250 }}>
                 <Typography variant="body2" sx={{ mb: 1 }}>Overall Rating</Typography>
                 <Rating
                   value={feedback.overall_rating}
                   onChange={(_, value) => setFeedback(prev => ({ ...prev, overall_rating: value || 0 }))}
                   max={5}
                 />
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
 
             <Divider sx={{ my: 3 }} />
 
             {/* Text Feedback */}
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box>
                 <TextField
                   label="Key Strengths"
                   value={feedback.strengths}
@@ -226,9 +225,9 @@ export const TechnicalInterviewManager: React.FC<TechnicalInterviewManagerProps>
                   rows={2}
                   sx={{ mb: 2 }}
                 />
-              </Grid>
+              </Box>
               
-              <Grid item xs={12}>
+              <Box>
                 <TextField
                   label="Areas for Improvement"
                   value={feedback.areas_for_improvement}
@@ -238,9 +237,9 @@ export const TechnicalInterviewManager: React.FC<TechnicalInterviewManagerProps>
                   rows={2}
                   sx={{ mb: 2 }}
                 />
-              </Grid>
+              </Box>
               
-              <Grid item xs={12}>
+              <Box>
                 <FormControl fullWidth sx={{ mb: 2 }}>
                   <InputLabel>Recommendation</InputLabel>
                   <Select
@@ -255,9 +254,9 @@ export const TechnicalInterviewManager: React.FC<TechnicalInterviewManagerProps>
                     <MenuItem value="strongly_not_recommend">Strongly Do Not Recommend</MenuItem>
                   </Select>
                 </FormControl>
-              </Grid>
+              </Box>
               
-              <Grid item xs={12}>
+              <Box>
                 <TextField
                   label="Detailed Feedback"
                   value={feedback.detailed_feedback}
@@ -267,8 +266,8 @@ export const TechnicalInterviewManager: React.FC<TechnicalInterviewManagerProps>
                   rows={4}
                   placeholder="Provide detailed feedback about the candidate's performance, specific examples, and any additional observations..."
                 />
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
           </Box>
         </DialogContent>
         <DialogActions>
