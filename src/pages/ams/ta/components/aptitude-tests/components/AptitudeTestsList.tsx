@@ -1,12 +1,12 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AptitudeTestCard } from './AptitudeTestCard';
+import { Badge } from '@/components/ui/badge';
 import { AptitudeTest } from '../types/AptitudeTestTypes';
-import { Search, Filter, Plus } from 'lucide-react';
+import { AptitudeTestCard } from './AptitudeTestCard';
+import { Plus, Search, Filter } from 'lucide-react';
 
 interface AptitudeTestsListProps {
   tests: AptitudeTest[];
@@ -25,138 +25,116 @@ export const AptitudeTestsList: React.FC<AptitudeTestsListProps> = ({
   onDeleteTest,
   onViewTest
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
-  const [difficultyFilter, setDifficultyFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [selectedCategory, setSelectedCategory] = React.useState<string>('all');
 
   const filteredTests = tests.filter(test => {
     const matchesSearch = test.test_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (test.description?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
-    const matchesCategory = categoryFilter === 'all' || test.category === categoryFilter;
-    const matchesDifficulty = difficultyFilter === 'all' || test.difficulty_level === difficultyFilter;
-    const matchesStatus = statusFilter === 'all' || 
-                         (statusFilter === 'active' ? test.is_active : !test.is_active);
-
-    return matchesSearch && matchesCategory && matchesDifficulty && matchesStatus;
+                         test.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || test.category === selectedCategory;
+    return matchesSearch && matchesCategory;
   });
+
+  const categories = ['all', ...Array.from(new Set(tests.map(test => test.category)))];
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        {[1, 2, 3].map(i => (
-          <Card key={i} className="animate-pulse">
-            <CardContent className="h-48 bg-gray-100" />
-          </Card>
-        ))}
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading aptitude tests...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
+      {/* Header with actions */}
+      <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Aptitude Tests</h2>
-          <p className="text-gray-600">Manage and create aptitude tests for candidates</p>
+          <p className="text-gray-600">Manage and administer aptitude tests for candidates</p>
         </div>
-        <Button onClick={onCreateTest} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
+        <Button onClick={onCreateTest} className="bg-blue-600 hover:bg-blue-700">
+          <Plus className="h-4 w-4 mr-2" />
           Create Test
         </Button>
       </div>
 
-      {/* Filters */}
+      {/* Search and filters */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Filter className="h-5 w-5" />
-            Filters
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <CardContent className="p-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="Search tests..."
+                placeholder="Search tests by name or description..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
-
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="general">General</SelectItem>
-                <SelectItem value="technical">Technical</SelectItem>
-                <SelectItem value="cognitive">Cognitive</SelectItem>
-                <SelectItem value="behavioral">Behavioral</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Difficulty" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Difficulties</SelectItem>
-                <SelectItem value="easy">Easy</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="hard">Hard</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-gray-400" />
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+              >
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category === 'all' ? 'All Categories' : category.charAt(0).toUpperCase() + category.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Tests Grid */}
+      {/* Test results summary */}
+      <div className="flex items-center justify-between text-sm text-gray-600">
+        <span>
+          Showing {filteredTests.length} of {tests.length} tests
+        </span>
+        <div className="flex items-center gap-4">
+          <Badge variant="outline">
+            {tests.filter(t => t.is_active).length} Active
+          </Badge>
+          <Badge variant="secondary">
+            {tests.filter(t => !t.is_active).length} Inactive
+          </Badge>
+        </div>
+      </div>
+
+      {/* Tests grid */}
       {filteredTests.length === 0 ? (
-        <Card className="text-center py-12">
-          <CardContent>
-            <div className="max-w-md mx-auto">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Search className="h-8 w-8 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {searchTerm || categoryFilter !== 'all' || difficultyFilter !== 'all' || statusFilter !== 'all'
-                  ? 'No tests match your filters'
-                  : 'No tests created yet'
-                }
-              </h3>
-              <p className="text-gray-600 mb-4">
-                {searchTerm || categoryFilter !== 'all' || difficultyFilter !== 'all' || statusFilter !== 'all'
-                  ? 'Try adjusting your search criteria or filters'
-                  : 'Create your first aptitude test to get started'
-                }
-              </p>
-              {!searchTerm && categoryFilter === 'all' && difficultyFilter === 'all' && statusFilter === 'all' && (
-                <Button onClick={onCreateTest}>
-                  Create Your First Test
-                </Button>
-              )}
+        <Card>
+          <CardContent className="p-12 text-center">
+            <div className="text-gray-400 mb-4">
+              <svg className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
             </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No tests found</h3>
+            <p className="text-gray-600 mb-6">
+              {searchTerm || selectedCategory !== 'all' 
+                ? 'Try adjusting your search criteria or filters.'
+                : 'Get started by creating your first aptitude test.'
+              }
+            </p>
+            {(!searchTerm && selectedCategory === 'all') && (
+              <Button onClick={onCreateTest} variant="outline">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Your First Test
+              </Button>
+            )}
           </CardContent>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTests.map(test => (
+          {filteredTests.map((test) => (
             <AptitudeTestCard
               key={test.id}
               test={test}
@@ -167,11 +145,6 @@ export const AptitudeTestsList: React.FC<AptitudeTestsListProps> = ({
           ))}
         </div>
       )}
-
-      {/* Summary */}
-      <div className="text-sm text-gray-600 text-center">
-        Showing {filteredTests.length} of {tests.length} tests
-      </div>
     </div>
   );
 };
