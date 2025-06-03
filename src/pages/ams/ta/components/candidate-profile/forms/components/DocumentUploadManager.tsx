@@ -14,7 +14,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Grid
+  Grid2 as Grid
 } from '@mui/material';
 import { 
   CloudUpload, 
@@ -43,7 +43,9 @@ const DOCUMENT_TYPES = [
   { value: 'offer_letter', label: 'Offer Letter', required: false },
   { value: 'salary_slip', label: 'Salary Slip', required: false },
   { value: 'other', label: 'Other Documents', required: false }
-];
+] as const;
+
+type DocumentType = typeof DOCUMENT_TYPES[number]['value'];
 
 export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
   candidate,
@@ -52,7 +54,7 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
   const [documents, setDocuments] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [selectedDocumentType, setSelectedDocumentType] = useState<string>('');
+  const [selectedDocumentType, setSelectedDocumentType] = useState<DocumentType | ''>('');
   const [previewDialog, setPreviewDialog] = useState<{ open: boolean; document: any }>({
     open: false,
     document: null
@@ -68,7 +70,7 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
       const { data, error } = await supabase
         .from('candidate_documents')
         .select('*')
-        .eq('candidate_id', candidate.id.toString())
+        .eq('candidate_id', candidate.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -78,7 +80,7 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
     }
   };
 
-  const handleFileSelect = (documentType: string) => {
+  const handleFileSelect = (documentType: DocumentType) => {
     setSelectedDocumentType(documentType);
     fileInputRef.current?.click();
   };
@@ -110,7 +112,7 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
       const { data: documentData, error: dbError } = await supabase
         .from('candidate_documents')
         .insert({
-          candidate_id: candidate.id.toString(),
+          candidate_id: candidate.id,
           document_type: selectedDocumentType,
           document_name: file.name,
           file_url: urlData.publicUrl,
@@ -211,7 +213,7 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
             {DOCUMENT_TYPES.map((docType) => {
               const isUploaded = getUploadedDocumentTypes().includes(docType.value);
               return (
-                <Grid xs={12} sm={6} md={4} key={docType.value}>
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={docType.value}>
                   <Button
                     variant={isUploaded ? "outlined" : "contained"}
                     fullWidth
@@ -258,7 +260,7 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
       ) : (
         <Grid container spacing={2}>
           {documents.map((document) => (
-            <Grid xs={12} sm={6} md={4} key={document.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={document.id}>
               <Card sx={{ height: '100%' }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
