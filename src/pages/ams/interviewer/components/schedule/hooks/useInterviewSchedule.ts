@@ -32,19 +32,22 @@ export const useInterviewSchedule = (panelistId?: string) => {
           // Handle candidate data with proper null checks
           let candidateData: { name: string; email: string } | null = null;
           
-          // Extract candidate data safely with proper type narrowing
+          // Use a more explicit type guard
           const candidateInfo = interview.candidate;
           
-          // First check if candidateInfo exists and is not null
-          if (candidateInfo !== null && candidateInfo !== undefined) {
-            // Then check if it's an object with the required properties
-            if (typeof candidateInfo === 'object' && 'name' in candidateInfo && 'email' in candidateInfo) {
-              // Now TypeScript knows candidateInfo is a non-null object with name and email properties
-              candidateData = {
-                name: candidateInfo.name || 'Unknown Candidate',
-                email: candidateInfo.email || ''
-              };
-            }
+          // Check if candidateInfo is a valid object with required properties
+          if (candidateInfo && 
+              typeof candidateInfo === 'object' && 
+              !Array.isArray(candidateInfo) &&
+              'name' in candidateInfo && 
+              'email' in candidateInfo &&
+              typeof candidateInfo.name === 'string' &&
+              typeof candidateInfo.email === 'string') {
+            
+            candidateData = {
+              name: candidateInfo.name || 'Unknown Candidate',
+              email: candidateInfo.email || ''
+            };
           }
 
           return {
