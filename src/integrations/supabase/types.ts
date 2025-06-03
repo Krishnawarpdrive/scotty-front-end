@@ -1053,6 +1053,7 @@ export type Database = {
           bio: string | null
           certifications: Json | null
           created_at: string
+          current_level: number | null
           department: string
           email: string
           feedback_score: number | null
@@ -1064,6 +1065,7 @@ export type Database = {
           languages: Json | null
           location: string | null
           max_interviews_per_week: number | null
+          monthly_interview_goal: number | null
           name: string
           panelist_id: string
           phone: string | null
@@ -1077,7 +1079,10 @@ export type Database = {
           title: string
           tools_used: Json | null
           total_interviews: number | null
+          total_points: number | null
           updated_at: string
+          weekly_feedback_goal: number | null
+          xp_to_next_level: number | null
           years_experience: number | null
         }
         Insert: {
@@ -1086,6 +1091,7 @@ export type Database = {
           bio?: string | null
           certifications?: Json | null
           created_at?: string
+          current_level?: number | null
           department: string
           email: string
           feedback_score?: number | null
@@ -1097,6 +1103,7 @@ export type Database = {
           languages?: Json | null
           location?: string | null
           max_interviews_per_week?: number | null
+          monthly_interview_goal?: number | null
           name: string
           panelist_id: string
           phone?: string | null
@@ -1110,7 +1117,10 @@ export type Database = {
           title: string
           tools_used?: Json | null
           total_interviews?: number | null
+          total_points?: number | null
           updated_at?: string
+          weekly_feedback_goal?: number | null
+          xp_to_next_level?: number | null
           years_experience?: number | null
         }
         Update: {
@@ -1119,6 +1129,7 @@ export type Database = {
           bio?: string | null
           certifications?: Json | null
           created_at?: string
+          current_level?: number | null
           department?: string
           email?: string
           feedback_score?: number | null
@@ -1130,6 +1141,7 @@ export type Database = {
           languages?: Json | null
           location?: string | null
           max_interviews_per_week?: number | null
+          monthly_interview_goal?: number | null
           name?: string
           panelist_id?: string
           phone?: string | null
@@ -1143,7 +1155,10 @@ export type Database = {
           title?: string
           tools_used?: Json | null
           total_interviews?: number | null
+          total_points?: number | null
           updated_at?: string
+          weekly_feedback_goal?: number | null
+          xp_to_next_level?: number | null
           years_experience?: number | null
         }
         Relationships: []
@@ -1323,6 +1338,191 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      interviewer_achievements: {
+        Row: {
+          achievement_name: string
+          achievement_type: string
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          metadata: Json | null
+          panelist_id: string | null
+          points_awarded: number | null
+          tier: string
+          unlocked_at: string | null
+        }
+        Insert: {
+          achievement_name: string
+          achievement_type: string
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          metadata?: Json | null
+          panelist_id?: string | null
+          points_awarded?: number | null
+          tier?: string
+          unlocked_at?: string | null
+        }
+        Update: {
+          achievement_name?: string
+          achievement_type?: string
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          metadata?: Json | null
+          panelist_id?: string | null
+          points_awarded?: number | null
+          tier?: string
+          unlocked_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interviewer_achievements_panelist_id_fkey"
+            columns: ["panelist_id"]
+            isOneToOne: false
+            referencedRelation: "interview_panelists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interviewer_leaderboard: {
+        Row: {
+          category: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          panelist_id: string | null
+          period_end: string
+          period_start: string
+          period_type: string
+          rank_position: number
+          total_points: number | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          panelist_id?: string | null
+          period_end: string
+          period_start: string
+          period_type: string
+          rank_position: number
+          total_points?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          panelist_id?: string | null
+          period_end?: string
+          period_start?: string
+          period_type?: string
+          rank_position?: number
+          total_points?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interviewer_leaderboard_panelist_id_fkey"
+            columns: ["panelist_id"]
+            isOneToOne: false
+            referencedRelation: "interview_panelists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interviewer_metrics: {
+        Row: {
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          metric_type: string
+          metric_value: number
+          panelist_id: string | null
+          period_end: string
+          period_start: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          metric_value?: number
+          panelist_id?: string | null
+          period_end: string
+          period_start: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          metric_value?: number
+          panelist_id?: string | null
+          period_end?: string
+          period_start?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interviewer_metrics_panelist_id_fkey"
+            columns: ["panelist_id"]
+            isOneToOne: false
+            referencedRelation: "interview_panelists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interviewer_streaks: {
+        Row: {
+          created_at: string | null
+          current_streak: number | null
+          id: string
+          last_activity_date: string | null
+          longest_streak: number | null
+          panelist_id: string | null
+          streak_data: Json | null
+          streak_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_streak?: number | null
+          id?: string
+          last_activity_date?: string | null
+          longest_streak?: number | null
+          panelist_id?: string | null
+          streak_data?: Json | null
+          streak_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          current_streak?: number | null
+          id?: string
+          last_activity_date?: string | null
+          longest_streak?: number | null
+          panelist_id?: string | null
+          streak_data?: Json | null
+          streak_type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interviewer_streaks_panelist_id_fkey"
+            columns: ["panelist_id"]
+            isOneToOne: false
+            referencedRelation: "interview_panelists"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       panelist_availability: {
         Row: {
