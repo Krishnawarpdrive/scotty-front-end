@@ -42,6 +42,7 @@ import HRDashboardPage from './pages/ams/hr/HRDashboardPage';
 import ExecutiveDashboardPage from './pages/ams/executive/ExecutiveDashboardPage';
 import ExecutiveClientPage from './pages/ams/executive/ExecutiveClientPage';
 import UserManagementPage from './pages/ams/admin/UserManagementPage';
+import InterviewerDashboardPage from './pages/ams/interviewer/InterviewerDashboardPage';
 
 const queryClient = new QueryClient();
 
@@ -88,6 +89,7 @@ function App() {
                         <Route path="/ams/candidate-dashboard" element={<CandidatePoolPage />} />
                         <Route path="/ams/executive/dashboard" element={<ExecutiveDashboardPage />} />
                         <Route path="/ams/executive/clients" element={<ExecutiveClientPage />} />
+                        <Route path="/ams/interviewer/dashboard" element={<InterviewerDashboardPage />} />
                         <Route path="/ams/checklist-bar" element={<ChecklistsPage />} />
                         <Route path="/ams/interview-panelists" element={<InterviewPanelistLibraryPage />} />
                         <Route path="/ams/checklists" element={<ChecklistsPage />} />
