@@ -12,7 +12,8 @@ import { useInterviewerData } from '../hooks/useInterviewerData';
 
 export const InterviewerDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  const { interviewer, metrics, achievements, leaderboard, isLoading } = useInterviewerData();
+  // Pass true to always use dummy data in development
+  const { interviewer, metrics, achievements, leaderboard, isLoading } = useInterviewerData(true);
 
   if (isLoading) {
     return <div className="flex items-center justify-center h-96">Loading dashboard...</div>;

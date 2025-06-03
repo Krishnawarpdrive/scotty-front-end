@@ -9,7 +9,7 @@ import type {
   LeaderboardEntry 
 } from '../types/InterviewerTypes';
 
-export const useInterviewerData = () => {
+export const useInterviewerData = (forceDummy: boolean = false) => {
   const { user } = useAuth();
   const [interviewer, setInterviewer] = useState<InterviewPanelist | null>(null);
   const [metrics, setMetrics] = useState<InterviewerMetric[]>([]);
@@ -18,12 +18,142 @@ export const useInterviewerData = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (user?.email) {
+    if (user?.email || forceDummy) {
       fetchInterviewerData();
     }
-  }, [user]);
+  }, [user, forceDummy]);
 
   const fetchInterviewerData = async () => {
+    if (forceDummy) {
+      // Provide dummy data for development/demo
+      const dummyPanelist = {
+        id: 'dummy-id',
+        panelist_id: 'dummy-panelist-id',
+        name: 'Jane Doe',
+        email: user?.email || 'jane.doe@example.com',
+        phone: '123-456-7890',
+        title: 'Senior Software Engineer',
+        department: 'Engineering',
+        location: 'Remote',
+        bio: 'Experienced interviewer with a passion for mentoring.',
+        avatar_url: '',
+        seniority_level: 'Senior',
+        status: 'active',
+        availability_status: 'available',
+        skills: ['React', 'Node.js', 'System Design'],
+        certifications: ['AWS Certified Developer'],
+        languages: ['English', 'Spanish'],
+        interview_types: ['Technical', 'Behavioral'],
+        preferred_time_slots: { Monday: ['10:00', '14:00'], Wednesday: ['11:00'] },
+        max_interviews_per_week: 5,
+        rating: 4.8,
+        total_interviews: 120,
+        feedback_score: 4.7,
+        interviews_converted_to_offers: 35,
+        interviews_allocated_per_day: 2,
+        projects_worked_on: ['Project A', 'Project B'],
+        tools_used: ['Zoom', 'CoderPad'],
+        years_experience: 8,
+        interview_authorization_level: 'full',
+        timezone: 'UTC+5:30',
+        total_points: 2450,
+        current_level: 7,
+        xp_to_next_level: 150,
+        monthly_interview_goal: 10,
+        weekly_feedback_goal: 2,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setInterviewer(dummyPanelist);
+      setMetrics([
+        {
+          id: 'metric-1',
+          panelist_id: 'dummy-id',
+          metric_type: 'interviews_conducted',
+          metric_value: 12,
+          period_start: '2025-06-01',
+          period_end: '2025-06-07',
+          metadata: {},
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        {
+          id: 'metric-2',
+          panelist_id: 'dummy-id',
+          metric_type: 'feedback_score',
+          metric_value: 4.9,
+          period_start: '2025-06-01',
+          period_end: '2025-06-07',
+          metadata: {},
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ]);
+      setAchievements([
+        {
+          id: 'ach-1',
+          panelist_id: 'dummy-id',
+          achievement_type: 'milestone',
+          achievement_name: 'First 100 Interviews',
+          description: 'Conducted 100 interviews!',
+          icon: '',
+          tier: 'gold',
+          points_awarded: 500,
+          unlocked_at: '2025-05-15T10:00:00Z',
+          metadata: {},
+          created_at: '2025-05-15T10:00:00Z',
+        },
+        {
+          id: 'ach-2',
+          panelist_id: 'dummy-id',
+          achievement_type: 'feedback',
+          achievement_name: 'Feedback Star',
+          description: 'Maintained feedback score above 4.5 for 3 months.',
+          icon: '',
+          tier: 'silver',
+          points_awarded: 200,
+          unlocked_at: '2025-04-10T10:00:00Z',
+          metadata: {},
+          created_at: '2025-04-10T10:00:00Z',
+        },
+      ]);
+      setLeaderboard([
+        {
+          id: 'leader-1',
+          panelist_id: 'dummy-id',
+          period_type: 'monthly',
+          period_start: '2025-06-01',
+          period_end: '2025-06-30',
+          rank_position: 1,
+          total_points: 2450,
+          category: 'overall',
+          metadata: {},
+          created_at: new Date().toISOString(),
+          panelist: dummyPanelist,
+        },
+        {
+          id: 'leader-2',
+          panelist_id: 'other-id',
+          period_type: 'monthly',
+          period_start: '2025-06-01',
+          period_end: '2025-06-30',
+          rank_position: 2,
+          total_points: 2100,
+          category: 'overall',
+          metadata: {},
+          created_at: new Date().toISOString(),
+          panelist: {
+            ...dummyPanelist,
+            id: 'other-id',
+            name: 'John Smith',
+            email: 'john.smith@example.com',
+            total_points: 2100,
+          },
+        },
+      ]);
+      setIsLoading(false);
+      return;
+    }
     try {
       setIsLoading(true);
       
@@ -34,8 +164,133 @@ export const useInterviewerData = () => {
         .eq('email', user?.email)
         .single();
 
-      if (panelistError) {
-        console.error('Error fetching panelist:', panelistError);
+      if (panelistError || !panelistData) {
+        // Provide dummy data for development/demo
+        const dummyPanelist = {
+          id: 'dummy-id',
+          panelist_id: 'dummy-panelist-id',
+          name: 'Jane Doe',
+          email: user?.email || 'jane.doe@example.com',
+          phone: '123-456-7890',
+          title: 'Senior Software Engineer',
+          department: 'Engineering',
+          location: 'Remote',
+          bio: 'Experienced interviewer with a passion for mentoring.',
+          avatar_url: '',
+          seniority_level: 'Senior',
+          status: 'active',
+          availability_status: 'available',
+          skills: ['React', 'Node.js', 'System Design'],
+          certifications: ['AWS Certified Developer'],
+          languages: ['English', 'Spanish'],
+          interview_types: ['Technical', 'Behavioral'],
+          preferred_time_slots: { Monday: ['10:00', '14:00'], Wednesday: ['11:00'] },
+          max_interviews_per_week: 5,
+          rating: 4.8,
+          total_interviews: 120,
+          feedback_score: 4.7,
+          interviews_converted_to_offers: 35,
+          interviews_allocated_per_day: 2,
+          projects_worked_on: ['Project A', 'Project B'],
+          tools_used: ['Zoom', 'CoderPad'],
+          years_experience: 8,
+          interview_authorization_level: 'full',
+          timezone: 'UTC+5:30',
+          total_points: 2450,
+          current_level: 7,
+          xp_to_next_level: 150,
+          monthly_interview_goal: 10,
+          weekly_feedback_goal: 2,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        setInterviewer(dummyPanelist);
+        setMetrics([
+          {
+            id: 'metric-1',
+            panelist_id: 'dummy-id',
+            metric_type: 'interviews_conducted',
+            metric_value: 12,
+            period_start: '2025-06-01',
+            period_end: '2025-06-07',
+            metadata: {},
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+          {
+            id: 'metric-2',
+            panelist_id: 'dummy-id',
+            metric_type: 'feedback_score',
+            metric_value: 4.9,
+            period_start: '2025-06-01',
+            period_end: '2025-06-07',
+            metadata: {},
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+        ]);
+        setAchievements([
+          {
+            id: 'ach-1',
+            panelist_id: 'dummy-id',
+            achievement_type: 'milestone',
+            achievement_name: 'First 100 Interviews',
+            description: 'Conducted 100 interviews!',
+            icon: '',
+            tier: 'gold',
+            points_awarded: 500,
+            unlocked_at: '2025-05-15T10:00:00Z',
+            metadata: {},
+            created_at: '2025-05-15T10:00:00Z',
+          },
+          {
+            id: 'ach-2',
+            panelist_id: 'dummy-id',
+            achievement_type: 'feedback',
+            achievement_name: 'Feedback Star',
+            description: 'Maintained feedback score above 4.5 for 3 months.',
+            icon: '',
+            tier: 'silver',
+            points_awarded: 200,
+            unlocked_at: '2025-04-10T10:00:00Z',
+            metadata: {},
+            created_at: '2025-04-10T10:00:00Z',
+          },
+        ]);
+        setLeaderboard([
+          {
+            id: 'leader-1',
+            panelist_id: 'dummy-id',
+            period_type: 'monthly',
+            period_start: '2025-06-01',
+            period_end: '2025-06-30',
+            rank_position: 1,
+            total_points: 2450,
+            category: 'overall',
+            metadata: {},
+            created_at: new Date().toISOString(),
+            panelist: dummyPanelist,
+          },
+          {
+            id: 'leader-2',
+            panelist_id: 'other-id',
+            period_type: 'monthly',
+            period_start: '2025-06-01',
+            period_end: '2025-06-30',
+            rank_position: 2,
+            total_points: 2100,
+            category: 'overall',
+            metadata: {},
+            created_at: new Date().toISOString(),
+            panelist: {
+              ...dummyPanelist,
+              id: 'other-id',
+              name: 'John Smith',
+              email: 'john.smith@example.com',
+              total_points: 2100,
+            },
+          },
+        ]);
         return;
       }
 
