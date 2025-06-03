@@ -17,6 +17,8 @@ interface InterviewSchedulingPanelProps {
   onSchedule: (scheduleData: any) => void;
 }
 
+type InterviewType = 'phone' | 'video' | 'in-person' | 'technical' | 'behavioral';
+
 export const InterviewSchedulingPanel: React.FC<InterviewSchedulingPanelProps> = ({
   open,
   onClose,
@@ -29,7 +31,7 @@ export const InterviewSchedulingPanel: React.FC<InterviewSchedulingPanelProps> =
     time: '',
     duration: stage.interview_details?.duration_minutes || 60,
     interviewer: stage.interview_details?.interviewer || '',
-    type: stage.interview_details?.type || 'video',
+    type: (stage.interview_details?.type || 'video') as InterviewType,
     location: '',
     meeting_link: '',
     notes: ''
@@ -68,6 +70,12 @@ export const InterviewSchedulingPanel: React.FC<InterviewSchedulingPanelProps> =
       applicationId,
       stageId: stage.id
     });
+  };
+
+  const handleTypeChange = (value: string) => {
+    const validTypes: InterviewType[] = ['phone', 'video', 'in-person', 'technical', 'behavioral'];
+    const selectedType = validTypes.includes(value as InterviewType) ? value as InterviewType : 'video';
+    setScheduleData({ ...scheduleData, type: selectedType });
   };
 
   return (
@@ -147,7 +155,7 @@ export const InterviewSchedulingPanel: React.FC<InterviewSchedulingPanelProps> =
 
             <div>
               <Label htmlFor="type">Interview Type</Label>
-              <Select value={scheduleData.type} onValueChange={(value) => setScheduleData({ ...scheduleData, type: value })}>
+              <Select value={scheduleData.type} onValueChange={handleTypeChange}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -168,6 +176,18 @@ export const InterviewSchedulingPanel: React.FC<InterviewSchedulingPanelProps> =
                     <div className="flex items-center space-x-2">
                       <MapPin className="h-4 w-4" />
                       <span>In Person</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="technical">
+                    <div className="flex items-center space-x-2">
+                      <Users className="h-4 w-4" />
+                      <span>Technical Interview</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="behavioral">
+                    <div className="flex items-center space-x-2">
+                      <Users className="h-4 w-4" />
+                      <span>Behavioral Interview</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
