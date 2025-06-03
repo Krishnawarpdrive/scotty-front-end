@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Box, Grid2 as Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import { CandidateContextualActions } from './CandidateContextualActions';
 import { CandidateActivityFeed } from './CandidateActivityFeed';
 import { CandidateApplicationsTable } from './CandidateApplicationsTable';
@@ -30,13 +30,13 @@ export const CandidateMainContent: React.FC<CandidateMainContentProps> = ({
 
       {/* Middle Section: Quick Actions and Activity Feed */}
       <Grid container spacing={3}>
-        <Grid xs={12} md={8}>
+        <Grid item xs={12} md={8}>
           <CandidateContextualActions 
             dashboardData={dashboardData}
             candidateId={candidateId}
           />
         </Grid>
-        <Grid xs={12} md={4}>
+        <Grid item xs={12} md={4}>
           <CandidateActivityFeed 
             notifications={notifications}
             messages={messages}

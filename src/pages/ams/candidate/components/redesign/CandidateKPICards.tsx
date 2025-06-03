@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Box, Card, CardContent, Typography, Grid2 as Grid, LinearProgress } from '@mui/material';
+import { Box, Card, CardContent, Typography, Grid, LinearProgress } from '@mui/material';
 import { 
   Work, 
   Schedule, 
@@ -136,7 +136,7 @@ export const CandidateKPICards: React.FC<CandidateKPICardsProps> = ({ dashboardD
     return (
       <Grid container spacing={2}>
         {[1, 2, 3, 4, 5, 6].map((item) => (
-          <Grid xs={12} sm={6} md={4} lg={2} key={item}>
+          <Grid item xs={12} sm={6} md={4} lg={2} key={item}>
             <Card sx={{ height: 120 }}>
               <CardContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -155,7 +155,7 @@ export const CandidateKPICards: React.FC<CandidateKPICardsProps> = ({ dashboardD
   return (
     <Grid container spacing={2}>
       {kpiData.map((kpi, index) => (
-        <Grid xs={12} sm={6} md={4} lg={2} key={index}>
+        <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
           <KPICard {...kpi} />
         </Grid>
       ))}
