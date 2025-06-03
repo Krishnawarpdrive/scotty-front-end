@@ -32,22 +32,20 @@ export const useInterviewSchedule = (panelistId?: string) => {
           // Handle candidate data with proper null checks
           let candidateData: { name: string; email: string } | null = null;
           
-          // Use a more explicit type guard
-          const candidateInfo = interview.candidate;
-          
-          // Check if candidateInfo is a valid object with required properties
-          if (candidateInfo && 
-              typeof candidateInfo === 'object' && 
-              !Array.isArray(candidateInfo) &&
-              'name' in candidateInfo && 
-              'email' in candidateInfo &&
-              typeof candidateInfo.name === 'string' &&
-              typeof candidateInfo.email === 'string') {
+          // Check if candidate data exists and has the expected structure
+          if (interview.candidate && 
+              typeof interview.candidate === 'object' && 
+              !Array.isArray(interview.candidate)) {
             
-            candidateData = {
-              name: candidateInfo.name || 'Unknown Candidate',
-              email: candidateInfo.email || ''
-            };
+            // Type assertion after validation
+            const candidate = interview.candidate as { name?: string; email?: string };
+            
+            if (candidate.name !== undefined && candidate.email !== undefined) {
+              candidateData = {
+                name: candidate.name || 'Unknown Candidate',
+                email: candidate.email || ''
+              };
+            }
           }
 
           return {
