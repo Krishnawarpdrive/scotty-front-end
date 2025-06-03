@@ -1,267 +1,174 @@
 
-import React, { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import {
-  LayoutDashboard,
-  Users,
-  Building2,
-  UserCheck,
+import React from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { 
+  Sidebar, 
+  SidebarContent, 
+  SidebarHeader,
+  SidebarTrigger,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  useSidebar
+} from '@/components/ui/sidebar';
+import { 
+  LayoutDashboard, 
+  Users, 
+  FileText, 
   Briefcase,
-  Settings,
-  ChevronDown,
-  ChevronRight,
-  FileText,
-  CheckCircle,
+  ListChecks, 
+  ClipboardList,
   Award,
-  DollarSign,
-  Workflow,
+  TrendingUp,
   Search,
-  UserPlus,
-  BarChart3,
-  Target,
-  Star,
-  Calendar,
-  Zap,
+  BarChart,
+  Menu,
+  UserCheck,
+  Building2,
   BookOpen,
   UserCog,
-  Presentation,
+  Target,
+  UserPlus,
   Crown,
   UserCircle,
-  HandHeart
-} from "lucide-react";
+  CheckCircle,
+  HandHeart,
+  DollarSign,
+  Presentation,
+} from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from "@/components/ui/tooltip";
 
-const AMSSidebar: React.FC = () => {
+interface NavigationItem {
+  title: string;
+  path: string;
+  icon: React.ElementType;
+}
+
+const navigationItems: NavigationItem[] = [
+  // { title: 'Dashboard', path: '/ams/dashboard', icon: LayoutDashboard },
+  // { title: 'HR Dashboard', path: '/ams/hr/dashboard', icon: BarChart },
+  // { title: 'Role Management', path: '/ams/hr/role-management', icon: Briefcase },
+  // { title: 'Candidate Pool', path: '/ams/hr/candidate-pool', icon: UserCheck },
+  // { title: 'TA Mission Control', path: '/ams/ta/mission-control', icon: LayoutDashboard },
+  // { title: 'Clients', path: '/ams/clients', icon: Users },
+  // { title: 'Client Dashboard', path: '/ams/client-dashboard', icon: BarChart },
+  // { title: 'Client Roles & Requirements', path: '/ams/client-roles-requirements', icon: FileText },
+  // { title: 'Global Role Library', path: '/ams/roles', icon: Briefcase },
+  // { title: 'Requirements', path: '/ams/requirements', icon: FileText },
+  // { title: 'Skills Library', path: '/ams/skills', icon: ListChecks },
+  // { title: 'Checklist Master', path: '/ams/checklists', icon: ClipboardList },
+  // { title: 'Certifications', path: '/ams/certifications', icon: Award },
+  // { title: 'Commission Tracker', path: '/ams/commissions', icon: TrendingUp }
+
+  {title: "Dashboard", path: "/ams/dashboard", icon: LayoutDashboard},
+  {title: "Clients", path: "/ams/clients",icon: Building2},
+  {title: "Requirements", path: "/ams/requirements",icon: FileText},
+  {title: "Roles Library", path: "/ams/roles",icon: Briefcase},
+  {title: "Skills Library", path: "/ams/skills/library",icon: BookOpen},
+
+  {title: "HR Dashboard", path: "/ams/hr/dashboard", icon: UserCheck},
+  {title: "Candidate Pool", path: "/ams/hr/candidate-pool", icon: Users},
+  {title: "Role Management", path: "/ams/hr/role-management", icon: UserCog},
+  {title: "TA Mission Control", path: "/ams/ta/mission-control", icon: Target},
+  {title: "Candidate Dashboard", path: "/ams/candidate-dashboard", icon: UserPlus},
+  {title: "Executive Dashboard", path: "/ams/executive/dashboard", icon: Crown},
+
+  {title: "Interview Panelists", path: "/ams/interview-panelists", icon: UserCircle},
+  {title: "Checklists", path: "/ams/checklists", icon: CheckCircle},
+  {title: "Certifications", path: "/ams/certifications", icon: Award},
+  {title: "Vendor Management", path: "/ams/vendor-management", icon: HandHeart},
+
+  {title: "Commissions", path: "/ams/commissions", icon: DollarSign},
+  {title: "Executive Clients", path: "/ams/executive/clients", icon: Presentation},
+];
+
+export const AMSSidebar = () => {
   const location = useLocation();
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    core: true,
-  });
-
-  const toggleSection = (sectionKey: string) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [sectionKey]: !prev[sectionKey]
-    }));
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
+  
+  const isActive = (path: string) => {
+    return location.pathname.startsWith(path);
   };
 
-  const isActive = (path: string) => location.pathname === path;
-  const isInPath = (path: string) => location.pathname.startsWith(path);
-
-  const navigationSections = [
-    {
-      key: "core",
-      title: "Core Functions",
-      icon: LayoutDashboard,
-      items: [
-        { 
-          title: "Dashboard", 
-          path: "/ams/dashboard", 
-          icon: LayoutDashboard,
-          description: "Main overview"
-        },
-        { 
-          title: "Clients", 
-          path: "/ams/clients", 
-          icon: Building2,
-          description: "Client management"
-        },
-        { 
-          title: "Requirements", 
-          path: "/ams/requirements", 
-          icon: FileText,
-          description: "Job requirements"
-        },
-        { 
-          title: "Roles Library", 
-          path: "/ams/roles", 
-          icon: Briefcase,
-          description: "Role templates"
-        },
-        { 
-          title: "Skills Library", 
-          path: "/ams/skills/library", 
-          icon: BookOpen,
-          description: "Skills database"
-        },
-      ]
-    },
-    {
-      key: "specialized",
-      title: "Specialized Modules",
-      icon: UserCog,
-      items: [
-        { 
-          title: "HR Dashboard", 
-          path: "/ams/hr/dashboard", 
-          icon: UserCheck,
-          description: "HR management"
-        },
-        { 
-          title: "Candidate Pool", 
-          path: "/ams/hr/candidate-pool", 
-          icon: Users,
-          description: "Candidate database"
-        },
-        { 
-          title: "Role Management", 
-          path: "/ams/hr/role-management", 
-          icon: UserCog,
-          description: "Role configuration"
-        },
-        { 
-          title: "TA Mission Control", 
-          path: "/ams/ta/mission-control", 
-          icon: Target,
-          description: "TA operations"
-        },
-        { 
-          title: "Candidate Dashboard", 
-          path: "/ams/candidate-dashboard", 
-          icon: UserPlus,
-          description: "Candidate view"
-        },
-        { 
-          title: "Executive Dashboard", 
-          path: "/ams/executive/dashboard", 
-          icon: Crown,
-          description: "Executive insights"
-        },
-      ]
-    },
-    {
-      key: "libraries",
-      title: "Resource Libraries",
-      icon: BookOpen,
-      items: [
-        { 
-          title: "Interview Panelists", 
-          path: "/ams/interview-panelists", 
-          icon: UserCircle,
-          description: "Panelist management"
-        },
-        { 
-          title: "Checklists", 
-          path: "/ams/checklists", 
-          icon: CheckCircle,
-          description: "Process checklists"
-        },
-        { 
-          title: "Certifications", 
-          path: "/ams/certifications", 
-          icon: Award,
-          description: "Certification library"
-        },
-        { 
-          title: "Vendor Management", 
-          path: "/ams/vendor-management", 
-          icon: HandHeart,
-          description: "Vendor portal"
-        },
-      ]
-    },
-    {
-      key: "analytics",
-      title: "Analytics & Insights",
-      icon: BarChart3,
-      items: [
-        { 
-          title: "Commissions", 
-          path: "/ams/commissions", 
-          icon: DollarSign,
-          description: "Commission tracking"
-        },
-        { 
-          title: "Executive Clients", 
-          path: "/ams/executive/clients", 
-          icon: Presentation,
-          description: "Client analytics"
-        },
-      ]
-    }
-  ];
-
   return (
-    <div className="flex h-full w-64 flex-col bg-white shadow-lg border-r">
-      {/* Header */}
-      <div className="flex h-16 items-center justify-center border-b bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="flex items-center gap-3">
-          <Zap className="h-8 w-8" />
-          <span className="text-xl font-bold">AMS</span>
+    <Sidebar 
+      className="border-r transition-all duration-300 ease-in-out bg-white shadow-sm"
+      collapsible="icon"
+      variant="sidebar"
+    >
+      <SidebarHeader className="border-b p-4 bg-gradient-to-r from-primary/5 to-accent/5">
+          <h2 className={`text-xl font-semibold text-primary transition-all duration-200 ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
+              AMS
+            </h2>
+          <div className="flex items-center justify-between"></div>
+        {!isCollapsed && (
+          <div className="mt-3">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search..."
+              className="w-full bg-white border-gray-200 pl-8 focus:ring-2 focus:ring-primary/20 text-[13px] h-9"
+            />
+          </div>
         </div>
-      </div>
-
-      {/* Navigation */}
-      <div className="flex-1 overflow-y-auto p-4">
-        <nav className="space-y-3">
-          {navigationSections.map((section) => (
-            <Collapsible
-              key={section.key}
-              open={expandedSections[section.key]}
-              onOpenChange={() => toggleSection(section.key)}
-            >
-              <CollapsibleTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-between text-left font-medium"
-                >
-                  <div className="flex items-center gap-2">
-                    <section.icon className="h-4 w-4" />
-                    {section.title}
-                  </div>
-                  {expandedSections[section.key] ? (
-                    <ChevronDown className="h-4 w-4" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4" />
-                  )}
-                </Button>
-              </CollapsibleTrigger>
+        )}
+      </SidebarHeader>
+      
+      <SidebarContent>
+        <SidebarGroup>
+          <div className="flex items-center justify-between">
+            {!isCollapsed && <SidebarGroupLabel>Navigation</SidebarGroupLabel>}
+            <SidebarTrigger className={isCollapsed ? 'space-y-2 ml-2' : ''} /> 
+          </div>
+          
+          <SidebarGroupContent>
+            <SidebarMenu className={`${!isCollapsed ? 'space-y-1 p-2' : 'mx-auto'}`}>
               
-              <CollapsibleContent className="mt-2 space-y-1">
-                {section.items.map((item) => (
-                  <NavLink
-                    key={item.path}
-                    to={item.path}
-                    className={({ isActive }) =>
-                      cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-gray-100",
-                        isActive
-                          ? "bg-blue-50 text-blue-700 border-l-4 border-blue-700"
-                          : "text-gray-600 hover:text-gray-900"
-                      )
-                    }
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <div className="flex-1">
-                      <div className="font-medium">{item.title}</div>
-                      <div className="text-xs text-gray-500">
-                        {item.description}
-                      </div>
-                    </div>
-                  </NavLink>
-                ))}
-              </CollapsibleContent>
-            </Collapsible>
-          ))}
-        </nav>
-      </div>
+              {navigationItems.map((item) => (
+                <SidebarMenuItem key={item.path}>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={isActive(item.path)} 
+                          className={`
+                            sidebar-nav-item rounded-lg mx-1 h-11 text-[13px]
+                            ${isActive(item.path) ? 'active' : ''}
+                            hover:bg-slate-50 hover:shadow-sm
+                            ${isActive(item.path) ? 'bg-primary/10 border-r-4 border-primary text-primary font-medium' : ''}
+                          `}
+                        >
+                          <NavLink to={item.path} className="flex items-center">
+                            <item.icon className="h-4 w-4 min-w-4" />
+                            {!isCollapsed && <span className="ml-2 truncate">{item.title}</span>}
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </TooltipTrigger>
+                      {!isCollapsed && (
+                        <TooltipContent side="right">
+                          <p>{item.title}</p>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TooltipProvider>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
 
-      {/* Footer */}
-      <div className="border-t p-4">
-        <div className="flex items-center gap-3 text-sm text-gray-600">
-          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-            <UserCheck className="h-4 w-4" />
-          </div>
-          <div>
-            <div className="font-medium">System User</div>
-            <div className="text-xs">Administrator</div>
-          </div>
-        </div>
-      </div>
-    </div>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
   );
 };
-
-export default AMSSidebar;
