@@ -4,7 +4,6 @@ import {
   Card, 
   CardContent, 
   Typography, 
-  Grid,
   Button,
   Box
 } from '@mui/material';
@@ -64,34 +63,41 @@ export const QuickActions: React.FC = () => {
           Quick Actions
         </Typography>
         
-        <Grid container spacing={2}>
+        <Box sx={{ 
+          display: 'grid', 
+          gridTemplateColumns: { 
+            xs: 'repeat(2, 1fr)', 
+            sm: 'repeat(3, 1fr)', 
+            md: 'repeat(6, 1fr)' 
+          }, 
+          gap: 2 
+        }}>
           {actions.map((action, index) => (
-            <Grid item xs={6} sm={4} md={2} key={index}>
-              <Button
-                variant="outlined"
-                fullWidth
-                sx={{
-                  height: 80,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 1,
+            <Button
+              key={index}
+              variant="outlined"
+              fullWidth
+              sx={{
+                height: 80,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
+                borderColor: action.color,
+                color: action.color,
+                '&:hover': {
                   borderColor: action.color,
-                  color: action.color,
-                  '&:hover': {
-                    borderColor: action.color,
-                    backgroundColor: `${action.color}10`
-                  }
-                }}
-                onClick={action.onClick}
-              >
-                {React.cloneElement(action.icon, { sx: { fontSize: 24 } })}
-                <Typography variant="caption" sx={{ textAlign: 'center' }}>
-                  {action.label}
-                </Typography>
-              </Button>
-            </Grid>
+                  backgroundColor: `${action.color}10`
+                }
+              }}
+              onClick={action.onClick}
+            >
+              {React.cloneElement(action.icon, { sx: { fontSize: 24 } })}
+              <Typography variant="caption" sx={{ textAlign: 'center' }}>
+                {action.label}
+              </Typography>
+            </Button>
           ))}
-        </Grid>
+        </Box>
       </CardContent>
     </Card>
   );
