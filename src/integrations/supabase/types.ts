@@ -93,6 +93,101 @@ export type Database = {
         }
         Relationships: []
       }
+      aptitude_test_sections: {
+        Row: {
+          aptitude_test_id: string
+          created_at: string
+          description: string | null
+          id: string
+          questions_count: number
+          section_name: string
+          section_type: string
+          time_limit_minutes: number | null
+          weightage: number | null
+        }
+        Insert: {
+          aptitude_test_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          questions_count?: number
+          section_name: string
+          section_type: string
+          time_limit_minutes?: number | null
+          weightage?: number | null
+        }
+        Update: {
+          aptitude_test_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          questions_count?: number
+          section_name?: string
+          section_type?: string
+          time_limit_minutes?: number | null
+          weightage?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aptitude_test_sections_aptitude_test_id_fkey"
+            columns: ["aptitude_test_id"]
+            isOneToOne: false
+            referencedRelation: "aptitude_tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aptitude_tests: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string
+          description: string | null
+          difficulty_level: string
+          duration_minutes: number
+          id: string
+          instructions: string | null
+          is_active: boolean | null
+          passing_score: number
+          skills_assessed: Json | null
+          test_name: string
+          total_questions: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          difficulty_level?: string
+          duration_minutes?: number
+          id?: string
+          instructions?: string | null
+          is_active?: boolean | null
+          passing_score?: number
+          skills_assessed?: Json | null
+          test_name: string
+          total_questions?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          difficulty_level?: string
+          duration_minutes?: number
+          id?: string
+          instructions?: string | null
+          is_active?: boolean | null
+          passing_score?: number
+          skills_assessed?: Json | null
+          test_name?: string
+          total_questions?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       candidate_applications: {
         Row: {
           application_date: string | null
@@ -140,6 +235,75 @@ export type Database = {
             columns: ["requirement_id"]
             isOneToOne: false
             referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      candidate_aptitude_results: {
+        Row: {
+          administered_by: string | null
+          aptitude_test_id: string
+          candidate_id: string
+          correct_answers: number
+          created_at: string
+          detailed_results: Json | null
+          id: string
+          notes: string | null
+          score: number
+          status: string
+          test_completed_at: string | null
+          test_started_at: string | null
+          time_taken_minutes: number | null
+          total_questions_attempted: number
+          updated_at: string
+        }
+        Insert: {
+          administered_by?: string | null
+          aptitude_test_id: string
+          candidate_id: string
+          correct_answers?: number
+          created_at?: string
+          detailed_results?: Json | null
+          id?: string
+          notes?: string | null
+          score: number
+          status?: string
+          test_completed_at?: string | null
+          test_started_at?: string | null
+          time_taken_minutes?: number | null
+          total_questions_attempted?: number
+          updated_at?: string
+        }
+        Update: {
+          administered_by?: string | null
+          aptitude_test_id?: string
+          candidate_id?: string
+          correct_answers?: number
+          created_at?: string
+          detailed_results?: Json | null
+          id?: string
+          notes?: string | null
+          score?: number
+          status?: string
+          test_completed_at?: string | null
+          test_started_at?: string | null
+          time_taken_minutes?: number | null
+          total_questions_attempted?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_aptitude_results_aptitude_test_id_fkey"
+            columns: ["aptitude_test_id"]
+            isOneToOne: false
+            referencedRelation: "aptitude_tests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_aptitude_results_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
             referencedColumns: ["id"]
           },
         ]
@@ -270,6 +434,54 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      candidate_section_scores: {
+        Row: {
+          correct_answers: number
+          created_at: string
+          id: string
+          questions_attempted: number
+          result_id: string
+          score: number
+          section_id: string
+          time_taken_minutes: number | null
+        }
+        Insert: {
+          correct_answers?: number
+          created_at?: string
+          id?: string
+          questions_attempted?: number
+          result_id: string
+          score: number
+          section_id: string
+          time_taken_minutes?: number | null
+        }
+        Update: {
+          correct_answers?: number
+          created_at?: string
+          id?: string
+          questions_attempted?: number
+          result_id?: string
+          score?: number
+          section_id?: string
+          time_taken_minutes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_section_scores_result_id_fkey"
+            columns: ["result_id"]
+            isOneToOne: false
+            referencedRelation: "candidate_aptitude_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_section_scores_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "aptitude_test_sections"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       candidates: {
         Row: {
