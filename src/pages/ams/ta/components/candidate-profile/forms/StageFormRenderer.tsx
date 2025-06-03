@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { EnhancedPhoneScreeningForm } from './EnhancedPhoneScreeningForm';
+import { ComprehensivePhoneScreeningForm } from './ComprehensivePhoneScreeningForm';
 import { StreamlinedTechnicalInterviewForm } from './components/StreamlinedTechnicalInterviewForm';
 import { ClientInterviewForm } from './ClientInterviewForm';
 import { BackgroundVerificationForm } from './BackgroundVerificationForm';
@@ -21,6 +22,8 @@ export const StageFormRenderer: React.FC<StageFormRendererProps> = ({
   const renderForm = () => {
     switch (stageId) {
       case 'phone-screening':
+        return <ComprehensivePhoneScreeningForm candidate={candidate} />;
+      case 'phone-screening-enhanced':
         return <EnhancedPhoneScreeningForm candidate={candidate} />;
       case 'technical':
         return <StreamlinedTechnicalInterviewForm candidate={candidate} />;
@@ -31,7 +34,7 @@ export const StageFormRenderer: React.FC<StageFormRendererProps> = ({
       case 'final-review':
         return <FinalReviewForm candidate={candidate} />;
       default:
-        return <EnhancedPhoneScreeningForm candidate={candidate} />;
+        return <ComprehensivePhoneScreeningForm candidate={candidate} />;
     }
   };
 
