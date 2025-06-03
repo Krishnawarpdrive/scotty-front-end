@@ -116,7 +116,7 @@ export const DailyMetrics: React.FC = () => {
         <EnhancedStreakCard />
         <EnhancedTodaysTargetsCard />
         <EnhancedTimelyTrackCard />
-        <EnhancedHiringFunnelCard />
+        <HiringFunnelCard />
       </div>
     </div>
   );
