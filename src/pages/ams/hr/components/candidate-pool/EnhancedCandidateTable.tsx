@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { DataTable } from '@/components/ui/data-table/DataTable';
 import { CandidateTableHeader } from './table/CandidateTableHeader';
 import { useTableColumns } from './table/tableColumns';
-import { CandidateDetailDrawer } from './CandidateDetailDrawer';
+import { EnhancedCandidateProfileDrawer } from './EnhancedCandidateProfileDrawer';
 import { Candidate } from './CandidateTable';
 
 interface EnhancedCandidateTableProps {
@@ -21,17 +21,19 @@ export const EnhancedCandidateTable: React.FC<EnhancedCandidateTableProps> = ({
   onSelectAll,
   onQuickAction,
 }) => {
-  const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const handleCandidateClick = (candidate: Candidate) => {
-    setSelectedCandidateId(candidate.id);
+    console.log('Opening enhanced candidate profile drawer for:', candidate.name);
+    setSelectedCandidate(candidate);
     setIsDetailOpen(true);
   };
 
   const handleCloseDrawer = () => {
+    console.log('Closing enhanced candidate profile drawer');
     setIsDetailOpen(false);
-    setSelectedCandidateId(null);
+    setSelectedCandidate(null);
   };
 
   const columns = useTableColumns({
@@ -57,10 +59,10 @@ export const EnhancedCandidateTable: React.FC<EnhancedCandidateTableProps> = ({
         />
       </div>
 
-      <CandidateDetailDrawer
+      <EnhancedCandidateProfileDrawer
         open={isDetailOpen}
         onClose={handleCloseDrawer}
-        candidateId={selectedCandidateId}
+        candidate={selectedCandidate}
       />
     </>
   );
