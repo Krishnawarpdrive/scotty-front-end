@@ -22,7 +22,16 @@ export const useCandidateResults = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setResults(data || []);
+      
+      // Transform the data to match our type definition
+      const transformedData: CandidateAptitudeResult[] = (data || []).map(result => ({
+        ...result,
+        detailed_results: typeof result.detailed_results === 'object' && result.detailed_results !== null 
+          ? result.detailed_results as Record<string, any>
+          : {}
+      }));
+      
+      setResults(transformedData);
     } catch (err: any) {
       toast.error({
         title: 'Error loading results',

@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { EnhancedTechnicalInterviewTabs } from './EnhancedTechnicalInterviewTabs';
-import { AptitudeTestTab } from '../../aptitude-tests/AptitudeTestTab';
+import { AptitudeTestTab } from '../../../aptitude-tests/AptitudeTestTab';
 import { Calendar, MessageSquare, BookOpen } from 'lucide-react';
 import type { Candidate } from '../../../types/CandidateTypes';
 

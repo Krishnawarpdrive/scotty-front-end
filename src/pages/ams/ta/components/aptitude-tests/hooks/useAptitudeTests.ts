@@ -19,7 +19,15 @@ export const useAptitudeTests = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setTests(data || []);
+      
+      // Transform the data to match our type definition
+      const transformedData: AptitudeTest[] = (data || []).map(test => ({
+        ...test,
+        difficulty_level: test.difficulty_level as 'easy' | 'medium' | 'hard',
+        skills_assessed: Array.isArray(test.skills_assessed) ? test.skills_assessed : []
+      }));
+      
+      setTests(transformedData);
     } catch (err: any) {
       setError(err.message);
       toast.error({
@@ -152,10 +160,15 @@ export const useAptitudeTests = () => {
 
       if (sectionsError) throw sectionsError;
 
-      return {
+      // Transform the data to match our type definition
+      const transformedTest: AptitudeTestWithSections = {
         ...test,
+        difficulty_level: test.difficulty_level as 'easy' | 'medium' | 'hard',
+        skills_assessed: Array.isArray(test.skills_assessed) ? test.skills_assessed : [],
         sections: sections || []
       };
+
+      return transformedTest;
     } catch (err: any) {
       toast.error({
         title: 'Error loading test details',
