@@ -69,99 +69,95 @@ export const EnhancedCandidateTable: React.FC<EnhancedCandidateTableProps> = ({
 
   const columns = [
     {
-      id: 'name',
+      key: 'name',
       header: 'Candidate',
-      accessorKey: 'name',
-      cell: ({ row }: any) => (
+      accessor: (item: any) => (
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-            {row.original.name.charAt(0)}
+            {item.name.charAt(0)}
           </div>
           <div>
-            <div className="font-medium text-gray-900">{row.original.name}</div>
-            <div className="text-sm text-gray-500">{row.original.email}</div>
+            <div className="font-medium text-gray-900">{item.name}</div>
+            <div className="text-sm text-gray-500">{item.email}</div>
           </div>
         </div>
       )
     },
     {
-      id: 'current_stage',
+      key: 'current_stage',
       header: 'Current Stage',
-      accessorKey: 'current_stage',
-      cell: ({ row }: any) => (
-        <Badge className={getStageColor(row.original.current_stage)}>
-          {row.original.current_stage}
+      accessor: (item: any) => (
+        <Badge className={getStageColor(item.current_stage)}>
+          {item.current_stage}
         </Badge>
       )
     },
     {
-      id: 'applications',
+      key: 'applications',
       header: 'Active Applications',
-      cell: ({ row }: any) => (
+      accessor: (item: any) => (
         <div className="space-y-1">
-          {row.original.role_applications?.slice(0, 2).map((app: any, index: number) => (
+          {item.role_applications?.slice(0, 2).map((app: any, index: number) => (
             <div key={index} className="text-sm">
               <div className="font-medium text-gray-900">{app.role_name}</div>
               <div className="text-gray-500">{app.client_name}</div>
             </div>
           ))}
-          {row.original.role_applications?.length > 2 && (
+          {item.role_applications?.length > 2 && (
             <div className="text-xs text-gray-500">
-              +{row.original.role_applications.length - 2} more
+              +{item.role_applications.length - 2} more
             </div>
           )}
         </div>
       )
     },
     {
-      id: 'experience',
+      key: 'experience',
       header: 'Experience',
-      accessorKey: 'experience_years',
-      cell: ({ row }: any) => (
+      accessor: (item: any) => (
         <div>
-          <div className="text-sm font-medium">{row.original.experience_years} years</div>
-          <div className="text-xs text-gray-500">{row.original.current_position}</div>
+          <div className="text-sm font-medium">{item.experience_years} years</div>
+          <div className="text-xs text-gray-500">{item.current_position}</div>
         </div>
       )
     },
     {
-      id: 'skills',
+      key: 'skills',
       header: 'Skills',
-      cell: ({ row }: any) => (
+      accessor: (item: any) => (
         <div className="flex flex-wrap gap-1">
-          {row.original.skills?.slice(0, 3).map((skill: string, index: number) => (
+          {item.skills?.slice(0, 3).map((skill: string, index: number) => (
             <Badge key={index} variant="outline" className="text-xs">
               {skill}
             </Badge>
           ))}
-          {row.original.skills?.length > 3 && (
+          {item.skills?.length > 3 && (
             <Badge variant="outline" className="text-xs">
-              +{row.original.skills.length - 3}
+              +{item.skills.length - 3}
             </Badge>
           )}
         </div>
       )
     },
     {
-      id: 'score',
+      key: 'score',
       header: 'Score',
-      accessorKey: 'overall_score',
-      cell: ({ row }: any) => (
+      accessor: (item: any) => (
         <div className="text-center">
           <div className="text-lg font-bold text-green-600">
-            {row.original.overall_score || '--'}
+            {item.overall_score || '--'}
           </div>
           <div className="text-xs text-gray-500">
-            {row.original.overall_score ? '/100' : 'No score'}
+            {item.overall_score ? '/100' : 'No score'}
           </div>
         </div>
       )
     },
     {
-      id: 'actions',
+      key: 'actions',
       header: 'Actions',
-      cell: ({ row }: any) => {
-        const stageAction = getStageAction(row.original.current_stage);
+      accessor: (item: any) => {
+        const stageAction = getStageAction(item.current_stage);
         const StageIcon = stageAction.icon;
         
         return (
@@ -169,7 +165,7 @@ export const EnhancedCandidateTable: React.FC<EnhancedCandidateTableProps> = ({
             <Button
               size="sm"
               variant={stageAction.variant}
-              onClick={() => onScheduleInterview(row.original)}
+              onClick={() => onScheduleInterview(item)}
               className="flex items-center gap-1 text-xs"
             >
               <StageIcon className="h-3 w-3" />
@@ -184,16 +180,16 @@ export const EnhancedCandidateTable: React.FC<EnhancedCandidateTableProps> = ({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" style={{ zIndex: 9999 }}>
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => onViewProfile(row.original)}>
+                <DropdownMenuItem onClick={() => onViewProfile(item)}>
                   <Eye className="h-4 w-4 mr-2" />
                   View Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onEditCandidate(row.original)}>
+                <DropdownMenuItem onClick={() => onEditCandidate(item)}>
                   <Edit className="h-4 w-4 mr-2" />
                   Edit Details
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => onScheduleInterview(row.original)}>
+                <DropdownMenuItem onClick={() => onScheduleInterview(item)}>
                   <Calendar className="h-4 w-4 mr-2" />
                   Schedule Interview
                 </DropdownMenuItem>
@@ -275,6 +271,7 @@ export const EnhancedCandidateTable: React.FC<EnhancedCandidateTableProps> = ({
         <EnhancedDataTable
           data={filteredCandidates}
           columns={columns}
+          keyField="id"
           loading={loading}
           emptyMessage="No candidates found"
           className="border-0"
