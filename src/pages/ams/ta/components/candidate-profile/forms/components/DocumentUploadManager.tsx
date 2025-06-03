@@ -14,7 +14,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Grid2 as Grid
+  Grid
 } from '@mui/material';
 import { 
   CloudUpload, 
@@ -70,7 +70,7 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
       const { data, error } = await supabase
         .from('candidate_documents')
         .select('*')
-        .eq('candidate_id', candidate.id)
+        .eq('candidate_id', candidate.id.toString())
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -112,7 +112,7 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
       const { data: documentData, error: dbError } = await supabase
         .from('candidate_documents')
         .insert({
-          candidate_id: candidate.id,
+          candidate_id: candidate.id.toString(),
           document_type: selectedDocumentType,
           document_name: file.name,
           file_url: urlData.publicUrl,
@@ -213,7 +213,7 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
             {DOCUMENT_TYPES.map((docType) => {
               const isUploaded = getUploadedDocumentTypes().includes(docType.value);
               return (
-                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={docType.value}>
+                <Grid item xs={12} sm={6} md={4} key={docType.value}>
                   <Button
                     variant={isUploaded ? "outlined" : "contained"}
                     fullWidth
@@ -260,7 +260,7 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
       ) : (
         <Grid container spacing={2}>
           {documents.map((document) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={document.id}>
+            <Grid item xs={12} sm={6} md={4} key={document.id}>
               <Card sx={{ height: '100%' }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
