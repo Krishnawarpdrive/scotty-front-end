@@ -115,7 +115,7 @@ export const DailyMetrics: React.FC = () => {
       <div className="flex w-full gap-[11px] flex-wrap mt-[11px] px-5 max-md:max-w-full">
         <EnhancedStreakCard />
         <EnhancedTodaysTargetsCard />
-        <EnhancedTimelyTrackCard />
+        <TimelyTrackCard />
         <HiringFunnelCard />
       </div>
     </div>
