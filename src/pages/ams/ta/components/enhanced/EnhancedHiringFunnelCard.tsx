@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { InteractiveCardContainer } from "../../../hr/components/animations/InteractiveCardContainer";
+
 import { FunnelHeader } from "./hiring-funnel/FunnelHeader";
 import { FunnelTimeframePicker } from "./hiring-funnel/FunnelTimeframePicker";
 import { FunnelStagesList } from "./hiring-funnel/FunnelStagesList";
@@ -21,11 +21,10 @@ export const EnhancedHiringFunnelCard: React.FC = () => {
   ];
   
   return (
-    <InteractiveCardContainer
-      hoverEffect="lift"
+    <div
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
-      className="bg-white border min-w-[300px] min-h-[250px] overflow-hidden flex-grow flex-shrink rounded-lg pt-[11px] pb-0.5 px-1 border-[rgba(246,246,246,1)] border-solid hover:border-[#009933]/30 hover:shadow-lg transition-all duration-300"
+      className="bg-white border min-w-[250px] min-h-[250px] overflow-hidden flex-grow flex-shrink rounded-lg pt-[11px] pb-0.5 px-1 border-[rgba(246,246,246,1)] border-solid"
     >
       <div className="flex w-full items-center gap-[40px_42px] justify-space-between">
         <div className="flex flex-col w-full">
@@ -39,6 +38,6 @@ export const EnhancedHiringFunnelCard: React.FC = () => {
           <FunnelStagesList stages={funnelStages} />
         </div>
       </div>
-    </InteractiveCardContainer>
+    </div>
   );
 };

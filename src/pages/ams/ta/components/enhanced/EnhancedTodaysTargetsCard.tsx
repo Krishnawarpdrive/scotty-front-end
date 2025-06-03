@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { InteractiveCardContainer } from "../../../hr/components/animations/InteractiveCardContainer";
+
 import { EnhancedTargetItem } from "./EnhancedTargetItem";
 
 export const EnhancedTodaysTargetsCard: React.FC = () => {
@@ -14,11 +14,10 @@ export const EnhancedTodaysTargetsCard: React.FC = () => {
   ];
 
   return (
-    <InteractiveCardContainer
-      hoverEffect="lift"
+    <div
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
-      className="bg-white border min-w-[350px] min-h-[250px] flex-grow flex-shrink rounded-xl pt-[11px] pb-[19px] px-3.5 border-[rgba(246,246,246,1)] border-solid hover:border-[#009933]/30 hover:shadow-lg transition-all duration-300"
+      className="bg-white border min-w-[350px] min-h-[250px] flex-grow flex-shrink rounded-xl pt-[11px] pb-[19px] px-3.5 border-[rgba(246,246,246,1)] border-solid"
     >
       <div className="flex w-full flex-col items-stretch">
         <motion.div 
@@ -59,6 +58,6 @@ export const EnhancedTodaysTargetsCard: React.FC = () => {
           ))}
         </motion.div>
       </div>
-    </InteractiveCardContainer>
+    </div>
   );
 };

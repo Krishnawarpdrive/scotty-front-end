@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from "react";
-import { InteractiveCardContainer } from "../../../hr/components/animations/InteractiveCardContainer";
+
 import { StreakHeader } from "./streak/StreakHeader";
 import { StreakCalendar } from "./streak/StreakCalendar";
 import { StreakLegend } from "./streak/StreakLegend";
@@ -24,13 +24,12 @@ export const EnhancedStreakCard: React.FC = () => {
   };
 
   return (
-    <InteractiveCardContainer
-      hoverEffect="lift"
+    <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bg-white border min-w-[400px] min-h-[250px] flex-grow flex-shrink rounded-xl pt-[11px] pb-[23px] px-4 border-[rgba(246,246,246,1)] border-solid hover:border-[#009933]/30 hover:shadow-lg transition-all duration-300"
+      className="bg-white border min-w-[300px] min-h-[250px] flex-grow flex-shrink rounded-xl pt-[11px] pb-[23px] px-4 border-[rgba(246,246,246,1)] border-solid"
     >
-      <div ref={containerRef} className="flex w-full max-w-[500px] flex-col items-stretch">
+      <div ref={containerRef} className="flex w-full max-w-[350px] flex-col items-stretch">
         <StreakHeader 
           isHovered={isHovered}
           selectedDate={selectedDate}
@@ -40,6 +39,6 @@ export const EnhancedStreakCard: React.FC = () => {
         <StreakCalendar streakData={streakData} totalWeeks={totalWeeks} days={days} />
         {/* <StreakLegend streakData={streakData} days={days} /> */}
       </div>
-    </InteractiveCardContainer>
+    </div>
   );
 };

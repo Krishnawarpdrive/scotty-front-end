@@ -2,18 +2,17 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Calendar } from "lucide-react";
-import { InteractiveCardContainer } from "../../../hr/components/animations/InteractiveCardContainer";
+
 
 export const EnhancedTimelyTrackCard: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState("4 Apr");
   const [isHovered, setIsHovered] = useState(false);
   
   return (
-    <InteractiveCardContainer
-      hoverEffect="lift"
+    <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bg-white border min-w-[300px] min-h-[250px] overflow-hidden flex-grow flex-shrink rounded-lg pt-[11px] pb-0.5 px-1 border-[rgba(246,246,246,1)] border-solid hover:border-[#009933]/30 hover:shadow-lg transition-all duration-300"
+      className="bg-white border min-w-[250px] min-h-[250px] overflow-hidden flex-grow flex-shrink rounded-lg pt-[11px] pb-0.5 px-1 border-[rgba(246,246,246,1)] border-solid"
     >
       <div className="flex w-full items-center gap-[40px_42px] justify-space-between">
         <motion.div 
@@ -115,6 +114,6 @@ export const EnhancedTimelyTrackCard: React.FC = () => {
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         />
       </motion.div>
-    </InteractiveCardContainer>
+    </div>
   );
 };

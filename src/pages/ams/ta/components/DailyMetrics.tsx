@@ -10,10 +10,14 @@ import { ChevronUp } from "lucide-react";
 import { StreakCelebration } from "./StreakCelebration";
 import { triggerGoalCompletionToast, triggerMilestoneToast } from "@/components/GoalCompletionToast";
 import { useGamification } from "@/store/hooks/useGamification";
+import { StreakCard } from "./StreakCard";
+import { TodaysTargetsCard } from "./TodaysTargetsCard";
+import { TimelyTrackCard } from "./TimelyTrackCard";
+import { HiringFunnelCard } from "./HiringFunnelCard";
 
 export const DailyMetrics: React.FC = () => {
   const [activeTab, setActiveTab] = useState("Default");
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [showStreakCelebration, setShowStreakCelebration] = useState(true);
   const [streakCount, setStreakCount] = useState(7);
   const [dailyGoalsCompleted, setDailyGoalsCompleted] = useState(3);
@@ -28,17 +32,7 @@ export const DailyMetrics: React.FC = () => {
   } = useGamification();
   
   const toggleCollapse = () => {
-    setIsCollapsed(false);
-    setShowStreakCelebration(true);
-    setTimeout(() => {
-      triggerGoalCompletionToast({
-        id: '1',
-        title: 'Process 5 new applications',
-        type: 'daily',
-        value: dailyGoalsCompleted,
-        target: 5,
-      });
-    }, 3000);
+    setIsCollapsed(!isCollapsed);
   };
 
   const handleMilestone = (milestone: number, metricTitle: string) => {
@@ -73,111 +67,57 @@ export const DailyMetrics: React.FC = () => {
   }, []);
   
   if (isCollapsed) {
-    return <CompactView onExpand={() => {}} />;
+    return <CompactView onExpand={toggleCollapse} />;
   }
   
   return (
-    <motion.div
-      className="bg-white w-full pt-2.5 pb-5 rounded-md border border-gray-200 hover:shadow-lg transition-shadow duration-300"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="flex w-full items-center gap-[40px_100px] justify-between flex-wrap px-5">
-        <motion.h2 
-          className="text-[rgba(2,8,23,1)] text-base font-medium leading-loose tracking-[0.33px] self-stretch my-auto"
-          initial={{ x: -20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          Daily Metrics {currentUser && `- ${currentUser.name}`}
-        </motion.h2>
-        
+    <div className="bg-white w-full max-w-[1331px] pt-2.5 pb-5 rounded-md border border-gray-200 max-md:max-w-full">
+      <div className="flex w-full items-center gap-[40px_100px] justify-between flex-wrap px-5 max-md:max-w-full">
+        <h2 className="text-[rgba(2,8,23,1)] text-base font-medium leading-loose tracking-[0.33px] self-stretch my-auto">
+          Daily Metrics
+        </h2>
         <div className="self-stretch flex min-w-60 items-center gap-[3px] my-auto">
           <div className="self-stretch flex items-center gap-2 text-sm my-auto">
-            <motion.button 
-              className={`self-stretch ${activeTab === "Default" ? "bg-[#009933] text-white" : "bg-gray-100"} min-h-9 gap-5 font-medium w-[98px] my-auto px-3 py-2.5 rounded-[7px] transition-all duration-200 hover:scale-105 active:scale-95`}
+            <button 
+              className={`self-stretch ${activeTab === "Default" ? "bg-[rgba(241,249,244,1)]" : ""} min-h-9 gap-5 text-slate-900 font-medium w-[98px] my-auto px-3 py-2.5 rounded-[7px]`}
               onClick={() => setActiveTab("Default")}
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.95 }}
             >
-              Default
-            </motion.button>
-            <motion.button 
-              className={`self-stretch ${activeTab === "Monthly Insights" ? "bg-[#009933] text-white" : "bg-gray-100"} min-h-9 gap-5 font-normal my-auto px-3 py-2.5 rounded-[7px] transition-all duration-200 hover:scale-105 active:scale-95`}
+              Default{" "}
+            </button>
+            <button 
+              className={`self-stretch ${activeTab === "Monthly Insights" ? "bg-[rgba(241,249,244,1)]" : ""} min-h-9 gap-5 text-[rgba(2,8,23,1)] font-normal my-auto px-3 py-2.5`}
               onClick={() => setActiveTab("Monthly Insights")}
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.95 }}
             >
               Monthly Insights
-            </motion.button>
+            </button>
           </div>
-          
-          <motion.button 
-            onClick={toggleCollapse}
-            className="flex items-center justify-center h-10 w-10 rounded-full hover:bg-gray-100 transition-all duration-200"
-            whileHover={{ scale: 1.1, backgroundColor: "rgba(0,153,51,0.1)" }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <motion.div
-              animate={{ rotate: 0 }}
-              whileHover={{ rotate: 180 }}
-              transition={{ duration: 0.3 }}
+          <div className="flex items-center gap-2">
+            <button 
+              className="flex items-center justify-center h-10 w-10 rounded-full hover:bg-gray-100"
+              onClick={toggleCollapse}
+              aria-label="Collapse panel"
             >
               <ChevronUp size={18} />
-            </motion.div>
-          </motion.button>
+            </button>
+          </div>
         </div>
       </div>
 
       {showStreakCelebration && (
         <StreakCelebration
-          streakCount={streakData.currentStreak}
-          milestone={streakData.currentStreak % 7 === 0}
-          duration={3000}
-          onComplete={() => setShowStreakCelebration(false)}
+        streakCount={streakData.currentStreak}
+        milestone={streakData.currentStreak % 7 === 0}
+        duration={3000}
+        onComplete={() => setShowStreakCelebration(false)}
         />
       )}
       
-      <motion.div
-        className="flex w-full mt-[11px] px-5 gap-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
-      >
-        <motion.div
-          className="col-span-1 lg:col-span-2 flex flex-col min-w-0"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <EnhancedStreakCard />
-        </motion.div>
-        <motion.div
-          className="col-span-1 lg:col-span-2 flex flex-col min-w-0"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <EnhancedTodaysTargetsCard />
-        </motion.div>
-        <motion.div
-          className="col-span-1 flex flex-col min-w-0"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-        >
-          <EnhancedTimelyTrackCard />
-        </motion.div>
-        <motion.div
-          className="col-span-1 flex flex-col min-w-0"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-        >
-          <EnhancedHiringFunnelCard />
-        </motion.div>
-      </motion.div>
-    </motion.div>
+      <div className="flex w-full gap-[11px] flex-wrap mt-[11px] px-5 max-md:max-w-full">
+        <EnhancedStreakCard />
+        <EnhancedTodaysTargetsCard />
+        <EnhancedTimelyTrackCard />
+        <EnhancedHiringFunnelCard />
+      </div>
+    </div>
   );
 };
