@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { EnhancedTAMissionControl } from './components/enhanced/EnhancedTAMissionControl';
+import { MissionControl } from './components/MissionControl';
 
 const TAMissionControlPage: React.FC = () => {
-  return <EnhancedTAMissionControl />;
+  return <MissionControl />;
 };
 
 export default TAMissionControlPage;

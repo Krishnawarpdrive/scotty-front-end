@@ -21,7 +21,7 @@ export const MissionControl: React.FC = () => {
       <ApplicationActions />
       
       {/* Interview Management Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <motion.div
           className="lg:col-span-2"
           initial={{ opacity: 0, y: 20 }}
@@ -38,7 +38,7 @@ export const MissionControl: React.FC = () => {
         >
           <CompactInterviewDashboard />
         </motion.div>
-      </div>
+      </div> */}
       
       <EnhancedApplicationTable />
     </motion.div>
