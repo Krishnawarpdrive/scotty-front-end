@@ -37,10 +37,11 @@ export const useInterviewSchedule = (panelistId?: string) => {
           if (candidateInfo && 
               typeof candidateInfo === 'object' && 
               'name' in candidateInfo && 
-              'email' in candidateInfo) {
+              'email' in candidateInfo &&
+              candidateInfo !== null) {
             candidateData = {
-              name: (candidateInfo as { name: string; email: string }).name || 'Unknown Candidate',
-              email: (candidateInfo as { name: string; email: string }).email || ''
+              name: candidateInfo.name || 'Unknown Candidate',
+              email: candidateInfo.email || ''
             };
           }
 
