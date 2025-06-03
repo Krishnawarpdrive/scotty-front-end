@@ -24,7 +24,9 @@ export const useAptitudeTests = () => {
       const transformedData: AptitudeTest[] = (data || []).map(test => ({
         ...test,
         difficulty_level: test.difficulty_level as 'easy' | 'medium' | 'hard',
-        skills_assessed: Array.isArray(test.skills_assessed) ? test.skills_assessed : []
+        skills_assessed: Array.isArray(test.skills_assessed) 
+          ? (test.skills_assessed as any[]).map(skill => String(skill))
+          : []
       }));
       
       setTests(transformedData);
@@ -164,7 +166,9 @@ export const useAptitudeTests = () => {
       const transformedTest: AptitudeTestWithSections = {
         ...test,
         difficulty_level: test.difficulty_level as 'easy' | 'medium' | 'hard',
-        skills_assessed: Array.isArray(test.skills_assessed) ? test.skills_assessed : [],
+        skills_assessed: Array.isArray(test.skills_assessed) 
+          ? (test.skills_assessed as any[]).map(skill => String(skill))
+          : [],
         sections: sections || []
       };
 

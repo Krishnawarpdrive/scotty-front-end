@@ -28,7 +28,8 @@ export const useCandidateResults = () => {
         ...result,
         detailed_results: typeof result.detailed_results === 'object' && result.detailed_results !== null 
           ? result.detailed_results as Record<string, any>
-          : {}
+          : {},
+        status: result.status as 'scheduled' | 'in_progress' | 'completed' | 'cancelled'
       }));
       
       setResults(transformedData);
