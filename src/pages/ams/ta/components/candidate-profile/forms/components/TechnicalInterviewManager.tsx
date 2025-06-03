@@ -1,161 +1,287 @@
 
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { EnhancedTechnicalInterviewTabs } from './EnhancedTechnicalInterviewTabs';
-import { Calendar, MessageSquare, BookOpen, Video, Clock, CheckCircle } from 'lucide-react';
-import type { Candidate } from '../../../types/CandidateTypes';
+import { 
+  Box, 
+  Typography, 
+  Card, 
+  CardContent, 
+  Button, 
+  Grid,
+  Chip,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Rating,
+  Divider
+} from '@mui/material';
+import { 
+  VideoCall, 
+  Schedule, 
+  Assessment, 
+  Person,
+  StarBorder,
+  Star,
+  Save
+} from '@mui/icons-material';
+import { Candidate } from '../../../types/CandidateTypes';
 
 interface TechnicalInterviewManagerProps {
   candidate: Candidate;
-  onSave?: (data: any) => void;
 }
 
 export const TechnicalInterviewManager: React.FC<TechnicalInterviewManagerProps> = ({
-  candidate,
-  onSave
+  candidate
 }) => {
-  const [activeTab, setActiveTab] = useState('interview');
+  const [feedbackDialog, setFeedbackDialog] = useState(false);
+  const [feedback, setFeedback] = useState({
+    technical_score: 0,
+    communication_score: 0,
+    problem_solving_score: 0,
+    overall_rating: 0,
+    strengths: '',
+    areas_for_improvement: '',
+    recommendation: 'pending',
+    detailed_feedback: ''
+  });
 
-  // Mock data for demonstration - in real app, this would come from props/API
-  const interviewStatus = {
-    scheduled: true,
-    completed: false,
-    dateTime: '2024-01-25 14:00',
-    interviewer: 'John Smith',
-    duration: 60,
-    type: 'Technical'
-  };
-
-  const handleScheduleInterview = () => {
-    console.log('Schedule interview for:', candidate.name);
-    // This would open the interview scheduling modal
-  };
-
-  const handleRescheduleInterview = () => {
-    console.log('Reschedule interview for:', candidate.name);
-    // This would open the rescheduling modal
-  };
-
-  const handleConductInterview = () => {
-    console.log('Start interview for:', candidate.name);
-    // This would start the interview process
+  const handleSaveFeedback = () => {
+    console.log('Saving feedback:', feedback);
+    setFeedbackDialog(false);
+    // Here you would typically save to the database
   };
 
   return (
-    <div className="w-full h-full">
-      <Card className="border-0 shadow-sm h-full">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-blue-600" />
-              <CardTitle className="text-lg">Technical Interview Management</CardTitle>
-            </div>
-            <div className="flex items-center gap-2">
-              {interviewStatus.scheduled && (
-                <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200">
-                  <Clock className="h-3 w-3 mr-1" />
-                  Scheduled
-                </Badge>
-              )}
-              {interviewStatus.completed && (
-                <Badge variant="default" className="bg-green-50 text-green-700 border-green-200">
-                  <CheckCircle className="h-3 w-3 mr-1" />
-                  Completed
-                </Badge>
-              )}
-            </div>
-          </div>
-          <p className="text-sm text-gray-600">
-            Manage technical interviews and assessments for {candidate.name}
-          </p>
-        </CardHeader>
-        <CardContent className="h-full">
-          {/* Prominent CTAs for Technical Interview */}
-          <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-blue-900 mb-1">Interview Actions</h3>
-                <p className="text-sm text-blue-700">
-                  {!interviewStatus.scheduled 
-                    ? 'Schedule a technical interview to assess candidate\'s technical skills'
-                    : interviewStatus.completed
-                    ? 'Interview completed - review feedback and scores'
-                    : `Interview scheduled for ${new Date(interviewStatus.dateTime).toLocaleDateString()} at ${new Date(interviewStatus.dateTime).toLocaleTimeString()}`
-                  }
-                </p>
-              </div>
-              <div className="flex gap-2">
-                {!interviewStatus.scheduled ? (
-                  <Button 
-                    size="sm" 
-                    className="bg-blue-600 hover:bg-blue-700"
-                    onClick={handleScheduleInterview}
-                  >
-                    <Calendar className="h-4 w-4 mr-2" />
-                    Schedule Interview
-                  </Button>
-                ) : !interviewStatus.completed ? (
-                  <>
-                    <Button 
-                      size="sm" 
-                      className="bg-blue-600 hover:bg-blue-700"
-                      onClick={handleConductInterview}
-                    >
-                      <Video className="h-4 w-4 mr-2" />
-                      Start Interview
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={handleRescheduleInterview}
-                    >
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Reschedule
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button 
-                      size="sm" 
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Review Feedback
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={handleScheduleInterview}
-                    >
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Schedule Follow-up
-                    </Button>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h6" sx={{ mb: 3, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
+        Technical Interview Management
+      </Typography>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full">
-            <TabsList className="grid w-full grid-cols-1 mb-6">
-              <TabsTrigger value="interview" className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Technical Interview
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="interview" className="mt-0 h-full">
-              <EnhancedTechnicalInterviewTabs
-                candidate={candidate}
-                onSave={onSave}
-              />
-            </TabsContent>
-          </Tabs>
+      {/* Interview Status */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              <Typography variant="subtitle2" sx={{ mb: 2 }}>Interview Status</Typography>
+              <Chip label="Scheduled" color="warning" sx={{ mb: 2 }} />
+              
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>Interview Type:</strong> Technical Round
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>Scheduled Date:</strong> Jan 25, 2024 at 3:00 PM
+              </Typography>
+              <Typography variant="body2">
+                <strong>Interviewer:</strong> John Smith (Senior Engineer)
+              </Typography>
+            </Grid>
+            
+            <Grid item xs={12} md={6}>
+              <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
+                <Button
+                  variant="contained"
+                  startIcon={<VideoCall />}
+                  fullWidth
+                  sx={{ mb: 1 }}
+                >
+                  Join Interview
+                </Button>
+                
+                <Button
+                  variant="outlined"
+                  startIcon={<Schedule />}
+                  fullWidth
+                  sx={{ mb: 1 }}
+                >
+                  Reschedule
+                </Button>
+                
+                <Button
+                  variant="outlined"
+                  startIcon={<Assessment />}
+                  fullWidth
+                  onClick={() => setFeedbackDialog(true)}
+                >
+                  Submit Feedback
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
         </CardContent>
       </Card>
-    </div>
+
+      {/* Interview Template */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography variant="subtitle2" sx={{ mb: 2 }}>Interview Template</Typography>
+          
+          <Alert severity="info" sx={{ mb: 2 }}>
+            This interview is based on the "Senior Frontend Developer" template
+          </Alert>
+          
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            <strong>Duration:</strong> 60 minutes
+          </Typography>
+          
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            <strong>Focus Areas:</strong>
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+            <Chip label="React" size="small" />
+            <Chip label="TypeScript" size="small" />
+            <Chip label="System Design" size="small" />
+            <Chip label="Problem Solving" size="small" />
+          </Box>
+          
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            <strong>Key Questions:</strong>
+          </Typography>
+          <Typography variant="body2" component="div">
+            <ul>
+              <li>Explain React component lifecycle</li>
+              <li>Design a scalable frontend architecture</li>
+              <li>Code review: Optimize this React component</li>
+              <li>Behavioral: Tell me about a challenging technical problem</li>
+            </ul>
+          </Typography>
+        </CardContent>
+      </Card>
+
+      {/* Previous Interviews */}
+      <Card>
+        <CardContent>
+          <Typography variant="subtitle2" sx={{ mb: 2 }}>Interview History</Typography>
+          
+          <Alert severity="info">
+            No previous technical interviews found for this candidate.
+          </Alert>
+        </CardContent>
+      </Card>
+
+      {/* Feedback Dialog */}
+      <Dialog open={feedbackDialog} onClose={() => setFeedbackDialog(false)} maxWidth="md" fullWidth>
+        <DialogTitle>Technical Interview Feedback</DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 2 }}>
+            {/* Rating Scores */}
+            <Typography variant="subtitle2" sx={{ mb: 2 }}>Performance Ratings</Typography>
+            
+            <Grid container spacing={3} sx={{ mb: 3 }}>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body2" sx={{ mb: 1 }}>Technical Skills</Typography>
+                <Rating
+                  value={feedback.technical_score}
+                  onChange={(_, value) => setFeedback(prev => ({ ...prev, technical_score: value || 0 }))}
+                  max={5}
+                  icon={<Star />}
+                  emptyIcon={<StarBorder />}
+                />
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body2" sx={{ mb: 1 }}>Communication</Typography>
+                <Rating
+                  value={feedback.communication_score}
+                  onChange={(_, value) => setFeedback(prev => ({ ...prev, communication_score: value || 0 }))}
+                  max={5}
+                />
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body2" sx={{ mb: 1 }}>Problem Solving</Typography>
+                <Rating
+                  value={feedback.problem_solving_score}
+                  onChange={(_, value) => setFeedback(prev => ({ ...prev, problem_solving_score: value || 0 }))}
+                  max={5}
+                />
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body2" sx={{ mb: 1 }}>Overall Rating</Typography>
+                <Rating
+                  value={feedback.overall_rating}
+                  onChange={(_, value) => setFeedback(prev => ({ ...prev, overall_rating: value || 0 }))}
+                  max={5}
+                />
+              </Grid>
+            </Grid>
+
+            <Divider sx={{ my: 3 }} />
+
+            {/* Text Feedback */}
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  label="Key Strengths"
+                  value={feedback.strengths}
+                  onChange={(e) => setFeedback(prev => ({ ...prev, strengths: e.target.value }))}
+                  fullWidth
+                  multiline
+                  rows={2}
+                  sx={{ mb: 2 }}
+                />
+              </Grid>
+              
+              <Grid item xs={12}>
+                <TextField
+                  label="Areas for Improvement"
+                  value={feedback.areas_for_improvement}
+                  onChange={(e) => setFeedback(prev => ({ ...prev, areas_for_improvement: e.target.value }))}
+                  fullWidth
+                  multiline
+                  rows={2}
+                  sx={{ mb: 2 }}
+                />
+              </Grid>
+              
+              <Grid item xs={12}>
+                <FormControl fullWidth sx={{ mb: 2 }}>
+                  <InputLabel>Recommendation</InputLabel>
+                  <Select
+                    value={feedback.recommendation}
+                    onChange={(e) => setFeedback(prev => ({ ...prev, recommendation: e.target.value }))}
+                    label="Recommendation"
+                  >
+                    <MenuItem value="strongly_recommend">Strongly Recommend</MenuItem>
+                    <MenuItem value="recommend">Recommend</MenuItem>
+                    <MenuItem value="neutral">Neutral</MenuItem>
+                    <MenuItem value="not_recommend">Do Not Recommend</MenuItem>
+                    <MenuItem value="strongly_not_recommend">Strongly Do Not Recommend</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              
+              <Grid item xs={12}>
+                <TextField
+                  label="Detailed Feedback"
+                  value={feedback.detailed_feedback}
+                  onChange={(e) => setFeedback(prev => ({ ...prev, detailed_feedback: e.target.value }))}
+                  fullWidth
+                  multiline
+                  rows={4}
+                  placeholder="Provide detailed feedback about the candidate's performance, specific examples, and any additional observations..."
+                />
+              </Grid>
+            </Grid>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setFeedbackDialog(false)}>Cancel</Button>
+          <Button 
+            onClick={handleSaveFeedback}
+            variant="contained"
+            startIcon={<Save />}
+          >
+            Save Feedback
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };

@@ -188,6 +188,68 @@ export type Database = {
         }
         Relationships: []
       }
+      background_verification_sessions: {
+        Row: {
+          assigned_to: string | null
+          candidate_id: string
+          completed_at: string | null
+          created_at: string
+          created_by: string
+          id: string
+          notes: string | null
+          overall_score: number | null
+          partner_reference: string | null
+          session_status: Database["public"]["Enums"]["verification_status"]
+          sla_date: string | null
+          started_at: string | null
+          updated_at: string
+          verification_partner: string | null
+          verification_summary: Json | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          candidate_id: string
+          completed_at?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          notes?: string | null
+          overall_score?: number | null
+          partner_reference?: string | null
+          session_status?: Database["public"]["Enums"]["verification_status"]
+          sla_date?: string | null
+          started_at?: string | null
+          updated_at?: string
+          verification_partner?: string | null
+          verification_summary?: Json | null
+        }
+        Update: {
+          assigned_to?: string | null
+          candidate_id?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          notes?: string | null
+          overall_score?: number | null
+          partner_reference?: string | null
+          session_status?: Database["public"]["Enums"]["verification_status"]
+          sla_date?: string | null
+          started_at?: string | null
+          updated_at?: string
+          verification_partner?: string | null
+          verification_summary?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "background_verification_sessions_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       candidate_applications: {
         Row: {
           application_date: string | null
@@ -301,6 +363,71 @@ export type Database = {
           },
           {
             foreignKeyName: "candidate_aptitude_results_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      candidate_documents: {
+        Row: {
+          candidate_id: string
+          created_at: string
+          document_name: string
+          document_type: Database["public"]["Enums"]["document_type"]
+          expiry_date: string | null
+          file_size: number | null
+          file_url: string | null
+          id: string
+          metadata: Json | null
+          mime_type: string | null
+          rejection_reason: string | null
+          status: Database["public"]["Enums"]["document_status"]
+          updated_at: string
+          uploaded_at: string | null
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          candidate_id: string
+          created_at?: string
+          document_name: string
+          document_type: Database["public"]["Enums"]["document_type"]
+          expiry_date?: string | null
+          file_size?: number | null
+          file_url?: string | null
+          id?: string
+          metadata?: Json | null
+          mime_type?: string | null
+          rejection_reason?: string | null
+          status?: Database["public"]["Enums"]["document_status"]
+          updated_at?: string
+          uploaded_at?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          candidate_id?: string
+          created_at?: string
+          document_name?: string
+          document_type?: Database["public"]["Enums"]["document_type"]
+          expiry_date?: string | null
+          file_size?: number | null
+          file_url?: string | null
+          id?: string
+          metadata?: Json | null
+          mime_type?: string | null
+          rejection_reason?: string | null
+          status?: Database["public"]["Enums"]["document_status"]
+          updated_at?: string
+          uploaded_at?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_documents_candidate_id_fkey"
             columns: ["candidate_id"]
             isOneToOne: false
             referencedRelation: "candidates"
@@ -802,6 +929,106 @@ export type Database = {
             columns: ["role_id"]
             isOneToOne: false
             referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_requests: {
+        Row: {
+          candidate_id: string
+          created_at: string
+          document_type: Database["public"]["Enums"]["document_type"]
+          due_date: string | null
+          fulfilled_at: string | null
+          id: string
+          request_message: string | null
+          requested_by: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          candidate_id: string
+          created_at?: string
+          document_type: Database["public"]["Enums"]["document_type"]
+          due_date?: string | null
+          fulfilled_at?: string | null
+          id?: string
+          request_message?: string | null
+          requested_by: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          candidate_id?: string
+          created_at?: string
+          document_type?: Database["public"]["Enums"]["document_type"]
+          due_date?: string | null
+          fulfilled_at?: string | null
+          id?: string
+          request_message?: string | null
+          requested_by?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_requests_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_verification_results: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          document_id: string
+          error_message: string | null
+          id: string
+          started_at: string | null
+          updated_at: string
+          verification_details: Json | null
+          verification_provider: string | null
+          verification_reference: string | null
+          verification_score: number | null
+          verification_status: Database["public"]["Enums"]["verification_status"]
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          document_id: string
+          error_message?: string | null
+          id?: string
+          started_at?: string | null
+          updated_at?: string
+          verification_details?: Json | null
+          verification_provider?: string | null
+          verification_reference?: string | null
+          verification_score?: number | null
+          verification_status?: Database["public"]["Enums"]["verification_status"]
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          document_id?: string
+          error_message?: string | null
+          id?: string
+          started_at?: string | null
+          updated_at?: string
+          verification_details?: Json | null
+          verification_provider?: string | null
+          verification_reference?: string | null
+          verification_score?: number | null
+          verification_status?: Database["public"]["Enums"]["verification_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_verification_results_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "candidate_documents"
             referencedColumns: ["id"]
           },
         ]
@@ -2910,6 +3137,28 @@ export type Database = {
         | "interviewer"
         | "client-hr"
         | "bo"
+      document_status:
+        | "pending_upload"
+        | "uploaded"
+        | "under_review"
+        | "verified"
+        | "rejected"
+        | "expired"
+      document_type:
+        | "resume"
+        | "id_proof"
+        | "address_proof"
+        | "education_certificate"
+        | "experience_letter"
+        | "offer_letter"
+        | "salary_slip"
+        | "other"
+      verification_status:
+        | "not_started"
+        | "in_progress"
+        | "completed"
+        | "failed"
+        | "on_hold"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3034,6 +3283,31 @@ export const Constants = {
         "interviewer",
         "client-hr",
         "bo",
+      ],
+      document_status: [
+        "pending_upload",
+        "uploaded",
+        "under_review",
+        "verified",
+        "rejected",
+        "expired",
+      ],
+      document_type: [
+        "resume",
+        "id_proof",
+        "address_proof",
+        "education_certificate",
+        "experience_letter",
+        "offer_letter",
+        "salary_slip",
+        "other",
+      ],
+      verification_status: [
+        "not_started",
+        "in_progress",
+        "completed",
+        "failed",
+        "on_hold",
       ],
     },
   },

@@ -5,7 +5,7 @@ import { ComprehensivePhoneScreeningForm } from './ComprehensivePhoneScreeningFo
 import { TechnicalInterviewManager } from './components/TechnicalInterviewManager';
 import { AptitudeTestManager } from './components/AptitudeTestManager';
 import { ClientInterviewForm } from './ClientInterviewForm';
-import { BackgroundVerificationForm } from './BackgroundVerificationForm';
+import { EnhancedBackgroundVerificationForm } from './components/EnhancedBackgroundVerificationForm';
 import { FinalReviewForm } from './FinalReviewForm';
 import { Candidate } from '../../types/CandidateTypes';
 
@@ -33,7 +33,7 @@ export const StageFormRenderer: React.FC<StageFormRendererProps> = ({
       case 'client-interview':
         return <ClientInterviewForm candidate={candidate} />;
       case 'background-verification':
-        return <BackgroundVerificationForm candidate={candidate} />;
+        return <EnhancedBackgroundVerificationForm candidate={candidate} />;
       case 'final-review':
         return <FinalReviewForm candidate={candidate} />;
       default:

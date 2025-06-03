@@ -1,198 +1,532 @@
 
-import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { AptitudeTestTab } from '../../../aptitude-tests/AptitudeTestTab';
-import { BookOpen, Plus, Calendar, FileText, CheckCircle } from 'lucide-react';
-import type { Candidate } from '../../../types/CandidateTypes';
+import React, { useState, useEffect } from 'react';
+import { 
+  Box, 
+  Typography, 
+  Card, 
+  CardContent, 
+  Button, 
+  Grid,
+  Chip,
+  LinearProgress,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper
+} from '@mui/material';
+import { 
+  PlayArrow, 
+  Assessment, 
+  Timer, 
+  Check, 
+  Error,
+  Visibility,
+  Download,
+  Schedule
+} from '@mui/icons-material';
+import { supabase } from '@/integrations/supabase/client';
+import { Candidate } from '../../../types/CandidateTypes';
 
 interface AptitudeTestManagerProps {
   candidate: Candidate;
-  onSave?: (data: any) => void;
 }
 
 export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
-  candidate,
-  onSave
+  candidate
 }) => {
-  const [activeTab, setActiveTab] = useState('tests');
+  const [tests, setTests] = useState<any[]>([]);
+  const [results, setResults] = useState<any[]>([]);
+  const [selectedTest, setSelectedTest] = useState<any>(null);
+  const [assignDialog, setAssignDialog] = useState(false);
+  const [resultDialog, setResultDialog] = useState<{ open: boolean; result: any }>({
+    open: false,
+    result: null
+  });
+  const [assignmentData, setAssignmentData] = useState({
+    test_id: '',
+    administered_by: '',
+    notes: ''
+  });
 
-  // Mock data for demonstration - in real app, this would come from props/API
-  const testStatus = {
-    assigned: 2,
-    completed: 1,
-    pending: 1,
-    score: 85
+  useEffect(() => {
+    fetchAptitudeTests();
+    fetchTestResults();
+  }, [candidate.id]);
+
+  const fetchAptitudeTests = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('aptitude_tests')
+        .select('*')
+        .eq('is_active', true)
+        .order('test_name');
+
+      if (error) throw error;
+      setTests(data || []);
+    } catch (error) {
+      console.error('Error fetching aptitude tests:', error);
+    }
   };
 
-  const handleAssignTest = () => {
-    console.log('Assign test to candidate:', candidate.name);
-    // This would open the test assignment modal
+  const fetchTestResults = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('candidate_aptitude_results')
+        .select('*, aptitude_tests(*)')
+        .eq('candidate_id', candidate.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setResults(data || []);
+    } catch (error) {
+      console.error('Error fetching test results:', error);
+    }
   };
 
-  const handleViewResults = () => {
-    console.log('View test results for:', candidate.name);
-    // This would open the results view
+  const assignTest = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('candidate_aptitude_results')
+        .insert({
+          candidate_id: candidate.id,
+          aptitude_test_id: assignmentData.test_id,
+          score: 0,
+          status: 'scheduled',
+          administered_by: assignmentData.administered_by,
+          notes: assignmentData.notes
+        })
+        .select('*, aptitude_tests(*)')
+        .single();
+
+      if (error) throw error;
+
+      setResults(prev => [data, ...prev]);
+      setAssignDialog(false);
+      setAssignmentData({ test_id: '', administered_by: '', notes: '' });
+    } catch (error) {
+      console.error('Error assigning test:', error);
+    }
+  };
+
+  const updateTestStatus = async (resultId: string, status: string, score?: number) => {
+    try {
+      const updateData: any = {
+        status,
+        updated_at: new Date().toISOString()
+      };
+
+      if (status === 'in_progress' && !results.find(r => r.id === resultId)?.test_started_at) {
+        updateData.test_started_at = new Date().toISOString();
+      }
+
+      if (status === 'completed') {
+        updateData.test_completed_at = new Date().toISOString();
+        if (score !== undefined) {
+          updateData.score = score;
+        }
+      }
+
+      const { data, error } = await supabase
+        .from('candidate_aptitude_results')
+        .update(updateData)
+        .eq('id', resultId)
+        .select('*, aptitude_tests(*)')
+        .single();
+
+      if (error) throw error;
+
+      setResults(prev => prev.map(r => r.id === resultId ? data : r));
+    } catch (error) {
+      console.error('Error updating test status:', error);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'success';
+      case 'in_progress': return 'warning';
+      case 'failed': return 'error';
+      case 'scheduled': return 'info';
+      default: return 'default';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed': return <Check />;
+      case 'in_progress': return <Timer />;
+      case 'failed': return <Error />;
+      case 'scheduled': return <Schedule />;
+      default: return <Assessment />;
+    }
+  };
+
+  const getScoreColor = (score: number, passingScore: number) => {
+    if (score >= passingScore) return 'success';
+    if (score >= passingScore * 0.8) return 'warning';
+    return 'error';
+  };
+
+  const calculateAverageScore = () => {
+    const completedTests = results.filter(r => r.status === 'completed' && r.score > 0);
+    if (completedTests.length === 0) return 0;
+    return Math.round(completedTests.reduce((sum, test) => sum + test.score, 0) / completedTests.length);
   };
 
   return (
-    <div className="w-full h-full">
-      <Card className="border-0 shadow-sm h-full">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-purple-600" />
-              <CardTitle className="text-lg">Aptitude Test Management</CardTitle>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="bg-purple-50 text-purple-700 border-purple-200">
-                {testStatus.completed}/{testStatus.assigned} Completed
-              </Badge>
-              {testStatus.score > 0 && (
-                <Badge variant="default" className="bg-green-50 text-green-700 border-green-200">
-                  Score: {testStatus.score}%
-                </Badge>
-              )}
-            </div>
-          </div>
-          <p className="text-sm text-gray-600">
-            Manage aptitude tests and assessments for {candidate.name}
-          </p>
-        </CardHeader>
-        <CardContent className="h-full">
-          {/* Prominent CTAs based on test status */}
-          <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-purple-900 mb-1">Quick Actions</h3>
-                <p className="text-sm text-purple-700">
-                  {testStatus.pending > 0 
-                    ? `${testStatus.pending} test(s) pending completion`
-                    : testStatus.completed === testStatus.assigned
-                    ? 'All tests completed - review results'
-                    : 'Assign aptitude tests to evaluate candidate skills'
-                  }
-                </p>
-              </div>
-              <div className="flex gap-2">
-                {testStatus.pending > 0 ? (
-                  <>
-                    <Button 
-                      size="sm" 
-                      className="bg-purple-600 hover:bg-purple-700"
-                      onClick={handleViewResults}
-                    >
-                      <FileText className="h-4 w-4 mr-2" />
-                      View Progress
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={handleAssignTest}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Assign More
-                    </Button>
-                  </>
-                ) : testStatus.completed === testStatus.assigned && testStatus.completed > 0 ? (
-                  <>
-                    <Button 
-                      size="sm" 
-                      className="bg-green-600 hover:bg-green-700"
-                      onClick={handleViewResults}
-                    >
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Review Results
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={handleAssignTest}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Additional Tests
-                    </Button>
-                  </>
-                ) : (
-                  <Button 
-                    size="sm" 
-                    className="bg-purple-600 hover:bg-purple-700"
-                    onClick={handleAssignTest}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Assign Test
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h6" sx={{ mb: 3, fontFamily: 'Rubik, sans-serif', fontWeight: 600 }}>
+        Aptitude Test Management
+      </Typography>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="tests" className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4" />
-                Available Tests
-              </TabsTrigger>
-              <TabsTrigger value="results" className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Test Results
-              </TabsTrigger>
-            </TabsList>
+      {/* Overview Cards */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h4" color="primary">
+                {results.length}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Total Tests
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h4" color="success.main">
+                {results.filter(r => r.status === 'completed').length}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Completed
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h4" color="warning.main">
+                {results.filter(r => r.status === 'in_progress').length}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                In Progress
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h4" color="text.primary">
+                {calculateAverageScore()}%
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Average Score
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
-            <TabsContent value="tests" className="mt-0 h-full">
-              <div className="h-full overflow-auto">
-                <AptitudeTestTab />
-              </div>
-            </TabsContent>
+      {/* Actions */}
+      <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
+        <Button
+          variant="contained"
+          startIcon={<PlayArrow />}
+          onClick={() => setAssignDialog(true)}
+          sx={{ bgcolor: '#009933', '&:hover': { bgcolor: '#00a341' } }}
+        >
+          Assign Test
+        </Button>
+        
+        <Button
+          variant="outlined"
+          startIcon={<Assessment />}
+          onClick={fetchTestResults}
+        >
+          Refresh Results
+        </Button>
+      </Box>
 
-            <TabsContent value="results" className="mt-0 h-full">
-              <div className="h-full overflow-auto">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Test Results & Scores</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {/* Mock test results */}
-                      <div className="flex items-center justify-between p-4 border rounded-lg">
-                        <div>
-                          <h4 className="font-medium">General Aptitude Test</h4>
-                          <p className="text-sm text-gray-600">Completed on Jan 15, 2024</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge className="bg-green-50 text-green-700 border-green-200">
-                            Score: 85%
-                          </Badge>
-                          <Button variant="outline" size="sm">
-                            View Details
-                          </Button>
-                        </div>
-                      </div>
+      {/* Test Results */}
+      {results.length === 0 ? (
+        <Alert severity="info">
+          No aptitude tests assigned yet. Click "Assign Test" to get started.
+        </Alert>
+      ) : (
+        <Card>
+          <CardContent>
+            <Typography variant="subtitle2" sx={{ mb: 2, fontFamily: 'Rubik, sans-serif' }}>
+              Test Results
+            </Typography>
+            
+            <TableContainer component={Paper} variant="outlined">
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Test Name</TableCell>
+                    <TableCell>Category</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Score</TableCell>
+                    <TableCell>Duration</TableCell>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {results.map((result) => (
+                    <TableRow key={result.id}>
+                      <TableCell>
+                        <Typography variant="subtitle2">
+                          {result.aptitude_tests?.test_name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {result.aptitude_tests?.description}
+                        </Typography>
+                      </TableCell>
                       
-                      <div className="flex items-center justify-between p-4 border rounded-lg bg-yellow-50">
-                        <div>
-                          <h4 className="font-medium">Technical Assessment</h4>
-                          <p className="text-sm text-gray-600">In Progress - Started Jan 20, 2024</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="bg-yellow-100 text-yellow-700">
-                            Pending
-                          </Badge>
-                          <Button variant="outline" size="sm">
-                            Monitor
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-    </div>
+                      <TableCell>
+                        <Chip 
+                          label={result.aptitude_tests?.category} 
+                          size="small" 
+                          variant="outlined"
+                        />
+                      </TableCell>
+                      
+                      <TableCell>
+                        <Chip
+                          icon={getStatusIcon(result.status)}
+                          label={result.status}
+                          color={getStatusColor(result.status)}
+                          size="small"
+                        />
+                      </TableCell>
+                      
+                      <TableCell>
+                        {result.status === 'completed' && result.score > 0 ? (
+                          <Box>
+                            <Typography 
+                              variant="subtitle2"
+                              color={getScoreColor(result.score, result.aptitude_tests?.passing_score || 70)}
+                            >
+                              {result.score}%
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              Pass: {result.aptitude_tests?.passing_score}%
+                            </Typography>
+                          </Box>
+                        ) : (
+                          <Typography variant="body2" color="text.secondary">
+                            {result.status === 'in_progress' ? 'In progress...' : 'Not started'}
+                          </Typography>
+                        )}
+                      </TableCell>
+                      
+                      <TableCell>
+                        {result.time_taken_minutes ? (
+                          `${result.time_taken_minutes} min`
+                        ) : (
+                          <Typography variant="caption" color="text.secondary">
+                            Target: {result.aptitude_tests?.duration_minutes} min
+                          </Typography>
+                        )}
+                      </TableCell>
+                      
+                      <TableCell>
+                        <Typography variant="body2">
+                          {new Date(result.created_at).toLocaleDateString()}
+                        </Typography>
+                        {result.test_completed_at && (
+                          <Typography variant="caption" color="text.secondary">
+                            Completed: {new Date(result.test_completed_at).toLocaleDateString()}
+                          </Typography>
+                        )}
+                      </TableCell>
+                      
+                      <TableCell>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          {result.status === 'scheduled' && (
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={() => updateTestStatus(result.id, 'in_progress')}
+                            >
+                              Start
+                            </Button>
+                          )}
+                          
+                          {result.status === 'in_progress' && (
+                            <Button
+                              size="small"
+                              variant="contained"
+                              color="success"
+                              onClick={() => updateTestStatus(result.id, 'completed', 85)} // Mock score
+                            >
+                              Complete
+                            </Button>
+                          )}
+                          
+                          {result.status === 'completed' && (
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              startIcon={<Visibility />}
+                              onClick={() => setResultDialog({ open: true, result })}
+                            >
+                              View
+                            </Button>
+                          )}
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Assign Test Dialog */}
+      <Dialog open={assignDialog} onClose={() => setAssignDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Assign Aptitude Test</DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <FormControl fullWidth required>
+              <InputLabel>Select Test</InputLabel>
+              <Select
+                value={assignmentData.test_id}
+                onChange={(e) => setAssignmentData(prev => ({ ...prev, test_id: e.target.value }))}
+                label="Select Test"
+              >
+                {tests.map((test) => (
+                  <MenuItem key={test.id} value={test.id}>
+                    <Box>
+                      <Typography variant="subtitle2">{test.test_name}</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {test.category} • {test.duration_minutes} min • {test.total_questions} questions
+                      </Typography>
+                    </Box>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            
+            <TextField
+              label="Administered By"
+              value={assignmentData.administered_by}
+              onChange={(e) => setAssignmentData(prev => ({ ...prev, administered_by: e.target.value }))}
+              fullWidth
+              required
+            />
+            
+            <TextField
+              label="Notes"
+              value={assignmentData.notes}
+              onChange={(e) => setAssignmentData(prev => ({ ...prev, notes: e.target.value }))}
+              fullWidth
+              multiline
+              rows={3}
+              placeholder="Any special instructions or notes..."
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAssignDialog(false)}>Cancel</Button>
+          <Button 
+            onClick={assignTest}
+            variant="contained"
+            disabled={!assignmentData.test_id || !assignmentData.administered_by}
+          >
+            Assign Test
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Result Details Dialog */}
+      <Dialog 
+        open={resultDialog.open} 
+        onClose={() => setResultDialog({ open: false, result: null })} 
+        maxWidth="md" 
+        fullWidth
+      >
+        <DialogTitle>
+          Test Result Details - {resultDialog.result?.aptitude_tests?.test_name}
+        </DialogTitle>
+        <DialogContent>
+          {resultDialog.result && (
+            <Box sx={{ pt: 2 }}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>Test Information</Typography>
+                  <Typography variant="body2">
+                    <strong>Category:</strong> {resultDialog.result.aptitude_tests?.category}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Difficulty:</strong> {resultDialog.result.aptitude_tests?.difficulty_level}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Total Questions:</strong> {resultDialog.result.aptitude_tests?.total_questions}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Passing Score:</strong> {resultDialog.result.aptitude_tests?.passing_score}%
+                  </Typography>
+                </Grid>
+                
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>Performance</Typography>
+                  <Typography variant="body2">
+                    <strong>Final Score:</strong> {resultDialog.result.score}%
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Questions Attempted:</strong> {resultDialog.result.total_questions_attempted}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Correct Answers:</strong> {resultDialog.result.correct_answers}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Time Taken:</strong> {resultDialog.result.time_taken_minutes} minutes
+                  </Typography>
+                </Grid>
+              </Grid>
+              
+              {resultDialog.result.notes && (
+                <Box sx={{ mt: 3 }}>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>Notes</Typography>
+                  <Typography variant="body2">{resultDialog.result.notes}</Typography>
+                </Box>
+              )}
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setResultDialog({ open: false, result: null })}>
+            Close
+          </Button>
+          <Button variant="outlined" startIcon={<Download />}>
+            Export Report
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
