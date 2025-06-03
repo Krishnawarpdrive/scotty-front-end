@@ -6,7 +6,7 @@ export interface Candidate {
   role: string;
   status: {
     text: string;
-    type: 'pending' | 'approved' | 'rejected' | 'interview' | 'scheduled' | 'awaited' | 'delay' | 'needs' | 'screening';
+    type: 'pending' | 'approved' | 'rejected' | 'interview' | 'scheduled' | 'awaited' | 'delay' | 'needs' | 'screening' | 'test';
     time?: string;
     date?: string;
   };

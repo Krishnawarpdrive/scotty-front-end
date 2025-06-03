@@ -31,6 +31,10 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
       bgColor = 'bg-gray-100 text-gray-700';
       icon = <span className="mr-1">🔎</span>;
       break;
+    case 'test':
+      bgColor = 'bg-orange-100 text-orange-700';
+      icon = <span className="mr-1">📊</span>;
+      break;
   }
   
   return (
