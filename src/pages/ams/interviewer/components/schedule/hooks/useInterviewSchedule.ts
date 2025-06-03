@@ -39,10 +39,10 @@ export const useInterviewSchedule = (panelistId?: string) => {
               candidateInfo !== null &&
               'name' in candidateInfo && 
               'email' in candidateInfo) {
-            const typedCandidateInfo = candidateInfo as { name: string; email: string };
+            // Now TypeScript knows candidateInfo is not null and has the required properties
             candidateData = {
-              name: typedCandidateInfo.name || 'Unknown Candidate',
-              email: typedCandidateInfo.email || ''
+              name: (candidateInfo as { name: string; email: string }).name || 'Unknown Candidate',
+              email: (candidateInfo as { name: string; email: string }).email || ''
             };
           }
 
