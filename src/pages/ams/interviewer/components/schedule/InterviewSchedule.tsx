@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -62,7 +61,10 @@ export const InterviewSchedule: React.FC<InterviewScheduleProps> = ({ panelistId
           meeting_link: interview.meeting_link || undefined,
           location: interview.location || undefined,
           notes: interview.notes || undefined,
-          candidate: interview.candidate && typeof interview.candidate === 'object' && 'name' in interview.candidate 
+          candidate: interview.candidate && 
+                     typeof interview.candidate === 'object' && 
+                     interview.candidate !== null &&
+                     'name' in interview.candidate 
             ? {
                 name: interview.candidate.name || 'Unknown Candidate',
                 email: interview.candidate.email || ''
