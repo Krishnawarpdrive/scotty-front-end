@@ -111,82 +111,85 @@ export const InterviewSchedule: React.FC<InterviewScheduleProps> = ({ panelistId
       </div>
 
       <div className="grid gap-4">
-        {interviews.map((interview) => (
-          <Card key={interview.id}>
-            <CardContent className="pt-6">
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-blue-500" />
-                    <span className="font-semibold">
-                      {interview.candidate?.name || 'Unknown Candidate'}
-                    </span>
-                    <Badge variant="outline" className={getStatusColor(interview.status)}>
-                      {interview.status}
-                    </Badge>
-                  </div>
-
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      {new Date(interview.scheduled_date).toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+        {interviews.map((interview) => {
+          const candidateName = interview.candidate?.name || 'Unknown Candidate';
+          const candidateEmail = interview.candidate?.email || '';
+          
+          return (
+            <Card key={interview.id}>
+              <CardContent className="pt-6">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4 text-blue-500" />
+                      <span className="font-semibold">{candidateName}</span>
+                      <Badge variant="outline" className={getStatusColor(interview.status)}>
+                        {interview.status}
+                      </Badge>
                     </div>
 
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      {new Date(interview.scheduled_date).toLocaleTimeString('en-US', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                      ({interview.duration_minutes} min)
+                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        {new Date(interview.scheduled_date).toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        {new Date(interview.scheduled_date).toLocaleTimeString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                        ({interview.duration_minutes} min)
+                      </div>
                     </div>
+
+                    <div className="flex items-center gap-4 text-sm">
+                      <Badge variant="outline">{interview.interview_type}</Badge>
+                      
+                      {interview.meeting_link && (
+                        <div className="flex items-center gap-1 text-blue-600">
+                          <Video className="h-4 w-4" />
+                          <span>Video Call</span>
+                        </div>
+                      )}
+
+                      {interview.location && (
+                        <div className="flex items-center gap-1 text-gray-600">
+                          <MapPin className="h-4 w-4" />
+                          <span>{interview.location}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {interview.notes && (
+                      <p className="text-sm text-gray-600 mt-2">{interview.notes}</p>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-4 text-sm">
-                    <Badge variant="outline">{interview.interview_type}</Badge>
-                    
+                  <div className="flex gap-2">
                     {interview.meeting_link && (
-                      <div className="flex items-center gap-1 text-blue-600">
-                        <Video className="h-4 w-4" />
-                        <span>Video Call</span>
-                      </div>
+                      <Button size="sm" variant="outline" asChild>
+                        <a href={interview.meeting_link} target="_blank" rel="noopener noreferrer">
+                          Join Meeting
+                        </a>
+                      </Button>
                     )}
-
-                    {interview.location && (
-                      <div className="flex items-center gap-1 text-gray-600">
-                        <MapPin className="h-4 w-4" />
-                        <span>{interview.location}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {interview.notes && (
-                    <p className="text-sm text-gray-600 mt-2">{interview.notes}</p>
-                  )}
-                </div>
-
-                <div className="flex gap-2">
-                  {interview.meeting_link && (
-                    <Button size="sm" variant="outline" asChild>
-                      <a href={interview.meeting_link} target="_blank" rel="noopener noreferrer">
-                        Join Meeting
-                      </a>
+                    
+                    <Button size="sm" variant="outline">
+                      View Details
                     </Button>
-                  )}
-                  
-                  <Button size="sm" variant="outline">
-                    View Details
-                  </Button>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
 
         {interviews.length === 0 && (
           <Card>
