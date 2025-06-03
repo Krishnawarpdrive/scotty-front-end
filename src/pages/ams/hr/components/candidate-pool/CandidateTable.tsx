@@ -1,34 +1,33 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { DataTable } from '@/components/ui/data-table/DataTable';
 import { CandidateTableHeader } from './table/CandidateTableHeader';
 import { useTableColumns } from './table/tableColumns';
+import { CandidateDetailDrawer } from './CandidateDetailDrawer';
 
 export interface Candidate {
   id: string;
   name: string;
-  candidateId: string;
-  avatar?: string;
   email: string;
-  phone: string;
-  type: 'Fresher' | 'Experienced';
-  source: string;
-  appliedRoles: string[];
+  phone?: string;
   currentStage: string;
-  score: number;
-  status: 'Active' | 'On Hold' | 'Rejected' | 'Hired' | 'Withdrawn';
-  assignedTA: {
-    name: string;
-    avatar?: string;
-  };
-  lastUpdated: string;
-  priority: 'High' | 'Medium' | 'Low';
+  source: string;
+  status: 'Active' | 'On Hold' | 'Rejected' | 'Hired';
+  appliedRoles: string[];
+  experience?: string;
+  experienceYears?: number;
+  score?: number;
+  assignedTA?: string;
   nextAction?: string;
   actionDueDate?: string;
-  experience: {
-    years: number;
-    months: number;
-  };
+  lastUpdated: string;
+  skills?: string[];
+  currentRole?: string;
+  currentCompany?: string;
+  location?: string;
+  appliedDate?: string;
+  resumeUrl?: string;
+  notes?: string;
 }
 
 interface CandidateTableProps {
@@ -36,7 +35,6 @@ interface CandidateTableProps {
   selectedCandidates: string[];
   onCandidateSelect: (candidateId: string, selected: boolean) => void;
   onSelectAll: (selected: boolean) => void;
-  onCandidateClick: (candidate: Candidate) => void;
   onQuickAction: (action: string, candidateId: string) => void;
 }
 
@@ -45,29 +43,44 @@ export const CandidateTable: React.FC<CandidateTableProps> = ({
   selectedCandidates,
   onCandidateSelect,
   onSelectAll,
-  onCandidateClick,
   onQuickAction,
 }) => {
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+
+  const handleCandidateClick = (candidate: Candidate) => {
+    setSelectedCandidate(candidate);
+    setIsDetailOpen(true);
+  };
+
   const columns = useTableColumns({
     selectedCandidates,
     onCandidateSelect,
-    onCandidateClick,
+    onCandidateClick: handleCandidateClick,
     onQuickAction,
   });
 
   return (
-    <div className="bg-white rounded-lg border overflow-hidden">
-      <CandidateTableHeader
-        selectedCount={selectedCandidates.length}
-        totalCount={candidates.length}
-        onSelectAll={onSelectAll}
-      />
+    <>
+      <div className="bg-white rounded-lg border overflow-hidden">
+        <CandidateTableHeader
+          selectedCount={selectedCandidates.length}
+          totalCount={candidates.length}
+          onSelectAll={onSelectAll}
+        />
 
-      <DataTable
-        data={candidates}
-        columns={columns}
-        onRowClick={onCandidateClick}
+        <DataTable
+          data={candidates}
+          columns={columns}
+          onRowClick={handleCandidateClick}
+        />
+      </div>
+
+      <CandidateDetailDrawer
+        open={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        candidate={selectedCandidate}
       />
-    </div>
+    </>
   );
 };

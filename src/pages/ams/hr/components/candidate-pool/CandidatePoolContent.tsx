@@ -16,36 +16,46 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { EnhancedCandidateTable } from './EnhancedCandidateTable';
-import { useCandidatePool } from './useCandidatePool';
+import { Candidate } from './CandidateTable';
 
 interface CandidatePoolContentProps {
-  onCandidateClick?: (candidate: any) => void;
+  candidates: Candidate[];
+  selectedCandidates: string[];
+  showFilters: boolean;
+  searchTerm: string;
+  metrics: {
+    totalCandidates: number;
+    activeCandidates: number;
+    newThisWeek: number;
+    interviewsScheduled: number;
+    callsToday: number;
+    avgResponseTime: string;
+  };
+  activeFilterCount: number;
+  onCandidateClick?: (candidate: Candidate) => void;
+  onCandidateSelect: (candidateId: string, selected: boolean) => void;
+  onSelectAll: (selected: boolean) => void;
+  onQuickAction: (action: string, candidateId: string) => void;
+  setSearchTerm: (term: string) => void;
+  setShowFilters: (show: boolean) => void;
+  setSelectedCandidates: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export const CandidatePoolContent: React.FC<CandidatePoolContentProps> = ({
-  onCandidateClick
+  candidates,
+  selectedCandidates,
+  showFilters,
+  searchTerm,
+  metrics,
+  activeFilterCount,
+  onCandidateClick,
+  onCandidateSelect,
+  onSelectAll,
+  onQuickAction,
+  setSearchTerm,
+  setShowFilters,
+  setSelectedCandidates
 }) => {
-  const {
-    candidates,
-    totalCandidates,
-    metrics,
-    searchTerm,
-    selectedCandidates,
-    showFilters,
-    filters,
-    activeFilterCount,
-    setSearchTerm,
-    setShowFilters,
-    handleCandidateSelect,
-    handleSelectAll,
-    handleFilterChange,
-    handleClearFilter,
-    handleClearAllFilters,
-    handleBulkAction,
-    handleQuickAction,
-    setSelectedCandidates
-  } = useCandidatePool();
-
   return (
     <div className="space-y-6">
       {/* Header with Metrics */}
@@ -56,7 +66,7 @@ export const CandidatePoolContent: React.FC<CandidatePoolContentProps> = ({
               <Users className="h-5 w-5 text-blue-500" />
               <div>
                 <p className="text-sm text-gray-600">Total Candidates</p>
-                <p className="text-2xl font-bold">{metrics.total}</p>
+                <p className="text-2xl font-bold">{metrics.totalCandidates}</p>
               </div>
             </div>
           </CardContent>
@@ -68,7 +78,7 @@ export const CandidatePoolContent: React.FC<CandidatePoolContentProps> = ({
               <UserCheck className="h-5 w-5 text-green-500" />
               <div>
                 <p className="text-sm text-gray-600">Active</p>
-                <p className="text-2xl font-bold">{metrics.active}</p>
+                <p className="text-2xl font-bold">{metrics.activeCandidates}</p>
               </div>
             </div>
           </CardContent>
@@ -79,8 +89,8 @@ export const CandidatePoolContent: React.FC<CandidatePoolContentProps> = ({
             <div className="flex items-center space-x-2">
               <Clock className="h-5 w-5 text-yellow-500" />
               <div>
-                <p className="text-sm text-gray-600">On Hold</p>
-                <p className="text-2xl font-bold">{metrics.onHold}</p>
+                <p className="text-sm text-gray-600">Interviews Scheduled</p>
+                <p className="text-2xl font-bold">{metrics.interviewsScheduled}</p>
               </div>
             </div>
           </CardContent>
@@ -91,8 +101,8 @@ export const CandidatePoolContent: React.FC<CandidatePoolContentProps> = ({
             <div className="flex items-center space-x-2">
               <TrendingUp className="h-5 w-5 text-purple-500" />
               <div>
-                <p className="text-sm text-gray-600">This Month</p>
-                <p className="text-2xl font-bold">{metrics.thisMonth}</p>
+                <p className="text-sm text-gray-600">New This Week</p>
+                <p className="text-2xl font-bold">{metrics.newThisWeek}</p>
               </div>
             </div>
           </CardContent>
@@ -155,9 +165,9 @@ export const CandidatePoolContent: React.FC<CandidatePoolContentProps> = ({
       <EnhancedCandidateTable
         candidates={candidates}
         selectedCandidates={selectedCandidates}
-        onCandidateSelect={handleCandidateSelect}
-        onSelectAll={handleSelectAll}
-        onQuickAction={handleQuickAction}
+        onCandidateSelect={onCandidateSelect}
+        onSelectAll={onSelectAll}
+        onQuickAction={onQuickAction}
       />
     </div>
   );
