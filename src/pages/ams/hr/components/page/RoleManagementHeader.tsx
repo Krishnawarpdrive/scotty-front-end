@@ -20,9 +20,9 @@ export const RoleManagementHeader: React.FC<RoleManagementHeaderProps> = ({
   tabCounts
 }) => {
   const tabs: TabItem[] = [
-    { id: 'dashboard', label: 'Dashboard', count: tabCounts.dashboard },
-    { id: 'mission', label: 'Mission Control', count: tabCounts.mission },
-    { id: 'role-requirements', label: 'Roles & Requirements', count: tabCounts['role-requirements'] },
+    // { id: 'dashboard', label: 'Dashboard', count: tabCounts.dashboard },
+    // { id: 'mission', label: 'Mission Control', count: tabCounts.mission },
+    // { id: 'role-requirements', label: 'Roles & Requirements', count: tabCounts['role-requirements'] },
     { id: 'clients', label: 'Clients', count: tabCounts.clients },
     { id: 'roles', label: 'Roles', count: tabCounts.roles },
     { id: 'requirements', label: 'Requirements', count: tabCounts.requirements },
@@ -33,7 +33,7 @@ export const RoleManagementHeader: React.FC<RoleManagementHeaderProps> = ({
     <div className="bg-white border-b sticky top-0 z-10">
       <div className="px-6 py-4">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold text-gray-900">Talent Acquisition Management</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Roles Management</h1>
         </div>
         
         <div className="flex items-center gap-6">

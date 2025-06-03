@@ -33,7 +33,7 @@ export const RoleManagementContent: React.FC<RoleManagementContentProps> = ({
   return (
     <div className="px-6 space-y-6">
       <AnimatePresence mode="wait">
-        {activeTab === "dashboard" && (
+        {/* {activeTab === "dashboard" && (
           <DashboardTab mockMetrics={mockMetrics} />
         )}
 
@@ -46,7 +46,7 @@ export const RoleManagementContent: React.FC<RoleManagementContentProps> = ({
             mockRolesWithRequirements={mockRolesWithRequirements}
             handleCreateRole={handleCreateRole}
           />
-        )}
+        )} */}
 
         {activeTab === "clients" && (
           <motion.div

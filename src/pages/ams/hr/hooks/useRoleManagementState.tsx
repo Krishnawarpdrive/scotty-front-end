@@ -6,7 +6,7 @@ import { clientsData, rolesData, requirementsData, tasData } from '../mockData';
 
 export const useRoleManagementState = () => {
   const { setCurrentScope } = useKeyboardShortcuts();
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState("clients");
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [clientDrawerOpen, setClientDrawerOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<any>(null);
