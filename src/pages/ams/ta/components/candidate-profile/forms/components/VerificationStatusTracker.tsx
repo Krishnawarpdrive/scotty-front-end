@@ -20,8 +20,7 @@ import {
   Select,
   MenuItem,
   FormControl,
-  InputLabel,
-  Grid
+  InputLabel
 } from '@mui/material';
 import { 
   CheckCircle, 
@@ -72,7 +71,7 @@ export const VerificationStatusTracker: React.FC<VerificationStatusTrackerProps>
       const { data: sessionData, error: sessionError } = await supabase
         .from('background_verification_sessions')
         .select('*')
-        .eq('candidate_id', candidate.id)
+        .eq('candidate_id', candidate.id.toString())
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -84,7 +83,7 @@ export const VerificationStatusTracker: React.FC<VerificationStatusTrackerProps>
       const { data: docsData, error: docsError } = await supabase
         .from('candidate_documents')
         .select('*')
-        .eq('candidate_id', candidate.id);
+        .eq('candidate_id', candidate.id.toString());
 
       if (docsError) throw docsError;
       setDocuments(docsData || []);
@@ -118,7 +117,7 @@ export const VerificationStatusTracker: React.FC<VerificationStatusTrackerProps>
       const { data, error } = await supabase
         .from('background_verification_sessions')
         .insert({
-          candidate_id: candidate.id,
+          candidate_id: candidate.id.toString(),
           session_status: 'not_started',
           verification_partner: sessionData.verification_partner,
           sla_date: sessionData.sla_date || null,
@@ -209,8 +208,8 @@ export const VerificationStatusTracker: React.FC<VerificationStatusTrackerProps>
       {verificationSession ? (
         <Card sx={{ mb: 3 }}>
           <CardContent>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              <Box sx={{ flex: 1, minWidth: 300 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1 }}>Session Status</Typography>
                 <Chip
                   label={verificationSession.session_status}
@@ -231,9 +230,9 @@ export const VerificationStatusTracker: React.FC<VerificationStatusTrackerProps>
                 <Typography variant="body2">
                   <strong>Progress:</strong> {getCompletionPercentage()}% complete
                 </Typography>
-              </Grid>
+              </Box>
               
-              <Grid item xs={12} md={6}>
+              <Box sx={{ flex: 1, minWidth: 300 }}>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                   {verificationSession.session_status === 'not_started' && (
                     <Button
@@ -278,8 +277,8 @@ export const VerificationStatusTracker: React.FC<VerificationStatusTrackerProps>
                     Refresh
                   </Button>
                 </Box>
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
           </CardContent>
         </Card>
       ) : (
