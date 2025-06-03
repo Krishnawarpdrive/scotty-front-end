@@ -6,7 +6,7 @@ import {
   Typography, 
   Box, 
   Button, 
-  Grid,
+  Grid2 as Grid,
   Chip
 } from '@mui/material';
 import { 
@@ -121,7 +121,7 @@ export const CandidateContextualActions: React.FC<CandidateContextualActionsProp
 
         <Grid container spacing={2}>
           {actions.map((action, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
+            <Grid xs={12} sm={6} md={4} key={index}>
               <Card 
                 variant="outlined" 
                 sx={{ 
