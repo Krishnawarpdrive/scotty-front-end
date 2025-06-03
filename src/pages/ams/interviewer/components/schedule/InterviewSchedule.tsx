@@ -51,26 +51,31 @@ export const InterviewSchedule: React.FC<InterviewScheduleProps> = ({ panelistId
         console.error('Error fetching interviews:', error);
       } else if (data) {
         // Transform the data to match our interface
-        const transformedInterviews: ScheduledInterview[] = data.map(interview => ({
-          id: interview.id,
-          candidate_id: interview.candidate_id,
-          scheduled_date: interview.scheduled_date,
-          duration_minutes: interview.duration_minutes,
-          interview_type: interview.interview_type,
-          status: interview.status,
-          meeting_link: interview.meeting_link || undefined,
-          location: interview.location || undefined,
-          notes: interview.notes || undefined,
-          candidate: interview.candidate && 
-                     typeof interview.candidate === 'object' && 
-                     interview.candidate !== null &&
-                     'name' in interview.candidate 
-            ? {
-                name: interview.candidate.name || 'Unknown Candidate',
-                email: interview.candidate.email || ''
-              } 
-            : null
-        }));
+        const transformedInterviews: ScheduledInterview[] = data.map(interview => {
+          // Handle candidate data with proper null checks
+          let candidateData = null;
+          if (interview.candidate && 
+              typeof interview.candidate === 'object' && 
+              'name' in interview.candidate) {
+            candidateData = {
+              name: interview.candidate.name || 'Unknown Candidate',
+              email: interview.candidate.email || ''
+            };
+          }
+
+          return {
+            id: interview.id,
+            candidate_id: interview.candidate_id,
+            scheduled_date: interview.scheduled_date,
+            duration_minutes: interview.duration_minutes,
+            interview_type: interview.interview_type,
+            status: interview.status,
+            meeting_link: interview.meeting_link || undefined,
+            location: interview.location || undefined,
+            notes: interview.notes || undefined,
+            candidate: candidateData
+          };
+        });
         setInterviews(transformedInterviews);
       }
     } catch (error) {
@@ -136,7 +141,8 @@ export const InterviewSchedule: React.FC<InterviewScheduleProps> = ({ panelistId
                       {new Date(interview.scheduled_date).toLocaleTimeString('en-US', {
                         hour: '2-digit',
                         minute: '2-digit'
-                      })} ({interview.duration_minutes} min)
+                      })}
+                      ({interview.duration_minutes} min)
                     </div>
                   </div>
 
