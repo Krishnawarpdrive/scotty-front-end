@@ -68,7 +68,7 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
       const { data, error } = await supabase
         .from('candidate_documents')
         .select('*')
-        .eq('candidate_id', candidate.id)
+        .eq('candidate_id', candidate.id.toString())
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -97,11 +97,7 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
       
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('candidate-documents')
-        .upload(fileName, file, {
-          onUploadProgress: (progress) => {
-            setUploadProgress((progress.loaded / progress.total) * 100);
-          }
-        });
+        .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
@@ -114,7 +110,7 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
       const { data: documentData, error: dbError } = await supabase
         .from('candidate_documents')
         .insert({
-          candidate_id: candidate.id,
+          candidate_id: candidate.id.toString(),
           document_type: selectedDocumentType,
           document_name: file.name,
           file_url: urlData.publicUrl,
@@ -215,7 +211,7 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
             {DOCUMENT_TYPES.map((docType) => {
               const isUploaded = getUploadedDocumentTypes().includes(docType.value);
               return (
-                <Grid item xs={12} sm={6} md={4} key={docType.value}>
+                <Grid xs={12} sm={6} md={4} key={docType.value}>
                   <Button
                     variant={isUploaded ? "outlined" : "contained"}
                     fullWidth
@@ -262,7 +258,7 @@ export const DocumentUploadManager: React.FC<DocumentUploadManagerProps> = ({
       ) : (
         <Grid container spacing={2}>
           {documents.map((document) => (
-            <Grid item xs={12} sm={6} md={4} key={document.id}>
+            <Grid xs={12} sm={6} md={4} key={document.id}>
               <Card sx={{ height: '100%' }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>

@@ -86,7 +86,7 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
       const { data, error } = await supabase
         .from('candidate_aptitude_results')
         .select('*, aptitude_tests(*)')
-        .eq('candidate_id', candidate.id)
+        .eq('candidate_id', candidate.id.toString())
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -101,7 +101,7 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
       const { data, error } = await supabase
         .from('candidate_aptitude_results')
         .insert({
-          candidate_id: candidate.id,
+          candidate_id: candidate.id.toString(),
           aptitude_test_id: assignmentData.test_id,
           score: 0,
           status: 'scheduled',
@@ -194,7 +194,7 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
 
       {/* Overview Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
               <Typography variant="h4" color="primary">
@@ -207,7 +207,7 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
           </Card>
         </Grid>
         
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
               <Typography variant="h4" color="success.main">
@@ -220,7 +220,7 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
           </Card>
         </Grid>
         
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
               <Typography variant="h4" color="warning.main">
@@ -233,7 +233,7 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
           </Card>
         </Grid>
         
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
               <Typography variant="h4" color="text.primary">
@@ -379,7 +379,7 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
                               size="small"
                               variant="contained"
                               color="success"
-                              onClick={() => updateTestStatus(result.id, 'completed', 85)} // Mock score
+                              onClick={() => updateTestStatus(result.id, 'completed', 85)}
                             >
                               Complete
                             </Button>
@@ -476,7 +476,7 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
           {resultDialog.result && (
             <Box sx={{ pt: 2 }}>
               <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="subtitle2" sx={{ mb: 1 }}>Test Information</Typography>
                   <Typography variant="body2">
                     <strong>Category:</strong> {resultDialog.result.aptitude_tests?.category}
@@ -492,7 +492,7 @@ export const AptitudeTestManager: React.FC<AptitudeTestManagerProps> = ({
                   </Typography>
                 </Grid>
                 
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="subtitle2" sx={{ mb: 1 }}>Performance</Typography>
                   <Typography variant="body2">
                     <strong>Final Score:</strong> {resultDialog.result.score}%
