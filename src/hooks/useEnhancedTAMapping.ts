@@ -57,16 +57,41 @@ interface RoleTarget {
   target_period_end: string;
 }
 
-// Helper function to safely convert Json array to string array
-const jsonArrayToStringArray = (jsonArray: any[]): string[] => {
-  if (!Array.isArray(jsonArray)) return [];
-  return jsonArray.map(item => {
-    if (typeof item === 'string') return item;
-    if (typeof item === 'number') return item.toString();
-    if (typeof item === 'boolean') return item.toString();
-    if (item === null || item === undefined) return '';
-    return JSON.stringify(item);
-  });
+// Helper function to safely convert Json to string array
+const jsonToStringArray = (jsonValue: any): string[] => {
+  // If it's null or undefined, return empty array
+  if (jsonValue === null || jsonValue === undefined) {
+    return [];
+  }
+  
+  // If it's already an array, convert each item to string
+  if (Array.isArray(jsonValue)) {
+    return jsonValue.map(item => {
+      if (typeof item === 'string') return item;
+      if (typeof item === 'number') return item.toString();
+      if (typeof item === 'boolean') return item.toString();
+      if (item === null || item === undefined) return '';
+      return JSON.stringify(item);
+    });
+  }
+  
+  // If it's a string, try to parse it as JSON array
+  if (typeof jsonValue === 'string') {
+    try {
+      const parsed = JSON.parse(jsonValue);
+      if (Array.isArray(parsed)) {
+        return jsonToStringArray(parsed);
+      }
+      // If it's a single string value, return it as array
+      return [jsonValue];
+    } catch {
+      // If parsing fails, treat as single string
+      return [jsonValue];
+    }
+  }
+  
+  // For other types, convert to string and return as single-item array
+  return [String(jsonValue)];
 };
 
 export const useEnhancedTAMapping = (roleId?: string) => {
@@ -92,8 +117,8 @@ export const useEnhancedTAMapping = (roleId?: string) => {
         name: item.name,
         email: item.email,
         status: (item.status as 'active' | 'inactive' | 'on_leave') || 'active',
-        skills: jsonArrayToStringArray(item.skills || []),
-        certifications: jsonArrayToStringArray(item.certifications || []),
+        skills: jsonToStringArray(item.skills),
+        certifications: jsonToStringArray(item.certifications),
         experience_years: item.experience_years || 0,
         current_workload: item.current_workload || 0,
         max_workload: item.max_workload || 10,
@@ -265,8 +290,8 @@ export const useEnhancedTAMapping = (roleId?: string) => {
         name: data.name,
         email: data.email,
         status: (data.status as 'active' | 'inactive' | 'on_leave') || 'active',
-        skills: jsonArrayToStringArray(data.skills || []),
-        certifications: jsonArrayToStringArray(data.certifications || []),
+        skills: jsonToStringArray(data.skills),
+        certifications: jsonToStringArray(data.certifications),
         experience_years: data.experience_years || 0,
         current_workload: data.current_workload || 0,
         max_workload: data.max_workload || 10,
