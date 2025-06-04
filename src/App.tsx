@@ -44,6 +44,7 @@ import ExecutiveClientPage from './pages/ams/executive/ExecutiveClientPage';
 import UserManagementPage from './pages/ams/admin/UserManagementPage';
 import InterviewerDashboardPage from './pages/ams/interviewer/InterviewerDashboardPage';
 import CandidateDashboardPage from './pages/ams/candidate/CandidateDashboardPage';
+import VendorDetailPage from './pages/ams/vendors/VendorDetailPage';
 
 const queryClient = new QueryClient();
 
@@ -100,6 +101,7 @@ function App() {
                         <Route path="/ams/checklists" element={<ChecklistsPage />} />
                         <Route path="/ams/certifications" element={<CertificationsPage />} />
                         <Route path="/ams/vendor-management" element={<VendorManagementPage />} />
+<Route path="/ams/vendor-management/:vendorId" element={<VendorDetailPage />} />
                         <Route path="/ams/commissions" element={<CommissionsPage />} />
                         <Route path="/ams/analytics" element={<Dashboard />} />
                         <Route path="/ams/admin/users" element={<UserManagementPage />} />
