@@ -112,7 +112,7 @@ export const CandidateApplicationDetailDrawer: React.FC<CandidateApplicationDeta
 
   return (
     <Drawer open={open} onOpenChange={onClose}>
-      <DrawerContent className="max-h-[90vh]">
+      <DrawerContent className="max-h-[90vh] w-[60%] ml-auto">
         <DrawerHeader className="border-b">
           <div className="flex items-center justify-between">
             <div>
