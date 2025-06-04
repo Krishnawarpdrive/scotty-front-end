@@ -85,7 +85,7 @@ export const EnhancedTAMappingInterface: React.FC<EnhancedTAMappingInterfaceProp
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="default" size="sm">
             <UserPlus className="h-4 w-4 mr-2" />
             Add TA
           </Button>
