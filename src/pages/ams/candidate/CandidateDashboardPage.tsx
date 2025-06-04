@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -24,15 +23,23 @@ import { CandidateRightDrawer } from './components/CandidateRightDrawer';
 import { CandidateApplicationsTable } from './components/CandidateApplicationsTable';
 import { CandidateStageDrawer } from './components/CandidateStageDrawer';
 import { CandidatePendingActions } from './components/CandidatePendingActions';
+import { CandidateApplicationDetailDrawer } from './components/CandidateApplicationDetailDrawer';
+import { CandidateApplicationDetailPage } from './components/CandidateApplicationDetailPage';
 import { useCandidateDashboardData } from './hooks/useCandidateDashboardData';
+import { useCandidateApplicationDetails } from './hooks/useCandidateApplicationDetails';
 
 const CandidateDashboardPage: React.FC = () => {
   const [selectedCandidateId] = useState('123e4567-e89b-12d3-a456-426614174000');
   const [showRightDrawer, setShowRightDrawer] = useState(false);
   const [showStageDrawer, setShowStageDrawer] = useState(false);
+  const [showApplicationDetailDrawer, setShowApplicationDetailDrawer] = useState(false);
+  const [showApplicationDetailPage, setShowApplicationDetailPage] = useState(false);
+  const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null);
   const [selectedStage, setSelectedStage] = useState(null);
   const [activeMainTab, setActiveMainTab] = useState('applications');
+  
   const { dashboardData, notifications, messages, isLoading } = useCandidateDashboardData(selectedCandidateId);
+  const { applicationDetails, isLoading: applicationLoading, submitInterviewReview } = useCandidateApplicationDetails(selectedApplicationId);
 
   // Mock data for the mission control interface
   const mockApplications = [
@@ -217,7 +224,8 @@ const CandidateDashboardPage: React.FC = () => {
 
   const handleApplicationClick = (application: any) => {
     console.log('Opening application details:', application.roleName);
-    // You could open a detailed view or the stage drawer here
+    setSelectedApplicationId(application.id);
+    setShowApplicationDetailDrawer(true);
   };
 
   const handleQuickAction = (applicationId: string, action: string) => {
@@ -236,12 +244,21 @@ const CandidateDashboardPage: React.FC = () => {
 
   const handleContentAction = (contentId: string, action: string) => {
     console.log('Content action:', action, 'for content:', contentId);
-    // Handle different content actions
   };
 
   const handleStageComplete = () => {
     console.log('Stage completed');
     setShowStageDrawer(false);
+  };
+
+  const handleViewFullDetails = (applicationId: string) => {
+    setShowApplicationDetailDrawer(false);
+    setShowApplicationDetailPage(true);
+  };
+
+  const handleBackFromDetailPage = () => {
+    setShowApplicationDetailPage(false);
+    setSelectedApplicationId(null);
   };
 
   const urgentActionsCount = mockPendingActions.filter(a => a.type === 'urgent' || a.type === 'overdue').length;
@@ -251,6 +268,16 @@ const CandidateDashboardPage: React.FC = () => {
       <div className="flex items-center justify-center h-screen">
         <div className="text-lg">Loading your mission control...</div>
       </div>
+    );
+  }
+
+  // Show detail page if selected
+  if (showApplicationDetailPage && selectedApplicationId) {
+    return (
+      <CandidateApplicationDetailPage
+        applicationId={selectedApplicationId}
+        onBack={handleBackFromDetailPage}
+      />
     );
   }
 
@@ -402,6 +429,18 @@ const CandidateDashboardPage: React.FC = () => {
         stageData={selectedStage}
         onContentAction={handleContentAction}
         onStageComplete={handleStageComplete}
+      />
+
+      {/* Application Detail Drawer */}
+      <CandidateApplicationDetailDrawer
+        open={showApplicationDetailDrawer}
+        onClose={() => {
+          setShowApplicationDetailDrawer(false);
+          setSelectedApplicationId(null);
+        }}
+        application={applicationDetails}
+        onViewFullDetails={handleViewFullDetails}
+        onSubmitReview={submitInterviewReview}
       />
     </div>
   );

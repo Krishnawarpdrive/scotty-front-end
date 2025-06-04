@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { DataTable } from '@/components/ui/data-table/DataTable';
 import { DataTableColumn } from '@/components/ui/data-table/types';
@@ -106,7 +105,12 @@ export const CandidateApplicationsTable: React.FC<CandidateApplicationsTableProp
       header: 'Role & Company',
       cell: (application) => (
         <div className="min-w-0">
-          <div className="font-medium text-gray-900 truncate">{application.roleName}</div>
+          <button
+            onClick={() => onApplicationClick(application)}
+            className="font-medium text-blue-600 hover:text-blue-800 truncate block text-left underline-offset-4 hover:underline"
+          >
+            {application.roleName}
+          </button>
           <div className="text-sm text-gray-500 truncate">{application.companyName}</div>
         </div>
       )
