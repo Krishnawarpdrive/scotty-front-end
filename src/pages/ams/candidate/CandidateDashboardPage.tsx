@@ -14,319 +14,394 @@ import {
   Search,
   Calendar,
   MessageSquare,
-  Target
+  Target,
+  AlertTriangle,
+  CheckCircle
 } from 'lucide-react';
 import { CandidateLeftSidebar } from './components/CandidateLeftSidebar';
-import { CandidateRolesTabs } from './components/CandidateRolesTabs';
 import { CandidateQuickInsights } from './components/CandidateQuickInsights';
 import { CandidateRightDrawer } from './components/CandidateRightDrawer';
+import { CandidateApplicationsTable } from './components/CandidateApplicationsTable';
+import { CandidateStageDrawer } from './components/CandidateStageDrawer';
+import { CandidatePendingActions } from './components/CandidatePendingActions';
 import { useCandidateDashboardData } from './hooks/useCandidateDashboardData';
 
 const CandidateDashboardPage: React.FC = () => {
   const [selectedCandidateId] = useState('123e4567-e89b-12d3-a456-426614174000');
   const [showRightDrawer, setShowRightDrawer] = useState(false);
-  const [activeMainTab, setActiveMainTab] = useState('journey');
+  const [showStageDrawer, setShowStageDrawer] = useState(false);
+  const [selectedStage, setSelectedStage] = useState(null);
+  const [activeMainTab, setActiveMainTab] = useState('applications');
   const { dashboardData, notifications, messages, isLoading } = useCandidateDashboardData(selectedCandidateId);
 
-  // Mock data for the new journey-driven experience
+  // Mock data for the mission control interface
   const mockApplications = [
     {
       id: '1',
       roleName: 'Senior Frontend Developer',
       companyName: 'TechCorp Inc',
-      location: 'San Francisco, CA',
-      appliedDate: '5 days ago',
+      appliedDate: '2024-01-15',
       currentStage: 'Technical Interview',
       progress: 65,
       status: 'active' as const,
       priority: 'high' as const,
       nextAction: 'Prepare for technical interview',
+      daysInStage: 3,
+      hasPendingActions: true,
+      alertReason: 'Interview scheduled for tomorrow',
+      nextDueDate: 'Tomorrow 2:00 PM',
       stages: [
         {
           id: '1',
           name: 'Application Submitted',
           status: 'completed' as const,
-          type: 'application' as const,
-          date: '5 days ago',
-          description: 'Your application has been successfully submitted and reviewed by the hiring team.',
+          type: 'document' as const,
+          completedDate: '2024-01-15'
         },
         {
           id: '2',
           name: 'Phone Screening',
           status: 'completed' as const,
-          type: 'screening' as const,
-          date: '3 days ago',
-          description: 'Completed initial phone screening with HR.',
-          feedback: 'Great communication skills and enthusiasm for the role.',
+          type: 'interview' as const,
+          completedDate: '2024-01-18'
         },
         {
           id: '3',
           name: 'Technical Interview',
           status: 'current' as const,
           type: 'interview' as const,
-          date: 'Tomorrow at 2:00 PM',
-          description: 'Technical interview focusing on React, TypeScript, and system design.',
-          nextAction: 'Review technical concepts and prepare coding examples',
-          documents: ['Updated Resume', 'Portfolio Projects'],
+          dueDate: 'Tomorrow',
+          hasAction: true,
+          actionType: 'join_interview'
         },
         {
           id: '4',
           name: 'Team Interview',
-          status: 'upcoming' as const,
-          type: 'interview' as const,
-          description: 'Meet with the development team and discuss collaboration.',
-        },
-        {
-          id: '5',
-          name: 'Final Decision',
-          status: 'upcoming' as const,
-          type: 'offer' as const,
-          description: 'Final decision and potential offer discussion.',
-        },
-      ],
+          status: 'pending' as const,
+          type: 'interview' as const
+        }
+      ]
     },
     {
       id: '2',
       roleName: 'Full Stack Engineer',
       companyName: 'DataFlow Systems',
-      location: 'Remote',
-      appliedDate: '1 week ago',
-      currentStage: 'Waiting for Response',
+      appliedDate: '2024-01-20',
+      currentStage: 'Document Verification',
       progress: 30,
       status: 'active' as const,
       priority: 'medium' as const,
-      nextAction: 'Follow up on application status',
+      daysInStage: 7,
+      hasPendingActions: true,
+      alertReason: 'Missing documents',
+      nextDueDate: 'End of week',
       stages: [
         {
           id: '1',
           name: 'Application Submitted',
           status: 'completed' as const,
-          type: 'application' as const,
-          date: '1 week ago',
-          description: 'Application submitted through company portal.',
+          type: 'document' as const
         },
         {
           id: '2',
-          name: 'Application Review',
+          name: 'Document Verification',
           status: 'current' as const,
-          type: 'screening' as const,
-          description: 'Your application is being reviewed by the hiring team.',
-          nextAction: 'Wait for initial screening call',
-        },
-      ],
+          type: 'document' as const,
+          hasAction: true,
+          actionType: 'upload_documents'
+        }
+      ]
     },
     {
       id: '3',
       roleName: 'React Developer',
       companyName: 'StartupXYZ',
-      location: 'New York, NY',
-      appliedDate: '2 weeks ago',
-      currentStage: 'Offer Received',
+      appliedDate: '2024-01-10',
+      currentStage: 'Offer Review',
       progress: 100,
       status: 'offer' as const,
       priority: 'high' as const,
-      stages: [
-        {
-          id: '1',
-          name: 'Application Submitted',
-          status: 'completed' as const,
-          type: 'application' as const,
-          date: '2 weeks ago',
-        },
-        {
-          id: '2',
-          name: 'Technical Assessment',
-          status: 'completed' as const,
-          type: 'assessment' as const,
-          date: '10 days ago',
-          feedback: 'Excellent problem-solving skills and clean code.',
-        },
-        {
-          id: '3',
-          name: 'Team Interview',
-          status: 'completed' as const,
-          type: 'interview' as const,
-          date: '5 days ago',
-          feedback: 'Great cultural fit and technical expertise.',
-        },
-        {
-          id: '4',
-          name: 'Offer Extended',
-          status: 'completed' as const,
-          type: 'offer' as const,
-          date: '2 days ago',
-          description: 'Competitive offer with equity package.',
-        },
-      ],
-    },
+      daysInStage: 2,
+      hasPendingActions: true,
+      alertReason: 'Offer expires in 3 days',
+      nextDueDate: 'Jan 28, 2024',
+      stages: []
+    }
   ];
 
-  const mockInsights = [
+  const mockPendingActions = [
     {
       id: '1',
-      type: 'achievement' as const,
-      title: 'Great Progress!',
-      value: '3',
-      description: 'You have 3 active applications in advanced stages.',
-      priority: 'medium' as const,
+      type: 'urgent' as const,
+      applicationName: 'Senior Frontend Developer - TechCorp',
+      stageName: 'Technical Interview',
+      actionTitle: 'Join Technical Interview',
+      description: 'Your technical interview is scheduled for tomorrow at 2:00 PM',
+      dueDate: 'Tomorrow 2:00 PM',
+      priority: 'high' as const,
+      actionType: 'interview' as const,
+      estimatedTime: '1 hour'
     },
     {
       id: '2',
-      type: 'alert' as const,
-      title: 'Interview Tomorrow',
-      description: 'Technical interview with TechCorp at 2:00 PM. Make sure to prepare!',
-      action: 'View Preparation Tips',
+      type: 'overdue' as const,
+      applicationName: 'Full Stack Engineer - DataFlow',
+      stageName: 'Document Verification',
+      actionTitle: 'Upload Missing Documents',
+      description: 'Please upload your updated resume and portfolio',
+      daysOverdue: 2,
       priority: 'high' as const,
+      actionType: 'document' as const,
+      estimatedTime: '10 minutes'
     },
     {
       id: '3',
-      type: 'tip' as const,
-      title: 'Profile Optimization',
-      description: 'Adding Docker and Kubernetes skills could increase your match rate by 15%.',
-      action: 'Update Skills',
-      priority: 'low' as const,
-    },
-    {
-      id: '4',
-      type: 'metric' as const,
-      title: 'Response Rate',
-      value: '85%',
-      description: 'Your response rate is above average. Keep up the great work!',
-      trend: 'up' as const,
-    },
+      type: 'urgent' as const,
+      applicationName: 'React Developer - StartupXYZ',
+      stageName: 'Offer Review',
+      actionTitle: 'Respond to Job Offer',
+      description: 'You have a job offer pending your response',
+      dueDate: 'Jan 28, 2024',
+      priority: 'high' as const,
+      actionType: 'form' as const,
+      estimatedTime: '15 minutes'
+    }
   ];
 
-  const mockStats = {
-    responseRate: 85,
-    averageProgressTime: '2.4d',
-    interviewSuccessRate: 78,
-    activeApplications: 3,
+  const mockStageData = {
+    id: '3',
+    name: 'Technical Interview',
+    description: 'Technical assessment focusing on React, TypeScript, and system design',
+    status: 'current' as const,
+    progress: 50,
+    content: [
+      {
+        id: '1',
+        type: 'video' as const,
+        title: 'Interview Preparation Video',
+        description: 'Watch this 15-minute video to prepare for your technical interview',
+        isRequired: false,
+        isCompleted: true,
+        estimatedTime: '15 minutes',
+        videoUrl: '#'
+      },
+      {
+        id: '2',
+        type: 'document' as const,
+        title: 'Technical Guidelines',
+        description: 'Download and review the technical interview guidelines',
+        isRequired: true,
+        isCompleted: true,
+        downloadUrl: '#',
+        estimatedTime: '5 minutes'
+      },
+      {
+        id: '3',
+        type: 'interview' as const,
+        title: 'Technical Interview Session',
+        description: 'Live technical interview with the development team',
+        isRequired: true,
+        isCompleted: false,
+        dueDate: 'Tomorrow 2:00 PM',
+        estimatedTime: '1 hour',
+        instructions: 'Make sure you have a stable internet connection and a quiet environment'
+      }
+    ],
+    nextSteps: [
+      'Complete the technical interview',
+      'Wait for feedback from the interview panel',
+      'Proceed to team interview if selected'
+    ],
+    supportContact: 'sarah.recruiter@techcorp.com'
   };
+
+  const handleApplicationClick = (application: any) => {
+    console.log('Opening application details:', application.roleName);
+    // You could open a detailed view or the stage drawer here
+  };
+
+  const handleQuickAction = (applicationId: string, action: string) => {
+    console.log('Quick action:', action, 'for application:', applicationId);
+    if (action === 'continue') {
+      setSelectedStage(mockStageData);
+      setShowStageDrawer(true);
+    }
+  };
+
+  const handlePendingActionClick = (action: any) => {
+    console.log('Pending action clicked:', action);
+    setSelectedStage(mockStageData);
+    setShowStageDrawer(true);
+  };
+
+  const handleContentAction = (contentId: string, action: string) => {
+    console.log('Content action:', action, 'for content:', contentId);
+    // Handle different content actions
+  };
+
+  const handleStageComplete = () => {
+    console.log('Stage completed');
+    setShowStageDrawer(false);
+  };
+
+  const urgentActionsCount = mockPendingActions.filter(a => a.type === 'urgent' || a.type === 'overdue').length;
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-lg">Loading your journey...</div>
+        <div className="text-lg">Loading your mission control...</div>
       </div>
     );
   }
 
   return (
     <div className="h-screen flex bg-gray-50">
-      {/* Left Sidebar - Always Visible */}
+      {/* Left Sidebar */}
       <CandidateLeftSidebar data={dashboardData} />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Enhanced Header */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Your Career Journey</h1>
-              <p className="text-gray-600">Track your progress across all applications and opportunities</p>
+      <div className="flex-1 flex overflow-hidden">
+        {/* Primary Content */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Enhanced Header */}
+          <div className="bg-white border-b border-gray-200 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Candidate Mission Control</h1>
+                <p className="text-gray-600">Manage all your applications and tasks in one place</p>
+              </div>
+              
+              <div className="flex items-center space-x-3">
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <Search className="h-4 w-4" />
+                  Quick Search
+                </Button>
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <Bell className="h-4 w-4" />
+                  {urgentActionsCount > 0 && (
+                    <Badge className="bg-red-500 text-white text-xs px-1 py-0 min-w-[16px] h-4">
+                      {urgentActionsCount}
+                    </Badge>
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowRightDrawer(true)}
+                  className="flex items-center gap-2"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  Analytics
+                </Button>
+              </div>
             </div>
-            
-            <div className="flex items-center space-x-3">
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <Search className="h-4 w-4" />
-                Quick Search
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <Bell className="h-4 w-4" />
-                <Badge className="bg-red-500 text-white text-xs px-1 py-0 min-w-[16px] h-4">
-                  2
-                </Badge>
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowRightDrawer(true)}
-                className="flex items-center gap-2"
-              >
-                <BarChart3 className="h-4 w-4" />
-                Analytics
-              </Button>
-              <Button variant="outline" size="sm">
-                <Settings className="h-4 w-4" />
-              </Button>
-            </div>
+          </div>
+
+          {/* Main Tabs Navigation */}
+          <div className="bg-white border-b border-gray-200 px-6">
+            <Tabs value={activeMainTab} onValueChange={setActiveMainTab}>
+              <TabsList className="h-12 bg-transparent border-none p-0">
+                <TabsTrigger 
+                  value="applications" 
+                  className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
+                >
+                  <Briefcase className="h-4 w-4 mr-2" />
+                  My Applications
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="insights" 
+                  className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
+                >
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Insights
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="calendar" 
+                  className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
+                >
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Schedule
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="messages" 
+                  className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Messages
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
+          {/* Tab Content */}
+          <div className="flex-1 overflow-y-auto">
+            <Tabs value={activeMainTab} onValueChange={setActiveMainTab}>
+              <TabsContent value="applications" className="p-6 m-0">
+                <CandidateApplicationsTable
+                  applications={mockApplications}
+                  onApplicationClick={handleApplicationClick}
+                  onQuickAction={handleQuickAction}
+                />
+              </TabsContent>
+
+              <TabsContent value="insights" className="p-6 m-0">
+                <CandidateQuickInsights 
+                  insights={[]} 
+                  overallStats={{
+                    responseRate: 85,
+                    averageProgressTime: '2.4d',
+                    interviewSuccessRate: 78,
+                    activeApplications: 3
+                  }} 
+                />
+              </TabsContent>
+
+              <TabsContent value="calendar" className="p-6 m-0">
+                <Card>
+                  <CardContent className="p-12 text-center">
+                    <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Interview Calendar</h3>
+                    <p className="text-gray-600">Your upcoming interviews and important dates will appear here.</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="messages" className="p-6 m-0">
+                <Card>
+                  <CardContent className="p-12 text-center">
+                    <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Messages & Communications</h3>
+                    <p className="text-gray-600">All your communications with recruiters and hiring teams will be here.</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
 
-        {/* Main Tabs Navigation */}
-        <div className="bg-white border-b border-gray-200 px-6">
-          <Tabs value={activeMainTab} onValueChange={setActiveMainTab}>
-            <TabsList className="h-12 bg-transparent border-none p-0">
-              <TabsTrigger 
-                value="journey" 
-                className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
-              >
-                <Briefcase className="h-4 w-4 mr-2" />
-                My Journey
-              </TabsTrigger>
-              <TabsTrigger 
-                value="insights" 
-                className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
-              >
-                <TrendingUp className="h-4 w-4 mr-2" />
-                Insights
-              </TabsTrigger>
-              <TabsTrigger 
-                value="calendar" 
-                className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
-              >
-                <Calendar className="h-4 w-4 mr-2" />
-                Schedule
-              </TabsTrigger>
-              <TabsTrigger 
-                value="messages" 
-                className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
-              >
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Messages
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-
-        {/* Tab Content */}
-        <div className="flex-1 overflow-y-auto">
-          <Tabs value={activeMainTab} onValueChange={setActiveMainTab}>
-            <TabsContent value="journey" className="p-6 m-0">
-              <CandidateRolesTabs applications={mockApplications} />
-            </TabsContent>
-
-            <TabsContent value="insights" className="p-6 m-0">
-              <CandidateQuickInsights insights={mockInsights} overallStats={mockStats} />
-            </TabsContent>
-
-            <TabsContent value="calendar" className="p-6 m-0">
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Interview Calendar</h3>
-                  <p className="text-gray-600">Your upcoming interviews and important dates will appear here.</p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="messages" className="p-6 m-0">
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Messages & Communications</h3>
-                  <p className="text-gray-600">All your communications with recruiters and hiring teams will be here.</p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+        {/* Right Sidebar for Pending Actions */}
+        <div className="w-80 bg-white border-l border-gray-200 p-6 overflow-y-auto">
+          <CandidatePendingActions
+            actions={mockPendingActions}
+            onActionClick={handlePendingActionClick}
+            onDismiss={(actionId) => console.log('Dismiss action:', actionId)}
+          />
         </div>
       </div>
 
-      {/* Right Sidebar Drawer */}
+      {/* Right Drawer for Analytics */}
       <CandidateRightDrawer
         open={showRightDrawer}
         onOpenChange={setShowRightDrawer}
         data={dashboardData}
+      />
+
+      {/* Stage Content Drawer */}
+      <CandidateStageDrawer
+        open={showStageDrawer}
+        onClose={() => setShowStageDrawer(false)}
+        stageData={selectedStage}
+        onContentAction={handleContentAction}
+        onStageComplete={handleStageComplete}
       />
     </div>
   );
