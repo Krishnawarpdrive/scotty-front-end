@@ -47,12 +47,14 @@ interface CandidateApplication {
 interface CandidateApplicationsTableProps {
   applications: CandidateApplication[];
   onApplicationClick: (application: CandidateApplication) => void;
+  onCompanyClick: (application: CandidateApplication) => void;
   onQuickAction: (applicationId: string, action: string) => void;
 }
 
 export const CandidateApplicationsTable: React.FC<CandidateApplicationsTableProps> = ({
   applications,
   onApplicationClick,
+  onCompanyClick,
   onQuickAction
 }) => {
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
@@ -111,7 +113,12 @@ export const CandidateApplicationsTable: React.FC<CandidateApplicationsTableProp
           >
             {application.roleName}
           </button>
-          <div className="text-sm text-gray-500 truncate">{application.companyName}</div>
+          <button
+            onClick={() => onCompanyClick(application)}
+            className="text-sm text-gray-500 truncate hover:text-blue-600 hover:underline underline-offset-4 block text-left"
+          >
+            {application.companyName}
+          </button>
         </div>
       )
     },

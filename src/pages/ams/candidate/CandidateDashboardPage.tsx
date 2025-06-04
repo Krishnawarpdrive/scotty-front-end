@@ -27,6 +27,7 @@ import { CandidateApplicationDetailDrawer } from './components/CandidateApplicat
 import { CandidateApplicationDetailPage } from './components/CandidateApplicationDetailPage';
 import { useCandidateDashboardData } from './hooks/useCandidateDashboardData';
 import { useCandidateApplicationDetails } from './hooks/useCandidateApplicationDetails';
+import { CandidateCompanyProgressDrawer } from './components/CandidateCompanyProgressDrawer';
 
 const CandidateDashboardPage: React.FC = () => {
   const [selectedCandidateId] = useState('123e4567-e89b-12d3-a456-426614174000');
@@ -34,6 +35,7 @@ const CandidateDashboardPage: React.FC = () => {
   const [showStageDrawer, setShowStageDrawer] = useState(false);
   const [showApplicationDetailDrawer, setShowApplicationDetailDrawer] = useState(false);
   const [showApplicationDetailPage, setShowApplicationDetailPage] = useState(false);
+  const [showCompanyProgressDrawer, setShowCompanyProgressDrawer] = useState(false);
   const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null);
   const [selectedStage, setSelectedStage] = useState(null);
   const [activeMainTab, setActiveMainTab] = useState('applications');
@@ -63,14 +65,21 @@ const CandidateDashboardPage: React.FC = () => {
           name: 'Application Submitted',
           status: 'completed' as const,
           type: 'document' as const,
-          completedDate: '2024-01-15'
+          completedDate: '2024-01-15',
+          description: 'Your application has been successfully submitted and is under initial review.',
+          documents: ['Resume', 'Cover Letter'],
+          notes: 'Application received and acknowledged by HR team.'
         },
         {
           id: '2',
           name: 'Phone Screening',
           status: 'completed' as const,
           type: 'interview' as const,
-          completedDate: '2024-01-18'
+          completedDate: '2024-01-18',
+          description: 'Initial phone screening with HR to discuss role and basic qualifications.',
+          duration: '30 minutes',
+          interviewer: 'Sarah Chen (HR Manager)',
+          notes: 'Positive feedback on communication skills and technical background.'
         },
         {
           id: '3',
@@ -78,6 +87,10 @@ const CandidateDashboardPage: React.FC = () => {
           status: 'current' as const,
           type: 'interview' as const,
           dueDate: 'Tomorrow',
+          description: 'Technical assessment focusing on React, TypeScript, and problem-solving skills.',
+          duration: '1 hour',
+          interviewer: 'Mike Johnson (Lead Developer)',
+          location: 'Video Call (Google Meet)',
           hasAction: true,
           actionType: 'join_interview'
         },
@@ -85,7 +98,16 @@ const CandidateDashboardPage: React.FC = () => {
           id: '4',
           name: 'Team Interview',
           status: 'pending' as const,
-          type: 'interview' as const
+          type: 'interview' as const,
+          description: 'Meet with your potential team members and discuss collaboration.',
+          duration: '45 minutes'
+        },
+        {
+          id: '5',
+          name: 'Final Review',
+          status: 'pending' as const,
+          type: 'assessment' as const,
+          description: 'Final review and decision by the hiring committee.'
         }
       ]
     },
@@ -107,15 +129,21 @@ const CandidateDashboardPage: React.FC = () => {
           id: '1',
           name: 'Application Submitted',
           status: 'completed' as const,
-          type: 'document' as const
+          type: 'document' as const,
+          completedDate: '2024-01-20',
+          description: 'Application submitted successfully.',
+          documents: ['Resume']
         },
         {
           id: '2',
           name: 'Document Verification',
           status: 'current' as const,
           type: 'document' as const,
+          description: 'Verification of submitted documents and credentials.',
           hasAction: true,
-          actionType: 'upload_documents'
+          actionType: 'upload_documents',
+          documents: ['Portfolio', 'References'],
+          notes: 'Please upload your portfolio and professional references.'
         }
       ]
     },
@@ -132,7 +160,45 @@ const CandidateDashboardPage: React.FC = () => {
       hasPendingActions: true,
       alertReason: 'Offer expires in 3 days',
       nextDueDate: 'Jan 28, 2024',
-      stages: []
+      stages: [
+        {
+          id: '1',
+          name: 'Application Submitted',
+          status: 'completed' as const,
+          type: 'document' as const,
+          completedDate: '2024-01-10'
+        },
+        {
+          id: '2',
+          name: 'Technical Assessment',
+          status: 'completed' as const,
+          type: 'assessment' as const,
+          completedDate: '2024-01-15',
+          description: 'Online coding assessment completed.',
+          duration: '2 hours',
+          notes: 'Excellent performance on React and JavaScript challenges.'
+        },
+        {
+          id: '3',
+          name: 'Final Interview',
+          status: 'completed' as const,
+          type: 'interview' as const,
+          completedDate: '2024-01-22',
+          description: 'Final interview with the founding team.',
+          interviewer: 'John Doe (CTO)',
+          duration: '45 minutes'
+        },
+        {
+          id: '4',
+          name: 'Offer Review',
+          status: 'current' as const,
+          type: 'document' as const,
+          description: 'Review and respond to the job offer.',
+          hasAction: true,
+          actionType: 'respond_offer',
+          notes: 'Competitive salary package with equity options included.'
+        }
+      ]
     }
   ];
 
@@ -226,6 +292,12 @@ const CandidateDashboardPage: React.FC = () => {
     console.log('Opening application details:', application.roleName);
     setSelectedApplicationId(application.id);
     setShowApplicationDetailDrawer(true);
+  };
+
+  const handleCompanyClick = (application: any) => {
+    console.log('Opening company progress:', application.companyName);
+    setSelectedApplicationId(application.id);
+    setShowCompanyProgressDrawer(true);
   };
 
   const handleQuickAction = (applicationId: string, action: string) => {
@@ -366,6 +438,7 @@ const CandidateDashboardPage: React.FC = () => {
                 <CandidateApplicationsTable
                   applications={mockApplications}
                   onApplicationClick={handleApplicationClick}
+                  onCompanyClick={handleCompanyClick}
                   onQuickAction={handleQuickAction}
                 />
               </TabsContent>
@@ -441,6 +514,16 @@ const CandidateDashboardPage: React.FC = () => {
         application={applicationDetails}
         onViewFullDetails={handleViewFullDetails}
         onSubmitReview={submitInterviewReview}
+      />
+
+      {/* Company Progress Drawer */}
+      <CandidateCompanyProgressDrawer
+        open={showCompanyProgressDrawer}
+        onClose={() => {
+          setShowCompanyProgressDrawer(false);
+          setSelectedApplicationId(null);
+        }}
+        application={selectedApplicationId ? mockApplications.find(app => app.id === selectedApplicationId) || null : null}
       />
     </div>
   );
