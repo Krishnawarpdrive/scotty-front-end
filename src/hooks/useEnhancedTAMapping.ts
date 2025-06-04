@@ -57,14 +57,41 @@ interface RoleTarget {
   target_period_end: string;
 }
 
+interface TAAssignmentMetrics {
+  id: string;
+  assignment_id: string;
+  metric_type: 'candidates_sourced' | 'interviews_scheduled' | 'offers_made' | 'hires_completed';
+  target_value: number;
+  actual_value: number;
+  measurement_period_start: string;
+  measurement_period_end: string;
+}
+
+interface TACollaboration {
+  id: string;
+  primary_ta_id: string;
+  secondary_ta_id: string;
+  assignment_id: string;
+  collaboration_type: 'primary_secondary' | 'equal_partners' | 'mentor_mentee';
+  responsibilities: Record<string, any>;
+}
+
+interface TAPerformanceInsight {
+  id: string;
+  ta_id: string;
+  insight_type: 'strength' | 'improvement_area' | 'recommendation' | 'trend';
+  insight_data: Record<string, any>;
+  confidence_score: number;
+  generated_at: string;
+  is_active: boolean;
+}
+
 // Helper function to safely convert Json to string array
 const jsonToStringArray = (jsonValue: any): string[] => {
-  // If it's null or undefined, return empty array
   if (jsonValue === null || jsonValue === undefined) {
     return [];
   }
   
-  // If it's already an array, convert each item to string
   if (Array.isArray(jsonValue)) {
     return jsonValue.map(item => {
       if (typeof item === 'string') return item;
@@ -75,22 +102,18 @@ const jsonToStringArray = (jsonValue: any): string[] => {
     });
   }
   
-  // If it's a string, try to parse it as JSON array
   if (typeof jsonValue === 'string') {
     try {
       const parsed = JSON.parse(jsonValue);
       if (Array.isArray(parsed)) {
         return jsonToStringArray(parsed);
       }
-      // If it's a single string value, return it as array
       return [jsonValue];
     } catch {
-      // If parsing fails, treat as single string
       return [jsonValue];
     }
   }
   
-  // For other types, convert to string and return as single-item array
   return [String(jsonValue)];
 };
 
@@ -99,6 +122,9 @@ export const useEnhancedTAMapping = (roleId?: string) => {
   const [assignments, setAssignments] = useState<TAAssignment[]>([]);
   const [workloadData, setWorkloadData] = useState<WorkloadData[]>([]);
   const [roleTargets, setRoleTargets] = useState<RoleTarget[]>([]);
+  const [assignmentMetrics, setAssignmentMetrics] = useState<TAAssignmentMetrics[]>([]);
+  const [collaborations, setCollaborations] = useState<TACollaboration[]>([]);
+  const [performanceInsights, setPerformanceInsights] = useState<TAPerformanceInsight[]>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -111,7 +137,6 @@ export const useEnhancedTAMapping = (roleId?: string) => {
 
       if (error) throw error;
       
-      // Transform and validate the data to match our interface
       const transformedData: TAProfile[] = (data || []).map(item => ({
         id: item.id,
         name: item.name,
@@ -148,7 +173,6 @@ export const useEnhancedTAMapping = (roleId?: string) => {
 
       if (error) throw error;
       
-      // Transform and validate the data to match our interface
       const transformedData: TAAssignment[] = (data || []).map(item => ({
         id: item.id,
         ta_id: item.ta_id,
@@ -172,6 +196,49 @@ export const useEnhancedTAMapping = (roleId?: string) => {
       });
     }
   }, [toast]);
+
+  const fetchAssignmentMetrics = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('ta_assignment_metrics')
+        .select('*')
+        .order('measurement_period_start', { ascending: false });
+
+      if (error) throw error;
+      setAssignmentMetrics(data || []);
+    } catch (error) {
+      console.error('Error fetching assignment metrics:', error);
+    }
+  }, []);
+
+  const fetchCollaborations = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('ta_collaborations')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setCollaborations(data || []);
+    } catch (error) {
+      console.error('Error fetching collaborations:', error);
+    }
+  }, []);
+
+  const fetchPerformanceInsights = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('ta_performance_insights')
+        .select('*')
+        .eq('is_active', true)
+        .order('generated_at', { ascending: false });
+
+      if (error) throw error;
+      setPerformanceInsights(data || []);
+    } catch (error) {
+      console.error('Error fetching performance insights:', error);
+    }
+  }, []);
 
   const fetchWorkloadData = useCallback(async () => {
     if (!roleId) return;
@@ -213,13 +280,16 @@ export const useEnhancedTAMapping = (roleId?: string) => {
       await Promise.all([
         fetchTAProfiles(),
         fetchAssignments(),
+        fetchAssignmentMetrics(),
+        fetchCollaborations(),
+        fetchPerformanceInsights(),
         fetchWorkloadData(),
         fetchRoleTargets()
       ]);
     } finally {
       setLoading(false);
     }
-  }, [fetchTAProfiles, fetchAssignments, fetchWorkloadData, fetchRoleTargets]);
+  }, [fetchTAProfiles, fetchAssignments, fetchAssignmentMetrics, fetchCollaborations, fetchPerformanceInsights, fetchWorkloadData, fetchRoleTargets]);
 
   const assignTAToRole = useCallback(async (taId: string, assignmentData: Partial<TAAssignment>) => {
     try {
@@ -240,7 +310,6 @@ export const useEnhancedTAMapping = (roleId?: string) => {
 
       if (error) throw error;
 
-      // Transform the returned data to match our interface
       const newAssignment: TAAssignment = {
         id: data.id,
         ta_id: data.ta_id,
@@ -284,7 +353,6 @@ export const useEnhancedTAMapping = (roleId?: string) => {
 
       if (error) throw error;
 
-      // Transform the returned data to match our interface
       const updatedProfile: TAProfile = {
         id: data.id,
         name: data.name,
@@ -320,6 +388,77 @@ export const useEnhancedTAMapping = (roleId?: string) => {
     }
   }, [toast]);
 
+  const createCollaboration = useCallback(async (
+    primaryTaId: string, 
+    secondaryTaId: string, 
+    assignmentId: string, 
+    collaborationType: 'primary_secondary' | 'equal_partners' | 'mentor_mentee',
+    responsibilities: Record<string, any> = {}
+  ) => {
+    try {
+      const { data, error } = await supabase
+        .from('ta_collaborations')
+        .insert({
+          primary_ta_id: primaryTaId,
+          secondary_ta_id: secondaryTaId,
+          assignment_id: assignmentId,
+          collaboration_type: collaborationType,
+          responsibilities
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setCollaborations(prev => [...prev, data]);
+      
+      toast({
+        title: "Success",
+        description: "Collaboration created successfully",
+      });
+
+      return data;
+    } catch (error) {
+      console.error('Error creating collaboration:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create collaboration",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  }, [toast]);
+
+  const updateAssignmentStatus = useCallback(async (assignmentId: string, status: 'active' | 'completed' | 'on_hold') => {
+    try {
+      const { error } = await supabase
+        .from('ta_assignments')
+        .update({ status })
+        .eq('id', assignmentId);
+
+      if (error) throw error;
+
+      setAssignments(prev => 
+        prev.map(assignment => 
+          assignment.id === assignmentId ? { ...assignment, status } : assignment
+        )
+      );
+
+      toast({
+        title: "Success",
+        description: "Assignment status updated successfully",
+      });
+    } catch (error) {
+      console.error('Error updating assignment status:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update assignment status",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  }, [toast]);
+
   // Initial data fetch
   useEffect(() => {
     refreshData();
@@ -328,7 +467,7 @@ export const useEnhancedTAMapping = (roleId?: string) => {
   // Set up real-time subscriptions
   useEffect(() => {
     const channel = supabase
-      .channel('ta-mapping-realtime')
+      .channel('enhanced-ta-mapping-realtime')
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
@@ -346,6 +485,27 @@ export const useEnhancedTAMapping = (roleId?: string) => {
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
+        table: 'ta_assignment_metrics'
+      }, () => {
+        fetchAssignmentMetrics();
+      })
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'ta_collaborations'
+      }, () => {
+        fetchCollaborations();
+      })
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'ta_performance_insights'
+      }, () => {
+        fetchPerformanceInsights();
+      })
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
         table: 'ta_workload_tracking'
       }, () => {
         fetchWorkloadData();
@@ -355,17 +515,22 @@ export const useEnhancedTAMapping = (roleId?: string) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [fetchTAProfiles, fetchAssignments, fetchWorkloadData]);
+  }, [fetchTAProfiles, fetchAssignments, fetchAssignmentMetrics, fetchCollaborations, fetchPerformanceInsights, fetchWorkloadData]);
 
   return {
     taProfiles,
     assignments,
     workloadData,
     roleTargets,
+    assignmentMetrics,
+    collaborations,
+    performanceInsights,
     loading,
     actions: {
       assignTAToRole,
       updateWorkload,
+      createCollaboration,
+      updateAssignmentStatus,
       refreshData
     }
   };

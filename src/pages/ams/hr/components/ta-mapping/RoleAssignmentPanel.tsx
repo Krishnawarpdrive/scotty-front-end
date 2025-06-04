@@ -11,33 +11,78 @@ import {
   Calendar,
   CheckCircle,
   AlertCircle,
-  Users
+  Users,
+  BarChart3
 } from 'lucide-react';
+
+interface TAAssignment {
+  id: string;
+  ta_id: string;
+  client_id: string;
+  requirement_id?: string;
+  assigned_at: string;
+  status: 'active' | 'completed' | 'on_hold';
+  priority: 'high' | 'medium' | 'low';
+  assignment_type: string;
+  target_completion_date?: string;
+  notes?: string;
+}
+
+interface TAAssignmentMetrics {
+  id: string;
+  assignment_id: string;
+  metric_type: 'candidates_sourced' | 'interviews_scheduled' | 'offers_made' | 'hires_completed';
+  target_value: number;
+  actual_value: number;
+  measurement_period_start: string;
+  measurement_period_end: string;
+}
 
 interface RoleAssignmentPanelProps {
   taId: string;
   roleId: string;
-  assignments: any[];
-  onAssignmentUpdate: (assignmentId: string, updates: any) => void;
+  assignments: TAAssignment[];
+  assignmentMetrics: TAAssignmentMetrics[];
+  onAssignmentUpdate: (assignmentId: string, status: 'active' | 'completed' | 'on_hold') => void;
 }
 
 export const RoleAssignmentPanel: React.FC<RoleAssignmentPanelProps> = ({
   taId,
   roleId,
   assignments,
+  assignmentMetrics,
   onAssignmentUpdate
 }) => {
   const [selectedAssignment, setSelectedAssignment] = useState<string | null>(null);
 
-  // Mock data for demonstration
+  // Calculate metrics for this TA
   const taMetrics = {
     totalAssignments: assignments.length,
-    completedThisWeek: Math.floor(assignments.length * 0.3),
+    activeAssignments: assignments.filter(a => a.status === 'active').length,
+    completedThisWeek: assignments.filter(a => 
+      a.status === 'completed' && 
+      new Date(a.assigned_at) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    ).length,
     avgTimeToComplete: '4.2 days',
     successRate: 87,
     currentCapacity: 75,
     weeklyTarget: 10,
     weeklyActual: 7
+  };
+
+  // Get metrics for assignments
+  const getAssignmentMetrics = (assignmentId: string) => {
+    return assignmentMetrics.filter(m => m.assignment_id === assignmentId);
+  };
+
+  const getMetricAchievement = (metrics: TAAssignmentMetrics[]) => {
+    if (metrics.length === 0) return { rate: 0, total: 0 };
+    const totalTarget = metrics.reduce((acc, m) => acc + m.target_value, 0);
+    const totalActual = metrics.reduce((acc, m) => acc + m.actual_value, 0);
+    return {
+      rate: totalTarget > 0 ? (totalActual / totalTarget) * 100 : 0,
+      total: totalActual
+    };
   };
 
   const weeklyProgress = [
@@ -68,7 +113,7 @@ export const RoleAssignmentPanel: React.FC<RoleAssignmentPanelProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* TA Performance Metrics */}
+      {/* TA Performance Overview */}
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -114,7 +159,7 @@ export const RoleAssignmentPanel: React.FC<RoleAssignmentPanelProps> = ({
         </Card>
       </div>
 
-      {/* Weekly Progress Chart */}
+      {/* Weekly Progress Breakdown */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Weekly Progress</CardTitle>
@@ -145,10 +190,13 @@ export const RoleAssignmentPanel: React.FC<RoleAssignmentPanelProps> = ({
         </CardContent>
       </Card>
 
-      {/* Assignment List */}
+      {/* Assignment List with Enhanced Details */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Current Assignments</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Current Assignments ({assignments.length})
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -158,67 +206,86 @@ export const RoleAssignmentPanel: React.FC<RoleAssignmentPanelProps> = ({
                 <p className="text-sm">No assignments for this TA</p>
               </div>
             ) : (
-              assignments.map((assignment) => (
-                <div 
-                  key={assignment.id}
-                  className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                    selectedAssignment === assignment.id ? 'border-blue-500 bg-blue-50' : 'hover:border-gray-300'
-                  }`}
-                  onClick={() => setSelectedAssignment(assignment.id)}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-sm">Assignment #{assignment.id.slice(0, 8)}</h4>
-                    <div className="flex items-center space-x-1">
-                      <Badge className={getPriorityColor(assignment.priority)} variant="secondary">
-                        {assignment.priority}
-                      </Badge>
-                      <Badge className={getAssignmentStatusColor(assignment.status)} variant="secondary">
-                        {assignment.status}
-                      </Badge>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-1 text-xs text-gray-600">
-                    <div className="flex items-center justify-between">
-                      <span>Assigned: {new Date(assignment.assigned_at).toLocaleDateString()}</span>
-                      {assignment.target_completion_date && (
-                        <span>Due: {new Date(assignment.target_completion_date).toLocaleDateString()}</span>
-                      )}
-                    </div>
-                    
-                    {assignment.notes && (
-                      <p className="text-xs text-gray-500 mt-1">{assignment.notes}</p>
-                    )}
-                  </div>
-
-                  {selectedAssignment === assignment.id && (
-                    <div className="mt-3 pt-3 border-t">
-                      <div className="flex space-x-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onAssignmentUpdate(assignment.id, { status: 'completed' });
-                          }}
-                        >
-                          Mark Complete
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onAssignmentUpdate(assignment.id, { status: 'on_hold' });
-                          }}
-                        >
-                          Put on Hold
-                        </Button>
+              assignments.map((assignment) => {
+                const metrics = getAssignmentMetrics(assignment.id);
+                const achievement = getMetricAchievement(metrics);
+                
+                return (
+                  <div 
+                    key={assignment.id}
+                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                      selectedAssignment === assignment.id ? 'border-blue-500 bg-blue-50' : 'hover:border-gray-300'
+                    }`}
+                    onClick={() => setSelectedAssignment(assignment.id)}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium text-sm">Assignment #{assignment.id.slice(0, 8)}</h4>
+                      <div className="flex items-center space-x-1">
+                        <Badge className={getPriorityColor(assignment.priority)} variant="secondary">
+                          {assignment.priority}
+                        </Badge>
+                        <Badge className={getAssignmentStatusColor(assignment.status)} variant="secondary">
+                          {assignment.status}
+                        </Badge>
                       </div>
                     </div>
-                  )}
-                </div>
-              ))
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs text-gray-600">
+                        <span>Assigned: {new Date(assignment.assigned_at).toLocaleDateString()}</span>
+                        {assignment.target_completion_date && (
+                          <span>Due: {new Date(assignment.target_completion_date).toLocaleDateString()}</span>
+                        )}
+                      </div>
+
+                      {metrics.length > 0 && (
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div className="bg-gray-50 p-2 rounded">
+                            <p className="font-medium">Performance</p>
+                            <p>{achievement.rate.toFixed(1)}% achievement</p>
+                          </div>
+                          <div className="bg-gray-50 p-2 rounded">
+                            <p className="font-medium">Total Results</p>
+                            <p>{achievement.total} completed</p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {assignment.notes && (
+                        <p className="text-xs text-gray-500 mt-1 p-2 bg-gray-50 rounded">{assignment.notes}</p>
+                      )}
+                    </div>
+
+                    {selectedAssignment === assignment.id && (
+                      <div className="mt-3 pt-3 border-t">
+                        <div className="flex space-x-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onAssignmentUpdate(assignment.id, 'completed');
+                            }}
+                            disabled={assignment.status === 'completed'}
+                          >
+                            Mark Complete
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onAssignmentUpdate(assignment.id, assignment.status === 'on_hold' ? 'active' : 'on_hold');
+                            }}
+                          >
+                            {assignment.status === 'on_hold' ? 'Reactivate' : 'Put on Hold'}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
             )}
           </div>
         </CardContent>

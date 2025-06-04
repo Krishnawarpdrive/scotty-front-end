@@ -2836,6 +2836,50 @@ export type Database = {
         }
         Relationships: []
       }
+      ta_assignment_metrics: {
+        Row: {
+          actual_value: number
+          assignment_id: string
+          created_at: string
+          id: string
+          measurement_period_end: string
+          measurement_period_start: string
+          metric_type: string
+          target_value: number
+          updated_at: string
+        }
+        Insert: {
+          actual_value?: number
+          assignment_id: string
+          created_at?: string
+          id?: string
+          measurement_period_end: string
+          measurement_period_start: string
+          metric_type: string
+          target_value?: number
+          updated_at?: string
+        }
+        Update: {
+          actual_value?: number
+          assignment_id?: string
+          created_at?: string
+          id?: string
+          measurement_period_end?: string
+          measurement_period_start?: string
+          metric_type?: string
+          target_value?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ta_assignment_metrics_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "ta_assignments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ta_assignments: {
         Row: {
           assigned_at: string | null
@@ -2899,6 +2943,102 @@ export type Database = {
           },
           {
             foreignKeyName: "ta_assignments_ta_id_fkey"
+            columns: ["ta_id"]
+            isOneToOne: false
+            referencedRelation: "ta_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ta_collaborations: {
+        Row: {
+          assignment_id: string
+          collaboration_type: string
+          created_at: string
+          id: string
+          primary_ta_id: string
+          responsibilities: Json | null
+          secondary_ta_id: string
+          updated_at: string
+        }
+        Insert: {
+          assignment_id: string
+          collaboration_type: string
+          created_at?: string
+          id?: string
+          primary_ta_id: string
+          responsibilities?: Json | null
+          secondary_ta_id: string
+          updated_at?: string
+        }
+        Update: {
+          assignment_id?: string
+          collaboration_type?: string
+          created_at?: string
+          id?: string
+          primary_ta_id?: string
+          responsibilities?: Json | null
+          secondary_ta_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ta_collaborations_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "ta_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ta_collaborations_primary_ta_id_fkey"
+            columns: ["primary_ta_id"]
+            isOneToOne: false
+            referencedRelation: "ta_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ta_collaborations_secondary_ta_id_fkey"
+            columns: ["secondary_ta_id"]
+            isOneToOne: false
+            referencedRelation: "ta_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ta_performance_insights: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          generated_at: string
+          id: string
+          insight_data: Json
+          insight_type: string
+          is_active: boolean | null
+          ta_id: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          generated_at?: string
+          id?: string
+          insight_data?: Json
+          insight_type: string
+          is_active?: boolean | null
+          ta_id: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          generated_at?: string
+          id?: string
+          insight_data?: Json
+          insight_type?: string
+          is_active?: boolean | null
+          ta_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ta_performance_insights_ta_id_fkey"
             columns: ["ta_id"]
             isOneToOne: false
             referencedRelation: "ta_profiles"
