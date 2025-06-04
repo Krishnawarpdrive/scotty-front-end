@@ -57,6 +57,18 @@ interface RoleTarget {
   target_period_end: string;
 }
 
+// Helper function to safely convert Json array to string array
+const jsonArrayToStringArray = (jsonArray: any[]): string[] => {
+  if (!Array.isArray(jsonArray)) return [];
+  return jsonArray.map(item => {
+    if (typeof item === 'string') return item;
+    if (typeof item === 'number') return item.toString();
+    if (typeof item === 'boolean') return item.toString();
+    if (item === null || item === undefined) return '';
+    return JSON.stringify(item);
+  });
+};
+
 export const useEnhancedTAMapping = (roleId?: string) => {
   const [taProfiles, setTAProfiles] = useState<TAProfile[]>([]);
   const [assignments, setAssignments] = useState<TAAssignment[]>([]);
@@ -80,8 +92,8 @@ export const useEnhancedTAMapping = (roleId?: string) => {
         name: item.name,
         email: item.email,
         status: (item.status as 'active' | 'inactive' | 'on_leave') || 'active',
-        skills: Array.isArray(item.skills) ? item.skills : [],
-        certifications: Array.isArray(item.certifications) ? item.certifications : [],
+        skills: jsonArrayToStringArray(item.skills || []),
+        certifications: jsonArrayToStringArray(item.certifications || []),
         experience_years: item.experience_years || 0,
         current_workload: item.current_workload || 0,
         max_workload: item.max_workload || 10,
@@ -253,8 +265,8 @@ export const useEnhancedTAMapping = (roleId?: string) => {
         name: data.name,
         email: data.email,
         status: (data.status as 'active' | 'inactive' | 'on_leave') || 'active',
-        skills: Array.isArray(data.skills) ? data.skills : [],
-        certifications: Array.isArray(data.certifications) ? data.certifications : [],
+        skills: jsonArrayToStringArray(data.skills || []),
+        certifications: jsonArrayToStringArray(data.certifications || []),
         experience_years: data.experience_years || 0,
         current_workload: data.current_workload || 0,
         max_workload: data.max_workload || 10,
