@@ -2600,6 +2600,53 @@ export type Database = {
           },
         ]
       }
+      role_targets: {
+        Row: {
+          candidates_target: number | null
+          closures_target: number | null
+          created_at: string
+          id: string
+          interviews_target: number | null
+          role_id: string
+          target_period_end: string
+          target_period_start: string
+          target_type: string
+          updated_at: string
+        }
+        Insert: {
+          candidates_target?: number | null
+          closures_target?: number | null
+          created_at?: string
+          id?: string
+          interviews_target?: number | null
+          role_id: string
+          target_period_end: string
+          target_period_start: string
+          target_type?: string
+          updated_at?: string
+        }
+        Update: {
+          candidates_target?: number | null
+          closures_target?: number | null
+          created_at?: string
+          id?: string
+          interviews_target?: number | null
+          role_id?: string
+          target_period_end?: string
+          target_period_start?: string
+          target_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_targets_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       roles: {
         Row: {
           category: string
@@ -2792,6 +2839,7 @@ export type Database = {
       ta_assignments: {
         Row: {
           assigned_at: string | null
+          assignment_type: string
           client_id: string
           created_at: string | null
           deadline: string | null
@@ -2801,10 +2849,12 @@ export type Database = {
           requirement_id: string
           status: string
           ta_id: string
+          target_completion_date: string | null
           updated_at: string | null
         }
         Insert: {
           assigned_at?: string | null
+          assignment_type?: string
           client_id: string
           created_at?: string | null
           deadline?: string | null
@@ -2814,10 +2864,12 @@ export type Database = {
           requirement_id: string
           status?: string
           ta_id: string
+          target_completion_date?: string | null
           updated_at?: string | null
         }
         Update: {
           assigned_at?: string | null
+          assignment_type?: string
           client_id?: string
           created_at?: string | null
           deadline?: string | null
@@ -2827,6 +2879,7 @@ export type Database = {
           requirement_id?: string
           status?: string
           ta_id?: string
+          target_completion_date?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -2900,6 +2953,69 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      ta_workload_tracking: {
+        Row: {
+          actual_candidates: number | null
+          actual_closures: number | null
+          actual_interviews: number | null
+          created_at: string
+          efficiency_score: number | null
+          id: string
+          role_id: string
+          ta_id: string
+          target_candidates: number | null
+          target_closures: number | null
+          target_interviews: number | null
+          updated_at: string
+          week_start_date: string
+        }
+        Insert: {
+          actual_candidates?: number | null
+          actual_closures?: number | null
+          actual_interviews?: number | null
+          created_at?: string
+          efficiency_score?: number | null
+          id?: string
+          role_id: string
+          ta_id: string
+          target_candidates?: number | null
+          target_closures?: number | null
+          target_interviews?: number | null
+          updated_at?: string
+          week_start_date: string
+        }
+        Update: {
+          actual_candidates?: number | null
+          actual_closures?: number | null
+          actual_interviews?: number | null
+          created_at?: string
+          efficiency_score?: number | null
+          id?: string
+          role_id?: string
+          ta_id?: string
+          target_candidates?: number | null
+          target_closures?: number | null
+          target_interviews?: number | null
+          updated_at?: string
+          week_start_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ta_workload_tracking_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ta_workload_tracking_ta_id_fkey"
+            columns: ["ta_id"]
+            isOneToOne: false
+            referencedRelation: "ta_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tags: {
         Row: {

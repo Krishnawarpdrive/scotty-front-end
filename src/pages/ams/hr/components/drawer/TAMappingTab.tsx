@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Box, Typography, Card, CardContent } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import { EnhancedTAMappingInterface } from '../ta-mapping/EnhancedTAMappingInterface';
 
 interface TAMappingTabProps {
   roleData: any;
@@ -8,37 +9,21 @@ interface TAMappingTabProps {
 
 const TAMappingTab: React.FC<TAMappingTabProps> = ({ roleData }) => {
   return (
-    <Box sx={{ height: '100%' }}>
+    <Box sx={{ height: '100%', p: 2 }}>
       <Typography
         variant="h6"
         sx={{
           fontFamily: 'Rubik, sans-serif',
-          fontSize: '16px',
-          fontWeight: 500,
+          fontSize: '18px',
+          fontWeight: 600,
           color: '#262626',
-          mb: 2,
+          mb: 3,
         }}
       >
         TA Mapping for {roleData?.name}
       </Typography>
       
-      <Card sx={{ p: 2 }}>
-        <CardContent>
-          <Typography
-            sx={{
-              fontFamily: 'Rubik, sans-serif',
-              fontSize: '13px',
-              color: '#666',
-              textAlign: 'center',
-              py: 4,
-            }}
-          >
-            TA Mapping functionality will be implemented here.
-            This will include assigning Talent Acquisition specialists to different stages
-            and managing workload distribution.
-          </Typography>
-        </CardContent>
-      </Card>
+      <EnhancedTAMappingInterface roleData={roleData} />
     </Box>
   );
 };
