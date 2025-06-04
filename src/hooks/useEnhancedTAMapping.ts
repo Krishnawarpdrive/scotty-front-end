@@ -73,7 +73,25 @@ export const useEnhancedTAMapping = (roleId?: string) => {
         .eq('status', 'active');
 
       if (error) throw error;
-      setTAProfiles(data || []);
+      
+      // Transform and validate the data to match our interface
+      const transformedData: TAProfile[] = (data || []).map(item => ({
+        id: item.id,
+        name: item.name,
+        email: item.email,
+        status: (item.status as 'active' | 'inactive' | 'on_leave') || 'active',
+        skills: Array.isArray(item.skills) ? item.skills : [],
+        certifications: Array.isArray(item.certifications) ? item.certifications : [],
+        experience_years: item.experience_years || 0,
+        current_workload: item.current_workload || 0,
+        max_workload: item.max_workload || 10,
+        efficiency_score: item.efficiency_score || 0,
+        success_rate: item.success_rate || 0,
+        created_at: item.created_at || '',
+        updated_at: item.updated_at || ''
+      }));
+      
+      setTAProfiles(transformedData);
     } catch (error) {
       console.error('Error fetching TA profiles:', error);
       toast({
@@ -92,7 +110,22 @@ export const useEnhancedTAMapping = (roleId?: string) => {
         .order('assigned_at', { ascending: false });
 
       if (error) throw error;
-      setAssignments(data || []);
+      
+      // Transform and validate the data to match our interface
+      const transformedData: TAAssignment[] = (data || []).map(item => ({
+        id: item.id,
+        ta_id: item.ta_id,
+        client_id: item.client_id,
+        requirement_id: item.requirement_id,
+        assigned_at: item.assigned_at,
+        status: (item.status as 'active' | 'completed' | 'on_hold') || 'active',
+        priority: (item.priority as 'high' | 'medium' | 'low') || 'medium',
+        assignment_type: item.assignment_type,
+        target_completion_date: item.target_completion_date,
+        notes: item.notes
+      }));
+      
+      setAssignments(transformedData);
     } catch (error) {
       console.error('Error fetching assignments:', error);
       toast({
@@ -170,14 +203,28 @@ export const useEnhancedTAMapping = (roleId?: string) => {
 
       if (error) throw error;
 
-      setAssignments(prev => [...prev, data]);
+      // Transform the returned data to match our interface
+      const newAssignment: TAAssignment = {
+        id: data.id,
+        ta_id: data.ta_id,
+        client_id: data.client_id,
+        requirement_id: data.requirement_id,
+        assigned_at: data.assigned_at,
+        status: (data.status as 'active' | 'completed' | 'on_hold') || 'active',
+        priority: (data.priority as 'high' | 'medium' | 'low') || 'medium',
+        assignment_type: data.assignment_type,
+        target_completion_date: data.target_completion_date,
+        notes: data.notes
+      };
+
+      setAssignments(prev => [...prev, newAssignment]);
       
       toast({
         title: "Success",
         description: "TA assigned successfully",
       });
 
-      return data;
+      return newAssignment;
     } catch (error) {
       console.error('Error assigning TA:', error);
       toast({
@@ -189,7 +236,7 @@ export const useEnhancedTAMapping = (roleId?: string) => {
     }
   }, [toast]);
 
-  const updateWorkload = useCallback(async (taId: string, updates: Partial<TAProfile>) => {
+  const updateWorkload = useCallback(async (taId: string, updates: Partial<TAProfile>): Promise<void> => {
     try {
       const { data, error } = await supabase
         .from('ta_profiles')
@@ -200,16 +247,31 @@ export const useEnhancedTAMapping = (roleId?: string) => {
 
       if (error) throw error;
 
+      // Transform the returned data to match our interface
+      const updatedProfile: TAProfile = {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        status: (data.status as 'active' | 'inactive' | 'on_leave') || 'active',
+        skills: Array.isArray(data.skills) ? data.skills : [],
+        certifications: Array.isArray(data.certifications) ? data.certifications : [],
+        experience_years: data.experience_years || 0,
+        current_workload: data.current_workload || 0,
+        max_workload: data.max_workload || 10,
+        efficiency_score: data.efficiency_score || 0,
+        success_rate: data.success_rate || 0,
+        created_at: data.created_at || '',
+        updated_at: data.updated_at || ''
+      };
+
       setTAProfiles(prev => 
-        prev.map(ta => ta.id === taId ? { ...ta, ...data } : ta)
+        prev.map(ta => ta.id === taId ? updatedProfile : ta)
       );
 
       toast({
         title: "Success",
         description: "Workload updated successfully",
       });
-
-      return data;
     } catch (error) {
       console.error('Error updating workload:', error);
       toast({

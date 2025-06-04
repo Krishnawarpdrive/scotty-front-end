@@ -15,11 +15,27 @@ import {
   CheckCircle
 } from 'lucide-react';
 
+interface TAProfile {
+  id: string;
+  name: string;
+  email: string;
+  status: 'active' | 'inactive' | 'on_leave';
+  skills: string[];
+  certifications: string[];
+  experience_years: number;
+  current_workload: number;
+  max_workload: number;
+  efficiency_score: number;
+  success_rate: number;
+  created_at: string;
+  updated_at: string;
+}
+
 interface TAWorkloadPanelProps {
-  taProfiles: any[];
+  taProfiles: TAProfile[];
   workloadData: any[];
   roleTargets: any[];
-  onWorkloadUpdate: (taId: string, updates: any) => Promise<void>;
+  onWorkloadUpdate: (taId: string, updates: Partial<TAProfile>) => Promise<void>;
 }
 
 export const TAWorkloadPanel: React.FC<TAWorkloadPanelProps> = ({
