@@ -117,6 +117,24 @@ const jsonToStringArray = (jsonValue: any): string[] => {
   return [String(jsonValue)];
 };
 
+// Helper function to validate and convert metric_type
+const validateMetricType = (value: string): 'candidates_sourced' | 'interviews_scheduled' | 'offers_made' | 'hires_completed' => {
+  const validTypes = ['candidates_sourced', 'interviews_scheduled', 'offers_made', 'hires_completed'];
+  return validTypes.includes(value) ? value as any : 'candidates_sourced';
+};
+
+// Helper function to validate and convert collaboration_type
+const validateCollaborationType = (value: string): 'primary_secondary' | 'equal_partners' | 'mentor_mentee' => {
+  const validTypes = ['primary_secondary', 'equal_partners', 'mentor_mentee'];
+  return validTypes.includes(value) ? value as any : 'primary_secondary';
+};
+
+// Helper function to validate and convert insight_type
+const validateInsightType = (value: string): 'strength' | 'improvement_area' | 'recommendation' | 'trend' => {
+  const validTypes = ['strength', 'improvement_area', 'recommendation', 'trend'];
+  return validTypes.includes(value) ? value as any : 'strength';
+};
+
 export const useEnhancedTAMapping = (roleId?: string) => {
   const [taProfiles, setTAProfiles] = useState<TAProfile[]>([]);
   const [assignments, setAssignments] = useState<TAAssignment[]>([]);
@@ -205,7 +223,18 @@ export const useEnhancedTAMapping = (roleId?: string) => {
         .order('measurement_period_start', { ascending: false });
 
       if (error) throw error;
-      setAssignmentMetrics(data || []);
+      
+      const transformedData: TAAssignmentMetrics[] = (data || []).map(item => ({
+        id: item.id,
+        assignment_id: item.assignment_id,
+        metric_type: validateMetricType(item.metric_type),
+        target_value: item.target_value,
+        actual_value: item.actual_value,
+        measurement_period_start: item.measurement_period_start,
+        measurement_period_end: item.measurement_period_end
+      }));
+      
+      setAssignmentMetrics(transformedData);
     } catch (error) {
       console.error('Error fetching assignment metrics:', error);
     }
@@ -219,7 +248,17 @@ export const useEnhancedTAMapping = (roleId?: string) => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setCollaborations(data || []);
+      
+      const transformedData: TACollaboration[] = (data || []).map(item => ({
+        id: item.id,
+        primary_ta_id: item.primary_ta_id,
+        secondary_ta_id: item.secondary_ta_id,
+        assignment_id: item.assignment_id,
+        collaboration_type: validateCollaborationType(item.collaboration_type),
+        responsibilities: (item.responsibilities as Record<string, any>) || {}
+      }));
+      
+      setCollaborations(transformedData);
     } catch (error) {
       console.error('Error fetching collaborations:', error);
     }
@@ -234,7 +273,18 @@ export const useEnhancedTAMapping = (roleId?: string) => {
         .order('generated_at', { ascending: false });
 
       if (error) throw error;
-      setPerformanceInsights(data || []);
+      
+      const transformedData: TAPerformanceInsight[] = (data || []).map(item => ({
+        id: item.id,
+        ta_id: item.ta_id,
+        insight_type: validateInsightType(item.insight_type),
+        insight_data: (item.insight_data as Record<string, any>) || {},
+        confidence_score: item.confidence_score || 0,
+        generated_at: item.generated_at,
+        is_active: item.is_active || true
+      }));
+      
+      setPerformanceInsights(transformedData);
     } catch (error) {
       console.error('Error fetching performance insights:', error);
     }
@@ -410,14 +460,23 @@ export const useEnhancedTAMapping = (roleId?: string) => {
 
       if (error) throw error;
 
-      setCollaborations(prev => [...prev, data]);
+      const newCollaboration: TACollaboration = {
+        id: data.id,
+        primary_ta_id: data.primary_ta_id,
+        secondary_ta_id: data.secondary_ta_id,
+        assignment_id: data.assignment_id,
+        collaboration_type: validateCollaborationType(data.collaboration_type),
+        responsibilities: (data.responsibilities as Record<string, any>) || {}
+      };
+
+      setCollaborations(prev => [...prev, newCollaboration]);
       
       toast({
         title: "Success",
         description: "Collaboration created successfully",
       });
 
-      return data;
+      return newCollaboration;
     } catch (error) {
       console.error('Error creating collaboration:', error);
       toast({
