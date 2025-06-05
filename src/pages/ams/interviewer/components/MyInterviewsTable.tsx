@@ -35,6 +35,7 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
 
   const columns = [
     {
+      id: 'candidateName',
       accessorKey: 'candidateName',
       header: 'Candidate',
       cell: ({ row }: any) => (
@@ -45,6 +46,7 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
       ),
     },
     {
+      id: 'roleName',
       accessorKey: 'roleName',
       header: 'Role & Client',
       cell: ({ row }: any) => (
@@ -55,6 +57,7 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
       ),
     },
     {
+      id: 'scheduledDate',
       accessorKey: 'scheduledDate',
       header: 'Schedule',
       cell: ({ row }: any) => {
@@ -76,6 +79,7 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
       },
     },
     {
+      id: 'interviewType',
       accessorKey: 'interviewType',
       header: 'Type',
       cell: ({ row }: any) => (
@@ -85,6 +89,7 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
       ),
     },
     {
+      id: 'status',
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }: any) => (
@@ -94,6 +99,7 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
       ),
     },
     {
+      id: 'location',
       accessorKey: 'location',
       header: 'Location',
       cell: ({ row }: any) => {

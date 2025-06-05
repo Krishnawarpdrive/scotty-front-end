@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useKeyboardShortcuts } from '@/contexts/KeyboardShortcutsContext';
 import { PageHeader } from '@/design-system/components/PageHeader/PageHeader';
@@ -60,13 +59,17 @@ const MyInterviewsPage: React.FC = () => {
     <div className="p-6 space-y-6">
       <PageHeader
         title="My Interviews"
-        description="Manage your scheduled interviews and candidate evaluations"
         breadcrumbs={[
           { label: 'AMS', href: '/ams/dashboard' },
           { label: 'Interviewer Portal', href: '/ams/interviewer/dashboard' },
           { label: 'My Interviews' }
         ]}
       />
+
+      {/* Description */}
+      <p className="text-gray-600 -mt-2">
+        Manage your scheduled interviews and candidate evaluations
+      </p>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
