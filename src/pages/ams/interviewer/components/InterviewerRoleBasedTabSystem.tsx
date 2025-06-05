@@ -2,7 +2,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { Interview } from '../MyInterviewsPage';
-import { InterviewerStageNavigator } from './InterviewerStageNavigator';
+import { EnhancedInterviewerStageNavigator } from './EnhancedInterviewerStageNavigator';
 import { InterviewerSplitLayoutContainer } from './InterviewerSplitLayoutContainer';
 
 interface InterviewerRoleBasedTabSystemProps {
@@ -19,6 +19,7 @@ export const InterviewerRoleBasedTabSystem: React.FC<InterviewerRoleBasedTabSyst
   const stageName = {
     'interview-details': 'Interview Details',
     'candidate-profile': 'Candidate Profile',
+    'documents': 'Documents',
     'interview-feedback': 'Interview Feedback',
     'interview-notes': 'Notes & Comments',
     'interview-history': 'Interview History'
@@ -26,8 +27,8 @@ export const InterviewerRoleBasedTabSystem: React.FC<InterviewerRoleBasedTabSyst
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* Stage Navigator */}
-      <InterviewerStageNavigator
+      {/* Enhanced Stage Navigator */}
+      <EnhancedInterviewerStageNavigator
         activeStage={activeStage}
         onStageChange={onStageChange}
       />

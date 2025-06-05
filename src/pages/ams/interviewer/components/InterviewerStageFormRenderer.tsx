@@ -7,6 +7,7 @@ import { CandidateProfileForm } from './forms/CandidateProfileForm';
 import { InterviewFeedbackForm } from './forms/InterviewFeedbackForm';
 import { InterviewNotesForm } from './forms/InterviewNotesForm';
 import { InterviewHistoryForm } from './forms/InterviewHistoryForm';
+import { DocumentsForm } from './forms/DocumentsForm';
 
 interface InterviewerStageFormRendererProps {
   interview: Interview;
@@ -31,6 +32,8 @@ export const InterviewerStageFormRenderer: React.FC<InterviewerStageFormRenderer
         return <InterviewNotesForm interview={interview} />;
       case 'interview-history':
         return <InterviewHistoryForm interview={interview} />;
+      case 'documents':
+        return <DocumentsForm interview={interview} />;
       default:
         return <InterviewDetailsForm interview={interview} />;
     }

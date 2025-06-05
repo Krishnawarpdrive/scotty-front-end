@@ -10,6 +10,7 @@ interface InterviewerStageNavigatorProps {
 const interviewerStages = [
   { id: 'interview-details', label: 'Interview Details' },
   { id: 'candidate-profile', label: 'Candidate Profile' },
+  { id: 'documents', label: 'Documents' },
   { id: 'interview-feedback', label: 'Interview Feedback' },
   { id: 'interview-notes', label: 'Notes & Comments' },
   { id: 'interview-history', label: 'Interview History' }
