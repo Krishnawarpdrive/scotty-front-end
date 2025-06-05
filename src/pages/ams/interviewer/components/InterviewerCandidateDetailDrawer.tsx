@@ -1,9 +1,16 @@
 
 import React, { useState } from 'react';
-import { Drawer, Box, IconButton, Typography } from '@mui/material';
-import { Close } from '@mui/icons-material';
+import { 
+  Drawer, 
+  Box, 
+  IconButton,
+  useMediaQuery,
+  useTheme
+} from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
+import { InterviewerCollapsibleProfileCard } from './InterviewerCollapsibleProfileCard';
+import { InterviewerRoleBasedTabSystem } from './InterviewerRoleBasedTabSystem';
 import { Interview } from '../MyInterviewsPage';
-import { EnhancedInterviewLayout } from './EnhancedInterviewLayout';
 
 interface InterviewerCandidateDetailDrawerProps {
   open: boolean;
@@ -16,44 +23,81 @@ export const InterviewerCandidateDetailDrawer: React.FC<InterviewerCandidateDeta
   onClose,
   interview
 }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [profileCollapsed, setProfileCollapsed] = useState(false);
   const [activeStage, setActiveStage] = useState('interview-details');
 
-  if (!interview) return null;
+  if (!interview) {
+    return (
+      <Drawer
+        anchor="right"
+        open={open}
+        onClose={onClose}
+        sx={{
+          '& .MuiDrawer-paper': {
+            width: isMobile ? '100%' : '70%',
+            maxWidth: isMobile ? '100%' : '1200px',
+            minWidth: isMobile ? 'auto' : '800px',
+            height: '100vh',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            fontFamily: 'Rubik, sans-serif'
+          },
+        }}
+      >
+        <Box sx={{ p: 6 }}>
+          <p>No interview data available</p>
+        </Box>
+      </Drawer>
+    );
+  }
 
   return (
     <Drawer
       anchor="right"
       open={open}
       onClose={onClose}
-      PaperProps={{
-        sx: { 
-          width: '100vw',
+      sx={{
+        '& .MuiDrawer-paper': {
+          width: isMobile ? '100%' : '70%',
+          maxWidth: isMobile ? '100%' : '1200px',
+          minWidth: isMobile ? 'auto' : '800px',
           height: '100vh',
-          maxWidth: 'none'
-        }
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          fontFamily: 'Rubik, sans-serif'
+        },
       }}
     >
-      <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        {/* Header */}
+      <Box sx={{ 
+        height: '100vh', 
+        display: 'flex', 
+        flexDirection: 'column',
+        fontFamily: 'Rubik, sans-serif'
+      }}>
+        {/* Close Button */}
         <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between',
-          p: 2,
-          borderBottom: '1px solid #e0e0e0',
-          bgcolor: 'white'
+          position: 'absolute', 
+          top: 8, 
+          right: 8, 
+          zIndex: 1000,
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          borderRadius: '50%'
         }}>
-          <Typography variant="h6" fontWeight="bold" sx={{ fontFamily: 'Rubik, sans-serif' }}>
-            Interview Session - {interview.candidateName}
-          </Typography>
           <IconButton onClick={onClose} size="small">
-            <Close />
+            <CloseIcon />
           </IconButton>
         </Box>
 
-        {/* Enhanced Layout Content */}
+        {/* Collapsible Profile Card */}
+        <InterviewerCollapsibleProfileCard
+          interview={interview}
+          collapsed={profileCollapsed}
+          onToggleCollapse={() => setProfileCollapsed(!profileCollapsed)}
+        />
+        
+        {/* Enhanced Role-Based Tab System */}
         <Box sx={{ flex: 1, overflow: 'hidden' }}>
-          <EnhancedInterviewLayout
+          <InterviewerRoleBasedTabSystem
             interview={interview}
             activeStage={activeStage}
             onStageChange={setActiveStage}

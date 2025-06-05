@@ -1,6 +1,14 @@
 
 import React, { useState } from 'react';
-import { Box, Typography, Card, CardContent, TextField, Button, Chip } from '@mui/material';
+import { 
+  Box, 
+  Typography, 
+  Card, 
+  CardContent, 
+  TextField, 
+  Button,
+  Chip
+} from '@mui/material';
 import { Save, Add } from '@mui/icons-material';
 import { Interview } from '../../MyInterviewsPage';
 
@@ -8,144 +16,91 @@ interface InterviewNotesFormProps {
   interview: Interview;
 }
 
-interface Note {
-  id: string;
-  timestamp: string;
-  content: string;
-  tag?: string;
-}
-
 export const InterviewNotesForm: React.FC<InterviewNotesFormProps> = ({
   interview
 }) => {
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      id: '1',
-      timestamp: new Date().toISOString(),
-      content: 'Candidate showed strong understanding of React concepts',
-      tag: 'Technical'
+  const [notes, setNotes] = useState<string>('');
+  const [savedNotes, setSavedNotes] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>(['Technical Discussion', 'Communication Skills']);
+
+  const handleSaveNote = () => {
+    if (notes.trim()) {
+      setSavedNotes([...savedNotes, notes]);
+      setNotes('');
     }
-  ]);
-  const [newNote, setNewNote] = useState('');
-  const [selectedTag, setSelectedTag] = useState('');
-
-  const tags = ['Technical', 'Behavioral', 'Communication', 'Problem Solving', 'Cultural Fit', 'Follow-up'];
-
-  const handleAddNote = () => {
-    if (newNote.trim()) {
-      const note: Note = {
-        id: Date.now().toString(),
-        timestamp: new Date().toISOString(),
-        content: newNote,
-        tag: selectedTag
-      };
-      setNotes(prev => [note, ...prev]);
-      setNewNote('');
-      setSelectedTag('');
-    }
-  };
-
-  const handleSave = () => {
-    console.log('Saving notes:', notes);
-    // Implement save logic
   };
 
   return (
     <Box sx={{ p: 3, fontFamily: 'Rubik, sans-serif' }}>
-      <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold' }}>
+      <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold', fontFamily: 'Rubik, sans-serif' }}>
         Interview Notes & Comments
       </Typography>
 
-      {/* Add New Note */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 'bold' }}>
             Add New Note
           </Typography>
-          
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="body2" sx={{ mb: 1 }}>Tag (Optional)</Typography>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-              {tags.map((tag) => (
-                <Chip
-                  key={tag}
-                  label={tag}
-                  onClick={() => setSelectedTag(tag === selectedTag ? '' : tag)}
-                  color={selectedTag === tag ? 'primary' : 'default'}
-                  variant={selectedTag === tag ? 'filled' : 'outlined'}
-                  size="small"
-                />
-              ))}
-            </Box>
-          </Box>
-          
           <TextField
-            label="Add a note..."
             multiline
-            rows={3}
-            value={newNote}
-            onChange={(e) => setNewNote(e.target.value)}
+            rows={4}
             fullWidth
+            placeholder="Add your observations, questions asked, candidate responses, or any other relevant notes..."
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            variant="outlined"
             sx={{ mb: 2 }}
           />
-          
+          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+            {tags.map((tag, index) => (
+              <Chip
+                key={index}
+                label={tag}
+                size="small"
+                variant="outlined"
+                clickable
+              />
+            ))}
+          </Box>
           <Button
             variant="contained"
-            startIcon={<Add />}
-            onClick={handleAddNote}
-            disabled={!newNote.trim()}
+            startIcon={<Save />}
+            onClick={handleSaveNote}
+            disabled={!notes.trim()}
+            sx={{ bgcolor: '#1976d2' }}
           >
-            Add Note
+            Save Note
           </Button>
         </CardContent>
       </Card>
 
-      {/* Notes List */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 'bold' }}>
-            Notes Timeline
-          </Typography>
-          
-          {notes.length === 0 ? (
-            <Typography variant="body2" color="text.secondary">
-              No notes added yet
+      {savedNotes.length > 0 && (
+        <Card>
+          <CardContent>
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 'bold' }}>
+              Saved Notes
             </Typography>
-          ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {notes.map((note) => (
+              {savedNotes.map((note, index) => (
                 <Box
-                  key={note.id}
+                  key={index}
                   sx={{
+                    bgcolor: '#f5f5f5',
                     p: 2,
-                    border: '1px solid #e0e0e0',
                     borderRadius: 1,
-                    bgcolor: '#f9f9f9'
+                    borderLeft: '4px solid #1976d2'
                   }}
                 >
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Typography variant="caption" color="text.secondary">
-                      {new Date(note.timestamp).toLocaleString()}
-                    </Typography>
-                    {note.tag && (
-                      <Chip label={note.tag} size="small" color="primary" variant="outlined" />
-                    )}
-                  </Box>
-                  <Typography variant="body2">{note.content}</Typography>
+                  <Typography variant="body2">{note}</Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                    Note {index + 1} - Just now
+                  </Typography>
                 </Box>
               ))}
             </Box>
-          )}
-        </CardContent>
-      </Card>
-
-      <Button
-        variant="outlined"
-        startIcon={<Save />}
-        onClick={handleSave}
-      >
-        Save All Notes
-      </Button>
+          </CardContent>
+        </Card>
+      )}
     </Box>
   );
 };
