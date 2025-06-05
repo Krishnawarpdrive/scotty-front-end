@@ -38,10 +38,10 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
       id: 'candidateName',
       accessorKey: 'candidateName',
       header: 'Candidate',
-      cell: ({ row }: any) => (
+      cell: (interview: Interview) => (
         <div>
-          <div className="font-medium text-gray-900">{row.original.candidateName}</div>
-          <div className="text-sm text-gray-500">{row.original.candidateEmail}</div>
+          <div className="font-medium text-gray-900">{interview.candidateName}</div>
+          <div className="text-sm text-gray-500">{interview.candidateEmail}</div>
         </div>
       ),
     },
@@ -49,10 +49,10 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
       id: 'roleName',
       accessorKey: 'roleName',
       header: 'Role & Client',
-      cell: ({ row }: any) => (
+      cell: (interview: Interview) => (
         <div>
-          <div className="font-medium text-gray-900">{row.original.roleName}</div>
-          <div className="text-sm text-gray-500">{row.original.clientName}</div>
+          <div className="font-medium text-gray-900">{interview.roleName}</div>
+          <div className="text-sm text-gray-500">{interview.clientName}</div>
         </div>
       ),
     },
@@ -60,8 +60,8 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
       id: 'scheduledDate',
       accessorKey: 'scheduledDate',
       header: 'Schedule',
-      cell: ({ row }: any) => {
-        const date = new Date(row.original.scheduledDate);
+      cell: (interview: Interview) => {
+        const date = new Date(interview.scheduledDate);
         return (
           <div className="flex items-center space-x-2">
             <Calendar className="h-4 w-4 text-gray-400" />
@@ -71,7 +71,7 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
               </div>
               <div className="text-sm text-gray-500 flex items-center">
                 <Clock className="h-3 w-3 mr-1" />
-                {format(date, 'hh:mm a')} ({row.original.duration}min)
+                {format(date, 'hh:mm a')} ({interview.duration}min)
               </div>
             </div>
           </div>
@@ -82,9 +82,9 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
       id: 'interviewType',
       accessorKey: 'interviewType',
       header: 'Type',
-      cell: ({ row }: any) => (
+      cell: (interview: Interview) => (
         <Badge variant="outline" className="capitalize">
-          {row.original.interviewType}
+          {interview.interviewType}
         </Badge>
       ),
     },
@@ -92,9 +92,9 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
       id: 'status',
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }: any) => (
-        <Badge className={getStatusColor(row.original.status)}>
-          {row.original.status}
+      cell: (interview: Interview) => (
+        <Badge className={getStatusColor(interview.status)}>
+          {interview.status}
         </Badge>
       ),
     },
@@ -102,8 +102,7 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
       id: 'location',
       accessorKey: 'location',
       header: 'Location',
-      cell: ({ row }: any) => {
-        const interview = row.original;
+      cell: (interview: Interview) => {
         if (interview.meetingLink) {
           return (
             <div className="flex items-center space-x-1">
@@ -126,8 +125,7 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }: any) => {
-        const interview = row.original;
+      cell: (interview: Interview) => {
         return (
           <div className="flex items-center space-x-2">
             {interview.meetingLink && (
