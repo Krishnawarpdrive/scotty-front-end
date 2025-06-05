@@ -1,6 +1,6 @@
-
 import React from 'react';
-import { Box, Typography, Card, CardContent, Chip, Timeline, TimelineItem, TimelineSeparator, TimelineDot, TimelineContent } from '@mui/material';
+import { Box, Typography, Card, CardContent, Chip } from '@mui/material';
+import { Timeline, TimelineItem, TimelineSeparator, TimelineDot, TimelineContent } from '@mui/lab';
 import { Event, Person, Star } from '@mui/icons-material';
 import { Interview } from '../../MyInterviewsPage';
 
