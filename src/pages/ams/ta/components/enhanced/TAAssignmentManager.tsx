@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,7 +22,8 @@ export const TAAssignmentManager: React.FC = () => {
         requirement_id: selectedRequirement,
         client_id: 'temp-client-id', // This would come from the requirement
         status: 'active',
-        priority: 'medium'
+        priority: 'medium',
+        assignment_type: 'primary'
       });
       setIsAssignModalOpen(false);
       setSelectedTA('');

@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { 
   TAProfile, 
@@ -160,7 +159,8 @@ export const taManagementService = {
       return (data || []).map(assignment => ({
         ...assignment,
         status: assignment.status as TAAssignment['status'],
-        priority: assignment.priority as TAAssignment['priority']
+        priority: assignment.priority as TAAssignment['priority'],
+        assignment_type: assignment.assignment_type
       }));
     } catch (error) {
       // Mock data fallback
@@ -173,6 +173,7 @@ export const taManagementService = {
           assigned_at: new Date().toISOString(),
           status: 'active',
           priority: 'high',
+          assignment_type: 'primary',
           deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
           notes: 'Urgent requirement for senior developer'
         },
@@ -183,7 +184,8 @@ export const taManagementService = {
           client_id: 'client-2',
           assigned_at: new Date().toISOString(),
           status: 'active',
-          priority: 'medium'
+          priority: 'medium',
+          assignment_type: 'secondary'
         }
       ];
 
@@ -232,7 +234,8 @@ export const taManagementService = {
       return {
         ...data,
         status: data.status as TAAssignment['status'],
-        priority: data.priority as TAAssignment['priority']
+        priority: data.priority as TAAssignment['priority'],
+        assignment_type: data.assignment_type
       };
     } catch (error) {
       const mockAssignment: TAAssignment = {
@@ -243,6 +246,7 @@ export const taManagementService = {
         assigned_at: new Date().toISOString(),
         status: 'active',
         priority: 'medium',
+        assignment_type: 'primary',
         ...updates
       };
       
