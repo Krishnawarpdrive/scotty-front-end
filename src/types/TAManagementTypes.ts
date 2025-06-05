@@ -1,4 +1,3 @@
-
 export interface TAProfile {
   id: string;
   name: string;
@@ -23,7 +22,9 @@ export interface TAAssignment {
   assigned_at: string;
   status: 'active' | 'completed' | 'on_hold';
   priority: 'high' | 'medium' | 'low';
+  assignment_type: string;
   deadline?: string;
+  target_completion_date?: string;
   notes?: string;
 }
 

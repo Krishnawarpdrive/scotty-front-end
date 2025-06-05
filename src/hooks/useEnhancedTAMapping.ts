@@ -1,35 +1,9 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { taManagementService } from '@/services/taManagementService';
-
-interface TAProfile {
-  id: string;
-  name: string;
-  email: string;
-  status: 'active' | 'inactive' | 'on_leave';
-  skills: string[];
-  certifications: string[];
-  experience_years: number;
-  current_workload: number;
-  max_workload: number;
-  efficiency_score: number;
-  success_rate: number;
-  created_at: string;
-  updated_at: string;
-}
-
-interface TAAssignment {
-  id: string;
-  ta_id: string;
-  client_id: string;
-  requirement_id?: string;
-  assigned_at: string;
-  status: 'active' | 'completed' | 'on_hold';
-  priority: 'high' | 'medium' | 'low';
-  assignment_type: string;
-  target_completion_date?: string;
-  notes?: string;
-}
+import { 
+  TAProfile, 
+  TAAssignment 
+} from '@/types/TAManagementTypes';
 
 interface WorkloadData {
   id: string;
