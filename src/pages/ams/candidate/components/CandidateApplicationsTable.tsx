@@ -14,7 +14,8 @@ import {
   Eye,
   ExternalLink,
   MessageSquare,
-  Phone
+  Phone,
+  Briefcase
 } from 'lucide-react';
 
 interface Application {
