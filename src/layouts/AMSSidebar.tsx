@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -34,13 +33,15 @@ import {
   HandHeart,
   ClipboardList,
   Database,
-  MessageSquare
+  MessageSquare,
+  Video
 } from "lucide-react";
 
 const AMSSidebar: React.FC = () => {
   const location = useLocation();
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     core: true,
+    interviewer: true,
     specialized: true,
     libraries: true,
     analytics: true,
@@ -57,6 +58,25 @@ const AMSSidebar: React.FC = () => {
   const isInPath = (path: string) => location.pathname.startsWith(path);
 
   const navigationSections = [
+    {
+      key: "interviewer",
+      title: "Interviewer Portal",
+      icon: Video,
+      items: [
+        { 
+          title: "My Interviews", 
+          path: "/ams/interviewer/my-interviews", 
+          icon: Calendar,
+          description: "Scheduled interviews"
+        },
+        { 
+          title: "Interviewer Dashboard", 
+          path: "/ams/interviewer/dashboard", 
+          icon: MessageSquare,
+          description: "Overview & metrics"
+        },
+      ]
+    },
     {
       key: "core",
       title: "Core Functions",
@@ -140,12 +160,6 @@ const AMSSidebar: React.FC = () => {
           path: "/ams/executive/dashboard", 
           icon: Crown,
           description: "Executive insights"
-        },
-        { 
-          title: "Interviewer Dashboard", 
-          path: "/ams/interviewer/dashboard", 
-          icon: MessageSquare,
-          description: "Interviewer portal"
         },
       ]
     },

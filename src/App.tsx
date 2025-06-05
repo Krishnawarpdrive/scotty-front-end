@@ -46,6 +46,7 @@ import UserManagementPage from './pages/ams/admin/UserManagementPage';
 import InterviewerDashboardPage from './pages/ams/interviewer/InterviewerDashboardPage';
 import CandidateDashboardPage from './pages/ams/candidate/CandidateDashboardPage';
 import VendorDetailPage from './pages/ams/vendors/VendorDetailPage';
+import MyInterviewsPage from './pages/ams/interviewer/MyInterviewsPage';
 
 const queryClient = new QueryClient();
 
@@ -97,6 +98,7 @@ function App() {
                         <Route path="/ams/executive/dashboard" element={<ExecutiveDashboardPage />} />
                         <Route path="/ams/executive/clients" element={<ExecutiveClientPage />} />
                         <Route path="/ams/interviewer/dashboard" element={<InterviewerDashboardPage />} />
+                        <Route path="/ams/interviewer/my-interviews" element={<MyInterviewsPage />} />
                         <Route path="/ams/checklist-bar" element={<ChecklistsPage />} />
                         <Route path="/ams/interview-panelists" element={<InterviewPanelistLibraryPage />} />
                         <Route path="/ams/checklists" element={<ChecklistsPage />} />
