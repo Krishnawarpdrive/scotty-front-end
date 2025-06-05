@@ -15,6 +15,7 @@ import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
 import AMSLayout from './layouts/AMSLayout';
 import { Dashboard } from './pages/Dashboard';
+import AMSDashboard from './pages/ams/Dashboard';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor } from './store/index';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
@@ -73,7 +74,7 @@ function App() {
                       {/* AMS Routes with Sidebar */}
                       <Route element={<AMSLayout />}>
                         <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/ams/dashboard" element={<Dashboard />} />
+                        <Route path="/ams/dashboard" element={<AMSDashboard />} />
                         <Route path="/onboarding" element={<Onboarding />} />
                         <Route path="/ams/clients" element={<ClientsPage />} />
                         <Route path="/ams/clients/:clientId" element={<ClientDetailsPage />} />
@@ -101,7 +102,7 @@ function App() {
                         <Route path="/ams/checklists" element={<ChecklistsPage />} />
                         <Route path="/ams/certifications" element={<CertificationsPage />} />
                         <Route path="/ams/vendor-management" element={<VendorManagementPage />} />
-<Route path="/ams/vendor-management/:vendorId" element={<VendorDetailPage />} />
+                        <Route path="/ams/vendor-management/:vendorId" element={<VendorDetailPage />} />
                         <Route path="/ams/commissions" element={<CommissionsPage />} />
                         <Route path="/ams/analytics" element={<Dashboard />} />
                         <Route path="/ams/admin/users" element={<UserManagementPage />} />
