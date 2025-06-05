@@ -9,6 +9,7 @@ import { DashboardTab } from './DashboardTab';
 import { MissionTab } from './MissionTab';
 import { RoleRequirementsTab } from './RoleRequirementsTab';
 import { TeamTab } from './TeamTab';
+import { EnhancedTAMappingInterface } from '../ta-mapping/EnhancedTAMappingInterface';
 import { clientsData, rolesData, requirementsData } from '../../mockData';
 
 interface RoleManagementContentProps {
@@ -33,21 +34,6 @@ export const RoleManagementContent: React.FC<RoleManagementContentProps> = ({
   return (
     <div className="px-6 space-y-6">
       <AnimatePresence mode="wait">
-        {/* {activeTab === "dashboard" && (
-          <DashboardTab mockMetrics={mockMetrics} />
-        )}
-
-        {activeTab === "mission" && (
-          <MissionTab mockTAs={mockTAs} />
-        )}
-
-        {activeTab === "role-requirements" && (
-          <RoleRequirementsTab 
-            mockRolesWithRequirements={mockRolesWithRequirements}
-            handleCreateRole={handleCreateRole}
-          />
-        )} */}
-
         {activeTab === "clients" && (
           <motion.div
             key="clients"
@@ -100,6 +86,20 @@ export const RoleManagementContent: React.FC<RoleManagementContentProps> = ({
             mockTAs={mockTAs}
             handleRowClick={handleRowClick}
           />
+        )}
+
+        {activeTab === "ta-mapping" && (
+          <motion.div
+            key="ta-mapping"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            <EnhancedTAMappingInterface 
+              roleData={{ id: 'current-role', name: 'Current Role' }}
+            />
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

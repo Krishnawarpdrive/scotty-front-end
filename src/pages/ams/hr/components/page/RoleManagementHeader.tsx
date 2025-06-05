@@ -20,13 +20,11 @@ export const RoleManagementHeader: React.FC<RoleManagementHeaderProps> = ({
   tabCounts
 }) => {
   const tabs: TabItem[] = [
-    // { id: 'dashboard', label: 'Dashboard', count: tabCounts.dashboard },
-    // { id: 'mission', label: 'Mission Control', count: tabCounts.mission },
-    // { id: 'role-requirements', label: 'Roles & Requirements', count: tabCounts['role-requirements'] },
     { id: 'clients', label: 'Clients', count: tabCounts.clients },
     { id: 'roles', label: 'Roles', count: tabCounts.roles },
     { id: 'requirements', label: 'Requirements', count: tabCounts.requirements },
-    { id: 'tas', label: 'Team', count: tabCounts.tas }
+    { id: 'tas', label: 'Team', count: tabCounts.tas },
+    { id: 'ta-mapping', label: 'TA Mapping', count: tabCounts['ta-mapping'] || 0 }
   ];
 
   return (

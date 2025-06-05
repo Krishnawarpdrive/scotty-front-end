@@ -2836,6 +2836,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ta_assignment_history: {
+        Row: {
+          action_type: string
+          assignment_id: string
+          created_at: string
+          id: string
+          new_values: Json | null
+          notes: string | null
+          old_values: Json | null
+          performed_by: string
+        }
+        Insert: {
+          action_type: string
+          assignment_id: string
+          created_at?: string
+          id?: string
+          new_values?: Json | null
+          notes?: string | null
+          old_values?: Json | null
+          performed_by: string
+        }
+        Update: {
+          action_type?: string
+          assignment_id?: string
+          created_at?: string
+          id?: string
+          new_values?: Json | null
+          notes?: string | null
+          old_values?: Json | null
+          performed_by?: string
+        }
+        Relationships: []
+      }
       ta_assignment_metrics: {
         Row: {
           actual_value: number
