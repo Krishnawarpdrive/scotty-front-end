@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Box, Card, CardContent, Typography, Chip, Button } from '@mui/material';
-import { Calendar, Clock, VideoCall } from 'lucide-react';
+import { Calendar, Clock, Video } from 'lucide-react';
 import { Interview } from '../../../MyInterviewsPage';
 
 interface ScheduledInterviewsTabProps {
@@ -70,7 +70,7 @@ export const ScheduledInterviewsTab: React.FC<ScheduledInterviewsTabProps> = ({
                 <Button
                   variant="contained"
                   size="small"
-                  startIcon={<VideoCall />}
+                  startIcon={<Video />}
                   sx={{ borderRadius: 2 }}
                 >
                   Join

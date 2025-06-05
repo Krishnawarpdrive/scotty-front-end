@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Box, Card, CardContent, Typography, Button, Chip } from '@mui/material';
-import { VideoCall, Calendar, Clock, MessageSquare, FileText, Star } from 'lucide-react';
+import { Video, Calendar, Clock, MessageSquare, FileText, Star } from 'lucide-react';
 import { Interview } from '../../../MyInterviewsPage';
 import { InterviewDetailsForm } from '../../forms/InterviewDetailsForm';
 import { InterviewFeedbackForm } from '../../forms/InterviewFeedbackForm';
@@ -64,7 +64,7 @@ export const TechnicalScreeningStage: React.FC<TechnicalScreeningStageProps> = (
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button
               variant="contained"
-              startIcon={<VideoCall />}
+              startIcon={<Video />}
               sx={{
                 bgcolor: '#2e7d32',
                 '&:hover': { bgcolor: '#1b5e20' },
