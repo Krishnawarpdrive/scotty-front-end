@@ -25,6 +25,7 @@ import { CandidateStageDrawer } from './components/CandidateStageDrawer';
 import { CandidatePendingActions } from './components/CandidatePendingActions';
 import { CandidateApplicationDetailDrawer } from './components/CandidateApplicationDetailDrawer';
 import { CandidateApplicationDetailPage } from './components/CandidateApplicationDetailPage';
+import { CandidateRequirementDetailPage } from './components/CandidateRequirementDetailPage';
 import { useCandidateDashboardData } from './hooks/useCandidateDashboardData';
 import { useCandidateApplicationDetails } from './hooks/useCandidateApplicationDetails';
 import { CandidateCompanyProgressDrawer } from './components/CandidateCompanyProgressDrawer';
@@ -35,8 +36,10 @@ const CandidateDashboardPage: React.FC = () => {
   const [showStageDrawer, setShowStageDrawer] = useState(false);
   const [showApplicationDetailDrawer, setShowApplicationDetailDrawer] = useState(false);
   const [showApplicationDetailPage, setShowApplicationDetailPage] = useState(false);
+  const [showRequirementDetailPage, setShowRequirementDetailPage] = useState(false);
   const [showCompanyProgressDrawer, setShowCompanyProgressDrawer] = useState(false);
   const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null);
+  const [selectedRequirementId, setSelectedRequirementId] = useState<string | null>(null);
   const [selectedStage, setSelectedStage] = useState(null);
   const [activeMainTab, setActiveMainTab] = useState('applications');
   
@@ -294,6 +297,12 @@ const CandidateDashboardPage: React.FC = () => {
     setShowApplicationDetailDrawer(true);
   };
 
+  const handleRequirementClick = (application: any) => {
+    console.log('Opening requirement details:', application.roleName);
+    setSelectedRequirementId(application.id);
+    setShowRequirementDetailPage(true);
+  };
+
   const handleCompanyClick = (application: any) => {
     console.log('Opening company progress:', application.companyName);
     setSelectedApplicationId(application.id);
@@ -305,6 +314,9 @@ const CandidateDashboardPage: React.FC = () => {
     if (action === 'continue') {
       setSelectedStage(mockStageData);
       setShowStageDrawer(true);
+    } else if (action === 'view_details') {
+      setSelectedRequirementId(applicationId);
+      setShowRequirementDetailPage(true);
     }
   };
 
@@ -333,6 +345,11 @@ const CandidateDashboardPage: React.FC = () => {
     setSelectedApplicationId(null);
   };
 
+  const handleBackFromRequirementPage = () => {
+    setShowRequirementDetailPage(false);
+    setSelectedRequirementId(null);
+  };
+
   const urgentActionsCount = mockPendingActions.filter(a => a.type === 'urgent' || a.type === 'overdue').length;
 
   if (isLoading) {
@@ -340,6 +357,16 @@ const CandidateDashboardPage: React.FC = () => {
       <div className="flex items-center justify-center h-screen">
         <div className="text-lg">Loading your mission control...</div>
       </div>
+    );
+  }
+
+  // Show requirement detail page if selected
+  if (showRequirementDetailPage && selectedRequirementId) {
+    return (
+      <CandidateRequirementDetailPage
+        requirementId={selectedRequirementId}
+        onBack={handleBackFromRequirementPage}
+      />
     );
   }
 
@@ -438,6 +465,7 @@ const CandidateDashboardPage: React.FC = () => {
                 <CandidateApplicationsTable
                   applications={mockApplications}
                   onApplicationClick={handleApplicationClick}
+                  onRequirementClick={handleRequirementClick}
                   onCompanyClick={handleCompanyClick}
                   onQuickAction={handleQuickAction}
                 />
