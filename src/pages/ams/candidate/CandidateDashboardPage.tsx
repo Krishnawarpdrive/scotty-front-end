@@ -446,11 +446,11 @@ const CandidateDashboardPage: React.FC = () => {
               <TabsContent value="insights" className="p-6 m-0">
                 <CandidateQuickInsights 
                   insights={[]} 
-                  overallStats={{
-                    responseRate: 85,
-                    averageProgressTime: '2.4d',
-                    interviewSuccessRate: 78,
-                    activeApplications: 3
+                  overallStats={dashboardData?.quickStats || {
+                    responseRate: 0,
+                    averageProgressTime: '0d',
+                    interviewSuccessRate: 0,
+                    activeApplications: 0
                   }} 
                 />
               </TabsContent>

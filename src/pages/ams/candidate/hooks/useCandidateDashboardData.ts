@@ -1,105 +1,189 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 
 interface CandidateDashboardData {
-  total_applications: number;
-  active_applications: number;
-  interviews_scheduled: number;
-  interviews_completed: number;
-  pending_assessments: number;
-  documents_uploaded: number;
-  documents_verified: number;
-  profile_completion_percentage: number;
-  last_activity_date: string;
+  totalApplications: number;
+  activeApplications: number;
+  interviewsScheduled: number;
+  completedInterviews: number;
+  pendingAssessments: number;
+  documentsUploaded: number;
+  documentsVerified: number;
+  profileCompletion: number;
+  recentActivities: Activity[];
+  upcomingInterviews: Interview[];
+  applicationProgress: ApplicationProgress[];
+  quickStats: QuickStats;
 }
 
-interface CandidateNotification {
+interface Activity {
+  id: string;
+  type: string;
+  description: string;
+  timestamp: string;
+  status?: string;
+}
+
+interface Interview {
   id: string;
   title: string;
-  message: string;
+  company: string;
+  date: string;
+  time: string;
   type: string;
-  priority: string;
-  is_read: boolean;
-  action_url?: string;
-  created_at: string;
+  status: string;
 }
 
-interface CandidateMessage {
+interface ApplicationProgress {
   id: string;
-  sender_name: string;
-  sender_role: string;
-  subject: string;
-  message_body: string;
-  is_read: boolean;
-  message_type: string;
-  created_at: string;
+  roleName: string;
+  companyName: string;
+  progress: number;
+  currentStage: string;
+  nextAction?: string;
+}
+
+interface QuickStats {
+  responseRate: number;
+  averageProgressTime: string;
+  interviewSuccessRate: number;
+  activeApplications: number;
 }
 
 export const useCandidateDashboardData = (candidateId: string) => {
   const [dashboardData, setDashboardData] = useState<CandidateDashboardData | null>(null);
-  const [notifications, setNotifications] = useState<CandidateNotification[]>([]);
-  const [messages, setMessages] = useState<CandidateMessage[]>([]);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      try {
-        setIsLoading(true);
+      setIsLoading(true);
+      
+      // Mock API call - replace with actual API integration
+      setTimeout(() => {
+        const mockData: CandidateDashboardData = {
+          totalApplications: 12,
+          activeApplications: 5,
+          interviewsScheduled: 3,
+          completedInterviews: 7,
+          pendingAssessments: 2,
+          documentsUploaded: 8,
+          documentsVerified: 6,
+          profileCompletion: 85,
+          recentActivities: [
+            {
+              id: '1',
+              type: 'interview',
+              description: 'Technical interview scheduled with TechCorp',
+              timestamp: '2024-01-24T10:00:00Z',
+              status: 'scheduled'
+            },
+            {
+              id: '2',
+              type: 'application',
+              description: 'Application submitted for Full Stack Engineer',
+              timestamp: '2024-01-23T14:30:00Z',
+              status: 'submitted'
+            },
+            {
+              id: '3',
+              type: 'document',
+              description: 'Resume updated and verified',
+              timestamp: '2024-01-22T09:15:00Z',
+              status: 'completed'
+            }
+          ],
+          upcomingInterviews: [
+            {
+              id: '1',
+              title: 'Technical Interview',
+              company: 'TechCorp Inc',
+              date: '2024-01-25',
+              time: '2:00 PM',
+              type: 'Technical',
+              status: 'scheduled'
+            },
+            {
+              id: '2',
+              title: 'HR Round',
+              company: 'DataFlow Systems',
+              date: '2024-01-26',
+              time: '11:00 AM',
+              type: 'HR',
+              status: 'confirmed'
+            }
+          ],
+          applicationProgress: [
+            {
+              id: '1',
+              roleName: 'Senior Frontend Developer',
+              companyName: 'TechCorp Inc',
+              progress: 65,
+              currentStage: 'Technical Interview',
+              nextAction: 'Prepare for interview'
+            },
+            {
+              id: '2',
+              roleName: 'Full Stack Engineer',
+              companyName: 'DataFlow Systems',
+              progress: 30,
+              currentStage: 'Document Verification'
+            }
+          ],
+          quickStats: {
+            responseRate: 85,
+            averageProgressTime: '2.4d',
+            interviewSuccessRate: 78,
+            activeApplications: 5
+          }
+        };
         
-        // Fetch dashboard data
-        const { data: dashData, error: dashError } = await supabase
-          .from('candidate_dashboard_data')
-          .select('*')
-          .eq('candidate_id', candidateId)
-          .maybeSingle();
+        const mockNotifications = [
+          {
+            id: '1',
+            title: 'Interview Reminder',
+            message: 'Technical interview with TechCorp tomorrow at 2:00 PM',
+            type: 'reminder',
+            timestamp: '2024-01-24T08:00:00Z',
+            read: false
+          },
+          {
+            id: '2',
+            title: 'Document Required',
+            message: 'Please upload your updated portfolio for DataFlow Systems',
+            type: 'action_required',
+            timestamp: '2024-01-23T16:00:00Z',
+            read: false
+          }
+        ];
 
-        if (dashError && dashError.code !== 'PGRST116') {
-          console.error('Error fetching dashboard data:', dashError);
-        }
-
-        // Fetch notifications
-        const { data: notificationData, error: notificationError } = await supabase
-          .from('candidate_notifications')
-          .select('*')
-          .eq('candidate_id', candidateId)
-          .order('created_at', { ascending: false })
-          .limit(10);
-
-        if (notificationError) {
-          console.error('Error fetching notifications:', notificationError);
-        }
-
-        // Fetch messages
-        const { data: messageData, error: messageError } = await supabase
-          .from('candidate_messages')
-          .select('*')
-          .eq('candidate_id', candidateId)
-          .order('created_at', { ascending: false })
-          .limit(10);
-
-        if (messageError) {
-          console.error('Error fetching messages:', messageError);
-        }
-
-        setDashboardData(dashData || {
-          total_applications: 0,
-          active_applications: 0,
-          interviews_scheduled: 0,
-          interviews_completed: 0,
-          pending_assessments: 0,
-          documents_uploaded: 0,
-          documents_verified: 0,
-          profile_completion_percentage: 0,
-          last_activity_date: new Date().toISOString()
-        });
-        setNotifications(notificationData || []);
-        setMessages(messageData || []);
-      } catch (error) {
-        console.error('Error in fetchDashboardData:', error);
-      } finally {
+        const mockMessages = [
+          {
+            id: '1',
+            sender: 'Sarah Chen (HR Manager)',
+            company: 'TechCorp Inc',
+            subject: 'Interview Confirmation',
+            preview: 'Your technical interview has been confirmed for tomorrow...',
+            timestamp: '2024-01-24T09:30:00Z',
+            read: false
+          },
+          {
+            id: '2',
+            sender: 'Mike Johnson (Recruiter)',
+            company: 'DataFlow Systems',
+            subject: 'Application Update',
+            preview: 'We need additional documents to proceed with your application...',
+            timestamp: '2024-01-23T15:45:00Z',
+            read: true
+          }
+        ];
+        
+        setDashboardData(mockData);
+        setNotifications(mockNotifications);
+        setMessages(mockMessages);
         setIsLoading(false);
-      }
+      }, 500);
     };
 
     if (candidateId) {
@@ -111,9 +195,6 @@ export const useCandidateDashboardData = (candidateId: string) => {
     dashboardData,
     notifications,
     messages,
-    isLoading,
-    refreshData: () => {
-      // Trigger refetch logic here if needed
-    }
+    isLoading
   };
 };
