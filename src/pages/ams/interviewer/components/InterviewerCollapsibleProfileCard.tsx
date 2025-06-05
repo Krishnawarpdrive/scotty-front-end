@@ -7,9 +7,9 @@ import {
   Email, 
   ExpandMore, 
   ExpandLess,
-  Video,
-  MessageSquare,
-  Calendar
+  Videocam,
+  Message,
+  Event
 } from '@mui/icons-material';
 import { Interview } from '../MyInterviewsPage';
 import { format } from 'date-fns';
@@ -108,7 +108,7 @@ export const InterviewerCollapsibleProfileCard: React.FC<InterviewerCollapsibleP
                 </Box>
                 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Calendar sx={{ fontSize: 16, color: 'text.secondary' }} />
+                  <Event sx={{ fontSize: 16, color: 'text.secondary' }} />
                   <Typography variant="body2" color="text.secondary" sx={{ fontFamily: 'Rubik, sans-serif' }}>
                     {format(interviewDate, 'MMM dd, yyyy')} at {format(interviewDate, 'hh:mm a')}
                   </Typography>
@@ -140,7 +140,7 @@ export const InterviewerCollapsibleProfileCard: React.FC<InterviewerCollapsibleP
 
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Chip
-                  icon={<MessageSquare />}
+                  icon={<Message />}
                   label="Message"
                   variant="outlined"
                   clickable
@@ -148,7 +148,7 @@ export const InterviewerCollapsibleProfileCard: React.FC<InterviewerCollapsibleP
                 />
                 {interview.meetingLink && (
                   <Chip
-                    icon={<Video />}
+                    icon={<Videocam />}
                     label="Join Interview"
                     clickable
                     size="small"

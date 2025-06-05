@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Box, Typography, Card, CardContent, Avatar, Chip } from '@mui/material';
-import { Person, Email, Phone, MapPin } from '@mui/icons-material';
+import { Person, Email, Phone, LocationOn } from '@mui/icons-material';
 import { Interview } from '../../MyInterviewsPage';
 
 interface CandidateProfileFormProps {

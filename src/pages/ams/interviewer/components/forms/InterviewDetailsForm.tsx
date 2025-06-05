@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Box, Typography, Card, CardContent, Chip, Button } from '@mui/material';
-import { Calendar, Clock, Video, MapPin, Person, Building2 } from '@mui/icons-material';
+import { Event, AccessTime, Videocam, LocationOn, Person, Business } from '@mui/icons-material';
 import { Interview } from '../../MyInterviewsPage';
 import { format } from 'date-fns';
 
@@ -43,13 +43,13 @@ export const InterviewDetailsForm: React.FC<InterviewDetailsFormProps> = ({
                 Interview Date & Time
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <Calendar sx={{ fontSize: 18, color: '#1976d2' }} />
+                <Event sx={{ fontSize: 18, color: '#1976d2' }} />
                 <Typography variant="body2">
                   {format(interviewDate, 'EEEE, MMMM dd, yyyy')}
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Clock sx={{ fontSize: 18, color: '#1976d2' }} />
+                <AccessTime sx={{ fontSize: 18, color: '#1976d2' }} />
                 <Typography variant="body2">
                   {format(interviewDate, 'hh:mm a')} ({interview.duration} minutes)
                 </Typography>
@@ -89,7 +89,7 @@ export const InterviewDetailsForm: React.FC<InterviewDetailsFormProps> = ({
                 Client
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Building2 sx={{ fontSize: 18, color: '#666' }} />
+                <Business sx={{ fontSize: 18, color: '#666' }} />
                 <Typography variant="body2">{interview.clientName}</Typography>
               </Box>
             </Box>
@@ -120,12 +120,12 @@ export const InterviewDetailsForm: React.FC<InterviewDetailsFormProps> = ({
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 {interview.meetingLink ? (
                   <>
-                    <Video sx={{ fontSize: 18, color: '#1976d2' }} />
+                    <Videocam sx={{ fontSize: 18, color: '#1976d2' }} />
                     <Typography variant="body2" color="#1976d2">Virtual Meeting</Typography>
                   </>
                 ) : (
                   <>
-                    <MapPin sx={{ fontSize: 18, color: '#666' }} />
+                    <LocationOn sx={{ fontSize: 18, color: '#666' }} />
                     <Typography variant="body2">{interview.location || 'Not specified'}</Typography>
                   </>
                 )}
@@ -152,7 +152,7 @@ export const InterviewDetailsForm: React.FC<InterviewDetailsFormProps> = ({
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Button
             variant="contained"
-            startIcon={<Video />}
+            startIcon={<Videocam />}
             onClick={() => window.open(interview.meetingLink, '_blank')}
             sx={{ bgcolor: '#1976d2' }}
           >
