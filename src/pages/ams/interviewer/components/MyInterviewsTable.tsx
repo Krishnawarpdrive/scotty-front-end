@@ -36,7 +36,7 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
   const columns = [
     {
       id: 'candidateName',
-      accessorKey: 'candidateName',
+      accessorKey: 'candidateName' as keyof Interview,
       header: 'Candidate',
       cell: (interview: Interview) => (
         <div>
@@ -47,7 +47,7 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
     },
     {
       id: 'roleName',
-      accessorKey: 'roleName',
+      accessorKey: 'roleName' as keyof Interview,
       header: 'Role & Client',
       cell: (interview: Interview) => (
         <div>
@@ -58,7 +58,7 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
     },
     {
       id: 'scheduledDate',
-      accessorKey: 'scheduledDate',
+      accessorKey: 'scheduledDate' as keyof Interview,
       header: 'Schedule',
       cell: (interview: Interview) => {
         const date = new Date(interview.scheduledDate);
@@ -80,7 +80,7 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
     },
     {
       id: 'interviewType',
-      accessorKey: 'interviewType',
+      accessorKey: 'interviewType' as keyof Interview,
       header: 'Type',
       cell: (interview: Interview) => (
         <Badge variant="outline" className="capitalize">
@@ -90,7 +90,7 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
     },
     {
       id: 'status',
-      accessorKey: 'status',
+      accessorKey: 'status' as keyof Interview,
       header: 'Status',
       cell: (interview: Interview) => (
         <Badge className={getStatusColor(interview.status)}>
@@ -100,7 +100,6 @@ export const MyInterviewsTable: React.FC<MyInterviewsTableProps> = ({
     },
     {
       id: 'location',
-      accessorKey: 'location',
       header: 'Location',
       cell: (interview: Interview) => {
         if (interview.meetingLink) {
