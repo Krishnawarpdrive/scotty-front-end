@@ -212,7 +212,7 @@ export const TAInsightsPanel: React.FC<TAInsightsPanelProps> = ({
               <TrendingDown className="h-8 w-8 mx-auto mb-2 text-blue-600" />
               <h3 className="font-medium text-blue-900">Underutilized</h3>
               <p className="text-2xl font-bold text-blue-600">{workloadDistribution.underutilized}</p>
-              <p className="text-sm text-blue-700">TAs (<50% capacity)</p>
+              <p className="text-sm text-blue-700">TAs (&lt;50% capacity)</p>
             </div>
           </div>
         </CardContent>
