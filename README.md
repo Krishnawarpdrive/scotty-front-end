@@ -8,6 +8,10 @@
 
 There are several ways of editing your application.
 
+## Project Purpose
+
+[TODO: Describe the main goal of this application. What problem does it solve? Who are the target users? e.g., "This application serves as a comprehensive platform for managing X, Y, and Z, aimed at streamlining workflows for enterprise teams."]
+
 **Use Lovable**
 
 Simply visit the [Lovable Project](https://lovable.dev/projects/6e5fe202-e981-4841-968e-42bc47030683) and start prompting.
@@ -36,6 +40,22 @@ npm i
 npm run dev
 ```
 
+## Environment Setup
+
+To run this project locally, you'll need to set up your environment variables. Copy the `.env.example` file to a new file named `.env` in the project root and fill in the required values.
+
+```bash
+cp .env.example .env
+```
+
+Key environment variables include:
+- `VITE_SUPABASE_URL`: The URL for your Supabase project.
+- `VITE_SUPABASE_ANON_KEY`: The anonymous key for your Supabase project.
+- `VITE_APP_TITLE`: (Optional) A title for your application.
+- `VITE_API_BASE_URL`: (Optional) If you have a separate backend API.
+
+Ensure that your Supabase instance is properly configured with the necessary tables and authentication settings.
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).
@@ -54,11 +74,24 @@ npm run dev
 
 This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Core:**
+  - Vite (Build Tool & Dev Server)
+  - TypeScript (Language)
+  - React (UI Library)
+  - React Router (Routing)
+  - Redux Toolkit (State Management)
+- **UI Components & Styling:**
+  - Shadcn/UI (Component Library)
+  - Material-UI (MUI) (Component Library)
+  - Tailwind CSS (CSS Framework)
+- **Backend & Database:**
+  - Supabase (Backend-as-a-Service: Auth, Database, Storage)
+- **Linting & Formatting:**
+  - ESLint
+  - (Prettier - if configured, otherwise can be omitted or added later)
+- **Testing:** (Setup initiated)
+  - Vitest (Test Runner)
+  - React Testing Library (Component Testing)
 
 ## How can I deploy this project?
 
