@@ -28,6 +28,7 @@ import { CandidateApplicationDetailPage } from './components/CandidateApplicatio
 import { useCandidateDashboardData } from './hooks/useCandidateDashboardData';
 import { useCandidateApplicationDetails } from './hooks/useCandidateApplicationDetails';
 import { CandidateCompanyProgressDrawer } from './components/CandidateCompanyProgressDrawer';
+import { SmartActionCenter } from '@/components/smart-action-center/SmartActionCenter';
 
 const CandidateDashboardPage: React.FC = () => {
   const [selectedCandidateId] = useState('123e4567-e89b-12d3-a456-426614174000');
@@ -487,6 +488,9 @@ const CandidateDashboardPage: React.FC = () => {
           />
         </div>
       </div>
+
+      {/* Smart Action Center */}
+      <SmartActionCenter position="bottom-right" />
 
       {/* Right Drawer for Analytics */}
       <CandidateRightDrawer
