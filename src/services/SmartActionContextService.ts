@@ -81,14 +81,26 @@ export class SmartActionContextService {
   }
 
   determinePageContext(pathname: string): string {
+    // Candidate pages
     if (pathname.includes('/candidate/')) return 'candidate-dashboard';
+    
+    // HR pages
     if (pathname.includes('/hr/dashboard')) return 'hr-dashboard';
     if (pathname.includes('/hr/candidate-pool')) return 'candidate-pool';
     if (pathname.includes('/hr/role-management')) return 'role-management';
+    
+    // TA pages
     if (pathname.includes('/ta/mission-control')) return 'ta-mission-control';
+    
+    // Executive pages
     if (pathname.includes('/executive/')) return 'executive-dashboard';
+    
+    // General AMS pages
     if (pathname.includes('/clients')) return 'clients';
     if (pathname.includes('/roles')) return 'roles-library';
+    if (pathname.includes('/ams/enhanced-dashboard') || pathname.includes('/ams/dashboard')) return 'general';
+    if (pathname === '/ams' || pathname === '/') return 'general';
+    
     return 'general';
   }
 
@@ -100,14 +112,16 @@ export class SmartActionContextService {
   }
 
   shouldAutoShow(context: ActionContext): boolean {
-    // Auto-show for urgent tasks
+    // Auto-show for urgent tasks or notifications
     if (context.pendingTasks.some(task => task.priority === 'urgent')) return true;
-    
-    // Auto-show for important notifications
     if (context.notifications.some(notif => notif.type === 'urgent')) return true;
     
-    // Auto-show in morning for daily planning
-    if (context.timeContext === 'morning' && context.page === 'hr-dashboard') return true;
+    // Auto-show in morning for daily planning on dashboard pages
+    if (context.timeContext === 'morning' && 
+        (context.page === 'hr-dashboard' || context.page === 'general')) return true;
+    
+    // Auto-show for TA users during work hours
+    if (context.userRole === 'ta' && context.timeContext !== 'evening') return true;
     
     return false;
   }

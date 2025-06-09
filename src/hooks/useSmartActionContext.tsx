@@ -25,7 +25,7 @@ export const useSmartActionContext = () => {
   const location = useLocation();
   const contextService = SmartActionContextService.getInstance();
   const [context, setContext] = useState<ActionContext | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true); // Start visible for better user experience
   const [lastActivity, setLastActivity] = useState(Date.now());
 
   // Mock data - in real app, this would come from your store/API
@@ -71,6 +71,28 @@ export const useSmartActionContext = () => {
       });
     }
 
+    if (page === 'hr-dashboard') {
+      baseTasks.push({
+        id: '5',
+        type: 'approval',
+        priority: 'urgent',
+        title: 'Approve Job Descriptions',
+        context: '3 roles waiting for approval',
+        action: () => console.log('Approve job descriptions')
+      });
+    }
+
+    if (page === 'ta-mission-control') {
+      baseTasks.push({
+        id: '6',
+        type: 'interview',
+        priority: 'urgent',
+        title: 'Conduct Phone Screening',
+        context: 'Scheduled for 3:00 PM today',
+        action: () => console.log('Start phone screening')
+      });
+    }
+
     return baseTasks;
   };
 
@@ -90,6 +112,14 @@ export const useSmartActionContext = () => {
       title: 'New Application Received',
       message: 'Senior Developer application requires immediate review',
       timestamp: '10 mins ago',
+      dismissible: true
+    },
+    {
+      id: '3',
+      type: 'contextual',
+      title: 'Daily Report Ready',
+      message: 'Your hiring metrics summary is available',
+      timestamp: '1 hour ago',
       dismissible: true
     }
   ];
@@ -140,7 +170,7 @@ export const useSmartActionContext = () => {
       );
     }
 
-    if (page === 'hr-dashboard') {
+    if (page === 'hr-dashboard' || page === 'general') {
       baseActions.push(
         {
           id: '5',
@@ -148,7 +178,7 @@ export const useSmartActionContext = () => {
           icon: <TrendingUp className="h-4 w-4" />,
           action: () => console.log('View analytics'),
           priority: 'contextual',
-          context: ['hr-dashboard'],
+          context: ['hr-dashboard', 'general'],
           color: 'bg-amber-100 text-amber-600'
         },
         {
@@ -157,8 +187,31 @@ export const useSmartActionContext = () => {
           icon: <MessageSquare className="h-4 w-4" />,
           action: () => console.log('View messages'),
           priority: 'contextual',
-          context: ['hr-dashboard'],
+          context: ['hr-dashboard', 'general'],
           badge: 2
+        }
+      );
+    }
+
+    if (page === 'ta-mission-control') {
+      baseActions.push(
+        {
+          id: '7',
+          title: 'Schedule Interview',
+          icon: <Calendar className="h-4 w-4" />,
+          action: () => console.log('Schedule interview'),
+          priority: 'important',
+          context: ['ta-mission-control'],
+          color: 'bg-indigo-100 text-indigo-600'
+        },
+        {
+          id: '8',
+          title: 'Review Applications',
+          icon: <FileText className="h-4 w-4" />,
+          action: () => console.log('Review applications'),
+          priority: 'contextual',
+          context: ['ta-mission-control'],
+          badge: 8
         }
       );
     }
@@ -192,12 +245,11 @@ export const useSmartActionContext = () => {
     contextService.updateContext(newContext);
     setContext(newContext);
 
-    // Auto-show logic
-    const shouldShow = contextService.shouldAutoShow(newContext);
-    if (shouldShow) {
+    // Show by default when there's urgent content or on first load
+    if (newContext.isUrgent || !isVisible) {
       setIsVisible(true);
     }
-  }, [location.pathname]);
+  }, [location.pathname, isVisible]);
 
   useEffect(() => {
     const unsubscribe = contextService.subscribeToContext((newContext) => {
@@ -207,13 +259,13 @@ export const useSmartActionContext = () => {
     return unsubscribe;
   }, []);
 
-  // Auto-hide after inactivity
+  // Auto-hide after longer inactivity (2 minutes instead of 30 seconds)
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (Date.now() - lastActivity > 30000) { // 30 seconds
+      if (Date.now() - lastActivity > 120000) { // 2 minutes
         setIsVisible(false);
       }
-    }, 30000);
+    }, 120000);
 
     return () => clearTimeout(timer);
   }, [lastActivity]);
