@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Tabs as MuiTabs,
@@ -31,7 +32,7 @@ export interface TabsContentProps {
 }
 
 export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
-  ({ className, defaultValue, onValueChange, children, ...restProps }, ref) => {
+  ({ className, defaultValue, onValueChange, children, ...props }, ref) => {
     const [value, setValue] = React.useState(defaultValue || '');
 
     const handleChange = (_: React.SyntheticEvent, newValue: string) => {
@@ -45,7 +46,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
       <div ref={ref} className={cn('', className)}>
         {React.Children.map(children, (child) => {
           if (React.isValidElement(child)) {
-            return React.cloneElement(child, { value, onChange: handleChange } as any);
+            return React.cloneElement(child, { value, onChange: handleChange, ...props } as any);
           }
           return child;
         })}

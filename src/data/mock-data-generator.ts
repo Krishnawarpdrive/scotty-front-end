@@ -1,4 +1,3 @@
-
 // Unified Mock Data Generator for Cross-Module Testing
 import { UnifiedVendor, UnifiedRole, UnifiedRequirement, UnifiedClient, UnifiedCandidate } from './unified-types';
 
@@ -32,14 +31,14 @@ export const generateMockVendors = (count: number = 10): UnifiedVendor[] => {
       },
       status: ['Active', 'Inactive', 'Paused'][Math.floor(Math.random() * 3)] as any,
       tier: ['Premium', 'Standard', 'Basic'][Math.floor(Math.random() * 3)] as any,
-      rating: Math.round((Math.random() * 2 + 3) * 10) / 10, // 3.0 - 5.0
+      rating: Math.round((Math.random() * 2 + 3) * 10) / 10,
       sla_status: ['Good', 'Warning', 'Breach'][Math.floor(Math.random() * 3)] as any,
       contract_status: ['Active', 'Expired', 'Pending'][Math.floor(Math.random() * 3)] as any,
       roles_assigned: Math.floor(Math.random() * 10) + 1,
       active_requirements: Math.floor(Math.random() * 5) + 1,
       last_active_date: randomDate(new Date(2024, 0, 1), new Date()),
       performance_metrics: {
-        quality_score: Math.floor(Math.random() * 40) + 60, // 60-100
+        quality_score: Math.floor(Math.random() * 40) + 60,
         timeliness_score: Math.floor(Math.random() * 40) + 60,
         compliance_score: Math.floor(Math.random() * 40) + 60,
         submission_rate: Math.floor(Math.random() * 40) + 60,

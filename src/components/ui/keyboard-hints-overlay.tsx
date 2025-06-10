@@ -2,7 +2,6 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { useKeyboardShortcuts } from '@/contexts/KeyboardShortcutsContext';
-import { cn } from '@/lib/utils';
 
 export const KeyboardHintsOverlay: React.FC = () => {
   const { shortcuts, currentScope, isGModeActive, showHints } = useKeyboardShortcuts();
