@@ -77,15 +77,17 @@ export function useAuth() {
 
       if (profileError && profileError.code !== 'PGRST116') {
         console.error('Error fetching profile:', profileError);
-      } else {
-        // Handle preferences type conversion and ensure timezone is never null
-        const processedProfile = profileData ? {
+      } else if (profileData) {
+        // Handle preferences type conversion and ensure required fields are properly typed
+        const processedProfile: UserProfile = {
           ...profileData,
           timezone: profileData.timezone || 'UTC',
           preferences: typeof profileData.preferences === 'string' 
             ? JSON.parse(profileData.preferences) 
-            : (profileData.preferences || {})
-        } : null;
+            : (profileData.preferences || {}),
+          created_at: profileData.created_at || new Date().toISOString(),
+          updated_at: profileData.updated_at || new Date().toISOString()
+        };
         setProfile(processedProfile);
       }
 
