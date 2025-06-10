@@ -7,7 +7,7 @@ import ClientDetailLoading from './components/ClientDetailLoading';
 import ClientBackHeader from './components/ClientBackHeader';
 import CompactClientHeader from './components/client-detail/profile-header/CompactClientHeader';
 import ClientOverviewTab from './components/client-detail/ClientOverviewTab';
-import ClientRolesTab from './components/client-detail/ClientRolesTab';
+import { ClientRolesTab } from './components/client-detail/ClientRolesTab';
 import ClientRequirementsTab from './components/client-detail/ClientRequirementsTab';
 import ClientActivityTab from './components/client-detail/ClientActivityTab';
 import ClientAgreementsTab from './components/client-detail/ClientAgreementsTab';
@@ -17,10 +17,18 @@ const ClientDetailsPage = () => {
   const { clientId } = useParams<{ clientId: string }>();
   const [activeTab, setActiveTab] = useState('overview');
   
-  const { client, loading, error } = useClientDetail(clientId || '');
+  const { client, loading, error } = useClientDetail();
 
   const handleCreateRole = () => {
     console.log('Create role clicked');
+  };
+
+  const handleEditClient = () => {
+    console.log('Edit client clicked');
+  };
+
+  const handleCreateRequirement = () => {
+    console.log('Create requirement clicked');
   };
 
   if (loading) return <ClientDetailLoading />;
@@ -31,7 +39,7 @@ const ClientDetailsPage = () => {
       <ClientBackHeader />
       
       <div className="container mx-auto px-4 py-6 space-y-6">
-        <CompactClientHeader client={client} />
+        <CompactClientHeader client={client} onEditClient={handleEditClient} />
         
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-5">
@@ -51,7 +59,7 @@ const ClientDetailsPage = () => {
           </TabsContent>
           
           <TabsContent value="requirements" className="mt-6">
-            <ClientRequirementsTab client={client} />
+            <ClientRequirementsTab client={client} onCreateRequirement={handleCreateRequirement} />
           </TabsContent>
           
           <TabsContent value="activity" className="mt-6">
