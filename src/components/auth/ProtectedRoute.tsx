@@ -1,5 +1,4 @@
 
-import React from 'react';
 import { useAuthContext, AppRole } from '@/contexts/AuthContext';
 import { usePermissionsContext } from '@/contexts/PermissionsContext';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -19,7 +18,7 @@ export function ProtectedRoute({
   requiredPermissions,
   fallback 
 }: ProtectedRouteProps) {
-  const { user, roles, loading: authLoading, hasAnyRole } = useAuthContext();
+  const { user, loading: authLoading, hasAnyRole } = useAuthContext();
   const { hasPermission, loading: permissionsLoading } = usePermissionsContext();
 
   // Show loading state while checking auth

@@ -1,7 +1,5 @@
 
 import { useState, useMemo } from 'react';
-import { DataTableColumn } from './types';
-import { getColumnValue } from './utils';
 
 export function useDataTableSort<T extends Record<string, any>>(
   data: T[]

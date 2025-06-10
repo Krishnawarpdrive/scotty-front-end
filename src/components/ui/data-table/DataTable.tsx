@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Table, TableHeader, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,32 +9,27 @@ import { DataTableHeader } from './DataTableHeader';
 import { DataTableRow } from './DataTableRow';
 import { useDataTableFilters } from './useDataTableFilters';
 import { useDataTableSort } from './useDataTableSort';
-import { cn } from "@/lib/utils";
 
 export interface DataTableProps<T> {
   data: T[];
   columns: DataTableColumn<T>[];
   onRowClick?: (item: T) => void;
   isLoading?: boolean;
-  searchPlaceholder?: string;
 }
 
 export function DataTable<T extends Record<string, any>>({ 
   data, 
   columns,
   onRowClick,
-  isLoading = false,
-  searchPlaceholder = "Search..."
+  isLoading = false
 }: DataTableProps<T>) {
   const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
   const [activeColumnFilter, setActiveColumnFilter] = useState<string | null>(null);
   
   const { 
     filters, 
-    setFilters, 
     columnValues, 
     selectedFilterValues, 
-    setSelectedFilterValues,
     handleFilterChange, 
     toggleFilterValue, 
     clearFilter, 
@@ -60,7 +55,7 @@ export function DataTable<T extends Record<string, any>>({
                   <DataTableHeader
                     key={column.id}
                     column={column}
-                    sortConfig={sortConfig}
+                    sortConfig={sortConfig?.key ? { key: sortConfig.key, direction: sortConfig.direction } : null}
                     handleSort={handleSort}
                     activeColumnFilter={activeColumnFilter}
                     setActiveColumnFilter={setActiveColumnFilter}
@@ -141,7 +136,7 @@ export function DataTable<T extends Record<string, any>>({
                   <DataTableHeader
                     key={column.id}
                     column={column}
-                    sortConfig={sortConfig}
+                    sortConfig={sortConfig?.key ? { key: sortConfig.key, direction: sortConfig.direction } : null}
                     handleSort={handleSort}
                     activeColumnFilter={activeColumnFilter}
                     setActiveColumnFilter={setActiveColumnFilter}
