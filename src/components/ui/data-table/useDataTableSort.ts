@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 
-export const useDataTableSort = <T extends Record<string, any>>() => {
+export const useDataTableSort = () => {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
 
   const handleSort = (key: string) => {

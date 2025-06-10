@@ -1,12 +1,10 @@
 
 import React from 'react';
 import { DataTable, DataTableColumn } from '@/design-system/components/DataTable/DataTable';
-import { StatusIndicator } from '@/design-system/components/StatusIndicator/StatusIndicator';
 import { SearchFilter } from '@/design-system/components/SearchFilter/SearchFilter';
 import { useSearchFilter, useTableSelection } from '@/design-system/hooks/useDesignSystem';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontalIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface UnifiedDataTableProps<T extends { id: string }> {
@@ -76,6 +74,7 @@ export function UnifiedDataTable<T extends { id: string }>({
     {
       id: 'select',
       header: '',
+      accessorKey: 'id',
       width: '50px',
       cell: (item) => (
         <input
