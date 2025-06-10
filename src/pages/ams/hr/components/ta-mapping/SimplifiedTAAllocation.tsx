@@ -3,18 +3,15 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Progress } from '@/components/ui/progress';
 import { 
   Users, 
   Target, 
   Lightbulb, 
   ArrowRight,
-  Plus,
-  AlertTriangle,
-  CheckCircle,
-  Clock
+  Plus
 } from 'lucide-react';
+import { TACard } from './components/TACard';
+import { RequirementCard } from './components/RequirementCard';
 
 interface TAProfile {
   id: string;
@@ -69,30 +66,8 @@ export const SimplifiedTAAllocation: React.FC<SimplifiedTAAllocationProps> = ({
   onAssignTA,
   onApplyRecommendation
 }) => {
-  const [selectedTA, setSelectedTA] = useState<string | null>(null);
-  const [selectedRequirement, setSelectedRequirement] = useState<string | null>(null);
-
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
-  };
-
-  const getAvailabilityColor = (availability: string) => {
-    switch (availability) {
-      case 'available': return 'bg-green-100 text-green-800';
-      case 'busy': return 'bg-yellow-100 text-yellow-800';
-      case 'unavailable': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+  const [selectedTA, setSelectedTA] = useState<string>('');
+  const [selectedRequirement, setSelectedRequirement] = useState<string>('');
 
   const getRecommendationForPair = (taId: string, requirementId: string) => {
     return recommendations.find(r => r.taId === taId && r.requirementId === requirementId);
@@ -101,14 +76,13 @@ export const SimplifiedTAAllocation: React.FC<SimplifiedTAAllocationProps> = ({
   const handleAssign = () => {
     if (selectedTA && selectedRequirement) {
       onAssignTA(selectedTA, selectedRequirement);
-      setSelectedTA(null);
-      setSelectedRequirement(null);
+      setSelectedTA('');
+      setSelectedRequirement('');
     }
   };
 
   return (
     <div className="h-full flex flex-col">
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg font-semibold">TA Allocation</h3>
@@ -124,7 +98,6 @@ export const SimplifiedTAAllocation: React.FC<SimplifiedTAAllocationProps> = ({
         </div>
       </div>
 
-      {/* Assignment Action Bar */}
       {(selectedTA || selectedRequirement) && (
         <Card className="mb-4 border-blue-200 bg-blue-50">
           <CardContent className="p-4">
@@ -163,8 +136,8 @@ export const SimplifiedTAAllocation: React.FC<SimplifiedTAAllocationProps> = ({
                   variant="outline" 
                   size="sm" 
                   onClick={() => {
-                    setSelectedTA(null);
-                    setSelectedRequirement(null);
+                    setSelectedTA('');
+                    setSelectedRequirement('');
                   }}
                 >
                   Clear
@@ -175,9 +148,7 @@ export const SimplifiedTAAllocation: React.FC<SimplifiedTAAllocationProps> = ({
         </Card>
       )}
 
-      {/* Main Content Grid */}
       <div className="flex-1 grid grid-cols-2 gap-6">
-        {/* Left Panel - Available TAs */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -187,86 +158,17 @@ export const SimplifiedTAAllocation: React.FC<SimplifiedTAAllocationProps> = ({
           </CardHeader>
           <CardContent className="space-y-3 max-h-96 overflow-y-auto">
             {availableTAs.map((ta) => (
-              <div
+              <TACard
                 key={ta.id}
-                className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
-                  selectedTA === ta.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-                }`}
-                onClick={() => setSelectedTA(ta.id === selectedTA ? null : ta.id)}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center space-x-3">
-                    <Avatar className="h-10 w-10">
-                      <AvatarFallback>{getInitials(ta.name)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="font-medium">{ta.name}</div>
-                      <div className="text-xs text-gray-600">{ta.email}</div>
-                    </div>
-                  </div>
-                  <Badge className={getAvailabilityColor(ta.availability)} variant="secondary">
-                    {ta.availability}
-                  </Badge>
-                </div>
-
-                {/* Workload */}
-                <div className="mb-3">
-                  <div className="flex items-center justify-between text-sm mb-1">
-                    <span>Workload</span>
-                    <span>{ta.currentWorkload}/{ta.maxWorkload}</span>
-                  </div>
-                  <Progress value={(ta.currentWorkload / ta.maxWorkload) * 100} className="h-2" />
-                </div>
-
-                {/* Efficiency */}
-                <div className="flex items-center justify-between text-sm">
-                  <span>Efficiency</span>
-                  <div className="flex items-center gap-1">
-                    <span className={`font-medium ${
-                      ta.efficiencyScore >= 85 ? 'text-green-600' : 
-                      ta.efficiencyScore >= 70 ? 'text-yellow-600' : 'text-red-600'
-                    }`}>
-                      {ta.efficiencyScore}%
-                    </span>
-                    {ta.efficiencyScore >= 85 ? (
-                      <CheckCircle className="h-3 w-3 text-green-600" />
-                    ) : ta.efficiencyScore < 70 ? (
-                      <AlertTriangle className="h-3 w-3 text-red-600" />
-                    ) : null}
-                  </div>
-                </div>
-
-                {/* Skills Preview */}
-                <div className="mt-2">
-                  <div className="flex flex-wrap gap-1">
-                    {ta.skills.slice(0, 3).map((skill, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">
-                        {skill}
-                      </Badge>
-                    ))}
-                    {ta.skills.length > 3 && (
-                      <Badge variant="outline" className="text-xs">
-                        +{ta.skills.length - 3}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-
-                {/* AI Recommendations for this TA */}
-                {recommendations.filter(r => r.taId === ta.id).length > 0 && (
-                  <div className="mt-2 p-2 bg-yellow-50 rounded border border-yellow-200">
-                    <div className="flex items-center gap-1 text-xs text-yellow-800">
-                      <Lightbulb className="h-3 w-3" />
-                      {recommendations.filter(r => r.taId === ta.id).length} AI suggestion(s)
-                    </div>
-                  </div>
-                )}
-              </div>
+                ta={ta}
+                isSelected={selectedTA === ta.id}
+                onSelect={setSelectedTA}
+                recommendationCount={recommendations.filter(r => r.taId === ta.id).length}
+              />
             ))}
           </CardContent>
         </Card>
 
-        {/* Right Panel - Requirements */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -276,99 +178,19 @@ export const SimplifiedTAAllocation: React.FC<SimplifiedTAAllocationProps> = ({
           </CardHeader>
           <CardContent className="space-y-3 max-h-96 overflow-y-auto">
             {requirements.map((requirement) => (
-              <div
+              <RequirementCard
                 key={requirement.id}
-                className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
-                  selectedRequirement === requirement.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-                }`}
-                onClick={() => setSelectedRequirement(requirement.id === selectedRequirement ? null : requirement.id)}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <div className="font-medium">{requirement.name}</div>
-                    <div className="text-sm text-gray-600">{requirement.client}</div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge className={getPriorityColor(requirement.priority)} variant="secondary">
-                      {requirement.priority}
-                    </Badge>
-                    <div className="flex items-center gap-1 text-xs text-gray-600">
-                      <Clock className="h-3 w-3" />
-                      {new Date(requirement.deadline).toLocaleDateString()}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Progress Metrics */}
-                <div className="grid grid-cols-3 gap-3 mb-3">
-                  <div className="text-center">
-                    <div className="text-xs text-gray-600 mb-1">Candidates</div>
-                    <div className="text-sm">
-                      <span className="font-semibold">{requirement.progress.candidates}</span>
-                      <span className="text-gray-500">/{requirement.targetCandidates}</span>
-                    </div>
-                    <Progress 
-                      value={(requirement.progress.candidates / requirement.targetCandidates) * 100} 
-                      className="h-1 mt-1"
-                    />
-                  </div>
-                  <div className="text-center">
-                    <div className="text-xs text-gray-600 mb-1">Interviews</div>
-                    <div className="text-sm">
-                      <span className="font-semibold">{requirement.progress.interviews}</span>
-                      <span className="text-gray-500">/{requirement.targetInterviews}</span>
-                    </div>
-                    <Progress 
-                      value={(requirement.progress.interviews / requirement.targetInterviews) * 100} 
-                      className="h-1 mt-1"
-                    />
-                  </div>
-                  <div className="text-center">
-                    <div className="text-xs text-gray-600 mb-1">Closures</div>
-                    <div className="text-sm">
-                      <span className="font-semibold">{requirement.progress.closures}</span>
-                      <span className="text-gray-500">/{requirement.targetClosures}</span>
-                    </div>
-                    <Progress 
-                      value={(requirement.progress.closures / requirement.targetClosures) * 100} 
-                      className="h-1 mt-1"
-                    />
-                  </div>
-                </div>
-
-                {/* Assigned TAs */}
-                {requirement.assignedTAs.length > 0 && (
-                  <div className="mb-2">
-                    <div className="text-xs text-gray-600 mb-1">Assigned TAs</div>
-                    <div className="flex flex-wrap gap-1">
-                      {requirement.assignedTAs.map((taId, index) => {
-                        const ta = availableTAs.find(t => t.id === taId);
-                        return ta ? (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {ta.name}
-                          </Badge>
-                        ) : null;
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* AI Recommendations for this requirement */}
-                {recommendations.filter(r => r.requirementId === requirement.id).length > 0 && (
-                  <div className="mt-2 p-2 bg-yellow-50 rounded border border-yellow-200">
-                    <div className="flex items-center gap-1 text-xs text-yellow-800">
-                      <Lightbulb className="h-3 w-3" />
-                      {recommendations.filter(r => r.requirementId === requirement.id).length} AI suggestion(s)
-                    </div>
-                  </div>
-                )}
-              </div>
+                requirement={requirement}
+                isSelected={selectedRequirement === requirement.id}
+                onSelect={setSelectedRequirement}
+                recommendationCount={recommendations.filter(r => r.requirementId === requirement.id).length}
+                availableTAs={availableTAs}
+              />
             ))}
           </CardContent>
         </Card>
       </div>
 
-      {/* AI Recommendations Panel */}
       {recommendations.length > 0 && (
         <Card className="mt-4">
           <CardHeader>
