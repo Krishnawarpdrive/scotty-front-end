@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 
 export interface SearchFilterState {
@@ -49,6 +50,10 @@ export const useTableSelection = <T extends { id: string }>(data: T[]): TableSel
     }
   }, [isSelected]);
 
+  const isAllSelected = data.length > 0 && selectedItems.length === data.length;
+  const isPartiallySelected = selectedItems.length > 0 && selectedItems.length < data.length;
+  const selectedCount = selectedItems.length;
+
   const toggleAll = useCallback(() => {
     if (isAllSelected) {
       setSelectedItems([]);
@@ -56,10 +61,6 @@ export const useTableSelection = <T extends { id: string }>(data: T[]): TableSel
       setSelectedItems([...data]);
     }
   }, [data, isAllSelected]);
-
-  const isAllSelected = data.length > 0 && selectedItems.length === data.length;
-  const isPartiallySelected = selectedItems.length > 0 && selectedItems.length < data.length;
-  const selectedCount = selectedItems.length;
 
   return {
     selectedItems,

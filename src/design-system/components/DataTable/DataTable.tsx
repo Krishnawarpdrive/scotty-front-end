@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -25,7 +26,6 @@ export interface DataTableProps<T> {
   columns: DataTableColumn<T>[];
   onRowClick?: (item: T) => void;
   searchable?: boolean;
-  filterable?: boolean;
   pageSize?: number;
 }
 
@@ -34,7 +34,6 @@ export function DataTable<T extends Record<string, any>>({
   columns,
   onRowClick,
   searchable = true,
-  filterable = false,
   pageSize = 10
 }: DataTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -120,7 +119,7 @@ export function DataTable<T extends Record<string, any>>({
                 {column.sortable ? (
                   <Button variant="ghost" onClick={() => handleSort(column.accessor as string)}>
                     {column.header}
-                    {sortConfig?.key === column.accessor ? (
+                    {sortConfig && sortConfig.key === column.accessor ? (
                       sortConfig.direction === 'asc' ? (
                         <ChevronDown className="ml-2 h-4 w-4" />
                       ) : (

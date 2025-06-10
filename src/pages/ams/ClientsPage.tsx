@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
-import { ClientsPageContent } from './clients/components/ClientsPageContent';
-import { ClientDetailDrawer } from './clients/components/ClientDetailDrawer';
+import ClientsPageContent from './clients/components/ClientsPageContent';
+import ClientDetailDrawer from './clients/components/ClientDetailDrawer';
 import { ClientAccountDrawer } from './clients/components/ClientAccountDrawer';
 import { useClients } from './clients/hooks/useClients';
 import { useClientDrawers } from './clients/hooks/useClientDrawers';

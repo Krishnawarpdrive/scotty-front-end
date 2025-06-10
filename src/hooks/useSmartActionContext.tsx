@@ -1,39 +1,20 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { 
-  CheckCircle,
-  AlertTriangle,
-  Calendar,
-  Clock,
-  FileText,
-  Users,
-  TrendingUp,
-  MessageSquare,
-  UserPlus,
-  Search,
-  Filter,
-  Settings,
-  Target
-} from 'lucide-react';
 
-interface SmartAction {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ComponentType<any>;
-  priority: 'high' | 'medium' | 'low';
-  category: string;
-  onClick: () => void;
-  isCompleted?: boolean;
-  dueDate?: Date;
-}
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { SmartActionContextService, ActionContext, PendingTask, SmartNotification, SmartAction } from '@/services/SmartActionContextService';
 
 interface SmartActionContextType {
   actions: SmartAction[];
+  context: ActionContext | null;
+  isVisible: boolean;
   addAction: (action: SmartAction) => void;
   removeAction: (id: string) => void;
   markCompleted: (id: string) => void;
   getActionsByCategory: (category: string) => SmartAction[];
   getPriorityActions: () => SmartAction[];
+  toggleVisibility: () => void;
+  handleTaskClick: (task: PendingTask) => void;
+  handleActionClick: (action: SmartAction) => void;
+  handleNotificationDismiss: (notificationId: string) => void;
 }
 
 const SmartActionContext = createContext<SmartActionContextType | undefined>(undefined);
@@ -51,7 +32,9 @@ interface SmartActionProviderProps {
 }
 
 export const SmartActionProvider: React.FC<SmartActionProviderProps> = ({ children }) => {
-  const [actions, setActions] = useState<SmartAction[]>([]);
+  const [actions, setActions] = useState<SmartAction[]>(SmartActionContextService.getDefaultActions());
+  const [context, setContext] = useState<ActionContext>(SmartActionContextService.getDefaultContext());
+  const [isVisible, setIsVisible] = useState(false);
 
   const addAction = (action: SmartAction) => {
     setActions([...actions, action]);
@@ -62,29 +45,53 @@ export const SmartActionProvider: React.FC<SmartActionProviderProps> = ({ childr
   };
 
   const markCompleted = (id: string) => {
-    setActions(actions.map(action =>
-      action.id === id ? { ...action, isCompleted: true } : action
-    ));
+    // Handle completion logic here
+    console.log('Marking completed:', id);
   };
 
   const getActionsByCategory = (category: string): SmartAction[] => {
-    return actions.filter(action => action.category === category);
+    return actions.filter(action => action.priority === category);
   };
 
   const getPriorityActions = (): SmartAction[] => {
     return actions.sort((a, b) => {
-      const priorityValues = { 'high': 3, 'medium': 2, 'low': 1 };
+      const priorityValues = { 'urgent': 3, 'important': 2, 'contextual': 1 };
       return priorityValues[b.priority] - priorityValues[a.priority];
     });
   };
 
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
+  };
+
+  const handleTaskClick = (task: PendingTask) => {
+    console.log('Task clicked:', task);
+  };
+
+  const handleActionClick = (action: SmartAction) => {
+    action.action();
+  };
+
+  const handleNotificationDismiss = (notificationId: string) => {
+    setContext(prev => ({
+      ...prev,
+      notifications: prev.notifications.filter(n => n.id !== notificationId)
+    }));
+  };
+
   const value: SmartActionContextType = {
     actions,
+    context,
+    isVisible,
     addAction,
     removeAction,
     markCompleted,
     getActionsByCategory,
     getPriorityActions,
+    toggleVisibility,
+    handleTaskClick,
+    handleActionClick,
+    handleNotificationDismiss,
   };
 
   return (

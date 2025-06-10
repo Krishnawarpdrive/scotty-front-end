@@ -1,14 +1,11 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { AMSSidebar } from './AMSSidebar';
-import { EnhancedToastContainer } from '@/components/feedback/enhanced-toast/components/EnhancedToastContainer';
 import { KeyboardHintsOverlay } from '@/components/ui/keyboard-hints-overlay';
 import { SmartActionCenter } from '@/components/smart-action-center/SmartActionCenter';
 
 export const EnhancedAMSLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   return (
     <div className="h-screen flex overflow-hidden bg-gray-50">
       {/* Sidebar */}
@@ -30,7 +27,6 @@ export const EnhancedAMSLayout = () => {
       </div>
 
       {/* Global Components */}
-      <EnhancedToastContainer />
       <KeyboardHintsOverlay />
       <SmartActionCenter />
     </div>
