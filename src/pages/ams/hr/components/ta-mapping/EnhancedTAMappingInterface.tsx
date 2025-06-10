@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,12 +14,17 @@ import {
   Settings,
   BarChart3,
   UserPlus,
-  Activity
+  Activity,
+  Lightbulb,
+  Zap
 } from 'lucide-react';
 import { TAWorkloadPanel } from './TAWorkloadPanel';
 import { RoleAssignmentPanel } from './RoleAssignmentPanel';
 import { TACollaborationPanel } from './TACollaborationPanel';
 import { TAInsightsPanel } from './TAInsightsPanel';
+import { DragDropTAAllocation } from './DragDropTAAllocation';
+import { TAWorkloadDashboard } from './TAWorkloadDashboard';
+import { SmartAssignmentRecommendations } from './SmartAssignmentRecommendations';
 import { useEnhancedTAMapping } from '@/hooks/useEnhancedTAMapping';
 
 interface EnhancedTAMappingInterfaceProps {
@@ -31,7 +35,7 @@ export const EnhancedTAMappingInterface: React.FC<EnhancedTAMappingInterfaceProp
   roleData
 }) => {
   const [selectedTA, setSelectedTA] = useState<string | null>(null);
-  const [activeView, setActiveView] = useState<'overview' | 'workload' | 'assignments' | 'collaboration' | 'insights'>('overview');
+  const [activeView, setActiveView] = useState<'allocation' | 'workload' | 'recommendations' | 'assignments' | 'collaboration' | 'insights'>('allocation');
   
   const {
     taProfiles,
@@ -57,12 +61,202 @@ export const EnhancedTAMappingInterface: React.FC<EnhancedTAMappingInterfaceProp
     return () => clearInterval(interval);
   }, [refreshData]);
 
-  const getWorkloadStatus = (workload: number, maxWorkload: number) => {
-    const percentage = (workload / maxWorkload) * 100;
-    if (percentage >= 90) return { color: 'text-red-600', bg: 'bg-red-100', status: 'Overloaded' };
-    if (percentage >= 75) return { color: 'text-yellow-600', bg: 'bg-yellow-100', status: 'High' };
-    if (percentage >= 50) return { color: 'text-blue-600', bg: 'bg-blue-100', status: 'Moderate' };
-    return { color: 'text-green-600', bg: 'bg-green-100', status: 'Light' };
+  // Transform data for drag-and-drop interface
+  const mockRequirements = [
+    {
+      id: 'req-1',
+      name: 'Senior Software Engineer',
+      client: 'TechCorp Inc.',
+      priority: 'high' as const,
+      targetCandidates: 15,
+      targetInterviews: 8,
+      targetClosures: 3,
+      deadline: '2024-07-15',
+      assignedTAs: ['ta1'],
+      progress: {
+        candidates: 8,
+        interviews: 4,
+        closures: 1
+      }
+    },
+    {
+      id: 'req-2',
+      name: 'Product Manager',
+      client: 'StartupX',
+      priority: 'medium' as const,
+      targetCandidates: 10,
+      targetInterviews: 5,
+      targetClosures: 2,
+      deadline: '2024-07-30',
+      assignedTAs: [],
+      progress: {
+        candidates: 3,
+        interviews: 1,
+        closures: 0
+      }
+    },
+    {
+      id: 'req-3',
+      name: 'Data Scientist',
+      client: 'DataFlow Ltd.',
+      priority: 'low' as const,
+      targetCandidates: 8,
+      targetInterviews: 4,
+      targetClosures: 2,
+      deadline: '2024-08-15',
+      assignedTAs: ['ta2'],
+      progress: {
+        candidates: 5,
+        interviews: 2,
+        closures: 0
+      }
+    }
+  ];
+
+  const mockTAWorkloads = taProfiles.map(ta => ({
+    id: ta.id,
+    name: ta.name,
+    currentWorkload: ta.current_workload,
+    maxWorkload: ta.max_workload,
+    efficiency: ta.efficiency_score,
+    metrics: {
+      candidates: {
+        current: Math.floor(Math.random() * 10) + 5,
+        target: 12,
+        trend: 'up' as const,
+        change: 15
+      },
+      interviews: {
+        current: Math.floor(Math.random() * 6) + 3,
+        target: 8,
+        trend: 'stable' as const,
+        change: 0
+      },
+      closures: {
+        current: Math.floor(Math.random() * 3) + 1,
+        target: 3,
+        trend: 'down' as const,
+        change: -10
+      }
+    },
+    assignments: [
+      {
+        id: '1',
+        name: 'Senior Software Engineer',
+        client: 'TechCorp Inc.',
+        priority: 'high' as const,
+        deadline: '2024-07-15'
+      }
+    ],
+    availability: ta.status === 'active' ? 'available' as const : 'busy' as const,
+    riskLevel: ta.efficiency_score < 70 ? 'high' as const : ta.efficiency_score < 85 ? 'medium' as const : 'low' as const
+  }));
+
+  const mockRecommendations = [
+    {
+      id: 'rec-1',
+      type: 'optimal_assignment' as const,
+      priority: 'high' as const,
+      title: 'High-Impact Assignment Opportunity',
+      description: 'Sarah Chen is an optimal match for the Senior Software Engineer role at TechCorp Inc.',
+      impact: 'Could reduce time-to-fill by 40% and increase placement success rate by 25%',
+      confidence: 92,
+      suggestedAction: {
+        taId: 'ta1',
+        taName: 'Sarah Chen',
+        requirementId: 'req-1',
+        requirementName: 'Senior Software Engineer',
+        client: 'TechCorp Inc.'
+      },
+      score: {
+        overall: 92,
+        skillMatch: 95,
+        workloadFit: 88,
+        efficiency: 90,
+        availability: 95
+      },
+      reasoning: [
+        'Exact skill match with React, Node.js, and AWS expertise',
+        'Current workload at 60% capacity, ideal for taking on high-priority requirements',
+        'Historical success rate of 85% for similar technical roles',
+        'Available immediately with no conflicting deadlines'
+      ],
+      estimatedOutcome: {
+        efficiencyGain: 25,
+        timeToFill: '3-4 weeks',
+        riskReduction: 35
+      }
+    },
+    {
+      id: 'rec-2',
+      type: 'workload_rebalance' as const,
+      priority: 'medium' as const,
+      title: 'Workload Rebalancing Needed',
+      description: 'Mike Rodriguez is approaching capacity limit. Consider redistributing assignments.',
+      impact: 'Prevent burnout and maintain consistent performance across the team',
+      confidence: 78,
+      suggestedAction: {
+        taId: 'ta2',
+        taName: 'Emily Watson',
+        requirementId: 'req-2',
+        requirementName: 'Product Manager',
+        client: 'StartupX'
+      },
+      score: {
+        overall: 78,
+        skillMatch: 82,
+        workloadFit: 95,
+        efficiency: 75,
+        availability: 90
+      },
+      reasoning: [
+        'Mike Rodriguez currently at 95% capacity',
+        'Emily Watson has bandwidth and relevant PM experience',
+        'Risk of quality degradation if current assignments continue'
+      ],
+      estimatedOutcome: {
+        efficiencyGain: 15,
+        timeToFill: '2-3 weeks',
+        riskReduction: 50
+      }
+    }
+  ];
+
+  const transformedTAs = taProfiles.map(ta => ({
+    id: ta.id,
+    name: ta.name,
+    email: ta.email,
+    currentWorkload: ta.current_workload,
+    maxWorkload: ta.max_workload,
+    efficiencyScore: ta.efficiency_score,
+    skills: Array.isArray(ta.skills) ? ta.skills : [],
+    availability: ta.status === 'active' ? 'available' as const : 
+                ta.current_workload >= ta.max_workload * 0.9 ? 'busy' as const : 'unavailable' as const,
+    assignments: ta.current_workload
+  }));
+
+  const handleAssignTA = (taId: string, requirementId: string) => {
+    console.log(`Assigning TA ${taId} to requirement ${requirementId}`);
+    assignTAToRole(taId, requirementId);
+  };
+
+  const handleUnassignTA = (taId: string, requirementId: string) => {
+    console.log(`Unassigning TA ${taId} from requirement ${requirementId}`);
+  };
+
+  const handleUpdateTargets = (requirementId: string, targets: any) => {
+    console.log(`Updating targets for requirement ${requirementId}:`, targets);
+  };
+
+  const handleApplyRecommendation = (recommendationId: string) => {
+    const recommendation = mockRecommendations.find(r => r.id === recommendationId);
+    if (recommendation) {
+      handleAssignTA(recommendation.suggestedAction.taId, recommendation.suggestedAction.requirementId);
+    }
+  };
+
+  const handleDismissRecommendation = (recommendationId: string) => {
+    console.log(`Dismissing recommendation ${recommendationId}`);
   };
 
   const totalTAs = taProfiles.length;
@@ -161,123 +355,56 @@ export const EnhancedTAMappingInterface: React.FC<EnhancedTAMappingInterfaceProp
 
       {/* Main Interface with Enhanced Tabs */}
       <Tabs value={activeView} onValueChange={(value: any) => setActiveView(value)}>
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="workload">Workload</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="allocation">
+            <Zap className="h-4 w-4 mr-2" />
+            Allocation
+          </TabsTrigger>
+          <TabsTrigger value="workload">
+            <BarChart3 className="h-4 w-4 mr-2" />
+            Workload
+          </TabsTrigger>
+          <TabsTrigger value="recommendations">
+            <Lightbulb className="h-4 w-4 mr-2" />
+            AI Suggestions
+          </TabsTrigger>
           <TabsTrigger value="assignments">Assignments</TabsTrigger>
           <TabsTrigger value="collaboration">Collaboration</TabsTrigger>
           <TabsTrigger value="insights">Insights</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Panel - TA List */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  TA Team Overview
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {taProfiles.map((ta) => {
-                    const workloadStatus = getWorkloadStatus(ta.current_workload, ta.max_workload);
-                    const workloadPercentage = (ta.current_workload / ta.max_workload) * 100;
-                    const taCollaborations = collaborations.filter(c => 
-                      c.primary_ta_id === ta.id || c.secondary_ta_id === ta.id
-                    ).length;
-                    
-                    return (
-                      <div 
-                        key={ta.id}
-                        className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                          selectedTA === ta.id ? 'border-blue-500 bg-blue-50' : 'hover:border-gray-300'
-                        }`}
-                        onClick={() => setSelectedTA(ta.id)}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <div>
-                            <h4 className="font-medium">{ta.name}</h4>
-                            <p className="text-sm text-gray-600">{ta.email}</p>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Badge className={workloadStatus.bg + ' ' + workloadStatus.color} variant="secondary">
-                              {workloadStatus.status}
-                            </Badge>
-                            {taCollaborations > 0 && (
-                              <Badge variant="outline" className="text-xs">
-                                {taCollaborations} collab
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between text-sm">
-                            <span>Workload</span>
-                            <span>{ta.current_workload}/{ta.max_workload}</span>
-                          </div>
-                          <Progress value={workloadPercentage} className="h-2" />
-                          
-                          <div className="grid grid-cols-3 gap-2 text-xs text-gray-500">
-                            <div className="text-center">
-                              <p>Success: {ta.success_rate}%</p>
-                            </div>
-                            <div className="text-center">
-                              <p>Efficiency: {ta.efficiency_score}</p>
-                            </div>
-                            <div className="text-center">
-                              <p>Exp: {ta.experience_years}y</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Right Panel - Assignment Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  Assignment Analytics
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {selectedTA ? (
-                  <RoleAssignmentPanel 
-                    taId={selectedTA} 
-                    roleId={roleData?.id}
-                    assignments={assignments.filter(a => a.ta_id === selectedTA)}
-                    assignmentMetrics={assignmentMetrics}
-                    onAssignmentUpdate={updateAssignmentStatus}
-                  />
-                ) : (
-                  <div className="text-center text-gray-500 py-8">
-                    <Target className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                    <h3 className="text-lg font-medium mb-2">Select a TA</h3>
-                    <p>Choose a TA from the left panel to view their assignment details and analytics.</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+        <TabsContent value="allocation" className="space-y-4">
+          <DragDropTAAllocation
+            requirements={mockRequirements}
+            availableTAs={transformedTAs}
+            onAssignTA={handleAssignTA}
+            onUnassignTA={handleUnassignTA}
+            onUpdateTargets={handleUpdateTargets}
+          />
         </TabsContent>
 
         <TabsContent value="workload" className="space-y-4">
-          <TAWorkloadPanel 
-            taProfiles={taProfiles}
-            workloadData={workloadData}
-            roleTargets={roleTargets}
-            onWorkloadUpdate={updateWorkload}
+          <TAWorkloadDashboard
+            workloads={mockTAWorkloads}
+            onRebalance={(fromTaId, toTaId, assignmentId) => {
+              console.log(`Rebalancing from ${fromTaId} to ${toTaId} assignment ${assignmentId}`);
+            }}
+            onUpdateCapacity={(taId, newCapacity) => {
+              console.log(`Updating capacity for ${taId} to ${newCapacity}`);
+            }}
+          />
+        </TabsContent>
+
+        <TabsContent value="recommendations" className="space-y-4">
+          <SmartAssignmentRecommendations
+            recommendations={mockRecommendations}
+            onApplyRecommendation={handleApplyRecommendation}
+            onDismissRecommendation={handleDismissRecommendation}
           />
         </TabsContent>
 
         <TabsContent value="assignments" className="space-y-4">
+          
           <Card>
             <CardHeader>
               <CardTitle>Assignment Management</CardTitle>
