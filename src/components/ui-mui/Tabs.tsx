@@ -1,11 +1,8 @@
-
 import React from 'react';
 import {
   Tabs as MuiTabs,
   Tab as MuiTab,
   TabsProps as MuiTabsProps,
-  TabProps as MuiTabProps,
-  Box,
 } from '@mui/material';
 import { cn } from '@/lib/utils';
 
@@ -20,7 +17,6 @@ export interface TabsListProps {
   children: React.ReactNode;
 }
 
-// Fix the interface to avoid conflicts with Material-UI's TabProps
 export interface TabsTriggerProps {
   className?: string;
   value: string;
@@ -35,10 +31,10 @@ export interface TabsContentProps {
 }
 
 export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
-  ({ className, defaultValue, onValueChange, children, ...props }, ref) => {
+  ({ className, defaultValue, onValueChange, children, ...restProps }, ref) => {
     const [value, setValue] = React.useState(defaultValue || '');
 
-    const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    const handleChange = (_: React.SyntheticEvent, newValue: string) => {
       setValue(newValue);
       if (onValueChange) {
         onValueChange(newValue);

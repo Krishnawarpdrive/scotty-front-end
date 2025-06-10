@@ -1,6 +1,5 @@
-
 import React, { useState, useCallback, useMemo } from 'react';
-import { Search, Loader2, Filter, X } from 'lucide-react';
+import { Search, Loader2, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -187,3 +186,5 @@ export const SemanticSearchBar: React.FC<SemanticSearchBarProps> = ({
     </div>
   );
 };
+
+export default SemanticSearchBar;
