@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { useSuperEnhancedToast } from './super-enhanced-toast';
 
 interface ToastOptions {
@@ -43,13 +44,13 @@ export const useEnhancedToast = () => {
   };
 
   return {
-    showSuccess,
-    showError,
-    showInfo,
-    showWarning,
-    showPromise,
-    dismiss: toast.dismiss,
-    dismissAll: toast.dismissAll
+    success: showSuccess,
+    error: showError,
+    info: showInfo,
+    warning: showWarning,
+    promise: showPromise,
+    // Expose all enhanced methods
+    ...toast
   };
 };
 

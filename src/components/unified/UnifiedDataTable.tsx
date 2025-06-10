@@ -1,10 +1,12 @@
 
 import React from 'react';
 import { DataTable, DataTableColumn } from '@/design-system/components/DataTable/DataTable';
+import { StatusIndicator } from '@/design-system/components/StatusIndicator/StatusIndicator';
 import { SearchFilter } from '@/design-system/components/SearchFilter/SearchFilter';
 import { useSearchFilter, useTableSelection } from '@/design-system/hooks/useDesignSystem';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { MoreHorizontalIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface UnifiedDataTableProps<T extends { id: string }> {
@@ -20,6 +22,8 @@ interface UnifiedDataTableProps<T extends { id: string }> {
   onRowClick?: (item: T) => void;
   onBulkAction?: (action: string, items: T[]) => void;
   bulkActions?: Array<{ key: string; label: string; variant?: 'default' | 'destructive' }>;
+  enableSemanticSearch?: boolean;
+  semanticTables?: string[];
   className?: string;
 }
 
@@ -31,10 +35,13 @@ export function UnifiedDataTable<T extends { id: string }>({
   onRowClick,
   onBulkAction,
   bulkActions = [],
+  enableSemanticSearch = true,
+  semanticTables = ['roles', 'requirements', 'clients', 'skills'],
   className,
 }: UnifiedDataTableProps<T>) {
   const { searchParams, updateSearch, updateFilters } = useSearchFilter();
   const { selectedItems, toggleItem, toggleAll, isSelected, isAllSelected, isPartiallySelected, selectedCount } = useTableSelection(data);
+  const [semanticResults, setSemanticResults] = React.useState<any[]>([]);
 
   // Filter data based on search and filters
   const filteredData = React.useMemo(() => {
@@ -83,8 +90,9 @@ export function UnifiedDataTable<T extends { id: string }>({
     ...columns,
   ];
 
-  const handleFilterChange = (key: string, value: any) => {
-    updateFilters({ [key]: value });
+  const handleSemanticResults = (results: any[]) => {
+    setSemanticResults(results);
+    console.log('Semantic search results:', results);
   };
 
   return (
@@ -96,8 +104,38 @@ export function UnifiedDataTable<T extends { id: string }>({
         onSearchChange={updateSearch}
         filters={filterOptions}
         activeFilters={searchParams.filters || {}}
-        onFilterChange={handleFilterChange}
+        onFilterChange={updateFilters}
+        enableSemanticSearch={enableSemanticSearch}
+        semanticTables={semanticTables}
+        onSemanticResults={handleSemanticResults}
       />
+
+      {/* Semantic Results Display */}
+      {semanticResults.length > 0 && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <h3 className="text-sm font-medium text-green-800 mb-2">
+            AI Search Results ({semanticResults.length})
+          </h3>
+          <div className="grid gap-2 max-h-48 overflow-y-auto">
+            {semanticResults.map((result, index) => (
+              <div key={index} className="text-xs bg-white p-2 rounded border">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-xs">
+                    {result.table_name}
+                  </Badge>
+                  <span className="font-medium">{result.name || result.title}</span>
+                  <span className="text-green-600 ml-auto">
+                    {Math.round(result.similarity * 100)}% match
+                  </span>
+                </div>
+                {result.description && (
+                  <p className="text-gray-600 mt-1 line-clamp-1">{result.description}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Bulk Actions */}
       {selectedCount > 0 && bulkActions.length > 0 && (
@@ -131,7 +169,8 @@ export function UnifiedDataTable<T extends { id: string }>({
           data={filteredData}
           columns={enhancedColumns}
           onRowClick={onRowClick}
-          searchable={false}
+          searchable={false} // We handle search externally
+          filterable={false}  // We handle filters externally
         />
       </div>
 

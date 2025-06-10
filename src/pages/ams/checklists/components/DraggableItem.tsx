@@ -1,6 +1,6 @@
 
 import React, { useRef } from 'react';
-import { useDrag, useDrop, DropTargetMonitor } from 'react-dnd';
+import { useDrag, useDrop } from 'react-dnd';
 import { Trash2, GripVertical } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,9 +39,14 @@ export const DraggableItem: React.FC<DraggableItemProps> = ({
     }),
   });
   
-  const [, drop] = useDrop<DragItem>({
+  const [{ handlerId }, drop] = useDrop({
     accept: 'CHECKLIST_ITEM',
-    hover(item: DragItem, monitor: DropTargetMonitor) {
+    collect(monitor) {
+      return {
+        handlerId: monitor.getHandlerId(),
+      };
+    },
+    hover(item: DragItem, monitor) {
       if (!ref.current) {
         return;
       }
@@ -98,6 +103,7 @@ export const DraggableItem: React.FC<DraggableItemProps> = ({
   return (
     <div 
       ref={ref}
+      data-handler-id={handlerId}
       className={cn(
         "flex items-center gap-2 border rounded-md p-2 bg-white transition-opacity",
         isDragging && "opacity-50"

@@ -47,10 +47,10 @@ export const SmartActionCenter: React.FC<SmartActionCenterProps> = ({
   const getTotalBadgeCount = () => {
     if (!context) return 0;
     
-    const urgentCount = context.pendingTasks.filter((t: any) => t.priority === 'urgent').length +
-                      context.notifications.filter((n: any) => n.type === 'urgent').length;
-    const importantCount = context.pendingTasks.filter((t: any) => t.priority === 'high').length +
-                          context.notifications.filter((n: any) => n.type === 'important').length;
+    const urgentCount = context.pendingTasks.filter(t => t.priority === 'urgent').length +
+                      context.notifications.filter(n => n.type === 'urgent').length;
+    const importantCount = context.pendingTasks.filter(t => t.priority === 'high').length +
+                          context.notifications.filter(n => n.type === 'important').length;
     
     return urgentCount + importantCount;
   };
@@ -59,16 +59,16 @@ export const SmartActionCenter: React.FC<SmartActionCenterProps> = ({
     if (!context) return 0;
     
     if (paperType === 'urgent') {
-      return context.pendingTasks.filter((t: any) => t.priority === 'urgent').length +
-             context.notifications.filter((n: any) => n.type === 'urgent').length;
+      return context.pendingTasks.filter(t => t.priority === 'urgent').length +
+             context.notifications.filter(n => n.type === 'urgent').length;
     }
     
     if (paperType === 'important') {
-      return context.pendingTasks.filter((t: any) => t.priority === 'high').length +
-             context.notifications.filter((n: any) => n.type === 'important').length;
+      return context.pendingTasks.filter(t => t.priority === 'high').length +
+             context.notifications.filter(n => n.type === 'important').length;
     }
     
-    return actions.filter((a: any) => a.priority === 'contextual').length;
+    return actions.filter(a => a.priority === 'contextual').length;
   };
 
   const handleFolderClick = () => {

@@ -1,112 +1,104 @@
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { Client } from '../types/ClientTypes';
-import { clientsData } from '../data/clientsData';
-
-export interface SortConfig {
-  key: string;
-  direction: 'asc' | 'desc';
-}
-
-export interface Pagination {
-  currentPage: number;
-  totalPages: number;
-  pageSize: number;
-  totalItems: number;
-}
 
 export const useClients = () => {
+  const { toast } = useToast();
   const [clients, setClients] = useState<Client[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTier, setSelectedTier] = useState<string>('');
-  const [selectedStatus, setSelectedStatus] = useState<string>('');
-  const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Fetch clients from Supabase
   useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        setLoading(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setClients(clientsData);
-        setError(null);
-      } catch (err) {
-        setError('Failed to fetch clients');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchClients();
   }, []);
 
-  const filteredClients = useMemo(() => {
-    let filtered = clients;
-
-    if (searchTerm) {
-      filtered = filtered.filter(client =>
-        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.email?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (selectedTier) {
-      filtered = filtered.filter(client => client.client_tier === selectedTier);
-    }
-
-    if (selectedStatus) {
-      filtered = filtered.filter(client => client.status === selectedStatus);
-    }
-
-    if (sortConfig) {
-      filtered.sort((a, b) => {
-        const aValue = (a as any)[sortConfig.key];
-        const bValue = (b as any)[sortConfig.key];
-        
-        if (sortConfig.direction === 'asc') {
-          return aValue > bValue ? 1 : -1;
-        } else {
-          return aValue < bValue ? 1 : -1;
-        }
-      });
-    }
-
-    return filtered;
-  }, [clients, searchTerm, selectedTier, selectedStatus, sortConfig]);
-
-  const totalPages = Math.ceil(filteredClients.length / pageSize);
-  const startIndex = (currentPage - 1) * pageSize;
-  const paginatedClients = filteredClients.slice(startIndex, startIndex + pageSize);
-
-  const pagination: Pagination = {
-    currentPage,
-    totalPages,
-    pageSize,
-    totalItems: filteredClients.length
+  // Helper function to calculate days since a given date
+  const calculateDaysSince = (dateString: string | null) => {
+    if (!dateString) return 0;
+    
+    const date = new Date(dateString);
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays;
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+  const fetchClients = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*');
+      
+      if (error) throw error;
+      
+      // Transform data to match the expected Client interface
+      const transformedClients: Client[] = data.map(client => ({
+        id: client.id,
+        name: client.name,
+        contact: client.contact || '',
+        email: client.email || '',
+        status: client.status || 'active',
+        accountType: client.account_type || 'Enterprise',
+        createdOn: client.created_on || new Date().toISOString(),
+        lastActivity: { 
+          days: calculateDaysSince(client.last_activity_date), 
+          active: client.status === 'active' 
+        },
+        roles: [], // Will be populated with a separate query if needed
+        totalRequirements: client.total_requirements || 0,
+        assignedHR: client.assigned_hr || '',
+        hiringStatus: client.hiring_status || 'Active',
+        clientTier: client.client_tier || '',
+        healthScore: client.health_score || 0,
+        budgetUtilized: client.budget_utilized || 0,
+        notes: client.notes
+      }));
+      
+      setClients(transformedClients);
+    } catch (error) {
+      console.error('Error fetching clients:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load client data. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deleteClient = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      setClients(clients.filter(client => client.id !== id));
+      toast({
+        title: "Client Deleted",
+        description: "The client has been deleted successfully.",
+      });
+    } catch (error) {
+      console.error('Error deleting client:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete client. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return {
-    clients: paginatedClients,
-    loading,
-    error,
-    searchTerm,
-    setSearchTerm,
-    selectedTier,
-    setSelectedTier,
-    selectedStatus,
-    setSelectedStatus,
-    sortConfig,
-    setSortConfig,
-    filteredClients: paginatedClients,
-    pagination,
-    handlePageChange
+    clients,
+    isLoading,
+    deleteClient,
+    fetchClients
   };
 };

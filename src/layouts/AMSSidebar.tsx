@@ -1,83 +1,312 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { cn } from '@/lib/utils';
-import { 
+import React, { useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  LayoutDashboard,
   Users,
-  FileText,
-  Building,
+  Building2,
   UserCheck,
-  BookOpen,
-  BarChart3,
-  UserPlus,
-  CheckSquare,
+  Briefcase,
+  Settings,
+  ChevronDown,
+  ChevronRight,
+  FileText,
+  CheckCircle,
   Award,
   DollarSign,
-  Calendar
-} from 'lucide-react';
+  Workflow,
+  Search,
+  UserPlus,
+  BarChart3,
+  Target,
+  Star,
+  Calendar,
+  Zap,
+  BookOpen,
+  UserCog,
+  Presentation,
+  Crown,
+  UserCircle,
+  HandHeart,
+  ClipboardList,
+  Database,
+  MessageSquare,
+  Video
+} from "lucide-react";
 
-interface SidebarItem {
-  name: string;
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  current?: boolean;
-}
-
-const sidebarItems: SidebarItem[] = [
-  { name: 'Dashboard', href: '/ams', icon: BarChart3 },
-  { name: 'Clients', href: '/ams/clients', icon: Building },
-  { name: 'Requirements', href: '/ams/requirements', icon: FileText },
-  { name: 'Roles Library', href: '/ams/roles-library', icon: BookOpen },
-  { name: 'Candidate Pool', href: '/ams/hr/candidate-pool', icon: Users },
-  { name: 'Role Management', href: '/ams/hr/role-management', icon: UserCheck },
-  { name: 'Search', href: '/ams/search', icon: Users },
-  { name: 'Interview Panelist Library', href: '/ams/interview-panelist-library', icon: UserPlus },
-  { name: 'Vendor Management', href: '/ams/vendor-management', icon: Building },
-  { name: 'Checklists', href: '/ams/checklists', icon: CheckSquare },
-  { name: 'Skills', href: '/ams/skills', icon: Award },
-  { name: 'Certifications', href: '/ams/certifications', icon: Award },
-  { name: 'Commissions', href: '/ams/commissions', icon: DollarSign },
-  { name: 'Workflow Management', href: '/ams/workflow-management', icon: Calendar },
-];
-
-export const AMSSidebar = () => {
+const AMSSidebar: React.FC = () => {
   const location = useLocation();
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    core: true,
+    interviewer: true,
+    specialized: true,
+    libraries: true,
+    analytics: true,
+  });
 
-  const getNavItemState = (href: string) => {
-    const currentPath = location.pathname;
-    return {
-      current: currentPath === href
-    };
+  const toggleSection = (sectionKey: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionKey]: !prev[sectionKey]
+    }));
   };
 
+  const isActive = (path: string) => location.pathname === path;
+  const isInPath = (path: string) => location.pathname.startsWith(path);
+
+  const navigationSections = [
+    {
+      key: "interviewer",
+      title: "Interviewer Portal",
+      icon: Video,
+      items: [
+        { 
+          title: "My Interviews", 
+          path: "/ams/interviewer/my-interviews", 
+          icon: Calendar,
+          description: "Scheduled interviews"
+        },
+        { 
+          title: "Interviewer Dashboard", 
+          path: "/ams/interviewer/dashboard", 
+          icon: MessageSquare,
+          description: "Overview & metrics"
+        },
+      ]
+    },
+    {
+      key: "core",
+      title: "Core Functions",
+      icon: LayoutDashboard,
+      items: [
+        { 
+          title: "AMS Dashboard", 
+          path: "/ams/dashboard", 
+          icon: LayoutDashboard,
+          description: "Main overview"
+        },
+        { 
+          title: "Clients", 
+          path: "/ams/clients", 
+          icon: Building2,
+          description: "Client management"
+        },
+        { 
+          title: "Requirements", 
+          path: "/ams/requirements", 
+          icon: FileText,
+          description: "Job requirements"
+        },
+        { 
+          title: "Roles Library", 
+          path: "/ams/roles", 
+          icon: Briefcase,
+          description: "Role templates"
+        },
+        { 
+          title: "Skills Library", 
+          path: "/ams/skills/library", 
+          icon: BookOpen,
+          description: "Skills database"
+        },
+      ]
+    },
+    {
+      key: "specialized",
+      title: "Specialized Modules",
+      icon: UserCog,
+      items: [
+        { 
+          title: "HR Dashboard", 
+          path: "/ams/hr/dashboard", 
+          icon: UserCheck,
+          description: "HR management"
+        },
+        { 
+          title: "Candidate Pool", 
+          path: "/ams/hr/candidate-pool", 
+          icon: Users,
+          description: "Candidate database"
+        },
+        { 
+          title: "Role Management", 
+          path: "/ams/hr/role-management", 
+          icon: UserCog,
+          description: "Role configuration"
+        },
+        { 
+          title: "TA Management", 
+          path: "/ams/ta/management", 
+          icon: Target,
+          description: "TA operations"
+        },
+        { 
+          title: "TA Mission Control", 
+          path: "/ams/ta/mission-control", 
+          icon: Target,
+          description: "TA operations"
+        },
+        { 
+          title: "Candidate Dashboard", 
+          path: "/ams/candidate-dashboard", 
+          icon: UserPlus,
+          description: "Candidate view"
+        },
+        { 
+          title: "Executive Dashboard", 
+          path: "/ams/executive/dashboard", 
+          icon: Crown,
+          description: "Executive insights"
+        },
+      ]
+    },
+    {
+      key: "libraries",
+      title: "Resource Libraries",
+      icon: BookOpen,
+      items: [
+        { 
+          title: "Checklist Bar", 
+          path: "/ams/checklist-bar", 
+          icon: ClipboardList,
+          description: "Process checklists"
+        },
+        { 
+          title: "Interview Panelists", 
+          path: "/ams/interview-panelists", 
+          icon: UserCircle,
+          description: "Panelist management"
+        },
+        { 
+          title: "Checklists", 
+          path: "/ams/checklists", 
+          icon: CheckCircle,
+          description: "Process checklists"
+        },
+        { 
+          title: "Certifications", 
+          path: "/ams/certifications", 
+          icon: Award,
+          description: "Certification library"
+        },
+        { 
+          title: "Vendor Management", 
+          path: "/ams/vendor-management", 
+          icon: HandHeart,
+          description: "Vendor portal"
+        },
+      ]
+    },
+    {
+      key: "analytics",
+      title: "Analytics & Insights",
+      icon: BarChart3,
+      items: [
+        { 
+          title: "Commissions", 
+          path: "/ams/commissions", 
+          icon: DollarSign,
+          description: "Commission tracking"
+        },
+        { 
+          title: "Executive Clients", 
+          path: "/ams/executive/clients", 
+          icon: Presentation,
+          description: "Client analytics"
+        },
+        { 
+          title: "Data Analytics", 
+          path: "/ams/analytics", 
+          icon: Database,
+          description: "System analytics"
+        },
+      ]
+    }
+  ];
+
   return (
-    <div className="flex flex-col h-full bg-white border-r border-gray-200">
-      <div className="flex-shrink-0 flex items-center justify-center h-16 border-b border-gray-200">
-        <span className="text-lg font-semibold text-gray-800">
-          AMS - Lovable
-        </span>
+    <div className="flex h-full w-64 flex-col bg-white shadow-lg border-r font-rubik">
+      {/* Header */}
+      <div className="flex h-16 items-center justify-center border-b" style={{ backgroundColor: '#009933' }}>
+        <div className="flex items-center gap-3 text-white">
+          <Zap className="h-8 w-8" />
+          <span className="text-xl font-bold">AMS</span>
+        </div>
       </div>
-      
-      <nav className="flex-1 px-4 pb-4 space-y-1">
-        {sidebarItems.map((item) => {
-          const { current } = getNavItemState(item.href);
-          
-          return (
-            <Link
-              key={item.name}
-              to={item.href}
-              className={cn(
-                'group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors',
-                current
-                  ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-              )}
+
+      {/* Navigation */}
+      <div className="flex-1 overflow-y-auto p-4">
+        <nav className="space-y-3">
+          {navigationSections.map((section) => (
+            <Collapsible
+              key={section.key}
+              open={expandedSections[section.key]}
+              onOpenChange={() => toggleSection(section.key)}
             >
-              <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
-              {item.name}
-            </Link>
-          );
-        })}
-      </nav>
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-between text-left font-medium text-xs"
+                >
+                  <div className="flex items-center gap-2">
+                    <section.icon className="h-4 w-4" />
+                    {section.title}
+                  </div>
+                  {expandedSections[section.key] ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4" />
+                  )}
+                </Button>
+              </CollapsibleTrigger>
+              
+              <CollapsibleContent className="mt-2 space-y-1">
+                {section.items.map((item) => (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    className={({ isActive }) =>
+                      cn(
+                        "flex items-center gap-3 rounded-lg px-3 py-2 text-xs transition-all hover:bg-gray-100",
+                        isActive
+                          ? "text-white border-l-4" 
+                          : "text-gray-600 hover:text-gray-900",
+                        isActive && "bg-[#009933] border-[#007728]"
+                      )
+                    }
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <div className="flex-1">
+                      <div className="font-medium">{item.title}</div>
+                      <div className="text-xs text-gray-500">
+                        {item.description}
+                      </div>
+                    </div>
+                  </NavLink>
+                ))}
+              </CollapsibleContent>
+            </Collapsible>
+          ))}
+        </nav>
+      </div>
+
+      {/* Footer */}
+      <div className="border-t p-4">
+        <div className="flex items-center gap-3 text-xs text-gray-600">
+          <div className="h-8 w-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#009933' }}>
+            <UserCheck className="h-4 w-4 text-white" />
+          </div>
+          <div>
+            <div className="font-medium">System User</div>
+            <div className="text-xs">Administrator</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
+
+export default AMSSidebar;

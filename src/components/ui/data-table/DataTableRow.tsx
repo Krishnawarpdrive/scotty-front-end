@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { TableRow, TableCell } from "@/components/ui/table";
 import { DataTableColumn } from './types';
 import { cn } from "@/lib/utils";
@@ -22,7 +23,7 @@ export function DataTableRow<T extends Record<string, any>>({
       )}
       onClick={() => onRowClick && onRowClick(item)}
     >
-      {columns.map((column) => {
+      {columns.map((column, index) => {
         // Define static widths for each column to prevent hover width changes
         const getColumnWidth = (columnId: string) => {
           switch (columnId) {

@@ -1,105 +1,113 @@
 
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { useClients } from './clients/hooks/useClients';
+import { useClientSelection } from './clients/hooks/useClientSelection';
+import { useClientSearch } from './clients/hooks/useClientSearch';
+import ClientsPageHeader from './clients/components/ClientsPageHeader';
 import ClientsPageContent from './clients/components/ClientsPageContent';
 import ClientDetailDrawer from './clients/components/ClientDetailDrawer';
 import ClientAccountDrawer from './clients/components/ClientAccountDrawer';
-import { useClients } from './clients/hooks/useClients';
-import { useClientDrawers } from './clients/hooks/useClientDrawers';
+import { Client } from './clients/types/ClientTypes';
 
 const ClientsPage = () => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const { clients, isLoading, deleteClient } = useClients();
+  const { 
+    selectedClients, 
+    selectedClient, 
+    isDetailsOpen, 
+    setIsDetailsOpen,
+    handleViewClientDetails,
+    handleSelectClient,
+    handleSelectAll,
+    setSelectedClient
+  } = useClientSelection(clients);
+  
   const {
-    clients,
-    loading,
     searchTerm,
     setSearchTerm,
-    setSortConfig,
     filteredClients,
-  } = useClients();
+    showFilterPanel,
+    toggleFilterPanel
+  } = useClientSearch(clients);
 
-  const {
-    selectedClientId,
-    setSelectedClientId,
-    clientDetailOpen,
-    setClientDetailOpen,
-    clientAccountOpen,
-    setClientAccountOpen,
-    setEditingClient
-  } = useClientDrawers();
+  const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false);
 
-  const [selectedClients, setSelectedClients] = useState<string[]>([]);
-
-  const handleClientCreated = () => {
-    setClientAccountOpen(false);
-    setEditingClient(null);
+  const handleCreateClient = () => {
+    setIsAccountDrawerOpen(true);
   };
 
-  const toggleFilterPanel = () => {
-    // Filter panel toggle logic
+  const handleEditClient = (client: Client) => {
+    toast({
+      title: "Not implemented",
+      description: "This feature is not implemented yet.",
+    });
   };
 
-  const handleEditClientAction = (client: any) => {
-    setEditingClient(client);
-    setClientAccountOpen(true);
+  // Handle search change - now expects a string directly
+  const handleSearchChange = (query: string) => {
+    setSearchTerm(query);
   };
 
-  const handleDeleteClient = (id: string) => {
-    console.log('Delete client:', id);
+  // Add a sort handler function
+  const handleSort = (column: string, direction: 'asc' | 'desc') => {
+    console.log(`Sorting by ${column} in ${direction} order`);
+    // Implement sorting logic if needed
   };
 
-  const handleViewClientDetails = (client: any) => {
-    setSelectedClientId(client.id);
-    setClientDetailOpen(true);
+  // Handle client creation success
+  const handleClientCreated = (newClient: Client) => {
+    toast({
+      title: "Awesome!",
+      description: `Client ${newClient.name} has been created successfully.`,
+    });
+    
+    // Option to navigate to client details page
+    navigate(`/ams/clients/${newClient.id}`);
   };
 
-  const handleSelectClient = (id: string) => {
-    setSelectedClients(prev => 
-      prev.includes(id) 
-        ? prev.filter(clientId => clientId !== id)
-        : [...prev, id]
-    );
-  };
-
-  const handleSelectAll = () => {
-    if (selectedClients.length === clients.length) {
-      setSelectedClients([]);
-    } else {
-      setSelectedClients(clients.map(c => c.id));
+  // Fix the client selection handler to match expected signature
+  const handleClientSelect = (clientId: string) => {
+    const client = clients.find(c => c.id === clientId);
+    if (client) {
+      handleSelectClient(client);
     }
   };
 
-  const handleSort = (column: string, direction: 'asc' | 'desc') => {
-    setSortConfig({ key: column, direction });
-  };
-
   return (
-    <>
-      <ClientsPageContent
+    <div className="space-y-4">
+      <ClientsPageHeader onCreateClient={handleCreateClient} />
+
+      <ClientsPageContent 
         filteredClients={filteredClients}
-        isLoading={loading}
+        isLoading={isLoading}
         searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
+        onSearchChange={handleSearchChange}
         selectedClients={selectedClients}
         toggleFilterPanel={toggleFilterPanel}
-        onEditClient={handleEditClientAction}
-        onDeleteClient={handleDeleteClient}
+        onEditClient={handleEditClient}
+        onDeleteClient={deleteClient}
         onViewClientDetails={handleViewClientDetails}
-        onSelectClient={handleSelectClient}
+        onSelectClient={handleClientSelect}
         onSelectAll={handleSelectAll}
         onSort={handleSort}
       />
 
       <ClientDetailDrawer
-        open={clientDetailOpen}
-        onOpenChange={setClientDetailOpen}
-        client={selectedClientId ? clients.find(c => c.id === selectedClientId) || null : null}
+        client={selectedClient}
+        open={isDetailsOpen}
+        onOpenChange={() => setIsDetailsOpen(false)}
       />
 
       <ClientAccountDrawer
-        open={clientAccountOpen}
-        onOpenChange={setClientAccountOpen}
+        open={isAccountDrawerOpen}
+        onOpenChange={setIsAccountDrawerOpen}
         onClientCreated={handleClientCreated}
       />
-    </>
+    </div>
   );
 };
 

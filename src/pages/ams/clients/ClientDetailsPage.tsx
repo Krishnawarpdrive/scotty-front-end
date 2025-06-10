@@ -1,76 +1,146 @@
-
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import ClientDetailError from './components/ClientDetailError';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
 import ClientDetailLoading from './components/ClientDetailLoading';
-import ClientBackHeader from './components/ClientBackHeader';
+import ClientDetailError from './components/ClientDetailError';
+import { useClientDetail } from './hooks/useClientDetail';
+import SteppedRoleCreationDrawer from '../roles/components/drawer/SteppedRoleCreationDrawer';
 import CompactClientHeader from './components/client-detail/profile-header/CompactClientHeader';
 import ClientOverviewTab from './components/client-detail/ClientOverviewTab';
-import { ClientRolesTab } from './components/client-detail/ClientRolesTab';
+import ClientRolesTab from './components/client-detail/ClientRolesTab';
 import ClientRequirementsTab from './components/client-detail/ClientRequirementsTab';
 import ClientActivityTab from './components/client-detail/ClientActivityTab';
 import ClientAgreementsTab from './components/client-detail/ClientAgreementsTab';
-import { useClientDetail } from './hooks/useClientDetail';
+import { cn } from '@/lib/utils';
 
 const ClientDetailsPage = () => {
-  const { clientId } = useParams<{ clientId: string }>();
-  const [activeTab, setActiveTab] = useState('overview');
-  
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const { client, loading, error } = useClientDetail();
+  const [activeTab, setActiveTab] = useState("roles"); // Changed default to roles
+  const [isRoleDrawerOpen, setIsRoleDrawerOpen] = useState(false);
+
+  if (loading) {
+    return <ClientDetailLoading />;
+  }
+  
+  if (error || !client) {
+    return <ClientDetailError error={error} />;
+  }
 
   const handleCreateRole = () => {
-    console.log('Create role clicked');
+    setIsRoleDrawerOpen(true);
   };
 
-  const handleEditClient = () => {
-    console.log('Edit client clicked');
+  const handleRoleCreated = (values: any) => {
+    toast({
+      title: "Role Created",
+      description: `The role "${values.roleName || 'New role'}" has been created successfully.`
+    });
+
+    // If we're not on the roles tab, switch to it to show the new role
+    if (activeTab !== "roles") {
+      setActiveTab("roles");
+    }
   };
-
-  const handleCreateRequirement = () => {
-    console.log('Create requirement clicked');
+  
+  const handleEditClient = (updatedClient: any) => {
+    console.log("Updating client data:", updatedClient);
+    toast({
+      title: "Client Updated",
+      description: "Client information has been successfully updated."
+    });
   };
-
-  if (loading) return <ClientDetailLoading />;
-  if (error || !client) return <ClientDetailError error={error} />;
-
+  
   return (
-    <div className="min-h-screen bg-background">
-      <ClientBackHeader />
-      
-      <div className="container mx-auto px-4 py-6 space-y-6">
-        <CompactClientHeader client={client} onEditClient={handleEditClient} />
-        
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="roles">Roles</TabsTrigger>
-            <TabsTrigger value="requirements">Requirements</TabsTrigger>
-            <TabsTrigger value="activity">Activity</TabsTrigger>
-            <TabsTrigger value="agreements">Agreements</TabsTrigger>
+    <div className="flex flex-col h-full">
+      {/* Compact Header */}
+      <CompactClientHeader 
+        client={client} 
+        onEditClient={handleEditClient} 
+      />
+
+      {/* Tabs and content */}
+      <div className="flex-1 overflow-auto flex flex-col">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+          <TabsList className="w-full border-b bg-background shadow-sm sticky top-0 z-10">
+            <div className="flex overflow-x-auto scrollbar-hide">
+              <TabsTrigger 
+                value="roles" 
+                className="flex-shrink-0 h-12 px-6 border-b-2 data-[state=active]:border-primary data-[state=active]:font-semibold border-transparent rounded-none text-sm"
+              >
+                Roles
+              </TabsTrigger>
+              <TabsTrigger 
+                value="requirements" 
+                className="flex-shrink-0 h-12 px-6 border-b-2 data-[state=active]:border-primary data-[state=active]:font-semibold border-transparent rounded-none text-sm"
+              >
+                Requirements
+              </TabsTrigger>
+              <TabsTrigger 
+                value="overview" 
+                className="flex-shrink-0 h-12 px-6 border-b-2 data-[state=active]:border-primary data-[state=active]:font-semibold border-transparent rounded-none text-sm"
+              >
+                Overview
+              </TabsTrigger>
+              <TabsTrigger 
+                value="agreements" 
+                className="flex-shrink-0 h-12 px-6 border-b-2 data-[state=active]:border-primary data-[state=active]:font-semibold border-transparent rounded-none text-sm"
+              >
+                Agreements
+              </TabsTrigger>
+              <TabsTrigger 
+                value="activity" 
+                className="flex-shrink-0 h-12 px-6 border-b-2 data-[state=active]:border-primary data-[state=active]:font-semibold border-transparent rounded-none text-sm"
+              >
+                Activity Logs
+              </TabsTrigger>
+            </div>
           </TabsList>
-          
-          <TabsContent value="overview" className="mt-6">
-            <ClientOverviewTab client={client} />
-          </TabsContent>
-          
-          <TabsContent value="roles" className="mt-6">
-            <ClientRolesTab client={client} onCreateRole={handleCreateRole} />
-          </TabsContent>
-          
-          <TabsContent value="requirements" className="mt-6">
-            <ClientRequirementsTab client={client} onCreateRequirement={handleCreateRequirement} />
-          </TabsContent>
-          
-          <TabsContent value="activity" className="mt-6">
-            <ClientActivityTab client={client} />
-          </TabsContent>
-          
-          <TabsContent value="agreements" className="mt-6">
-            <ClientAgreementsTab client={client} />
-          </TabsContent>
+
+          <div className="flex-1 overflow-y-auto">
+            <TabsContent value="roles" className="mt-0 p-6 h-full">
+              <ClientRolesTab client={client} onCreateRole={handleCreateRole} />
+            </TabsContent>
+
+            <TabsContent value="requirements" className="mt-0 p-6 h-full">
+              <ClientRequirementsTab client={client} onCreateRequirement={() => {}} />
+            </TabsContent>
+
+            <TabsContent value="overview" className="mt-0 p-6 h-full">
+              <ClientOverviewTab client={client} />
+            </TabsContent>
+
+            <TabsContent value="agreements" className="mt-0 p-6 h-full">
+              <ClientAgreementsTab client={client} />
+            </TabsContent>
+
+            <TabsContent value="activity" className="mt-0 p-6 h-full">
+              <ClientActivityTab client={client} />
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
+
+      <SteppedRoleCreationDrawer 
+        open={isRoleDrawerOpen} 
+        onOpenChange={setIsRoleDrawerOpen} 
+        clientId={client.id} 
+        clientName={client.name} 
+        onRoleCreated={handleRoleCreated} 
+      />
+
+      {/* Floating action button for quick actions */}
+      <Button 
+        className="fixed bottom-6 right-6 rounded-full shadow-lg" 
+        size="icon"
+        onClick={handleCreateRole}
+      >
+        <PlusCircle className="h-5 w-5" />
+      </Button>
     </div>
   );
 };

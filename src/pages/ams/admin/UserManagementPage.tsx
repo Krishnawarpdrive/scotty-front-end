@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnhancedToast } from '@/components/feedback/EnhancedToast';
-import { Search, Filter } from 'lucide-react';
+import { Users, UserPlus, Search, Filter } from 'lucide-react';
 import { AppRole } from '@/contexts/AuthContext';
 
 interface UserWithProfile {
@@ -84,15 +86,6 @@ export default function UserManagementPage() {
             };
           }
 
-          // Filter and transform the roles data to match our interface
-          const validRoles = (rolesData || [])
-            .filter(role => role.is_active !== null && role.assigned_at !== null)
-            .map(role => ({
-              role: role.role as AppRole,
-              is_active: role.is_active as boolean,
-              assigned_at: role.assigned_at as string
-            }));
-
           return {
             id: profile.user_id,
             email: profile.email || '',
@@ -101,7 +94,7 @@ export default function UserManagementPage() {
               last_name: profile.last_name,
               department: profile.department
             },
-            user_roles: validRoles
+            user_roles: rolesData || []
           };
         })
       );
@@ -109,7 +102,7 @@ export default function UserManagementPage() {
       setUsers(usersWithRoles);
     } catch (error) {
       console.error('Error fetching users:', error);
-      toast.showError({
+      toast.error({
         title: 'Error',
         description: 'Failed to fetch users'
       });
@@ -130,7 +123,7 @@ export default function UserManagementPage() {
 
       if (error) throw error;
 
-      toast.showSuccess({
+      toast.success({
         title: 'Success',
         description: `Role ${roleLabels[role]} assigned successfully`
       });
@@ -138,7 +131,7 @@ export default function UserManagementPage() {
       fetchUsers();
     } catch (error) {
       console.error('Error assigning role:', error);
-      toast.showError({
+      toast.error({
         title: 'Error',
         description: 'Failed to assign role'
       });
@@ -155,7 +148,7 @@ export default function UserManagementPage() {
 
       if (error) throw error;
 
-      toast.showSuccess({
+      toast.success({
         title: 'Success',
         description: `Role ${roleLabels[role]} removed successfully`
       });
@@ -163,7 +156,7 @@ export default function UserManagementPage() {
       fetchUsers();
     } catch (error) {
       console.error('Error removing role:', error);
-      toast.showError({
+      toast.error({
         title: 'Error',
         description: 'Failed to remove role'
       });
@@ -196,6 +189,12 @@ export default function UserManagementPage() {
         <PageHeader
           title="User Management"
           subtitle="Manage user roles and permissions"
+          actions={
+            <Button size="sm">
+              <UserPlus className="h-4 w-4 mr-2" />
+              Invite User
+            </Button>
+          }
         />
 
         {/* Filters */}
@@ -242,7 +241,10 @@ export default function UserManagementPage() {
         {/* Users List */}
         <Card>
           <CardHeader>
-            <CardTitle>Users ({filteredUsers.length})</CardTitle>
+            <CardTitle className="flex items-center space-x-2">
+              <Users className="h-5 w-5" />
+              <span>Users ({filteredUsers.length})</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

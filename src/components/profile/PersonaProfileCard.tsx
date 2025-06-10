@@ -4,8 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { UserProfile } from '@/types/ProfileTypes';
-import { personaConfigs } from '@/utils/persona';
-import { User, Clock, Globe } from 'lucide-react';
+import { PersonaType, personaConfigs } from '@/utils/persona';
+import { User, MapPin, Clock, Globe } from 'lucide-react';
 
 interface PersonaProfileCardProps {
   profile: UserProfile;

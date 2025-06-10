@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export interface ClientDetailErrorProps {
-  error?: string | null;
+  error: string | null;
 }
 
 const ClientDetailError: React.FC<ClientDetailErrorProps> = ({ error }) => {

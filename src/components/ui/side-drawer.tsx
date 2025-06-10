@@ -1,5 +1,5 @@
 
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { 
   Sheet, 
   SheetContent, 
@@ -12,12 +12,12 @@ import {
 export interface SideDrawerProps {
   title?: string;
   subtitle?: string;
-  description?: string;
+  description?: string; // Added description property
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: ReactNode;
   size?: 'sm' | 'default' | 'lg' | 'xl' | 'full';
-  footer?: ReactNode;
+  footer?: ReactNode; // Added footer property
 }
 
 export const SideDrawer = ({

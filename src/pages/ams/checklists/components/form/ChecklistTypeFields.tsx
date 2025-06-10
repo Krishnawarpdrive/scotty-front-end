@@ -1,17 +1,56 @@
 
 import React from 'react';
+import { UseFormReturn } from 'react-hook-form';
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checklist } from '../../types';
 
 interface ChecklistTypeFieldsProps {
-  // Add any props if needed in the future
+  form: UseFormReturn<Checklist>;
 }
 
-export const ChecklistTypeFields: React.FC<ChecklistTypeFieldsProps> = () => {
+export const ChecklistTypeFields: React.FC<ChecklistTypeFieldsProps> = ({ form }) => {
   return (
-    <div className="space-y-4">
-      {/* This component can be expanded in the future to show type-specific fields */}
-      <p className="text-sm text-muted-foreground">
-        Additional configuration options based on checklist type will appear here.
-      </p>
-    </div>
+    <FormField
+      control={form.control}
+      name="type"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Checklist Type</FormLabel>
+          <Select
+            onValueChange={field.onChange}
+            defaultValue={field.value}
+          >
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Select checklist type" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectItem value="general">General</SelectItem>
+              <SelectItem value="role">Role-based</SelectItem>
+              <SelectItem value="client">Client-based</SelectItem>
+            </SelectContent>
+          </Select>
+          <FormDescription>
+            The type of checklist determines its availability and association.
+          </FormDescription>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   );
 };

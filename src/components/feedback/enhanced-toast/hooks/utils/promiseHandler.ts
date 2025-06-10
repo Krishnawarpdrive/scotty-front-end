@@ -26,13 +26,14 @@ export const usePromiseHandler = (
           const result = options.success(data);
           successOptions = typeof result === 'string' 
             ? { title: result, type: 'success' as const }
-            : { type: 'success' as const, ...result };
+            : { ...result, type: 'success' as const };
         } else if (typeof options.success === 'string') {
           successOptions = { title: options.success, type: 'success' as const };
         } else {
           // Type guard to ensure we have an object before spreading
           const successObj = options.success as ToastOptions;
           successOptions = { 
+            title: successObj.title || 'Success',
             type: 'success' as const,
             ...successObj 
           };
@@ -49,13 +50,14 @@ export const usePromiseHandler = (
           const result = options.error(error);
           errorOptions = typeof result === 'string'
             ? { title: result, type: 'error' as const }
-            : { type: 'error' as const, ...result };
+            : { ...result, type: 'error' as const };
         } else if (typeof options.error === 'string') {
           errorOptions = { title: options.error, type: 'error' as const };
         } else {
           // Type guard to ensure we have an object before spreading
           const errorObj = options.error as ToastOptions;
           errorOptions = { 
+            title: errorObj.title || 'Error',
             type: 'error' as const,
             ...errorObj 
           };

@@ -51,7 +51,7 @@ export function useAuth() {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_, session) => {
+      async (event, session) => {
         setUser(session?.user ?? null);
         if (session?.user) {
           fetchUserData(session.user.id);
@@ -77,17 +77,14 @@ export function useAuth() {
 
       if (profileError && profileError.code !== 'PGRST116') {
         console.error('Error fetching profile:', profileError);
-      } else if (profileData) {
-        // Handle preferences type conversion and ensure required fields are properly typed
-        const processedProfile: UserProfile = {
+      } else {
+        // Handle preferences type conversion
+        const processedProfile = profileData ? {
           ...profileData,
-          timezone: profileData.timezone || 'UTC',
           preferences: typeof profileData.preferences === 'string' 
             ? JSON.parse(profileData.preferences) 
-            : (profileData.preferences || {}),
-          created_at: profileData.created_at || new Date().toISOString(),
-          updated_at: profileData.updated_at || new Date().toISOString()
-        };
+            : (profileData.preferences || {})
+        } : null;
         setProfile(processedProfile);
       }
 
