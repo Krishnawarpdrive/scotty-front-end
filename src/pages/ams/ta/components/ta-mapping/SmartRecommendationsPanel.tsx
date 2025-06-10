@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Lightbulb, CheckCircle, Star } from 'lucide-react';
-import { DAProfile, ClientRole } from './DAMappingInterface';
+import { TAProfile, ClientRole } from './TAMappingInterface';
 
 interface Recommendation {
   id: string;
-  da_id: string;
+  ta_id: string;
   client_role_id: string;
   confidence_score: number;
   reasoning: string;
@@ -18,20 +18,20 @@ interface Recommendation {
 
 interface SmartRecommendationsPanelProps {
   recommendations: Recommendation[];
-  daProfiles: DAProfile[];
+  taProfiles: TAProfile[];
   clientRoles: ClientRole[];
-  onApplyRecommendation: (daId: string, clientRoleId: string, assignmentType: 'primary' | 'secondary' | 'backup') => void;
+  onApplyRecommendation: (taId: string, clientRoleId: string, assignmentType: 'primary' | 'secondary' | 'backup') => void;
 }
 
 export const SmartRecommendationsPanel: React.FC<SmartRecommendationsPanelProps> = ({
   recommendations,
-  daProfiles,
+  taProfiles,
   clientRoles,
   onApplyRecommendation
 }) => {
-  const getDAName = (daId: string) => {
-    const da = daProfiles.find(d => d.id === daId);
-    return da ? da.name : 'Unknown DA';
+  const getTAName = (taId: string) => {
+    const ta = taProfiles.find(t => t.id === taId);
+    return ta ? ta.name : 'Unknown TA';
   };
 
   const getRoleInfo = (roleId: string) => {
@@ -57,7 +57,7 @@ export const SmartRecommendationsPanel: React.FC<SmartRecommendationsPanelProps>
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
                         <h4 className="font-medium text-sm">
-                          {getDAName(rec.da_id)} → {getRoleInfo(rec.client_role_id)}
+                          {getTAName(rec.ta_id)} → {getRoleInfo(rec.client_role_id)}
                         </h4>
                         <p className="text-xs text-gray-600 mt-1">
                           {rec.reasoning}
@@ -82,7 +82,7 @@ export const SmartRecommendationsPanel: React.FC<SmartRecommendationsPanelProps>
 
                     <Button
                       size="sm"
-                      onClick={() => onApplyRecommendation(rec.da_id, rec.client_role_id, rec.assignment_type)}
+                      onClick={() => onApplyRecommendation(rec.ta_id, rec.client_role_id, rec.assignment_type)}
                       className="w-full"
                     >
                       <CheckCircle className="h-4 w-4 mr-2" />

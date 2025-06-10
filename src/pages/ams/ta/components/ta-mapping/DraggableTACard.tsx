@@ -6,17 +6,17 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MapPin, Clock, Star } from 'lucide-react';
-import { DAProfile } from './DAMappingInterface';
+import { TAProfile } from './TAMappingInterface';
 
-interface DraggableDACardProps {
-  da: DAProfile;
+interface DraggableTACardProps {
+  ta: TAProfile;
   isSelected: boolean;
 }
 
-export const DraggableDACard: React.FC<DraggableDACardProps> = ({ da, isSelected }) => {
+export const DraggableTACard: React.FC<DraggableTACardProps> = ({ ta, isSelected }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'DA_CARD',
-    item: { id: da.id, da },
+    type: 'TA_CARD',
+    item: { id: ta.id, ta },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -29,12 +29,6 @@ export const DraggableDACard: React.FC<DraggableDACardProps> = ({ da, isSelected
       case 'unavailable': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
-  };
-
-  const getWorkloadColor = (workload: number) => {
-    if (workload >= 80) return 'bg-red-500';
-    if (workload >= 50) return 'bg-yellow-500';
-    return 'bg-green-500';
   };
 
   const getInitials = (name: string) => {
@@ -51,29 +45,29 @@ export const DraggableDACard: React.FC<DraggableDACardProps> = ({ da, isSelected
       <CardContent className="p-3">
         <div className="flex items-start space-x-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${da.name}`} />
-            <AvatarFallback>{getInitials(da.name)}</AvatarFallback>
+            <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${ta.name}`} />
+            <AvatarFallback>{getInitials(ta.name)}</AvatarFallback>
           </Avatar>
           
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-1">
-              <h4 className="font-medium text-sm truncate">{da.name}</h4>
-              <Badge className={getAvailabilityColor(da.availability_status)} variant="secondary">
-                {da.availability_status}
+              <h4 className="font-medium text-sm truncate">{ta.name}</h4>
+              <Badge className={getAvailabilityColor(ta.availability_status)} variant="secondary">
+                {ta.availability_status}
               </Badge>
             </div>
             
-            <p className="text-xs text-gray-600 mb-2">{da.email}</p>
+            <p className="text-xs text-gray-600 mb-2">{ta.email}</p>
             
             <div className="space-y-2">
               {/* Workload */}
               <div>
                 <div className="flex items-center justify-between text-xs mb-1">
                   <span className="text-gray-600">Workload</span>
-                  <span>{da.current_workload}%</span>
+                  <span>{ta.current_workload}%</span>
                 </div>
                 <Progress 
-                  value={da.current_workload} 
+                  value={ta.current_workload} 
                   className="h-1"
                 />
               </div>
@@ -84,7 +78,7 @@ export const DraggableDACard: React.FC<DraggableDACardProps> = ({ da, isSelected
                   <Star className="h-3 w-3 text-yellow-500" />
                   <span className="text-gray-600">Performance</span>
                 </div>
-                <span className="font-medium">{da.performance_score}/100</span>
+                <span className="font-medium">{ta.performance_score}/100</span>
               </div>
               
               {/* Experience */}
@@ -93,27 +87,27 @@ export const DraggableDACard: React.FC<DraggableDACardProps> = ({ da, isSelected
                   <Clock className="h-3 w-3 text-blue-500" />
                   <span className="text-gray-600">Experience</span>
                 </div>
-                <span>{da.experience_years} years</span>
+                <span>{ta.experience_years} years</span>
               </div>
               
               {/* Location */}
               <div className="flex items-center space-x-1 text-xs text-gray-600">
                 <MapPin className="h-3 w-3" />
-                <span className="truncate">{da.location}</span>
+                <span className="truncate">{ta.location}</span>
               </div>
             </div>
             
             {/* Skills */}
             <div className="mt-2">
               <div className="flex flex-wrap gap-1">
-                {da.skills.slice(0, 3).map((skill, index) => (
+                {ta.skills.slice(0, 3).map((skill, index) => (
                   <Badge key={index} variant="outline" className="text-xs">
                     {skill}
                   </Badge>
                 ))}
-                {da.skills.length > 3 && (
+                {ta.skills.length > 3 && (
                   <Badge variant="outline" className="text-xs">
-                    +{da.skills.length - 3}
+                    +{ta.skills.length - 3}
                   </Badge>
                 )}
               </div>

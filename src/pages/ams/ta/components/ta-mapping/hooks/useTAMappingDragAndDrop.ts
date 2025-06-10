@@ -1,10 +1,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { DAProfile, ClientRole, AssignmentMapping } from '../DAMappingInterface';
+import { TAProfile, ClientRole, AssignmentMapping } from '../TAMappingInterface';
 
 interface Recommendation {
   id: string;
-  da_id: string;
+  ta_id: string;
   client_role_id: string;
   confidence_score: number;
   reasoning: string;
@@ -12,15 +12,15 @@ interface Recommendation {
 }
 
 interface PerformanceMetric {
-  da_id: string;
+  ta_id: string;
   metric_type: string;
   value: number;
   period: string;
   trend: 'up' | 'down' | 'stable';
 }
 
-export const useDragAndDropMapping = () => {
-  const [daProfiles, setDAProfiles] = useState<DAProfile[]>([]);
+export const useTAMappingDragAndDrop = () => {
+  const [taProfiles, setTAProfiles] = useState<TAProfile[]>([]);
   const [clientRoles, setClientRoles] = useState<ClientRole[]>([]);
   const [assignments, setAssignments] = useState<AssignmentMapping[]>([]);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
@@ -38,61 +38,61 @@ export const useDragAndDropMapping = () => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Mock DA Profiles
-    const mockDAs: DAProfile[] = [
+    // Mock TA Profiles
+    const mockTAs: TAProfile[] = [
       {
-        id: 'da-1',
+        id: 'ta-1',
         name: 'Sarah Chen',
         email: 'sarah.chen@company.com',
-        skills: ['React', 'TypeScript', 'Node.js', 'AWS'],
+        skills: ['Technical Recruiting', 'IT Sourcing', 'Candidate Assessment', 'Client Management'],
         experience_years: 5,
         current_workload: 65,
         max_capacity: 100,
         performance_score: 92,
         availability_status: 'available',
-        specializations: ['Frontend Development', 'Cloud Architecture'],
+        specializations: ['Frontend Recruiting', 'Full Stack Roles'],
         location: 'San Francisco, CA',
         timezone: 'PST'
       },
       {
-        id: 'da-2',
+        id: 'ta-2',
         name: 'Mike Rodriguez',
         email: 'mike.rodriguez@company.com',
-        skills: ['Python', 'Django', 'PostgreSQL', 'Docker'],
+        skills: ['Backend Recruiting', 'Database Specialists', 'DevOps Hiring', 'Team Leadership'],
         experience_years: 7,
         current_workload: 80,
         max_capacity: 100,
         performance_score: 88,
         availability_status: 'busy',
-        specializations: ['Backend Development', 'Database Design'],
+        specializations: ['Backend Development', 'System Architecture'],
         location: 'Austin, TX',
         timezone: 'CST'
       },
       {
-        id: 'da-3',
+        id: 'ta-3',
         name: 'Emily Watson',
         email: 'emily.watson@company.com',
-        skills: ['Java', 'Spring Boot', 'Microservices', 'Kubernetes'],
+        skills: ['Enterprise Recruiting', 'Senior Level Hiring', 'Client Relations', 'Strategic Planning'],
         experience_years: 6,
         current_workload: 45,
         max_capacity: 100,
         performance_score: 95,
         availability_status: 'available',
-        specializations: ['Enterprise Architecture', 'DevOps'],
+        specializations: ['Enterprise Sales', 'Leadership Roles'],
         location: 'New York, NY',
         timezone: 'EST'
       },
       {
-        id: 'da-4',
+        id: 'ta-4',
         name: 'David Kim',
         email: 'david.kim@company.com',
-        skills: ['React Native', 'Swift', 'Kotlin', 'Firebase'],
+        skills: ['Mobile App Recruiting', 'Startup Hiring', 'Fast-paced Environments', 'Culture Fit'],
         experience_years: 4,
         current_workload: 30,
         max_capacity: 100,
         performance_score: 87,
         availability_status: 'available',
-        specializations: ['Mobile Development', 'Cross-platform'],
+        specializations: ['Mobile Development', 'Startup Ecosystem'],
         location: 'Seattle, WA',
         timezone: 'PST'
       }
@@ -109,7 +109,7 @@ export const useDragAndDropMapping = () => {
         skills_required: ['React', 'TypeScript', 'GraphQL'],
         assignment_status: 'partially_assigned',
         due_date: '2024-02-15',
-        assigned_das: ['da-1']
+        assigned_tas: ['ta-1']
       },
       {
         id: 'role-2',
@@ -120,7 +120,7 @@ export const useDragAndDropMapping = () => {
         skills_required: ['Python', 'Django', 'PostgreSQL'],
         assignment_status: 'unassigned',
         due_date: '2024-02-20',
-        assigned_das: []
+        assigned_tas: []
       },
       {
         id: 'role-3',
@@ -131,7 +131,7 @@ export const useDragAndDropMapping = () => {
         skills_required: ['React', 'Node.js', 'MongoDB'],
         assignment_status: 'fully_assigned',
         due_date: '2024-01-30',
-        assigned_das: ['da-3', 'da-4']
+        assigned_tas: ['ta-3', 'ta-4']
       },
       {
         id: 'role-4',
@@ -142,7 +142,7 @@ export const useDragAndDropMapping = () => {
         skills_required: ['React Native', 'JavaScript'],
         assignment_status: 'unassigned',
         due_date: '2024-03-01',
-        assigned_das: []
+        assigned_tas: []
       }
     ];
 
@@ -150,7 +150,7 @@ export const useDragAndDropMapping = () => {
     const mockAssignments: AssignmentMapping[] = [
       {
         id: 'assign-1',
-        da_id: 'da-1',
+        ta_id: 'ta-1',
         client_role_id: 'role-1',
         assignment_type: 'primary',
         assigned_at: '2024-01-15T10:00:00Z',
@@ -159,7 +159,7 @@ export const useDragAndDropMapping = () => {
       },
       {
         id: 'assign-2',
-        da_id: 'da-3',
+        ta_id: 'ta-3',
         client_role_id: 'role-3',
         assignment_type: 'primary',
         assigned_at: '2024-01-10T14:00:00Z',
@@ -168,7 +168,7 @@ export const useDragAndDropMapping = () => {
       },
       {
         id: 'assign-3',
-        da_id: 'da-4',
+        ta_id: 'ta-4',
         client_role_id: 'role-3',
         assignment_type: 'secondary',
         assigned_at: '2024-01-12T09:00:00Z',
@@ -181,18 +181,18 @@ export const useDragAndDropMapping = () => {
     const mockRecommendations: Recommendation[] = [
       {
         id: 'rec-1',
-        da_id: 'da-2',
+        ta_id: 'ta-2',
         client_role_id: 'role-2',
         confidence_score: 0.92,
-        reasoning: 'Perfect skill match with Python and Django experience',
+        reasoning: 'Perfect skill match with backend recruiting experience',
         assignment_type: 'primary'
       },
       {
         id: 'rec-2',
-        da_id: 'da-4',
+        ta_id: 'ta-4',
         client_role_id: 'role-4',
         confidence_score: 0.88,
-        reasoning: 'Strong mobile development background with React Native',
+        reasoning: 'Strong mobile development recruiting background',
         assignment_type: 'primary'
       }
     ];
@@ -200,14 +200,14 @@ export const useDragAndDropMapping = () => {
     // Mock Performance Metrics
     const mockMetrics: PerformanceMetric[] = [
       {
-        da_id: 'da-1',
-        metric_type: 'completion_rate',
+        ta_id: 'ta-1',
+        metric_type: 'placement_rate',
         value: 94,
         period: 'last_30_days',
         trend: 'up'
       },
       {
-        da_id: 'da-2',
+        ta_id: 'ta-2',
         metric_type: 'client_satisfaction',
         value: 4.6,
         period: 'last_quarter',
@@ -215,7 +215,7 @@ export const useDragAndDropMapping = () => {
       }
     ];
 
-    setDAProfiles(mockDAs);
+    setTAProfiles(mockTAs);
     setClientRoles(mockRoles);
     setAssignments(mockAssignments);
     setRecommendations(mockRecommendations);
@@ -223,10 +223,10 @@ export const useDragAndDropMapping = () => {
     setIsLoading(false);
   };
 
-  const handleDrop = useCallback((daId: string, clientRoleId: string, assignmentType: 'primary' | 'secondary' | 'backup') => {
+  const handleDrop = useCallback((taId: string, clientRoleId: string, assignmentType: 'primary' | 'secondary' | 'backup') => {
     const newAssignment: AssignmentMapping = {
       id: `assign-${Date.now()}`,
-      da_id: daId,
+      ta_id: taId,
       client_role_id: clientRoleId,
       assignment_type: assignmentType,
       assigned_at: new Date().toISOString(),
@@ -236,11 +236,11 @@ export const useDragAndDropMapping = () => {
 
     setAssignments(prev => [...prev, newAssignment]);
 
-    // Update DA workload
-    setDAProfiles(prev => prev.map(da => 
-      da.id === daId 
-        ? { ...da, current_workload: da.current_workload + newAssignment.workload_percentage }
-        : da
+    // Update TA workload
+    setTAProfiles(prev => prev.map(ta => 
+      ta.id === taId 
+        ? { ...ta, current_workload: ta.current_workload + newAssignment.workload_percentage }
+        : ta
     ));
 
     // Update role assignment status
@@ -253,7 +253,7 @@ export const useDragAndDropMapping = () => {
       return role;
     }));
 
-    console.log(`Assigned DA ${daId} to role ${clientRoleId} as ${assignmentType}`);
+    console.log(`Assigned TA ${taId} to role ${clientRoleId} as ${assignmentType}`);
   }, [assignments]);
 
   const handleRemoveAssignment = useCallback((assignmentId: string) => {
@@ -262,11 +262,11 @@ export const useDragAndDropMapping = () => {
 
     setAssignments(prev => prev.filter(a => a.id !== assignmentId));
 
-    // Update DA workload
-    setDAProfiles(prev => prev.map(da => 
-      da.id === assignment.da_id 
-        ? { ...da, current_workload: Math.max(0, da.current_workload - assignment.workload_percentage) }
-        : da
+    // Update TA workload
+    setTAProfiles(prev => prev.map(ta => 
+      ta.id === assignment.ta_id 
+        ? { ...ta, current_workload: Math.max(0, ta.current_workload - assignment.workload_percentage) }
+        : ta
     ));
 
     // Update role assignment status
@@ -285,10 +285,10 @@ export const useDragAndDropMapping = () => {
     console.log(`Removed assignment ${assignmentId}`);
   }, [assignments]);
 
-  const handleBulkAssignment = useCallback((selectedDAIds: string[], targetRoleId: string) => {
-    selectedDAIds.forEach((daId, index) => {
+  const handleBulkAssignment = useCallback((selectedTAIds: string[], targetRoleId: string) => {
+    selectedTAIds.forEach((taId, index) => {
       const assignmentType = index === 0 ? 'primary' : 'secondary';
-      handleDrop(daId, targetRoleId, assignmentType);
+      handleDrop(taId, targetRoleId, assignmentType);
     });
   }, [handleDrop]);
 
@@ -297,7 +297,7 @@ export const useDragAndDropMapping = () => {
   }, []);
 
   return {
-    daProfiles,
+    taProfiles,
     clientRoles,
     assignments,
     recommendations,

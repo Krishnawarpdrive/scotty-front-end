@@ -5,24 +5,24 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Users, ArrowRight, CheckCircle } from 'lucide-react';
-import { ClientRole } from './DAMappingInterface';
+import { ClientRole } from './TAMappingInterface';
 
 interface BulkActionsPanelProps {
-  selectedDAs: string[];
+  selectedTAs: string[];
   clientRoles: ClientRole[];
-  onBulkAssignment: (selectedDAIds: string[], targetRoleId: string) => void;
+  onBulkAssignment: (selectedTAIds: string[], targetRoleId: string) => void;
 }
 
 export const BulkActionsPanel: React.FC<BulkActionsPanelProps> = ({
-  selectedDAs,
+  selectedTAs,
   clientRoles,
   onBulkAssignment
 }) => {
   const [selectedRole, setSelectedRole] = useState<string>('');
 
   const handleBulkAssign = () => {
-    if (selectedDAs.length > 0 && selectedRole) {
-      onBulkAssignment(selectedDAs, selectedRole);
+    if (selectedTAs.length > 0 && selectedRole) {
+      onBulkAssignment(selectedTAs, selectedRole);
       setSelectedRole('');
     }
   };
@@ -43,11 +43,11 @@ export const BulkActionsPanel: React.FC<BulkActionsPanelProps> = ({
         <CardContent className="space-y-4">
           <div className="flex items-center space-x-2">
             <Badge variant="outline">
-              {selectedDAs.length} DA{selectedDAs.length !== 1 ? 's' : ''} selected
+              {selectedTAs.length} TA{selectedTAs.length !== 1 ? 's' : ''} selected
             </Badge>
           </div>
 
-          {selectedDAs.length > 0 ? (
+          {selectedTAs.length > 0 ? (
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">
@@ -55,7 +55,7 @@ export const BulkActionsPanel: React.FC<BulkActionsPanelProps> = ({
                 </label>
                 <Select value={selectedRole} onValueChange={setSelectedRole}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a role to assign DAs" />
+                    <SelectValue placeholder="Select a role to assign TAs" />
                   </SelectTrigger>
                   <SelectContent>
                     {unassignedRoles.map((role) => (
@@ -73,13 +73,13 @@ export const BulkActionsPanel: React.FC<BulkActionsPanelProps> = ({
                 className="w-full"
               >
                 <ArrowRight className="h-4 w-4 mr-2" />
-                Assign Selected DAs
+                Assign Selected TAs
               </Button>
             </div>
           ) : (
             <div className="text-center text-gray-500 py-8">
               <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p>Select DAs from the pool to perform bulk actions</p>
+              <p>Select TAs from the pool to perform bulk actions</p>
             </div>
           )}
         </CardContent>

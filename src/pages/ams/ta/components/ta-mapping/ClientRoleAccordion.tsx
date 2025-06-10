@@ -6,14 +6,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Building2, Briefcase, Calendar, AlertTriangle, Users, X } from 'lucide-react';
 import { DroppableRoleCard } from './DroppableRoleCard';
-import { ClientRole, AssignmentMapping, DAProfile } from './DAMappingInterface';
+import { ClientRole, AssignmentMapping } from './TAMappingInterface';
 
 interface ClientRoleAccordionProps {
   clientRoles: ClientRole[];
   assignments: AssignmentMapping[];
   expandedClients: string[];
   onClientExpansion: (clientId: string, isExpanded: boolean) => void;
-  onDrop: (daId: string, clientRoleId: string, assignmentType: 'primary' | 'secondary' | 'backup') => void;
+  onDrop: (taId: string, clientRoleId: string, assignmentType: 'primary' | 'secondary' | 'backup') => void;
   onRemoveAssignment: (assignmentId: string) => void;
 }
 
@@ -33,24 +33,6 @@ export const ClientRoleAccordion: React.FC<ClientRoleAccordionProps> = ({
     acc[role.client_name].push(role);
     return acc;
   }, {} as Record<string, ClientRole[]>);
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'fully_assigned': return 'bg-green-100 text-green-800';
-      case 'partially_assigned': return 'bg-yellow-100 text-yellow-800';
-      case 'unassigned': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
 
   const getClientSummary = (roles: ClientRole[]) => {
     const totalRoles = roles.length;

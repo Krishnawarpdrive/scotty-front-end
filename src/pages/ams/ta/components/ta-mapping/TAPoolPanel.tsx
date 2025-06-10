@@ -6,13 +6,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Search, Users, Filter } from 'lucide-react';
-import { DraggableDACard } from './DraggableDACard';
-import { DAProfile } from './DAMappingInterface';
+import { DraggableTACard } from './DraggableTACard';
+import { TAProfile } from './TAMappingInterface';
 
-interface DAPoolPanelProps {
-  daProfiles: DAProfile[];
-  selectedDAs: string[];
-  onDASelection: (daId: string, isSelected: boolean) => void;
+interface TAPoolPanelProps {
+  taProfiles: TAProfile[];
+  selectedTAs: string[];
+  onTASelection: (taId: string, isSelected: boolean) => void;
   filterCriteria: {
     availability: string;
     skills: string;
@@ -21,54 +21,39 @@ interface DAPoolPanelProps {
   onFilterChange: (filters: any) => void;
 }
 
-export const DAPoolPanel: React.FC<DAPoolPanelProps> = ({
-  daProfiles,
-  selectedDAs,
-  onDASelection,
+export const TAPoolPanel: React.FC<TAPoolPanelProps> = ({
+  taProfiles,
+  selectedTAs,
+  onTASelection,
   filterCriteria,
   onFilterChange
 }) => {
-  const filteredDAs = daProfiles.filter(da => {
+  const filteredTAs = taProfiles.filter(ta => {
     const matchesAvailability = 
       filterCriteria.availability === 'all' || 
-      da.availability_status === filterCriteria.availability;
+      ta.availability_status === filterCriteria.availability;
     
     const matchesSkills = 
       !filterCriteria.skills || 
-      da.skills.some(skill => 
+      ta.skills.some(skill => 
         skill.toLowerCase().includes(filterCriteria.skills.toLowerCase())
       );
     
     const matchesWorkload = 
       filterCriteria.workload === 'all' ||
-      (filterCriteria.workload === 'low' && da.current_workload < 50) ||
-      (filterCriteria.workload === 'medium' && da.current_workload >= 50 && da.current_workload < 80) ||
-      (filterCriteria.workload === 'high' && da.current_workload >= 80);
+      (filterCriteria.workload === 'low' && ta.current_workload < 50) ||
+      (filterCriteria.workload === 'medium' && ta.current_workload >= 50 && ta.current_workload < 80) ||
+      (filterCriteria.workload === 'high' && ta.current_workload >= 80);
 
     return matchesAvailability && matchesSkills && matchesWorkload;
   });
-
-  const getAvailabilityColor = (status: string) => {
-    switch (status) {
-      case 'available': return 'bg-green-100 text-green-800';
-      case 'busy': return 'bg-yellow-100 text-yellow-800';
-      case 'unavailable': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getWorkloadColor = (workload: number) => {
-    if (workload >= 80) return 'bg-red-500';
-    if (workload >= 50) return 'bg-yellow-500';
-    return 'bg-green-500';
-  };
 
   return (
     <Card className="h-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Users className="h-5 w-5" />
-          DA Pool ({filteredDAs.length})
+          TA Pool ({filteredTAs.length})
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -108,37 +93,37 @@ export const DAPoolPanel: React.FC<DAPoolPanelProps> = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Workloads</SelectItem>
-              <SelectItem value="low">Low (< 50%)</SelectItem>
+              <SelectItem value="low">Low (&lt; 50%)</SelectItem>
               <SelectItem value="medium">Medium (50-80%)</SelectItem>
-              <SelectItem value="high">High (> 80%)</SelectItem>
+              <SelectItem value="high">High (&gt; 80%)</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        {/* DA Cards */}
+        {/* TA Cards */}
         <div className="space-y-3 max-h-96 overflow-y-auto">
-          {filteredDAs.map((da) => (
-            <div key={da.id} className="space-y-2">
+          {filteredTAs.map((ta) => (
+            <div key={ta.id} className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Checkbox
-                  checked={selectedDAs.includes(da.id)}
-                  onCheckedChange={(checked) => onDASelection(da.id, !!checked)}
+                  checked={selectedTAs.includes(ta.id)}
+                  onCheckedChange={(checked) => onTASelection(ta.id, !!checked)}
                 />
                 <span className="text-sm font-medium">Select for bulk actions</span>
               </div>
               
-              <DraggableDACard
-                da={da}
-                isSelected={selectedDAs.includes(da.id)}
+              <DraggableTACard
+                ta={ta}
+                isSelected={selectedTAs.includes(ta.id)}
               />
             </div>
           ))}
         </div>
 
-        {filteredDAs.length === 0 && (
+        {filteredTAs.length === 0 && (
           <div className="text-center text-gray-500 py-8">
             <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-            <p>No DAs match the current filters</p>
+            <p>No TAs match the current filters</p>
           </div>
         )}
       </CardContent>

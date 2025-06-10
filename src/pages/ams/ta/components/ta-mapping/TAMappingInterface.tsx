@@ -17,15 +17,15 @@ import {
   CheckCircle,
   Clock
 } from 'lucide-react';
-import { DAPoolPanel } from './DAPoolPanel';
+import { TAPoolPanel } from './TAPoolPanel';
 import { ClientRoleAccordion } from './ClientRoleAccordion';
 import { AssignmentSummaryPanel } from './AssignmentSummaryPanel';
 import { BulkActionsPanel } from './BulkActionsPanel';
 import { SmartRecommendationsPanel } from './SmartRecommendationsPanel';
 import { PerformanceMetricsPanel } from './PerformanceMetricsPanel';
-import { useDragAndDropMapping } from './hooks/useDragAndDropMapping';
+import { useTAMappingDragAndDrop } from './hooks/useTAMappingDragAndDrop';
 
-export interface DAProfile {
+export interface TAProfile {
   id: string;
   name: string;
   email: string;
@@ -49,12 +49,12 @@ export interface ClientRole {
   skills_required: string[];
   assignment_status: 'unassigned' | 'partially_assigned' | 'fully_assigned';
   due_date: string;
-  assigned_das: string[];
+  assigned_tas: string[];
 }
 
 export interface AssignmentMapping {
   id: string;
-  da_id: string;
+  ta_id: string;
   client_role_id: string;
   assignment_type: 'primary' | 'secondary' | 'backup';
   assigned_at: string;
@@ -62,8 +62,8 @@ export interface AssignmentMapping {
   status: 'active' | 'pending' | 'completed';
 }
 
-export const DAMappingInterface: React.FC = () => {
-  const [selectedDAs, setSelectedDAs] = useState<string[]>([]);
+export const TAMappingInterface: React.FC = () => {
+  const [selectedTAs, setSelectedTAs] = useState<string[]>([]);
   const [expandedClients, setExpandedClients] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('mapping');
   const [filterCriteria, setFilterCriteria] = useState({
@@ -73,7 +73,7 @@ export const DAMappingInterface: React.FC = () => {
   });
 
   const {
-    daProfiles,
+    taProfiles,
     clientRoles,
     assignments,
     recommendations,
@@ -83,13 +83,13 @@ export const DAMappingInterface: React.FC = () => {
     handleRemoveAssignment,
     isLoading,
     refreshData
-  } = useDragAndDropMapping();
+  } = useTAMappingDragAndDrop();
 
-  const handleDASelection = useCallback((daId: string, isSelected: boolean) => {
-    setSelectedDAs(prev => 
+  const handleTASelection = useCallback((taId: string, isSelected: boolean) => {
+    setSelectedTAs(prev => 
       isSelected 
-        ? [...prev, daId]
-        : prev.filter(id => id !== daId)
+        ? [...prev, taId]
+        : prev.filter(id => id !== taId)
     );
   }, []);
 
@@ -118,8 +118,8 @@ export const DAMappingInterface: React.FC = () => {
         {/* Header with Stats */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">DA Mapping Interface</h1>
-            <p className="text-gray-600">Assign delivery associates to client roles using drag & drop</p>
+            <h1 className="text-2xl font-bold">TA Mapping Interface</h1>
+            <p className="text-gray-600">Assign talent acquisition specialists to client roles using drag & drop</p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm">
@@ -199,12 +199,12 @@ export const DAMappingInterface: React.FC = () => {
 
           <TabsContent value="mapping" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              {/* DA Pool Panel */}
+              {/* TA Pool Panel */}
               <div className="lg:col-span-1">
-                <DAPoolPanel
-                  daProfiles={daProfiles}
-                  selectedDAs={selectedDAs}
-                  onDASelection={handleDASelection}
+                <TAPoolPanel
+                  taProfiles={taProfiles}
+                  selectedTAs={selectedTAs}
+                  onTASelection={handleTASelection}
                   filterCriteria={filterCriteria}
                   onFilterChange={setFilterCriteria}
                 />
@@ -226,7 +226,7 @@ export const DAMappingInterface: React.FC = () => {
               <div className="lg:col-span-1">
                 <AssignmentSummaryPanel
                   assignments={assignments}
-                  daProfiles={daProfiles}
+                  taProfiles={taProfiles}
                   clientRoles={clientRoles}
                 />
               </div>
@@ -235,7 +235,7 @@ export const DAMappingInterface: React.FC = () => {
 
           <TabsContent value="bulk" className="space-y-6">
             <BulkActionsPanel
-              selectedDAs={selectedDAs}
+              selectedTAs={selectedTAs}
               clientRoles={clientRoles}
               onBulkAssignment={handleBulkAssignment}
             />
@@ -244,7 +244,7 @@ export const DAMappingInterface: React.FC = () => {
           <TabsContent value="recommendations" className="space-y-6">
             <SmartRecommendationsPanel
               recommendations={recommendations}
-              daProfiles={daProfiles}
+              taProfiles={taProfiles}
               clientRoles={clientRoles}
               onApplyRecommendation={handleDrop}
             />
@@ -254,7 +254,7 @@ export const DAMappingInterface: React.FC = () => {
             <PerformanceMetricsPanel
               performanceMetrics={performanceMetrics}
               assignments={assignments}
-              daProfiles={daProfiles}
+              taProfiles={taProfiles}
             />
           </TabsContent>
         </Tabs>

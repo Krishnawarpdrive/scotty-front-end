@@ -4,24 +4,24 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { BarChart3, TrendingUp, Users, AlertCircle } from 'lucide-react';
-import { AssignmentMapping, DAProfile, ClientRole } from './DAMappingInterface';
+import { AssignmentMapping, TAProfile, ClientRole } from './TAMappingInterface';
 
 interface AssignmentSummaryPanelProps {
   assignments: AssignmentMapping[];
-  daProfiles: DAProfile[];
+  taProfiles: TAProfile[];
   clientRoles: ClientRole[];
 }
 
 export const AssignmentSummaryPanel: React.FC<AssignmentSummaryPanelProps> = ({
   assignments,
-  daProfiles,
+  taProfiles,
   clientRoles
 }) => {
   // Calculate summary statistics
   const totalAssignments = assignments.length;
   const activeAssignments = assignments.filter(a => a.status === 'active').length;
-  const averageWorkload = daProfiles.reduce((sum, da) => sum + da.current_workload, 0) / daProfiles.length || 0;
-  const overloadedDAs = daProfiles.filter(da => da.current_workload > 80).length;
+  const averageWorkload = taProfiles.reduce((sum, ta) => sum + ta.current_workload, 0) / taProfiles.length || 0;
+  const overloadedTAs = taProfiles.filter(ta => ta.current_workload > 80).length;
   
   // Get recent assignments
   const recentAssignments = assignments
@@ -30,9 +30,9 @@ export const AssignmentSummaryPanel: React.FC<AssignmentSummaryPanelProps> = ({
 
   // Get workload distribution
   const workloadRanges = {
-    low: daProfiles.filter(da => da.current_workload < 50).length,
-    medium: daProfiles.filter(da => da.current_workload >= 50 && da.current_workload < 80).length,
-    high: daProfiles.filter(da => da.current_workload >= 80).length
+    low: taProfiles.filter(ta => ta.current_workload < 50).length,
+    medium: taProfiles.filter(ta => ta.current_workload >= 50 && ta.current_workload < 80).length,
+    high: taProfiles.filter(ta => ta.current_workload >= 80).length
   };
 
   const getAssignmentTypeColor = (type: string) => {
@@ -44,9 +44,9 @@ export const AssignmentSummaryPanel: React.FC<AssignmentSummaryPanelProps> = ({
     }
   };
 
-  const getDAName = (daId: string) => {
-    const da = daProfiles.find(d => d.id === daId);
-    return da ? da.name : 'Unknown DA';
+  const getTAName = (taId: string) => {
+    const ta = taProfiles.find(t => t.id === taId);
+    return ta ? ta.name : 'Unknown TA';
   };
 
   const getRoleName = (roleId: string) => {
@@ -86,11 +86,11 @@ export const AssignmentSummaryPanel: React.FC<AssignmentSummaryPanelProps> = ({
           </div>
 
           {/* Alerts */}
-          {overloadedDAs > 0 && (
+          {overloadedTAs > 0 && (
             <div className="flex items-center space-x-2 p-2 bg-red-50 border border-red-200 rounded-md">
               <AlertCircle className="h-4 w-4 text-red-600" />
               <span className="text-sm text-red-700">
-                {overloadedDAs} DA{overloadedDAs > 1 ? 's' : ''} overloaded (>80%)
+                {overloadedTAs} TA{overloadedTAs > 1 ? 's' : ''} overloaded (&gt; 80%)
               </span>
             </div>
           )}
@@ -101,16 +101,16 @@ export const AssignmentSummaryPanel: React.FC<AssignmentSummaryPanelProps> = ({
           <h4 className="font-medium text-sm mb-3">Workload Distribution</h4>
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">Low (&lt;50%)</span>
-              <span className="font-medium">{workloadRanges.low} DAs</span>
+              <span className="text-gray-600">Low (&lt; 50%)</span>
+              <span className="font-medium">{workloadRanges.low} TAs</span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600">Medium (50-80%)</span>
-              <span className="font-medium">{workloadRanges.medium} DAs</span>
+              <span className="font-medium">{workloadRanges.medium} TAs</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">High (&gt;80%)</span>
-              <span className="font-medium text-red-600">{workloadRanges.high} DAs</span>
+              <span className="text-gray-600">High (&gt; 80%)</span>
+              <span className="font-medium text-red-600">{workloadRanges.high} TAs</span>
             </div>
           </div>
         </div>
@@ -126,7 +126,7 @@ export const AssignmentSummaryPanel: React.FC<AssignmentSummaryPanelProps> = ({
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-medium">
-                    {getDAName(assignment.da_id)}
+                    {getTAName(assignment.ta_id)}
                   </span>
                   <Badge className={getAssignmentTypeColor(assignment.assignment_type)} variant="secondary">
                     {assignment.assignment_type}

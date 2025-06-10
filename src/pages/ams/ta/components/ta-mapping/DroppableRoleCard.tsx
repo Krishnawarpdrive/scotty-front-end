@@ -15,12 +15,12 @@ import {
   CheckCircle,
   Clock
 } from 'lucide-react';
-import { ClientRole, AssignmentMapping } from './DAMappingInterface';
+import { ClientRole, AssignmentMapping } from './TAMappingInterface';
 
 interface DroppableRoleCardProps {
   role: ClientRole;
   assignments: AssignmentMapping[];
-  onDrop: (daId: string, clientRoleId: string, assignmentType: 'primary' | 'secondary' | 'backup') => void;
+  onDrop: (taId: string, clientRoleId: string, assignmentType: 'primary' | 'secondary' | 'backup') => void;
   onRemoveAssignment: (assignmentId: string) => void;
 }
 
@@ -31,8 +31,8 @@ export const DroppableRoleCard: React.FC<DroppableRoleCardProps> = ({
   onRemoveAssignment
 }) => {
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
-    accept: 'DA_CARD',
-    drop: (item: { id: string; da: any }) => {
+    accept: 'TA_CARD',
+    drop: (item: { id: string; ta: any }) => {
       // Determine assignment type based on existing assignments
       const primaryExists = assignments.some(a => a.assignment_type === 'primary');
       const assignmentType = primaryExists ? 'secondary' : 'primary';
@@ -141,7 +141,7 @@ export const DroppableRoleCard: React.FC<DroppableRoleCardProps> = ({
           {/* Current Assignments */}
           {assignments.length > 0 && (
             <div>
-              <p className="text-sm font-medium text-gray-700 mb-2">Assigned DAs:</p>
+              <p className="text-sm font-medium text-gray-700 mb-2">Assigned TAs:</p>
               <div className="space-y-2">
                 {assignments.map((assignment) => (
                   <div
@@ -161,7 +161,7 @@ export const DroppableRoleCard: React.FC<DroppableRoleCardProps> = ({
                       >
                         {assignment.assignment_type}
                       </Badge>
-                      <span className="text-sm">DA #{assignment.da_id.slice(0, 8)}</span>
+                      <span className="text-sm">TA #{assignment.ta_id.slice(0, 8)}</span>
                       <span className="text-xs text-gray-500">
                         {assignment.workload_percentage}% workload
                       </span>
@@ -184,14 +184,14 @@ export const DroppableRoleCard: React.FC<DroppableRoleCardProps> = ({
           {isOver && canDrop && (
             <div className="border-2 border-dashed border-blue-400 bg-blue-50 p-4 rounded-lg text-center">
               <Plus className="h-6 w-6 mx-auto mb-2 text-blue-600" />
-              <p className="text-sm text-blue-600 font-medium">Drop DA here to assign</p>
+              <p className="text-sm text-blue-600 font-medium">Drop TA here to assign</p>
             </div>
           )}
           
           {isOver && !canDrop && (
             <div className="border-2 border-dashed border-red-400 bg-red-50 p-4 rounded-lg text-center">
               <AlertTriangle className="h-6 w-6 mx-auto mb-2 text-red-600" />
-              <p className="text-sm text-red-600 font-medium">Cannot assign this DA</p>
+              <p className="text-sm text-red-600 font-medium">Cannot assign this TA</p>
             </div>
           )}
         </div>

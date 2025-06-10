@@ -4,10 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { BarChart3, TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { AssignmentMapping, DAProfile } from './DAMappingInterface';
+import { AssignmentMapping, TAProfile } from './TAMappingInterface';
 
 interface PerformanceMetric {
-  da_id: string;
+  ta_id: string;
   metric_type: string;
   value: number;
   period: string;
@@ -17,13 +17,13 @@ interface PerformanceMetric {
 interface PerformanceMetricsPanelProps {
   performanceMetrics: PerformanceMetric[];
   assignments: AssignmentMapping[];
-  daProfiles: DAProfile[];
+  taProfiles: TAProfile[];
 }
 
 export const PerformanceMetricsPanel: React.FC<PerformanceMetricsPanelProps> = ({
   performanceMetrics,
   assignments,
-  daProfiles
+  taProfiles
 }) => {
   const getTrendIcon = (trend: string) => {
     switch (trend) {
@@ -43,9 +43,9 @@ export const PerformanceMetricsPanel: React.FC<PerformanceMetricsPanelProps> = (
     }
   };
 
-  const getDAName = (daId: string) => {
-    const da = daProfiles.find(d => d.id === daId);
-    return da ? da.name : 'Unknown DA';
+  const getTAName = (taId: string) => {
+    const ta = taProfiles.find(t => t.id === taId);
+    return ta ? ta.name : 'Unknown TA';
   };
 
   return (
@@ -65,7 +65,7 @@ export const PerformanceMetricsPanel: React.FC<PerformanceMetricsPanelProps> = (
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-medium text-sm">
-                        {getDAName(metric.da_id)}
+                        {getTAName(metric.ta_id)}
                       </h4>
                       <div className="flex items-center space-x-1">
                         {getTrendIcon(metric.trend)}
