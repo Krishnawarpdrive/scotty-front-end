@@ -43,12 +43,13 @@ export const useEnhancedToast = () => {
   };
 
   return {
-    success: showSuccess,
-    error: showError,
-    info: showInfo,
-    warning: showWarning,
-    promise: showPromise,
-    ...toast
+    showSuccess,
+    showError,
+    showInfo,
+    showWarning,
+    showPromise,
+    dismiss: toast.dismiss,
+    clear: toast.clear
   };
 };
 

@@ -1,7 +1,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Provider } from 'redux-persist/integration/react';
+import { Provider } from 'react-redux';
 import { store } from './store';
 import { ToastProvider } from './components/feedback/enhanced-toast';
 import { Toaster } from '@/components/ui/sonner';
