@@ -10,18 +10,10 @@ const ClientsPage = () => {
   const {
     clients,
     loading,
-    error,
     searchTerm,
     setSearchTerm,
-    selectedTier,
-    setSelectedTier,
-    selectedStatus,
-    setSelectedStatus,
-    sortConfig,
     setSortConfig,
     filteredClients,
-    pagination,
-    handlePageChange
   } = useClients();
 
   const {
@@ -35,18 +27,7 @@ const ClientsPage = () => {
     setEditingClient
   } = useClientDrawers();
 
-  const [filterPanelVisible] = useState(false);
   const [selectedClients, setSelectedClients] = useState<string[]>([]);
-
-  const handleClientSelect = (clientId: string) => {
-    setSelectedClientId(clientId);
-    setClientDetailOpen(true);
-  };
-
-  const handleCreateClient = () => {
-    setEditingClient(null);
-    setClientAccountOpen(true);
-  };
 
   const handleEditClient = () => {
     const clientToEdit = clients.find(c => c.id === selectedClientId);
@@ -60,7 +41,6 @@ const ClientsPage = () => {
   const handleClientCreated = () => {
     setClientAccountOpen(false);
     setEditingClient(null);
-    // Refresh clients list would happen here
   };
 
   const toggleFilterPanel = () => {
@@ -121,14 +101,14 @@ const ClientsPage = () => {
       <ClientDetailDrawer
         open={clientDetailOpen}
         onOpenChange={setClientDetailOpen}
-        clientId={selectedClientId}
+        client={selectedClientId ? clients.find(c => c.id === selectedClientId) || null : null}
         onEdit={handleEditClient}
       />
 
       <ClientAccountDrawer
         open={clientAccountOpen}
         onOpenChange={setClientAccountOpen}
-        editingClient={editingClient}
+        client={editingClient}
         onClientCreated={handleClientCreated}
       />
     </>

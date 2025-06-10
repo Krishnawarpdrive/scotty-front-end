@@ -23,7 +23,6 @@ const ChecklistsPage = () => {
   } = useChecklistsData();
 
   const filteredChecklists = checklists.filter(checklist => {
-    // Since the checklist type doesn't have a status property, we'll filter by type instead
     if (typeFilter !== 'all' && checklist.type !== typeFilter) return false;
     return true;
   });
@@ -51,10 +50,11 @@ const ChecklistsPage = () => {
         title="Checklists Management" 
         subtitle="Create and manage role-specific checklists for candidate evaluation"
         actions={[
-          <Button key="create" onClick={() => setCreateDrawerOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Create Checklist
-          </Button>
+          {
+            label: "Create Checklist",
+            onClick: () => setCreateDrawerOpen(true),
+            variant: "default"
+          }
         ]}
       />
 
@@ -70,6 +70,7 @@ const ChecklistsPage = () => {
 
         <div className="flex items-center space-x-4">
           <ChecklistTypeFilter 
+            selectedType={typeFilter}
             onTypeChange={(type) => setTypeFilter(type || 'all')} 
           />
           <div className="relative">
@@ -91,7 +92,10 @@ const ChecklistsPage = () => {
       </div>
 
       {filteredChecklists.length === 0 ? (
-        <ChecklistEmptyState onCreateClick={() => setCreateDrawerOpen(true)} />
+        <ChecklistEmptyState 
+          isFiltering={typeFilter !== 'all' || searchTerm !== ''}
+          onCreateClick={() => setCreateDrawerOpen(true)} 
+        />
       ) : (
         <ChecklistsTable 
           checklists={filteredChecklists}
@@ -103,7 +107,7 @@ const ChecklistsPage = () => {
       <ChecklistCreationDrawer
         open={createDrawerOpen}
         onOpenChange={setCreateDrawerOpen}
-        onSubmit={handleCreateChecklist}
+        onCreate={handleCreateChecklist}
       />
     </div>
   );
