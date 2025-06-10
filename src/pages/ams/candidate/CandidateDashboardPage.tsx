@@ -87,7 +87,7 @@ const CandidateDashboardPage = () => {
         </div>
 
         {/* Metrics Cards */}
-        <CandidateMetricsCards />
+        <CandidateMetricsCards data={dashboardData} />
 
         {/* Profile Completion Widget */}
         <ProfileCompletionWidget 
@@ -122,7 +122,7 @@ const CandidateDashboardPage = () => {
                 </Card>
 
                 {/* Upcoming Interviews */}
-                <InterviewsSchedule />
+                <InterviewsSchedule candidateId={candidateId || ''} />
               </div>
 
               {/* Sidebar */}
@@ -152,7 +152,7 @@ const CandidateDashboardPage = () => {
           </TabsContent>
 
           <TabsContent value="interviews">
-            <InterviewsSchedule />
+            <InterviewsSchedule candidateId={candidateId || ''} />
           </TabsContent>
 
           <TabsContent value="activity">

@@ -7,7 +7,7 @@ export const useChecklistsData = () => {
     {
       id: '1',
       name: 'Frontend Developer Interview Checklist',
-      type: 'interview',
+      type: 'role',
       roleId: undefined,
       clientId: undefined,
       subdomain: undefined,
