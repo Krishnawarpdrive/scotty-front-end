@@ -1,10 +1,22 @@
-
 import { useState, useCallback } from 'react';
-import { SearchParams, FilterOption } from '@/data/unified-types';
 
-// Custom hook for managing search and filter state
-export const useSearchFilter = (initialParams: SearchParams = {}) => {
-  const [searchParams, setSearchParams] = useState<SearchParams>(initialParams);
+export interface SearchFilterState {
+  query?: string;
+  filters?: Record<string, any>;
+}
+
+export interface TableSelectionState<T> {
+  selectedItems: T[];
+  isSelected: (item: T) => boolean;
+  toggleItem: (item: T) => void;
+  toggleAll: () => void;
+  isAllSelected: boolean;
+  isPartiallySelected: boolean;
+  selectedCount: number;
+}
+
+export const useSearchFilter = () => {
+  const [searchParams, setSearchParams] = useState<SearchFilterState>({});
 
   const updateSearch = useCallback((query: string) => {
     setSearchParams(prev => ({ ...prev, query }));
@@ -14,114 +26,48 @@ export const useSearchFilter = (initialParams: SearchParams = {}) => {
     setSearchParams(prev => ({ ...prev, filters }));
   }, []);
 
-  const updateSort = useCallback((field: string, direction: 'asc' | 'desc') => {
-    setSearchParams(prev => ({
-      ...prev,
-      sort: { field, direction }
-    }));
-  }, []);
-
-  const updatePagination = useCallback((page: number, limit: number) => {
-    setSearchParams(prev => ({
-      ...prev,
-      pagination: { page, limit }
-    }));
-  }, []);
-
-  const resetParams = useCallback(() => {
-    setSearchParams(initialParams);
-  }, [initialParams]);
-
   return {
     searchParams,
     updateSearch,
     updateFilters,
-    updateSort,
-    updatePagination,
-    resetParams,
+    setSearchParams
   };
 };
 
-// Custom hook for managing table selection
-export const useTableSelection = <T extends { id: string }>(data: T[]) => {
+export const useTableSelection = <T extends { id: string }>(data: T[]): TableSelectionState<T> => {
   const [selectedItems, setSelectedItems] = useState<T[]>([]);
 
-  const selectAll = useCallback(() => {
-    setSelectedItems(data);
-  }, [data]);
-
-  const clearSelection = useCallback(() => {
-    setSelectedItems([]);
-  }, []);
-
-  const toggleItem = useCallback((item: T) => {
-    setSelectedItems(prev => {
-      const isSelected = prev.some(selected => selected.id === item.id);
-      if (isSelected) {
-        return prev.filter(selected => selected.id !== item.id);
-      } else {
-        return [...prev, item];
-      }
-    });
-  }, []);
-
-  const toggleAll = useCallback(() => {
-    if (selectedItems.length === data.length) {
-      clearSelection();
-    } else {
-      selectAll();
-    }
-  }, [selectedItems.length, data.length, clearSelection, selectAll]);
-
   const isSelected = useCallback((item: T) => {
-    return selectedItems.some(selected => selected.id === item.id);
+    return selectedItems.some(selectedItem => selectedItem.id === item.id);
   }, [selectedItems]);
 
-  const isAllSelected = selectedItems.length === data.length && data.length > 0;
+  const toggleItem = useCallback((item: T) => {
+    if (isSelected(item)) {
+      setSelectedItems(prev => prev.filter(selectedItem => selectedItem.id !== item.id));
+    } else {
+      setSelectedItems(prev => [...prev, item]);
+    }
+  }, [isSelected]);
+
+  const toggleAll = useCallback(() => {
+    if (isAllSelected) {
+      setSelectedItems([]);
+    } else {
+      setSelectedItems([...data]);
+    }
+  }, [data, isAllSelected]);
+
+  const isAllSelected = data.length > 0 && selectedItems.length === data.length;
   const isPartiallySelected = selectedItems.length > 0 && selectedItems.length < data.length;
+  const selectedCount = selectedItems.length;
 
   return {
     selectedItems,
-    selectAll,
-    clearSelection,
+    isSelected,
     toggleItem,
     toggleAll,
-    isSelected,
     isAllSelected,
     isPartiallySelected,
-    selectedCount: selectedItems.length,
-  };
-};
-
-// Custom hook for managing async data operations
-export const useAsyncOperation = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const execute = useCallback(async <T>(operation: () => Promise<T>): Promise<T | null> => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const result = await operation();
-      return result;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
-      setError(errorMessage);
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const reset = useCallback(() => {
-    setIsLoading(false);
-    setError(null);
-  }, []);
-
-  return {
-    isLoading,
-    error,
-    execute,
-    reset,
+    selectedCount
   };
 };

@@ -1,200 +1,184 @@
-
-import React, { useState } from 'react';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
+import React, { useState, useMemo } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { SearchIcon, FilterIcon, MoreHorizontalIcon, ArrowUpDownIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from '@/components/ui/table';
 
 export interface DataTableColumn<T> {
   id: string;
   header: string;
-  accessorKey?: keyof T;
+  accessor?: keyof T;
   cell?: (item: T) => React.ReactNode;
   sortable?: boolean;
-  filterable?: boolean;
   width?: string;
 }
 
 export interface DataTableProps<T> {
   data: T[];
   columns: DataTableColumn<T>[];
+  onRowClick?: (item: T) => void;
   searchable?: boolean;
   filterable?: boolean;
-  selectable?: boolean;
-  onRowClick?: (item: T) => void;
-  onSelectionChange?: (selectedItems: T[]) => void;
-  className?: string;
+  pageSize?: number;
 }
 
 export function DataTable<T extends Record<string, any>>({
   data,
   columns,
-  searchable = true,
-  filterable = true,
-  selectable = false,
   onRowClick,
-  onSelectionChange,
-  className,
+  searchable = true,
+  filterable = false,
+  pageSize = 10
 }: DataTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedItems, setSelectedItems] = useState<T[]>([]);
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+  const [sortConfig, setSortConfig] = useState<{
+    key: string;
+    direction: 'asc' | 'desc';
+  } | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
 
-  // Filter data based on search term
-  const filteredData = data.filter(item =>
-    Object.values(item).some(value =>
-      String(value).toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+  const filteredData = useMemo(() => {
+    if (!searchTerm) return data;
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return data.filter(item =>
+      Object.values(item).some(value =>
+        typeof value === 'string' && value.toLowerCase().includes(lowerSearchTerm)
+      )
+    );
+  }, [data, searchTerm]);
 
-  // Sort data
-  const sortedData = React.useMemo(() => {
+  const sortedData = useMemo(() => {
     if (!sortConfig) return filteredData;
-    
+
+    const { key, direction } = sortConfig;
     return [...filteredData].sort((a, b) => {
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
-      
-      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-      return 0;
+      const aValue = a[key];
+      const bValue = b[key];
+
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return direction === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return direction === 'asc' ? aValue - bValue : bValue - aValue;
+      } else {
+        return 0;
+      }
     });
   }, [filteredData, sortConfig]);
 
+  const paginatedData = useMemo(() => {
+    const startIndex = currentPage * pageSize;
+    const endIndex = startIndex + pageSize;
+    return sortedData.slice(startIndex, endIndex);
+  }, [sortedData, currentPage, pageSize]);
+
   const handleSort = (key: string) => {
-    setSortConfig(prev => ({
-      key,
-      direction: prev?.key === key && prev?.direction === 'asc' ? 'desc' : 'asc',
-    }));
+    setSortConfig(currentConfig => {
+      if (currentConfig?.key === key) {
+        return {
+          key,
+          direction: currentConfig.direction === 'asc' ? 'desc' : 'asc',
+        };
+      } else {
+        return {
+          key,
+          direction: 'asc',
+        };
+      }
+    });
   };
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedItems(sortedData);
-      onSelectionChange?.(sortedData);
-    } else {
-      setSelectedItems([]);
-      onSelectionChange?.([]);
-    }
-  };
-
-  const handleSelectItem = (item: T, checked: boolean) => {
-    const newSelection = checked
-      ? [...selectedItems, item]
-      : selectedItems.filter(selected => selected !== item);
-    
-    setSelectedItems(newSelection);
-    onSelectionChange?.(newSelection);
-  };
+  const totalPages = Math.ceil(sortedData.length / pageSize);
 
   return (
-    <div className={cn('space-y-4', className)}>
-      {/* Search and Filter Bar */}
-      {(searchable || filterable) && (
-        <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-          {searchable && (
-            <div className="relative flex-1 max-w-sm">
-              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          )}
-          
-          {filterable && (
-            <Button variant="outline" size="sm">
-              <FilterIcon className="h-4 w-4 mr-2" />
-              Filters
-            </Button>
-          )}
-          
-          {selectedItems.length > 0 && (
-            <Badge variant="secondary">
-              {selectedItems.length} selected
-            </Badge>
-          )}
+    <div className="space-y-4">
+      {/* Search */}
+      {searchable && (
+        <div className="flex items-center space-x-2">
+          <div className="relative flex-1">
+            <Input
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
       )}
 
       {/* Table */}
-      <div className="border rounded-lg overflow-hidden">
+      <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow>
-              {selectable && (
-                <TableHead className="w-12">
-                  <input
-                    type="checkbox"
-                    checked={selectedItems.length === sortedData.length}
-                    onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="rounded border-gray-300"
-                  />
-                </TableHead>
-              )}
-              
-              {columns.map((column) => (
-                <TableHead
-                  key={column.id}
-                  className={cn(
-                    'text-xs font-medium uppercase tracking-wide',
-                    column.sortable && 'cursor-pointer hover:text-primary',
-                    column.width && `w-[${column.width}]`
-                  )}
-                  onClick={() => column.sortable && handleSort(column.id)}
-                >
-                  <div className="flex items-center gap-2">
+            {columns.map(column => (
+              <TableHead key={column.id} className={column.width ? `w-[${column.width}]` : ''}>
+                {column.sortable ? (
+                  <Button variant="ghost" onClick={() => handleSort(column.accessor as string)}>
                     {column.header}
-                    {column.sortable && (
-                      <ArrowUpDownIcon className="h-3 w-3" />
-                    )}
-                  </div>
-                </TableHead>
-              ))}
-            </TableRow>
+                    {sortConfig?.key === column.accessor ? (
+                      sortConfig.direction === 'asc' ? (
+                        <ChevronDown className="ml-2 h-4 w-4" />
+                      ) : (
+                        <ChevronUp className="ml-2 h-4 w-4" />
+                      )
+                    ) : null}
+                  </Button>
+                ) : (
+                  column.header
+                )}
+              </TableHead>
+            ))}
           </TableHeader>
-          
           <TableBody>
-            {sortedData.map((item, index) => (
-              <TableRow
-                key={index}
-                className={cn(
-                  'hover:bg-gray-50 transition-colors',
-                  onRowClick && 'cursor-pointer',
-                  selectedItems.includes(item) && 'bg-blue-50'
-                )}
-                onClick={() => onRowClick?.(item)}
-              >
-                {selectable && (
-                  <TableCell>
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.includes(item)}
-                      onChange={(e) => handleSelectItem(item, e.target.checked)}
-                      onClick={(e) => e.stopPropagation()}
-                      className="rounded border-gray-300"
-                    />
-                  </TableCell>
-                )}
-                
-                {columns.map((column) => (
-                  <TableCell key={column.id} className="text-sm">
-                    {column.cell
-                      ? column.cell(item)
-                      : column.accessorKey
-                      ? item[column.accessorKey]
-                      : ''}
+            {paginatedData.map(item => (
+              <TableRow key={item.id} onClick={() => onRowClick?.(item)} className="cursor-pointer">
+                {columns.map(column => (
+                  <TableCell key={`${item.id}-${column.id}`}>
+                    {column.cell ? column.cell(item) : (item[column.accessor as string] as React.ReactNode)}
                   </TableCell>
                 ))}
               </TableRow>
             ))}
+            {paginatedData.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="text-center py-4">
+                  No results found.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-gray-500">
+            Showing {currentPage * pageSize + 1} to {Math.min((currentPage + 1) * pageSize, sortedData.length)} of {sortedData.length} results
+          </span>
+          <div className="space-x-2">
+            <Button
+              variant="outline"
+              disabled={currentPage === 0}
+              onClick={() => setCurrentPage(currentPage - 1)}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              disabled={currentPage === totalPages - 1}
+              onClick={() => setCurrentPage(currentPage + 1)}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
+import { Search, Filter, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { SearchIcon, FilterIcon, XIcon, Brain } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -16,14 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UnifiedSearchBar } from '@/components/search/UnifiedSearchBar';
-import { cn } from '@/lib/utils';
 
 export interface FilterOption {
   key: string;
   label: string;
-  type: 'select' | 'multiselect' | 'date' | 'range';
+  type: 'select' | 'multiselect';
   options?: Array<{ value: string; label: string }>;
 }
 
@@ -33,11 +29,10 @@ export interface SearchFilterProps {
   onSearchChange?: (value: string) => void;
   filters?: FilterOption[];
   activeFilters?: Record<string, any>;
-  onFilterChange?: (filters: Record<string, any>) => void;
-  onSemanticResults?: (results: any[]) => void;
+  onFilterChange?: (key: string, value: any) => void;
   enableSemanticSearch?: boolean;
   semanticTables?: string[];
-  className?: string;
+  onSemanticResults?: (results: any[]) => void;
 }
 
 export const SearchFilter: React.FC<SearchFilterProps> = ({
@@ -47,113 +42,55 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
   filters = [],
   activeFilters = {},
   onFilterChange,
-  onSemanticResults,
-  enableSemanticSearch = true,
-  semanticTables = ['roles', 'requirements', 'clients', 'skills'],
-  className,
+  enableSemanticSearch = false,
+  semanticTables = [],
+  onSemanticResults
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [localFilters, setLocalFilters] = useState(activeFilters);
 
-  const activeFilterCount = Object.keys(activeFilters).filter(
-    key => activeFilters[key] !== undefined && activeFilters[key] !== ''
-  ).length;
-
-  const handleFilterUpdate = (key: string, value: any) => {
-    const newFilters = { ...localFilters, [key]: value };
-    setLocalFilters(newFilters);
-    onFilterChange?.(newFilters);
-  };
-
-  const clearFilter = (key: string) => {
-    const newFilters = { ...localFilters };
-    delete newFilters[key];
-    setLocalFilters(newFilters);
-    onFilterChange?.(newFilters);
-  };
-
-  const clearAllFilters = () => {
-    setLocalFilters({});
-    onFilterChange?.({});
-  };
-
-  const handleTraditionalSearch = (query: string) => {
-    onSearchChange?.(query);
+  const handleFilterChange = (key: string, value: any) => {
+    if (onFilterChange) {
+      onFilterChange(key, value);
+    }
   };
 
   return (
-    <div className={cn('space-y-4', className)}>
-      {/* Enhanced Search with Semantic Support */}
-      <div className="flex items-center gap-4">
-        <div className="flex-1">
-          {enableSemanticSearch ? (
-            <UnifiedSearchBar
-              placeholder={searchPlaceholder}
-              onTraditionalSearch={handleTraditionalSearch}
-              onSemanticResults={onSemanticResults}
-              defaultTables={semanticTables}
-              searchMode="both"
-            />
-          ) : (
-            <div className="relative">
-              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder={searchPlaceholder}
-                value={searchValue}
-                onChange={(e) => onSearchChange?.(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          )}
+    <div className="space-y-4">
+      <div className="flex items-center space-x-4">
+        {/* Search Input */}
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder={searchPlaceholder}
+            value={searchValue}
+            onChange={(e) => onSearchChange?.(e.target.value)}
+            className="pl-10"
+          />
         </div>
 
         {/* Filter Button */}
         {filters.length > 0 && (
           <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="relative">
-                <FilterIcon className="h-4 w-4 mr-2" />
+              <Button variant="outline" size="sm">
+                <Filter className="h-4 w-4 mr-2" />
                 Filters
-                {activeFilterCount > 0 && (
-                  <Badge
-                    variant="destructive"
-                    className="absolute -top-2 -right-2 h-5 w-5 p-0 text-xs"
-                  >
-                    {activeFilterCount}
+                {Object.keys(activeFilters).length > 0 && (
+                  <Badge variant="secondary" className="ml-2 text-xs">
+                    {Object.keys(activeFilters).length}
                   </Badge>
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 p-4" align="end">
+            <PopoverContent className="w-80" align="end">
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-medium">Filters</h4>
-                  {activeFilterCount > 0 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={clearAllFilters}
-                    >
-                      Clear all
-                    </Button>
-                  )}
-                </div>
-
                 {filters.map((filter) => (
                   <div key={filter.key} className="space-y-2">
-                    <label className="text-sm font-medium">
-                      {filter.label}
-                    </label>
-                    
+                    <h4 className="font-medium">{filter.label}</h4>
                     {filter.type === 'select' && (
-                      <Select
-                        value={localFilters[filter.key] || ''}
-                        onValueChange={(value) =>
-                          handleFilterUpdate(filter.key, value)
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder={`Select ${filter.label}`} />
+                      <Select onValueChange={(value) => handleFilterChange(filter.key, value)}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder={`Select ${filter.label}`} defaultValue={activeFilters[filter.key] || ''} />
                         </SelectTrigger>
                         <SelectContent>
                           {filter.options?.map((option) => (
@@ -164,6 +101,33 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
                         </SelectContent>
                       </Select>
                     )}
+                    {filter.type === 'multiselect' && (
+                      <div className="flex flex-wrap gap-2">
+                        {filter.options?.map((option) => (
+                          <Badge
+                            key={option.value}
+                            variant={activeFilters[filter.key]?.includes(option.value) ? 'selected' : 'outline'}
+                            className="cursor-pointer"
+                            onClick={() => {
+                              const currentValues = activeFilters[filter.key] || [];
+                              const newValue = option.value;
+                              let newValues;
+                              if (currentValues.includes(newValue)) {
+                                newValues = currentValues.filter((v: any) => v !== newValue);
+                              } else {
+                                newValues = [...currentValues, newValue];
+                              }
+                              handleFilterChange(filter.key, newValues);
+                            }}
+                          >
+                            {option.label}
+                            {activeFilters[filter.key]?.includes(option.value) && (
+                              <X className="h-3 w-3 ml-1" />
+                            )}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -172,31 +136,21 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
         )}
       </div>
 
-      {/* Active Filter Tags */}
-      {activeFilterCount > 0 && (
-        <div className="flex flex-wrap items-center gap-2">
+      {/* Active Filters Display */}
+      {Object.keys(activeFilters).length > 0 && (
+        <div className="flex items-center space-x-2">
           <span className="text-sm text-gray-600">Active filters:</span>
           {Object.entries(activeFilters).map(([key, value]) => {
-            if (!value) return null;
-            
-            const filter = filters.find(f => f.key === key);
-            const option = filter?.options?.find(o => o.value === value);
-            
+            const filter = filters.find((f) => f.key === key);
+            if (!filter) return null;
+
+            const displayValue = Array.isArray(value)
+              ? value.map((v) => filter.options?.find((o) => o.value === v)?.label).join(', ')
+              : filter.options?.find((o) => o.value === value)?.label || value;
+
             return (
-              <Badge
-                key={key}
-                variant="secondary"
-                className="flex items-center gap-1"
-              >
-                {filter?.label}: {option?.label || value}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-auto w-auto p-0 ml-1"
-                  onClick={() => clearFilter(key)}
-                >
-                  <XIcon className="h-3 w-3" />
-                </Button>
+              <Badge key={key} variant="secondary" className="text-xs">
+                {filter.label}: {displayValue}
               </Badge>
             );
           })}

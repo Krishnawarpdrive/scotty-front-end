@@ -1,26 +1,20 @@
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHeader } from '@/components/layout/PageHeader';
 
 const CertificationsPage = () => {
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Certifications</h1>
-        <button className="bg-primary text-white px-4 py-2 rounded-md">Add Certification</button>
+      <PageHeader 
+        title="Certifications" 
+        subtitle="Manage certification requirements and templates"
+      />
+      
+      <div className="bg-white rounded-lg border p-8 text-center">
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Certifications Management</h3>
+        <p className="text-gray-500">
+          This page will contain certification management functionality.
+        </p>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Certifications Management</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>Track and verify professional certifications for candidates and requirements.</p>
-          <div className="h-64 flex items-center justify-center border rounded-md mt-4 bg-muted/20">
-            <p className="text-muted-foreground">Certification database will be displayed here</p>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
