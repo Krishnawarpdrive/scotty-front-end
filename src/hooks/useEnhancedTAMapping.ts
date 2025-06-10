@@ -15,14 +15,14 @@ interface Collaboration {
   type: 'shared' | 'backup' | 'mentor';
 }
 
-export const useEnhancedTAMapping = (roleId?: string) => {
+export const useEnhancedTAMapping = () => {
   const [workloadData, setWorkloadData] = useState<TAWorkloadData[]>([]);
   const [collaborations, setCollaborations] = useState<Collaboration[]>([]);
-  const [taProfiles, setTAProfiles] = useState<any[]>([]);
-  const [assignments, setAssignments] = useState<any[]>([]);
-  const [roleTargets, setRoleTargets] = useState<any[]>([]);
-  const [assignmentMetrics, setAssignmentMetrics] = useState<any[]>([]);
-  const [performanceInsights, setPerformanceInsights] = useState<any[]>([]);
+  const [taProfiles] = useState<any[]>([]);
+  const [assignments] = useState<any[]>([]);
+  const [roleTargets] = useState<any[]>([]);
+  const [assignmentMetrics] = useState<any[]>([]);
+  const [performanceInsights] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   const updateTAWorkload = useCallback((taId: string, newWorkload: Partial<TAWorkloadData>) => {

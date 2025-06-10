@@ -19,7 +19,7 @@ export function ProtectedRoute({
   requiredPermissions,
   fallback 
 }: ProtectedRouteProps) {
-  const { user, roles, loading: authLoading, hasAnyRole } = useAuthContext();
+  const { user, loading: authLoading, hasAnyRole } = useAuthContext();
   const { hasPermission, loading: permissionsLoading } = usePermissionsContext();
 
   // Show loading state while checking auth
