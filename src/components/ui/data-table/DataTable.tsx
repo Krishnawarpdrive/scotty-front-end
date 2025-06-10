@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { DataTableHeader } from './DataTableHeader';
 import { DataTableRow } from './DataTableRow';
 import { useDataTableFilters } from './useDataTableFilters';
@@ -7,16 +7,13 @@ import { useDataTableSort } from './useDataTableSort';
 import { filterData, sortData } from './utils';
 import { DataTableProps } from './types';
 
-export function DataTable<T>({
+export function DataTable<T extends Record<string, any>>({
   data,
   columns,
   onRowClick,
   loading = false,
   emptyMessage = "No data available",
   searchable = true,
-  sortable = true,
-  filterable = false,
-  filters = [],
   actions,
 }: DataTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,7 +21,7 @@ export function DataTable<T>({
   const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
   
   const {
-    filters: columnFilters,
+    columnValues,
     selectedFilterValues,
     handleFilterChange,
     toggleFilterValue,
@@ -84,8 +81,8 @@ export function DataTable<T>({
                     setActiveColumnFilter={setActiveColumnFilter}
                     hoveredColumn={hoveredColumn}
                     setHoveredColumn={setHoveredColumn}
-                    filters={columnFilters}
-                    columnValues={new Set()}
+                    filters={{}}
+                    columnValues={columnValues[column.id] || new Set()}
                     selectedFilterValues={selectedFilterValues[column.id] || []}
                     handleFilterChange={handleFilterChange}
                     toggleFilterValue={toggleFilterValue}
