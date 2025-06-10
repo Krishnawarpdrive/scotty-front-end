@@ -51,6 +51,8 @@ export const CandidateJourneyTimeline: React.FC<CandidateJourneyTimelineProps> =
     }
   ];
 
+  console.log('Rendering timeline for candidate:', candidateId, 'application:', applicationId);
+
   const getStageIcon = (status: string) => {
     switch (status) {
       case 'completed':

@@ -1,15 +1,17 @@
 
 import React from 'react';
-import { Client } from '../../types/ClientTypes';
-import EnhancedClientRolesTab from './EnhancedClientRolesTab';
+import { EnhancedClientRolesTab } from './EnhancedClientRolesTab';
 
 interface ClientRolesTabProps {
-  client: Client;
-  onCreateRole?: () => void;
+  client: any;
+  onCreateRole: () => void;
 }
 
-const ClientRolesTab: React.FC<ClientRolesTabProps> = ({ client, onCreateRole }) => {
-  return <EnhancedClientRolesTab client={client} />;
+export const ClientRolesTab: React.FC<ClientRolesTabProps> = ({ client, onCreateRole }) => {
+  return (
+    <EnhancedClientRolesTab 
+      client={client}
+      onCreateRole={onCreateRole}
+    />
+  );
 };
-
-export default ClientRolesTab;

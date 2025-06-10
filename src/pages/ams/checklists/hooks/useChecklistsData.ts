@@ -1,31 +1,22 @@
 
 import { useState } from 'react';
-
-interface Checklist {
-  id: string;
-  title: string;
-  type: string;
-  description?: string;
-  items: string[];
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Checklist } from '../types';
 
 export const useChecklistsData = () => {
   const [checklists, setChecklists] = useState<Checklist[]>([
     {
       id: '1',
-      title: 'Frontend Developer Interview Checklist',
+      name: 'Frontend Developer Interview Checklist',
       type: 'interview',
-      description: 'Standard checklist for frontend developer interviews',
+      roleId: undefined,
+      clientId: undefined,
+      subdomain: undefined,
       items: [
-        'JavaScript fundamentals',
-        'React/Vue experience', 
-        'CSS/HTML proficiency',
-        'Problem-solving skills'
+        { id: '1', text: 'JavaScript fundamentals', completed: false },
+        { id: '2', text: 'React/Vue experience', completed: false },
+        { id: '3', text: 'CSS/HTML proficiency', completed: false },
+        { id: '4', text: 'Problem-solving skills', completed: false }
       ],
-      isActive: true,
       createdAt: '2024-01-01',
       updatedAt: '2024-01-01'
     }
@@ -41,8 +32,19 @@ export const useChecklistsData = () => {
     setChecklists(prev => [...prev, checklist]);
   };
 
+  const updateChecklist = (id: string, updates: Partial<Checklist>) => {
+    setChecklists(prev => 
+      prev.map(checklist => 
+        checklist.id === id 
+          ? { ...checklist, ...updates, updatedAt: new Date().toISOString() }
+          : checklist
+      )
+    );
+  };
+
   return {
     checklists,
-    addChecklist
+    addChecklist,
+    updateChecklist
   };
 };

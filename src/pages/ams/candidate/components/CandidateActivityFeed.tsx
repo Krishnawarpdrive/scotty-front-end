@@ -18,8 +18,7 @@ interface CandidateActivityFeedProps {
 export const CandidateActivityFeed: React.FC<CandidateActivityFeedProps> = ({
   activities
 }) => {
-  const getActivityIcon = (type: string) => {
-    // Return appropriate icon based on activity type
+  const getActivityIcon = () => {
     return '📝';
   };
 
@@ -41,7 +40,7 @@ export const CandidateActivityFeed: React.FC<CandidateActivityFeedProps> = ({
         <div className="space-y-4">
           {activities.map((activity) => (
             <div key={activity.id} className="flex items-start space-x-3 p-3 border rounded-lg">
-              <div className="text-lg">{getActivityIcon(activity.type)}</div>
+              <div className="text-lg">{getActivityIcon()}</div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-gray-900">{activity.description}</p>
                 <p className="text-xs text-gray-500">

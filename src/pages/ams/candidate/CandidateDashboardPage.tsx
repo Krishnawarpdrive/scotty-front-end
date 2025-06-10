@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -18,7 +18,6 @@ const CandidateDashboardPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [applicationDetailOpen, setApplicationDetailOpen] = useState(false);
 
-  // Use the hook after import
   const {
     dashboardData,
     notifications,
@@ -52,12 +51,12 @@ const CandidateDashboardPage = () => {
     }
   ];
 
-  const handleViewApplication = (application: any) => {
+  const handleViewApplication = () => {
     setApplicationDetailOpen(true);
   };
 
-  const handleQuickAction = (action: string, application: any) => {
-    console.log('Quick action:', action, 'for application:', application);
+  const handleQuickAction = (action: string, applicationData: any) => {
+    console.log('Quick action:', action, 'for application:', applicationData);
   };
 
   if (isLoading) {
@@ -88,12 +87,11 @@ const CandidateDashboardPage = () => {
         </div>
 
         {/* Metrics Cards */}
-        <CandidateMetricsCards dashboardData={dashboardData} />
+        <CandidateMetricsCards />
 
         {/* Profile Completion Widget */}
         <ProfileCompletionWidget 
           completionPercentage={dashboardData.profileCompletion}
-          onComplete={() => {}} 
         />
 
         {/* Main Content Tabs */}
@@ -124,7 +122,7 @@ const CandidateDashboardPage = () => {
                 </Card>
 
                 {/* Upcoming Interviews */}
-                <InterviewsSchedule interviews={dashboardData.upcomingInterviews} />
+                <InterviewsSchedule />
               </div>
 
               {/* Sidebar */}
@@ -154,7 +152,7 @@ const CandidateDashboardPage = () => {
           </TabsContent>
 
           <TabsContent value="interviews">
-            <InterviewsSchedule interviews={dashboardData.upcomingInterviews} />
+            <InterviewsSchedule />
           </TabsContent>
 
           <TabsContent value="activity">
