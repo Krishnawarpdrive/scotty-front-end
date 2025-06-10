@@ -1,53 +1,66 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { 
+  Users, 
   TrendingUp, 
   TrendingDown, 
-  Clock, 
-  Target, 
+  Minus,
   AlertTriangle,
   CheckCircle,
+  Clock,
   BarChart3
 } from 'lucide-react';
 
-interface WorkloadMetric {
-  current: number;
-  target: number;
-  trend: 'up' | 'down' | 'stable';
-  change: number;
+interface WorkloadMetrics {
+  candidates: {
+    current: number;
+    target: number;
+    trend: 'up' | 'down' | 'stable';
+    change: number;
+  };
+  interviews: {
+    current: number;
+    target: number;
+    trend: 'up' | 'down' | 'stable';
+    change: number;
+  };
+  closures: {
+    current: number;
+    target: number;
+    trend: 'up' | 'down' | 'stable';
+    change: number;
+  };
+}
+
+interface Assignment {
+  id: string;
+  name: string;
+  client: string;
+  priority: 'high' | 'medium' | 'low';
+  deadline: string;
 }
 
 interface TAWorkload {
   id: string;
   name: string;
-  avatar?: string;
   currentWorkload: number;
   maxWorkload: number;
   efficiency: number;
-  metrics: {
-    candidates: WorkloadMetric;
-    interviews: WorkloadMetric;
-    closures: WorkloadMetric;
-  };
-  assignments: Array<{
-    id: string;
-    name: string;
-    client: string;
-    priority: 'high' | 'medium' | 'low';
-    deadline: string;
-  }>;
+  metrics: WorkloadMetrics;
+  assignments: Assignment[];
   availability: 'available' | 'busy' | 'unavailable';
   riskLevel: 'low' | 'medium' | 'high';
 }
 
 interface TAWorkloadDashboardProps {
   workloads: TAWorkload[];
-  onRebalance?: (fromTaId: string, toTaId: string, assignmentId: string) => void;
-  onUpdateCapacity?: (taId: string, newCapacity: number) => void;
+  onRebalance: (fromTaId: string, toTaId: string, assignmentId: string) => void;
+  onUpdateCapacity: (taId: string, newCapacity: number) => void;
 }
 
 export const TAWorkloadDashboard: React.FC<TAWorkloadDashboardProps> = ({
@@ -55,44 +68,41 @@ export const TAWorkloadDashboard: React.FC<TAWorkloadDashboardProps> = ({
   onRebalance,
   onUpdateCapacity
 }) => {
-  const getWorkloadColor = (workload: number, maxWorkload: number) => {
-    const percentage = (workload / maxWorkload) * 100;
-    if (percentage >= 90) return 'text-red-600';
-    if (percentage >= 75) return 'text-yellow-600';
-    if (percentage >= 50) return 'text-blue-600';
-    return 'text-green-600';
-  };
-
-  const getWorkloadBgColor = (workload: number, maxWorkload: number) => {
-    const percentage = (workload / maxWorkload) * 100;
-    if (percentage >= 90) return 'bg-red-500';
-    if (percentage >= 75) return 'bg-yellow-500';
-    if (percentage >= 50) return 'bg-blue-500';
-    return 'bg-green-500';
-  };
-
-  const getRiskColor = (risk: string) => {
-    switch (risk) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  const getTrendIcon = (trend: string, change: number) => {
-    if (trend === 'up') return <TrendingUp className="h-3 w-3 text-green-600" />;
-    if (trend === 'down') return <TrendingDown className="h-3 w-3 text-red-600" />;
-    return <div className="h-3 w-3" />;
+  const getTrendIcon = (trend: 'up' | 'down' | 'stable') => {
+    switch (trend) {
+      case 'up': return <TrendingUp className="h-3 w-3 text-green-600" />;
+      case 'down': return <TrendingDown className="h-3 w-3 text-red-600" />;
+      case 'stable': return <Minus className="h-3 w-3 text-gray-600" />;
+    }
   };
 
-  const overloadedTAs = workloads.filter(ta => ta.currentWorkload >= ta.maxWorkload * 0.9);
-  const availableTAs = workloads.filter(ta => ta.currentWorkload < ta.maxWorkload * 0.7);
-  const avgEfficiency = workloads.reduce((acc, ta) => acc + ta.efficiency, 0) / workloads.length;
+  const getRiskColor = (level: string) => {
+    switch (level) {
+      case 'low': return 'bg-green-100 text-green-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'high': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'bg-red-100 text-red-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'low': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  // Calculate overall stats
+  const totalWorkload = workloads.reduce((acc, ta) => acc + ta.currentWorkload, 0);
+  const totalCapacity = workloads.reduce((acc, ta) => acc + ta.maxWorkload, 0);
+  const avgEfficiency = Math.round(workloads.reduce((acc, ta) => acc + ta.efficiency, 0) / workloads.length);
+  const overloadedTAs = workloads.filter(ta => (ta.currentWorkload / ta.maxWorkload) > 0.9).length;
 
   return (
     <div className="space-y-6">
@@ -103,8 +113,32 @@ export const TAWorkloadDashboard: React.FC<TAWorkloadDashboardProps> = ({
             <div className="flex items-center space-x-2">
               <BarChart3 className="w-5 h-5 text-blue-600" />
               <div>
+                <p className="text-sm text-gray-600">Overall Utilization</p>
+                <p className="text-xl font-bold">{Math.round((totalWorkload / totalCapacity) * 100)}%</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <TrendingUp className="w-5 h-5 text-green-600" />
+              <div>
                 <p className="text-sm text-gray-600">Avg Efficiency</p>
-                <p className="text-xl font-bold">{avgEfficiency.toFixed(1)}%</p>
+                <p className="text-xl font-bold">{avgEfficiency}%</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <Users className="w-5 h-5 text-purple-600" />
+              <div>
+                <p className="text-sm text-gray-600">Total TAs</p>
+                <p className="text-xl font-bold">{workloads.length}</p>
               </div>
             </div>
           </CardContent>
@@ -116,179 +150,133 @@ export const TAWorkloadDashboard: React.FC<TAWorkloadDashboardProps> = ({
               <AlertTriangle className="w-5 h-5 text-red-600" />
               <div>
                 <p className="text-sm text-gray-600">Overloaded</p>
-                <p className="text-xl font-bold">{overloadedTAs.length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              <div>
-                <p className="text-sm text-gray-600">Available</p>
-                <p className="text-xl font-bold">{availableTAs.length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Target className="w-5 h-5 text-purple-600" />
-              <div>
-                <p className="text-sm text-gray-600">High Risk</p>
-                <p className="text-xl font-bold">
-                  {workloads.filter(ta => ta.riskLevel === 'high').length}
-                </p>
+                <p className="text-xl font-bold">{overloadedTAs}</p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* TA Workload Cards */}
+      {/* Individual TA Workload Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {workloads.map((ta) => (
-          <Card key={ta.id} className="overflow-hidden">
-            <CardHeader className="pb-3">
+          <Card key={ta.id} className="relative">
+            <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={ta.avatar} />
                     <AvatarFallback>{getInitials(ta.name)}</AvatarFallback>
                   </Avatar>
                   <div>
                     <CardTitle className="text-base">{ta.name}</CardTitle>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <Badge variant="outline" className="text-xs">
-                        {ta.availability}
-                      </Badge>
+                    <div className="flex items-center gap-2 mt-1">
                       <Badge className={getRiskColor(ta.riskLevel)} variant="secondary">
                         {ta.riskLevel} risk
+                      </Badge>
+                      <Badge variant="outline">
+                        {ta.efficiency}% efficiency
                       </Badge>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={`text-2xl font-bold ${getWorkloadColor(ta.currentWorkload, ta.maxWorkload)}`}>
+                  <div className="text-lg font-bold">
                     {ta.currentWorkload}/{ta.maxWorkload}
                   </div>
-                  <div className="text-xs text-gray-600">workload</div>
+                  <div className="text-sm text-gray-600">workload</div>
                 </div>
               </div>
             </CardHeader>
-            
+
             <CardContent className="space-y-4">
               {/* Workload Progress */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Capacity Utilization</span>
-                  <span className="text-sm text-gray-600">
-                    {Math.round((ta.currentWorkload / ta.maxWorkload) * 100)}%
-                  </span>
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <span>Capacity Utilization</span>
+                  <span>{Math.round((ta.currentWorkload / ta.maxWorkload) * 100)}%</span>
                 </div>
                 <Progress 
                   value={(ta.currentWorkload / ta.maxWorkload) * 100} 
-                  className="h-2"
+                  className="h-3"
                 />
               </div>
 
               {/* Performance Metrics */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="flex items-center justify-center space-x-1 mb-1">
-                    <span className="text-xs font-medium">Candidates</span>
-                    {getTrendIcon(ta.metrics.candidates.trend, ta.metrics.candidates.change)}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <span className="text-xs text-gray-600">Candidates</span>
+                    {getTrendIcon(ta.metrics.candidates.trend)}
                   </div>
-                  <div className="text-sm">
-                    <span className="font-semibold">{ta.metrics.candidates.current}</span>
-                    <span className="text-gray-500">/{ta.metrics.candidates.target}</span>
+                  <div className="text-lg font-bold">
+                    {ta.metrics.candidates.current}
                   </div>
-                  <Progress 
-                    value={(ta.metrics.candidates.current / ta.metrics.candidates.target) * 100} 
-                    className="h-1 mt-1"
-                  />
+                  <div className="text-xs text-gray-500">
+                    Target: {ta.metrics.candidates.target}
+                  </div>
+                  {ta.metrics.candidates.change !== 0 && (
+                    <div className={`text-xs ${ta.metrics.candidates.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {ta.metrics.candidates.change > 0 ? '+' : ''}{ta.metrics.candidates.change}%
+                    </div>
+                  )}
                 </div>
 
-                <div className="text-center">
-                  <div className="flex items-center justify-center space-x-1 mb-1">
-                    <span className="text-xs font-medium">Interviews</span>
-                    {getTrendIcon(ta.metrics.interviews.trend, ta.metrics.interviews.change)}
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <span className="text-xs text-gray-600">Interviews</span>
+                    {getTrendIcon(ta.metrics.interviews.trend)}
                   </div>
-                  <div className="text-sm">
-                    <span className="font-semibold">{ta.metrics.interviews.current}</span>
-                    <span className="text-gray-500">/{ta.metrics.interviews.target}</span>
+                  <div className="text-lg font-bold">
+                    {ta.metrics.interviews.current}
                   </div>
-                  <Progress 
-                    value={(ta.metrics.interviews.current / ta.metrics.interviews.target) * 100} 
-                    className="h-1 mt-1"
-                  />
+                  <div className="text-xs text-gray-500">
+                    Target: {ta.metrics.interviews.target}
+                  </div>
+                  {ta.metrics.interviews.change !== 0 && (
+                    <div className={`text-xs ${ta.metrics.interviews.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {ta.metrics.interviews.change > 0 ? '+' : ''}{ta.metrics.interviews.change}%
+                    </div>
+                  )}
                 </div>
 
-                <div className="text-center">
-                  <div className="flex items-center justify-center space-x-1 mb-1">
-                    <span className="text-xs font-medium">Closures</span>
-                    {getTrendIcon(ta.metrics.closures.trend, ta.metrics.closures.change)}
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <span className="text-xs text-gray-600">Closures</span>
+                    {getTrendIcon(ta.metrics.closures.trend)}
                   </div>
-                  <div className="text-sm">
-                    <span className="font-semibold">{ta.metrics.closures.current}</span>
-                    <span className="text-gray-500">/{ta.metrics.closures.target}</span>
+                  <div className="text-lg font-bold">
+                    {ta.metrics.closures.current}
                   </div>
-                  <Progress 
-                    value={(ta.metrics.closures.current / ta.metrics.closures.target) * 100} 
-                    className="h-1 mt-1"
-                  />
-                </div>
-              </div>
-
-              {/* Efficiency Score */}
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <Clock className="h-4 w-4 text-gray-600" />
-                  <span className="text-sm font-medium">Efficiency Score</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className={`text-lg font-bold ${
-                    ta.efficiency >= 85 ? 'text-green-600' : 
-                    ta.efficiency >= 70 ? 'text-yellow-600' : 'text-red-600'
-                  }`}>
-                    {ta.efficiency}%
+                  <div className="text-xs text-gray-500">
+                    Target: {ta.metrics.closures.target}
                   </div>
-                  {ta.efficiency >= 85 ? (
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                  ) : ta.efficiency < 70 ? (
-                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                  ) : null}
+                  {ta.metrics.closures.change !== 0 && (
+                    <div className={`text-xs ${ta.metrics.closures.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {ta.metrics.closures.change > 0 ? '+' : ''}{ta.metrics.closures.change}%
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Current Assignments */}
               <div>
-                <h4 className="text-sm font-medium mb-2">
-                  Current Assignments ({ta.assignments.length})
+                <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4" />
+                  Active Assignments ({ta.assignments.length})
                 </h4>
                 <div className="space-y-2 max-h-32 overflow-y-auto">
                   {ta.assignments.map((assignment) => (
-                    <div key={assignment.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs font-medium truncate">{assignment.name}</div>
+                    <div key={assignment.id} className="flex items-center justify-between p-2 bg-white rounded border">
+                      <div>
+                        <div className="text-sm font-medium">{assignment.name}</div>
                         <div className="text-xs text-gray-600">{assignment.client}</div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge 
-                          variant="outline" 
-                          className={`text-xs ${
-                            assignment.priority === 'high' ? 'border-red-300 text-red-700' :
-                            assignment.priority === 'medium' ? 'border-yellow-300 text-yellow-700' :
-                            'border-blue-300 text-blue-700'
-                          }`}
-                        >
+                      <div className="flex items-center gap-2">
+                        <Badge className={getPriorityColor(assignment.priority)} variant="secondary">
                           {assignment.priority}
                         </Badge>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-gray-500 flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
                           {new Date(assignment.deadline).toLocaleDateString()}
                         </div>
                       </div>
@@ -297,19 +285,25 @@ export const TAWorkloadDashboard: React.FC<TAWorkloadDashboardProps> = ({
                 </div>
               </div>
 
-              {/* Risk Indicators */}
-              {ta.riskLevel === 'high' && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                    <span className="text-sm font-medium text-red-800">High Risk Alert</span>
-                  </div>
-                  <p className="text-xs text-red-700">
-                    This TA is at risk of burnout. Consider redistributing workload.
-                  </p>
-                </div>
-              )}
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2 pt-2 border-t">
+                <Button variant="outline" size="sm" className="flex-1">
+                  Adjust Capacity
+                </Button>
+                {ta.currentWorkload > ta.maxWorkload * 0.8 && (
+                  <Button variant="outline" size="sm" className="flex-1 text-orange-600 border-orange-200">
+                    Rebalance Load
+                  </Button>
+                )}
+              </div>
             </CardContent>
+
+            {/* Risk Indicator */}
+            {ta.riskLevel === 'high' && (
+              <div className="absolute top-2 right-2">
+                <AlertTriangle className="h-5 w-5 text-red-600" />
+              </div>
+            )}
           </Card>
         ))}
       </div>
