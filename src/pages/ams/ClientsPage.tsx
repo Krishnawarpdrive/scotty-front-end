@@ -23,20 +23,10 @@ const ClientsPage = () => {
     setClientDetailOpen,
     clientAccountOpen,
     setClientAccountOpen,
-    editingClient,
     setEditingClient
   } = useClientDrawers();
 
   const [selectedClients, setSelectedClients] = useState<string[]>([]);
-
-  const handleEditClient = () => {
-    const clientToEdit = clients.find(c => c.id === selectedClientId);
-    if (clientToEdit) {
-      setEditingClient(clientToEdit);
-      setClientAccountOpen(true);
-      setClientDetailOpen(false);
-    }
-  };
 
   const handleClientCreated = () => {
     setClientAccountOpen(false);

@@ -44,26 +44,10 @@ export const CandidateApplicationsTable: React.FC<CandidateApplicationsTableProp
   onQuickAction
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortConfig, setSortConfig] = useState<{
-    key: keyof CandidateApplication;
-    direction: 'asc' | 'desc';
-  } | null>(null);
 
   const sortedApplications = useMemo(() => {
-    if (!sortConfig) return applications;
-
-    return [...applications].sort((a, b) => {
-      const key = sortConfig.key;
-
-      if (a[key] < b[key]) {
-        return sortConfig.direction === 'asc' ? -1 : 1;
-      }
-      if (a[key] > b[key]) {
-        return sortConfig.direction === 'asc' ? 1 : -1;
-      }
-      return 0;
-    });
-  }, [applications, sortConfig]);
+    return [...applications];
+  }, [applications]);
 
   const filteredApplications = useMemo(() => {
     if (!searchTerm) return sortedApplications;
