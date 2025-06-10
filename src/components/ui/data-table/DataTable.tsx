@@ -29,7 +29,7 @@ export function DataTable<T extends Record<string, any>>({
     filteredData: dataFilteredByFilters
   } = useDataTableFilters(data, columns);
 
-  const { sortConfig, handleSort } = useDataTableSort<T>();
+  const { sortConfig, handleSort } = useDataTableSort();
 
   // Apply search filtering
   let filteredData = filterData(dataFilteredByFilters, searchTerm, columns);
