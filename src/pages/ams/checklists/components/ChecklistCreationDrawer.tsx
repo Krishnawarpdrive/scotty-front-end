@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -16,7 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 
 import { checklistFormSchema } from '../schemas/checklistFormSchema';
-import { Checklist, ChecklistItem } from '../types';
+import { Checklist } from '../types';
 import { useChecklistsData } from '../hooks/useChecklistsData';
 import { useMockData } from '../hooks/useMockData';
 import { useChecklistItems } from '../hooks/useChecklistItems';
@@ -31,12 +31,14 @@ interface ChecklistCreationDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   editingChecklist?: Checklist | null;
+  onSubmit?: (data: any) => void;
 }
 
 const ChecklistCreationDrawer: React.FC<ChecklistCreationDrawerProps> = ({ 
   open, 
   onOpenChange,
-  editingChecklist = null
+  editingChecklist = null,
+  onSubmit
 }) => {
   const { toast } = useToast();
   const { addChecklist, updateChecklist } = useChecklistsData();
@@ -70,7 +72,7 @@ const ChecklistCreationDrawer: React.FC<ChecklistCreationDrawerProps> = ({
   } = useChecklistItems(editingChecklist?.items || [{ id: '1', text: '', completed: false }]);
   
   // Handle form submission
-  const onSubmit = (data: Checklist) => {
+  const handleSubmit = (data: Checklist) => {
     // Filter out empty checklist items
     const validItems = getValidItems();
     
@@ -105,6 +107,10 @@ const ChecklistCreationDrawer: React.FC<ChecklistCreationDrawerProps> = ({
       });
     }
     
+    if (onSubmit) {
+      onSubmit(checklistData);
+    }
+    
     onOpenChange(false);
     form.reset();
     resetItems();
@@ -125,7 +131,7 @@ const ChecklistCreationDrawer: React.FC<ChecklistCreationDrawerProps> = ({
         <ScrollArea className="flex-1">
           <div className="p-6">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
                 {/* Basic Info Fields */}
                 <ChecklistBasicInfoFields form={form} />
                 
@@ -156,7 +162,7 @@ const ChecklistCreationDrawer: React.FC<ChecklistCreationDrawerProps> = ({
         </ScrollArea>
         
         <SheetFooter className="p-6 border-t flex justify-end gap-2">
-          <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
+          <Button type="submit" onClick={form.handleSubmit(handleSubmit)}>
             {editingChecklist ? 'Update Checklist' : 'Create Checklist'}
           </Button>
           <Button variant="outline" onClick={() => onOpenChange(false)}>

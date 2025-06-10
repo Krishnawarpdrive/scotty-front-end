@@ -48,7 +48,14 @@ export const DocumentsStatus: React.FC<DocumentsStatusProps> = ({ candidateId })
           return;
         }
 
-        setDocuments(data || []);
+        // Transform data to handle null values
+        const transformedData = (data || []).map(doc => ({
+          ...doc,
+          uploaded_at: doc.uploaded_at || undefined,
+          verified_at: doc.verified_at || undefined
+        }));
+
+        setDocuments(transformedData);
       } catch (error) {
         console.error('Error in fetchDocuments:', error);
       } finally {

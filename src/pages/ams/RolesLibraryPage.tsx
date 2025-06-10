@@ -13,12 +13,13 @@ const RolesLibraryPage = () => {
       <PageHeader 
         title="Roles Library" 
         subtitle="Manage role templates and job descriptions"
-        action={
-          <Button onClick={() => setCreateRoleOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Create Role
-          </Button>
-        }
+        actions={[
+          {
+            label: "Create Role",
+            onClick: () => setCreateRoleOpen(true),
+            variant: "default"
+          }
+        ]}
       />
       
       <div className="bg-white rounded-lg border p-8 text-center">

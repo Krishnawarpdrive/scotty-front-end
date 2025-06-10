@@ -1,20 +1,17 @@
+
 import React, { useState, useMemo } from 'react';
 import { 
-  ChevronDown, 
-  ChevronUp, 
   Search,
   Eye,
   ExternalLink,
   Calendar,
   Clock,
-  AlertCircle,
-  CheckCircle,
   MoreHorizontal
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { DataTable, DataTableColumn } from '@/components/ui/data-table/DataTable';
+import { DataTable, DataTableColumn } from '@/design-system/components/DataTable/DataTable';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -79,27 +76,11 @@ export const CandidateApplicationsTable: React.FC<CandidateApplicationsTableProp
     );
   }, [searchTerm, sortedApplications]);
 
-  const handleSort = (key: keyof CandidateApplication) => {
-    setSortConfig(currentConfig => {
-      if (currentConfig?.key === key) {
-        return {
-          key,
-          direction: currentConfig.direction === 'asc' ? 'desc' : 'asc',
-        };
-      } else {
-        return {
-          key,
-          direction: 'asc',
-        };
-      }
-    });
-  };
-
   const columns: DataTableColumn<CandidateApplication>[] = [
     {
       id: 'role',
       header: 'Role & Company',
-      cell: (application) => (
+      cell: (application: CandidateApplication) => (
         <div className="flex flex-col">
           <span className="font-medium text-gray-900">{application.role}</span>
           <span className="text-sm text-gray-500">{application.company}</span>
@@ -110,7 +91,7 @@ export const CandidateApplicationsTable: React.FC<CandidateApplicationsTableProp
     {
       id: 'status',
       header: 'Status',
-      cell: (application) => {
+      cell: (application: CandidateApplication) => {
         const getStatusColor = (status: string) => {
           switch (status.toLowerCase()) {
             case 'active': return 'bg-green-100 text-green-800';
@@ -139,7 +120,7 @@ export const CandidateApplicationsTable: React.FC<CandidateApplicationsTableProp
     {
       id: 'progress',
       header: 'Progress',
-      cell: (application) => (
+      cell: (application: CandidateApplication) => (
         <div className="flex items-center space-x-2">
           <div className="w-16 bg-gray-200 rounded-full h-2">
             <div
@@ -155,7 +136,7 @@ export const CandidateApplicationsTable: React.FC<CandidateApplicationsTableProp
     {
       id: 'appliedDate',
       header: 'Applied Date',
-      cell: (application) => (
+      cell: (application: CandidateApplication) => (
         <span className="text-sm text-gray-600">
           {new Date(application.appliedDate).toLocaleDateString()}
         </span>
@@ -165,7 +146,7 @@ export const CandidateApplicationsTable: React.FC<CandidateApplicationsTableProp
     {
       id: 'nextAction',
       header: 'Next Action',
-      cell: (application) => (
+      cell: (application: CandidateApplication) => (
         application.nextAction ? (
           <div className="flex items-center space-x-1 text-sm">
             <Clock className="h-4 w-4 text-orange-500" />
@@ -179,7 +160,7 @@ export const CandidateApplicationsTable: React.FC<CandidateApplicationsTableProp
     {
       id: 'actions',
       header: 'Actions',
-      cell: (application) => (
+      cell: (application: CandidateApplication) => (
         <div className="flex items-center space-x-2">
           <Button
             variant="ghost"

@@ -102,13 +102,11 @@ const ClientsPage = () => {
         open={clientDetailOpen}
         onOpenChange={setClientDetailOpen}
         client={selectedClientId ? clients.find(c => c.id === selectedClientId) || null : null}
-        onEdit={handleEditClient}
       />
 
       <ClientAccountDrawer
         open={clientAccountOpen}
         onOpenChange={setClientAccountOpen}
-        client={editingClient}
         onClientCreated={handleClientCreated}
       />
     </>
