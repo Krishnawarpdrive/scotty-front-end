@@ -49,7 +49,7 @@ export const useEnhancedToast = () => {
     showWarning,
     showPromise,
     dismiss: toast.dismiss,
-    clear: toast.clear
+    dismissAll: toast.dismissAll
   };
 };
 

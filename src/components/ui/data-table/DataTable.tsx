@@ -64,7 +64,6 @@ export function DataTable<T extends Record<string, any>>({
                     filters={filters}
                     columnValues={new Set()}
                     selectedFilterValues={[]}
-                    handleFilterChange={handleFilterChange}
                     toggleFilterValue={toggleFilterValue}
                     clearFilter={clearFilter}
                   />
@@ -145,7 +144,6 @@ export function DataTable<T extends Record<string, any>>({
                     filters={filters}
                     columnValues={columnValues[column.id] || new Set()}
                     selectedFilterValues={selectedFilterValues[column.id] || []}
-                    handleFilterChange={handleFilterChange}
                     toggleFilterValue={toggleFilterValue}
                     clearFilter={clearFilter}
                   />
