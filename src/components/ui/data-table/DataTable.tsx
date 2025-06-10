@@ -30,7 +30,6 @@ export function DataTable<T extends Record<string, any>>({
     filters, 
     columnValues, 
     selectedFilterValues, 
-    handleFilterChange, 
     toggleFilterValue, 
     clearFilter, 
     clearAllFilters, 
