@@ -1,24 +1,21 @@
 
 import { useState } from 'react';
+import { Client } from '../types/ClientTypes';
 
 export const useClientDrawers = () => {
-  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [isRoleDrawerOpen, setIsRoleDrawerOpen] = useState(false);
-  
-  const handleEditClient = () => {
-    setIsEditDrawerOpen(true);
-  };
-  
-  const handleCreateRole = () => {
-    setIsRoleDrawerOpen(true);
-  };
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [clientDetailOpen, setClientDetailOpen] = useState(false);
+  const [clientAccountOpen, setClientAccountOpen] = useState(false);
+  const [editingClient, setEditingClient] = useState<Client | null>(null);
 
   return {
-    isEditDrawerOpen,
-    setIsEditDrawerOpen,
-    isRoleDrawerOpen,
-    setIsRoleDrawerOpen,
-    handleEditClient,
-    handleCreateRole
+    selectedClientId,
+    setSelectedClientId,
+    clientDetailOpen,
+    setClientDetailOpen,
+    clientAccountOpen,
+    setClientAccountOpen,
+    editingClient,
+    setEditingClient
   };
 };

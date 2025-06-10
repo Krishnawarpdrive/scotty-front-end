@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { SmartActionContextService, ActionContext, PendingTask, SmartNotification, SmartAction } from '@/services/SmartActionContextService';
+import { SmartActionContextService, ActionContext, PendingTask, SmartAction } from '@/services/SmartActionContextService';
 
 interface SmartActionContextType {
   actions: SmartAction[];

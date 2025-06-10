@@ -37,17 +37,25 @@ const ChecklistsPage = () => {
     setCreateDrawerOpen(false);
   };
 
+  const handleEditChecklist = (checklist: any) => {
+    console.log('Edit checklist:', checklist);
+  };
+
+  const handleDeleteChecklist = (id: string) => {
+    console.log('Delete checklist:', id);
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader 
         title="Checklists Management" 
         subtitle="Create and manage role-specific checklists for candidate evaluation"
-        actions={
-          <Button onClick={() => setCreateDrawerOpen(true)}>
+        actions={[
+          <Button key="create" onClick={() => setCreateDrawerOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Create Checklist
           </Button>
-        }
+        ]}
       />
 
       <div className="flex items-center justify-between">
@@ -62,7 +70,6 @@ const ChecklistsPage = () => {
 
         <div className="flex items-center space-x-4">
           <ChecklistTypeFilter 
-            value={typeFilter} 
             onTypeChange={(type) => setTypeFilter(type || 'all')} 
           />
           <div className="relative">
@@ -84,17 +91,19 @@ const ChecklistsPage = () => {
       </div>
 
       {filteredChecklists.length === 0 ? (
-        <ChecklistEmptyState onCreate={() => setCreateDrawerOpen(true)} />
+        <ChecklistEmptyState onCreateClick={() => setCreateDrawerOpen(true)} />
       ) : (
         <ChecklistsTable 
           checklists={filteredChecklists}
+          onEdit={handleEditChecklist}
+          onDelete={handleDeleteChecklist}
         />
       )}
 
       <ChecklistCreationDrawer
         open={createDrawerOpen}
         onOpenChange={setCreateDrawerOpen}
-        onChecklistCreated={handleCreateChecklist}
+        onSubmit={handleCreateChecklist}
       />
     </div>
   );

@@ -93,6 +93,10 @@ export function UnifiedDataTable<T extends { id: string }>({
     console.log('Semantic search results:', results);
   };
 
+  const handleFilterChange = (key: string, value: any) => {
+    updateFilters({ [key]: value });
+  };
+
   return (
     <div className={cn('space-y-6', className)}>
       {/* Search and Filter */}
@@ -102,10 +106,7 @@ export function UnifiedDataTable<T extends { id: string }>({
         onSearchChange={updateSearch}
         filters={filterOptions}
         activeFilters={searchParams.filters || {}}
-        onFilterChange={updateFilters}
-        enableSemanticSearch={enableSemanticSearch}
-        semanticTables={semanticTables}
-        onSemanticResults={handleSemanticResults}
+        onFilterChange={handleFilterChange}
       />
 
       {/* Semantic Results Display */}
@@ -168,7 +169,6 @@ export function UnifiedDataTable<T extends { id: string }>({
           columns={enhancedColumns}
           onRowClick={onRowClick}
           searchable={false}
-          filterable={false}
         />
       </div>
 
