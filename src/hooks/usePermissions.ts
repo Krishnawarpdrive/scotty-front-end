@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth, AppRole } from './useAuth';
+import { useAuth } from './useAuth';
 
 export interface Permission {
   id: string;

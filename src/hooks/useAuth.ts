@@ -51,7 +51,7 @@ export function useAuth() {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (_, session) => {
         setUser(session?.user ?? null);
         if (session?.user) {
           fetchUserData(session.user.id);
@@ -78,9 +78,10 @@ export function useAuth() {
       if (profileError && profileError.code !== 'PGRST116') {
         console.error('Error fetching profile:', profileError);
       } else {
-        // Handle preferences type conversion
+        // Handle preferences type conversion and ensure timezone is never null
         const processedProfile = profileData ? {
           ...profileData,
+          timezone: profileData.timezone || 'UTC',
           preferences: typeof profileData.preferences === 'string' 
             ? JSON.parse(profileData.preferences) 
             : (profileData.preferences || {})
