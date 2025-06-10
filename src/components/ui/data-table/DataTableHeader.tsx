@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { TableHead } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Filter, ArrowUp, ArrowDown, X } from "lucide-react";
@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/popover"
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { DataTableColumn } from './types';
 
@@ -41,7 +40,6 @@ export function DataTableHeader<T>({
   filters,
   columnValues,
   selectedFilterValues,
-  handleFilterChange,
   toggleFilterValue,
   clearFilter,
 }: DataTableHeaderProps<T>) {
@@ -68,6 +66,7 @@ export function DataTableHeader<T>({
       )}
       onMouseEnter={() => column.enableFiltering && setHoveredColumn(column.id)}
       onMouseLeave={() => column.enableFiltering && setHoveredColumn(null)}
+      style={{ width: column.width }}
     >
       <div className="flex items-center justify-between min-w-0">
         <span className="text-[12px] text-[#262626] hover:text-green-600 transition-colors truncate">

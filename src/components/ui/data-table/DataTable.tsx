@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { DataTableHeader } from './DataTableHeader';
 import { DataTableRow } from './DataTableRow';
 import { useDataTableFilters } from './useDataTableFilters';
@@ -20,17 +20,22 @@ export function DataTable<T>({
   actions,
 }: DataTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeColumnFilter, setActiveColumnFilter] = useState<string | null>(null);
+  const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
   
   const {
-    filters: activeFilters,
+    filters: columnFilters,
     selectedFilterValues,
-    clearFilters,
-  } = useDataTableFilters(filters);
+    handleFilterChange,
+    toggleFilterValue,
+    clearFilter,
+    filteredData: dataFilteredByFilters
+  } = useDataTableFilters(data, columns);
 
   const { sortConfig, handleSort } = useDataTableSort<T>();
 
-  // Apply filtering
-  let filteredData = filterData(data, searchTerm, columns);
+  // Apply search filtering
+  let filteredData = filterData(dataFilteredByFilters, searchTerm, columns);
   
   // Apply sorting
   if (sortConfig && sortConfig.key) {
@@ -47,16 +52,22 @@ export function DataTable<T>({
 
   return (
     <div className="w-full">
-      <DataTableHeader
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        searchable={searchable}
-        filterable={filterable}
-        filters={activeFilters}
-        selectedFilterValues={selectedFilterValues}
-        onClearFilters={clearFilters}
-        actions={actions}
-      />
+      {(searchable || actions) && (
+        <div className="flex items-center justify-between mb-4">
+          {searchable && (
+            <div className="flex-1 max-w-sm">
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
+            </div>
+          )}
+          {actions && <div>{actions}</div>}
+        </div>
+      )}
       
       <div className="rounded-md border">
         <div className="overflow-x-auto">
@@ -64,35 +75,22 @@ export function DataTable<T>({
             <thead>
               <tr className="border-b bg-muted/50">
                 {columns.map((column) => (
-                  <th
+                  <DataTableHeader
                     key={column.id}
-                    className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0"
-                    style={{ width: column.width }}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <span>{column.header}</span>
-                      {sortable && column.sortable && (
-                        <button
-                          onClick={() => {
-                            if (sortConfig?.key === column.accessorKey) {
-                              handleSort({
-                                key: column.accessorKey,
-                                direction: sortConfig.direction === 'asc' ? 'desc' : 'asc'
-                              });
-                            } else {
-                              handleSort({
-                                key: column.accessorKey,
-                                direction: 'asc'
-                              });
-                            }
-                          }}
-                          className="ml-2 h-4 w-4"
-                        >
-                          ↕
-                        </button>
-                      )}
-                    </div>
-                  </th>
+                    column={column}
+                    sortConfig={sortConfig}
+                    handleSort={handleSort}
+                    activeColumnFilter={activeColumnFilter}
+                    setActiveColumnFilter={setActiveColumnFilter}
+                    hoveredColumn={hoveredColumn}
+                    setHoveredColumn={setHoveredColumn}
+                    filters={columnFilters}
+                    columnValues={new Set()}
+                    selectedFilterValues={selectedFilterValues[column.id] || []}
+                    handleFilterChange={handleFilterChange}
+                    toggleFilterValue={toggleFilterValue}
+                    clearFilter={clearFilter}
+                  />
                 ))}
               </tr>
             </thead>
