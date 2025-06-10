@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Search, Filter, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -30,9 +31,6 @@ export interface SearchFilterProps {
   filters?: FilterOption[];
   activeFilters?: Record<string, any>;
   onFilterChange?: (key: string, value: any) => void;
-  enableSemanticSearch?: boolean;
-  semanticTables?: string[];
-  onSemanticResults?: (results: any[]) => void;
 }
 
 export const SearchFilter: React.FC<SearchFilterProps> = ({
@@ -41,10 +39,7 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
   onSearchChange,
   filters = [],
   activeFilters = {},
-  onFilterChange,
-  enableSemanticSearch = false,
-  semanticTables = [],
-  onSemanticResults
+  onFilterChange
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 

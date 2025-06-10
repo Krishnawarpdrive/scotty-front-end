@@ -39,7 +39,7 @@ export const DraggableItem: React.FC<DraggableItemProps> = ({
     }),
   });
   
-  const [, drop] = useDrop({
+  const [, drop] = useDrop<DragItem>({
     accept: 'CHECKLIST_ITEM',
     hover(item: DragItem, monitor: DropTargetMonitor) {
       if (!ref.current) {
