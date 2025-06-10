@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { ChecklistTypeFields } from './form/ChecklistTypeFields';
 import { ChecklistItemsSection } from './form/ChecklistItemsSection';
 import { useChecklistItems } from '../hooks/useChecklistItems';
 
@@ -29,7 +27,7 @@ const ChecklistCreationDrawer: React.FC<ChecklistCreationDrawerProps> = ({
     subdomain: undefined
   });
 
-  const { items, addItem, removeItem, updateItem } = useChecklistItems();
+  const { items, addItem, removeItem, updateItemText } = useChecklistItems();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,13 +75,11 @@ const ChecklistCreationDrawer: React.FC<ChecklistCreationDrawerProps> = ({
             </Select>
           </div>
 
-          <ChecklistTypeFields type={formData.type} />
-
           <ChecklistItemsSection 
             items={items}
             onAddItem={addItem}
             onRemoveItem={removeItem}
-            onUpdateItem={updateItem}
+            onUpdateItem={updateItemText}
           />
 
           <div className="flex justify-end space-x-2 pt-4">

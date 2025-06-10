@@ -2,29 +2,29 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ClientDetailError } from './components/ClientDetailError';
-import { ClientDetailLoading } from './components/ClientDetailLoading';
-import { ClientBackHeader } from './components/ClientBackHeader';
-import { CompactClientHeader } from './components/client-detail/profile-header/CompactClientHeader';
-import { ClientOverviewTab } from './components/client-detail/ClientOverviewTab';
-import { ClientRolesTab } from './components/client-detail/ClientRolesTab';
-import { ClientRequirementsTab } from './components/client-detail/ClientRequirementsTab';
-import { ClientActivityTab } from './components/client-detail/ClientActivityTab';
-import { ClientAgreementsTab } from './components/client-detail/ClientAgreementsTab';
+import ClientDetailError from './components/ClientDetailError';
+import ClientDetailLoading from './components/ClientDetailLoading';
+import ClientBackHeader from './components/ClientBackHeader';
+import CompactClientHeader from './components/client-detail/profile-header/CompactClientHeader';
+import ClientOverviewTab from './components/client-detail/ClientOverviewTab';
+import ClientRolesTab from './components/client-detail/ClientRolesTab';
+import ClientRequirementsTab from './components/client-detail/ClientRequirementsTab';
+import ClientActivityTab from './components/client-detail/ClientActivityTab';
+import ClientAgreementsTab from './components/client-detail/ClientAgreementsTab';
 import { useClientDetail } from './hooks/useClientDetail';
 
 const ClientDetailsPage = () => {
   const { clientId } = useParams<{ clientId: string }>();
   const [activeTab, setActiveTab] = useState('overview');
   
-  const { client, isLoading, error } = useClientDetail(clientId || '');
+  const { client, loading, error } = useClientDetail(clientId || '');
 
   const handleCreateRole = () => {
     console.log('Create role clicked');
   };
 
-  if (isLoading) return <ClientDetailLoading />;
-  if (error || !client) return <ClientDetailError />;
+  if (loading) return <ClientDetailLoading />;
+  if (error || !client) return <ClientDetailError error={error} />;
 
   return (
     <div className="min-h-screen bg-background">
