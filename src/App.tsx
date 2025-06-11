@@ -1,4 +1,3 @@
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -45,6 +44,7 @@ import InterviewerDashboardPage from './pages/ams/interviewer/InterviewerDashboa
 import CandidateDashboardPage from './pages/ams/candidate/CandidateDashboardPage';
 import VendorDetailPage from './pages/ams/vendors/VendorDetailPage';
 import MyInterviewsPage from './pages/ams/interviewer/MyInterviewsPage';
+import VendorManagementPage from './pages/ams/VendorManagementPage';
 
 const queryClient = new QueryClient();
 
@@ -82,6 +82,7 @@ function App() {
                         <Route path="/ams/skills/library" element={<SkillsPage />} />
                         <Route path="/ams/vendors" element={<VendorsPage />} />
                         <Route path="/ams/vendors/:vendorId" element={<VendorDetailPage />} />
+                        <Route path="/ams/vendor-management" element={<VendorManagementPage />} />
                         <Route path="/ams/talent-acquisition" element={<TalentAcquisitionPage />} />
                         <Route path="/ams/ta/management" element={<TAManagementPage />} />
                         <Route path="/ams/ta/mission-control" element={<TalentAcquisitionPage />} />

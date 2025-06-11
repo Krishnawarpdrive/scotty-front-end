@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth, AppRole } from './useAuth';
+import { useAuth } from './useAuth';
 
 export interface Permission {
   id: string;
@@ -27,6 +27,15 @@ export function usePermissions() {
 
   const fetchPermissions = async () => {
     try {
+      // Convert roles to the database enum format
+      const dbRoles = roles.map(role => {
+        // Map 'admin' to 'hr' for database compatibility
+        if (role === 'admin') return 'hr';
+        return role;
+      }).filter(role => 
+        ['hr', 'ta', 'candidate', 'vendor', 'interviewer', 'client-hr', 'bo'].includes(role)
+      );
+
       const { data, error } = await supabase
         .from('role_permissions')
         .select(`
@@ -40,7 +49,7 @@ export function usePermissions() {
             created_at
           )
         `)
-        .in('role', roles);
+        .in('role', dbRoles);
 
       if (error) {
         console.error('Error fetching permissions:', error);
