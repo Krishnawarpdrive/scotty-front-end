@@ -4,8 +4,6 @@ import {
   Tabs as MuiTabs,
   Tab as MuiTab,
   TabsProps as MuiTabsProps,
-  TabProps as MuiTabProps,
-  Box,
 } from '@mui/material';
 import { cn } from '@/lib/utils';
 
@@ -20,7 +18,6 @@ export interface TabsListProps {
   children: React.ReactNode;
 }
 
-// Fix the interface to avoid conflicts with Material-UI's TabProps
 export interface TabsTriggerProps {
   className?: string;
   value: string;
@@ -35,10 +32,10 @@ export interface TabsContentProps {
 }
 
 export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
-  ({ className, defaultValue, onValueChange, children, ...props }, ref) => {
+  ({ className, defaultValue, onValueChange, children, ...rest }, ref) => {
     const [value, setValue] = React.useState(defaultValue || '');
 
-    const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    const handleChange = (_: React.SyntheticEvent, newValue: string) => {
       setValue(newValue);
       if (onValueChange) {
         onValueChange(newValue);
@@ -59,12 +56,12 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
 );
 
 export const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
-  ({ className, children, ...props }, ref) => {
+  ({ className, children, ...rest }, ref) => {
     return (
       <MuiTabs
         ref={ref as any}
         className={cn('inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground', className)}
-        {...props}
+        {...rest}
       >
         {children}
       </MuiTabs>
@@ -73,7 +70,7 @@ export const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
 );
 
 export const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
-  ({ className, value, children, disabled, ...props }, ref) => {
+  ({ className, value, children, disabled, ...rest }, ref) => {
     return (
       <MuiTab
         ref={ref as any}
@@ -84,14 +81,14 @@ export const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>
           'inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm',
           className
         )}
-        {...props}
+        {...rest}
       />
     );
   }
 );
 
 export const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
-  ({ className, value, children, ...props }, ref) => {
+  ({ className, value, children, ...rest }, ref) => {
     return (
       <div
         ref={ref}
@@ -100,7 +97,7 @@ export const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
           'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           className
         )}
-        {...props}
+        {...rest}
       >
         {children}
       </div>

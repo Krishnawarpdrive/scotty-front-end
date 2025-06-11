@@ -12,6 +12,9 @@ export interface Permission {
   created_at: string;
 }
 
+// Database role types
+type DatabaseRole = 'hr' | 'candidate' | 'interviewer' | 'ta' | 'vendor' | 'client-hr' | 'bo';
+
 export function usePermissions() {
   const { user, roles, loading: authLoading } = useAuth();
   const [permissions, setPermissions] = useState<Permission[]>([]);
@@ -27,16 +30,18 @@ export function usePermissions() {
 
   const fetchPermissions = async () => {
     try {
-      // Filter roles to only include those that exist in the database schema
       // Map AppRole types to database role types
-      const validRoles = roles
+      const validRoles: DatabaseRole[] = roles
         .map(role => {
-          // Map admin to hr for database compatibility
+          // Map AppRole to DatabaseRole
           if (role === 'admin') return 'hr';
-          return role;
+          if (role === 'user') return null; // Skip user role
+          if (role === 'manager') return 'hr';
+          if (role === 'executive') return 'hr';
+          return role as DatabaseRole;
         })
-        .filter(role => 
-          ['hr', 'candidate', 'interviewer', 'ta', 'vendor', 'client-hr', 'bo'].includes(role)
+        .filter((role): role is DatabaseRole => 
+          role !== null && ['hr', 'candidate', 'interviewer', 'ta', 'vendor', 'client-hr', 'bo'].includes(role)
         );
 
       if (validRoles.length === 0) {
