@@ -1,147 +1,111 @@
 
-import { useState } from 'react';
-import ClientsPageContent from './clients/components/ClientsPageContent';
+import React, { useState } from 'react';
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { useClients } from './clients/hooks/useClients';
+import { useClientSelection } from './clients/hooks/useClientSelection';
+import { useClientSearch } from './clients/hooks/useClientSearch';
 import ClientsPageHeader from './clients/components/ClientsPageHeader';
+import ClientsPageContent from './clients/components/ClientsPageContent';
 import ClientDetailDrawer from './clients/components/ClientDetailDrawer';
 import ClientAccountDrawer from './clients/components/ClientAccountDrawer';
-import { UnifiedClient } from '@/data/unified-types';
 import { Client } from './clients/types/ClientTypes';
 
-const mockClients: UnifiedClient[] = [
-  {
-    id: '1',
-    name: 'Acme Corp',
-    email: 'info@acme.com',
-    contact: 'John Doe',
-    account_type: 'Enterprise',
-    client_tier: 'Premium',
-    status: 'Active',
-    hiring_status: 'Active',
-    assigned_hr: 'Jane Smith',
-    total_requirements: 10,
-    budget_utilized: 500000,
-    health_score: 90,
-    last_activity_date: '2024-01-20',
-    notes: 'Strategic client',
-    created_at: '2023-01-01',
-    updated_at: '2024-01-20',
-  },
-  {
-    id: '2',
-    name: 'Beta Industries',
-    email: 'contact@beta.com',
-    contact: 'Alice Johnson',
-    account_type: 'SMB',
-    client_tier: 'Standard',
-    status: 'Active',
-    hiring_status: 'Inactive',
-    assigned_hr: 'Bob Williams',
-    total_requirements: 5,
-    budget_utilized: 200000,
-    health_score: 75,
-    last_activity_date: '2024-01-15',
-    notes: '',
-    created_at: '2023-02-15',
-    updated_at: '2024-01-15',
-  },
-];
-
-// Convert UnifiedClient to Client format
-const convertToClient = (unifiedClient: UnifiedClient): Client => ({
-  id: unifiedClient.id,
-  name: unifiedClient.name,
-  contact: unifiedClient.contact || '',
-  email: unifiedClient.email || '',
-  status: unifiedClient.status,
-  accountType: unifiedClient.account_type || '',
-  createdOn: unifiedClient.created_at,
-  lastActivity: { 
-    days: Math.floor((new Date().getTime() - new Date(unifiedClient.last_activity_date).getTime()) / (1000 * 3600 * 24)),
-    active: unifiedClient.status === 'Active'
-  },
-  roles: [], // Will be populated from relationships
-  totalRequirements: unifiedClient.total_requirements,
-  assignedHR: unifiedClient.assigned_hr || '',
-  hiringStatus: unifiedClient.hiring_status,
-  clientTier: unifiedClient.client_tier || '',
-  healthScore: unifiedClient.health_score || 0,
-  budgetUtilized: unifiedClient.budget_utilized,
-  notes: unifiedClient.notes
-});
-
 const ClientsPage = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showAccountDrawer, setShowAccountDrawer] = useState(false);
-  const [showDetailDrawer, setShowDetailDrawer] = useState(false);
-  const [detailClient, setDetailClient] = useState<UnifiedClient | null>(null);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const { clients, isLoading, deleteClient } = useClients();
+  const { 
+    selectedClients, 
+    selectedClient, 
+    isDetailsOpen, 
+    setIsDetailsOpen,
+    handleViewClientDetails,
+    handleSelectClient,
+    handleSelectAll,
+    setSelectedClient
+  } = useClientSelection(clients);
+  
+  const {
+    searchTerm,
+    setSearchTerm,
+    filteredClients,
+    showFilterPanel,
+    toggleFilterPanel
+  } = useClientSearch(clients);
 
-  const filteredClients = mockClients.filter(client => {
-    const searchRegex = new RegExp(searchTerm, 'i');
-    const nameMatch = searchRegex.test(client.name);
-    const emailMatch = searchRegex.test(client.email || '');
-    const contactMatch = searchRegex.test(client.contact || '');
-
-    return nameMatch || emailMatch || contactMatch;
-  }).sort((a, b) => a.name.localeCompare(b.name));
-
-  // Convert to Client format for the table
-  const convertedClients = filteredClients.map(convertToClient);
-
-  const handleClientClick = (client: Client) => {
-    // Find the original UnifiedClient
-    const unifiedClient = mockClients.find(c => c.id === client.id);
-    if (unifiedClient) {
-      setDetailClient(unifiedClient);
-      setShowDetailDrawer(true);
-    }
-  };
-
-  const handleViewAccount = (client: Client) => {
-    // Find the original UnifiedClient
-    const unifiedClient = mockClients.find(c => c.id === client.id);
-    if (unifiedClient) {
-      setDetailClient(unifiedClient);
-      setShowAccountDrawer(true);
-    }
-  };
+  const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false);
 
   const handleCreateClient = () => {
-    setDetailClient(null);
-    setShowAccountDrawer(true);
+    setIsAccountDrawerOpen(true);
+  };
+
+  const handleEditClient = (client: Client) => {
+    toast({
+      title: "Not implemented",
+      description: "This feature is not implemented yet.",
+    });
+  };
+
+  // Handle search change - now expects a string directly
+  const handleSearchChange = (query: string) => {
+    setSearchTerm(query);
+  };
+
+  // Add a sort handler function
+  const handleSort = (column: string, direction: 'asc' | 'desc') => {
+    console.log(`Sorting by ${column} in ${direction} order`);
+    // Implement sorting logic if needed
+  };
+
+  // Handle client creation success
+  const handleClientCreated = (newClient: Client) => {
+    toast({
+      title: "Awesome!",
+      description: `Client ${newClient.name} has been created successfully.`,
+    });
+    
+    // Option to navigate to client details page
+    navigate(`/ams/clients/${newClient.id}`);
+  };
+
+  // Fix the client selection handler to match expected signature
+  const handleClientSelect = (clientId: string) => {
+    const client = clients.find(c => c.id === clientId);
+    if (client) {
+      handleSelectClient(client);
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <ClientsPageHeader
-        onCreateClient={handleCreateClient}
-      />
+    <div className="space-y-4">
+      <ClientsPageHeader onCreateClient={handleCreateClient} />
 
-      <ClientsPageContent
-        filteredClients={convertedClients}
-        isLoading={false}
+      <ClientsPageContent 
+        filteredClients={filteredClients}
+        isLoading={isLoading}
         searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        selectedClients={[]}
-        toggleFilterPanel={() => {}}
-        onEditClient={handleViewAccount}
-        onDeleteClient={() => {}}
-        onViewClientDetails={handleClientClick}
-        onSelectClient={() => {}}
-        onSelectAll={() => {}}
-        onSort={() => {}}
+        onSearchChange={handleSearchChange}
+        selectedClients={selectedClients}
+        toggleFilterPanel={toggleFilterPanel}
+        onEditClient={handleEditClient}
+        onDeleteClient={deleteClient}
+        onViewClientDetails={handleViewClientDetails}
+        onSelectClient={handleClientSelect}
+        onSelectAll={handleSelectAll}
+        onSort={handleSort}
       />
 
       <ClientDetailDrawer
-        open={showDetailDrawer}
-        onOpenChange={setShowDetailDrawer}
-        client={detailClient}
+        client={selectedClient}
+        open={isDetailsOpen}
+        onOpenChange={() => setIsDetailsOpen(false)}
       />
 
       <ClientAccountDrawer
-        open={showAccountDrawer}
-        onOpenChange={setShowAccountDrawer}
-        client={detailClient}
-        onClose={() => setShowAccountDrawer(false)}
+        open={isAccountDrawerOpen}
+        onOpenChange={setIsAccountDrawerOpen}
+        onClientCreated={handleClientCreated}
       />
     </div>
   );

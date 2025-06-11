@@ -33,7 +33,7 @@ export const usePromiseHandler = (
           // Only spread if it's an object
           successOptions = { 
             type: 'success' as const,
-            ...(typeof options.success === 'object' && options.success !== null ? options.success : { title: 'Success' })
+            ...(typeof options.success === 'object' && options.success !== null ? options.success : {})
           };
         }
 
@@ -55,7 +55,7 @@ export const usePromiseHandler = (
           // Only spread if it's an object
           errorOptions = { 
             type: 'error' as const,
-            ...(typeof options.error === 'object' && options.error !== null ? options.error : { title: 'Error' })
+            ...(typeof options.error === 'object' && options.error !== null ? options.error : {})
           };
         }
 

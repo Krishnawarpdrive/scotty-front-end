@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -30,7 +30,7 @@ import { useCandidateApplicationDetails } from './hooks/useCandidateApplicationD
 import { CandidateCompanyProgressDrawer } from './components/CandidateCompanyProgressDrawer';
 import { SmartActionCenter } from '@/components/smart-action-center/SmartActionCenter';
 
-export const CandidateDashboardPage = () => {
+const CandidateDashboardPage: React.FC = () => {
   const [selectedCandidateId] = useState('123e4567-e89b-12d3-a456-426614174000');
   const [showRightDrawer, setShowRightDrawer] = useState(false);
   const [showStageDrawer, setShowStageDrawer] = useState(false);
@@ -40,9 +40,7 @@ export const CandidateDashboardPage = () => {
   const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null);
   const [selectedStage, setSelectedStage] = useState(null);
   const [activeMainTab, setActiveMainTab] = useState('applications');
-  const [selectedApplication, setSelectedApplication] = useState<CandidateApplication | null>(null);
-  const [selectedOnboarding, setSelectedOnboarding] = useState<OnboardingProgram | null>(null);
-
+  
   const { dashboardData, notifications, messages, isLoading } = useCandidateDashboardData(selectedCandidateId);
   const { applicationDetails, isLoading: applicationLoading, submitInterviewReview } = useCandidateApplicationDetails(selectedApplicationId);
 
@@ -334,17 +332,6 @@ export const CandidateDashboardPage = () => {
   const handleBackFromDetailPage = () => {
     setShowApplicationDetailPage(false);
     setSelectedApplicationId(null);
-  };
-
-  const handleViewApplication = (applicationId: string) => {
-    const application = mockApplications.find(app => app.id === applicationId);
-    if (application) {
-      setSelectedApplication(application);
-    }
-  };
-
-  const handleStartOnboarding = (program: OnboardingProgram) => {
-    setSelectedOnboarding(program);
   };
 
   const urgentActionsCount = mockPendingActions.filter(a => a.type === 'urgent' || a.type === 'overdue').length;

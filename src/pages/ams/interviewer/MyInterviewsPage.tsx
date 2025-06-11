@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useKeyboardShortcuts } from '@/contexts/KeyboardShortcutsContext';
 import { PageHeader } from '@/design-system/components/PageHeader/PageHeader';
@@ -27,12 +26,6 @@ export interface Interview {
   notes?: string;
   feedback?: string;
   rating?: number;
-  // Additional fields for drawer components
-  role: string;
-  client: string;
-  date: string;
-  time: string;
-  type: string;
 }
 
 const MyInterviewsPage: React.FC = () => {
@@ -53,20 +46,7 @@ const MyInterviewsPage: React.FC = () => {
   }, [setCurrentScope]);
 
   const handleInterviewClick = (interview: Interview) => {
-    // Transform the interview data to match expected format
-    const transformedInterview: Interview = {
-      ...interview,
-      role: interview.roleName,
-      client: interview.clientName,
-      date: interview.scheduledDate,
-      time: new Date(interview.scheduledDate).toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      }),
-      type: interview.interviewType
-    };
-    
-    setSelectedInterview(transformedInterview);
+    setSelectedInterview(interview);
     setIsDetailOpen(true);
   };
 

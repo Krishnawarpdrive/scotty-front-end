@@ -7,7 +7,11 @@ import {
   Clock, 
   AlertTriangle, 
   Star, 
-  Calendar
+  Calendar,
+  UserPlus,
+  FileText,
+  MessageSquare,
+  TrendingUp
 } from 'lucide-react';
 import { PendingTask, SmartNotification, SmartAction } from '@/services/SmartActionContextService';
 import { cn } from '@/lib/utils';

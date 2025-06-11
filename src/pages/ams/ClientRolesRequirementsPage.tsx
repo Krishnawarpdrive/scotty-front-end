@@ -1,323 +1,551 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Search, Filter, MoreHorizontal, Edit, Eye, Trash2, Users } from 'lucide-react';
-import { DataTable } from '@/components/ui/data-table';
-import type { DataTableColumn } from '@/components/ui/data-table/types';
+import { Progress } from '@/components/ui/progress';
+import { DataTable } from '@/components/ui/data-table/DataTable';
+import { SideDrawer } from '@/components/ui/side-drawer';
+import { 
+  Search, 
+  Calendar, 
+  Users, 
+  CheckCircle, 
+  Clock, 
+  Filter,
+  Star,
+  MessageSquare,
+  Phone,
+  Video,
+  MapPin
+} from 'lucide-react';
+
+// Mock data types
+interface Candidate {
+  id: string;
+  name: string;
+  status: 'Offered' | 'Interview Scheduled';
+  experience: string;
+  skills: string[];
+  interviewFeedback: {
+    date: string;
+    rating: number;
+    comments: string;
+    interviewer: string;
+  }[];
+  scheduledInterviews: {
+    date: string;
+    time: string;
+    mode: 'phone' | 'video' | 'in-person';
+    panelists: string[];
+  }[];
+  offerDetails?: {
+    status: string;
+    date: string;
+    compensation: string;
+  };
+  notes: string;
+}
 
 interface Requirement {
   id: string;
-  name: string;
-  client: string;
-  status: 'Open' | 'In Progress' | 'Closed' | 'On Hold';
-  priority: 'Low' | 'Medium' | 'High' | 'Critical';
-  vacancies: number;
-  filled: number;
-  dueDate: string;
-  assignedTo: string;
-  budget: string;
-  lastUpdated: string;
+  requirementId: string;
+  roleName: string;
+  status: 'Open' | 'Closed' | 'On Hold';
+  offeredCandidatesCount: number;
+  scheduledInterviewsCount: number;
+  candidates: Candidate[];
+  hiringProgress: number;
+  targetCompletionDate: string;
+  notes: string;
 }
 
-// Mock data for requirements
+// Mock data
 const mockRequirements: Requirement[] = [
   {
-    id: 'REQ-001',
-    name: 'Senior Frontend Developer',
-    client: 'TechCorp Inc',
+    id: '1',
+    requirementId: 'REQ-2024-001',
+    roleName: 'Senior Software Engineer',
     status: 'Open',
-    priority: 'High',
-    vacancies: 3,
-    filled: 1,
-    dueDate: '2024-02-15',
-    assignedTo: 'John Smith',
-    budget: '$80,000 - $120,000',
-    lastUpdated: '2024-01-10'
+    offeredCandidatesCount: 2,
+    scheduledInterviewsCount: 3,
+    candidates: [
+      {
+        id: 'c1',
+        name: 'John Smith',
+        status: 'Offered',
+        experience: '5+ years',
+        skills: ['React', 'Node.js', 'TypeScript'],
+        interviewFeedback: [
+          {
+            date: '2024-01-15',
+            rating: 4.5,
+            comments: 'Strong technical skills, good communication',
+            interviewer: 'Sarah Johnson'
+          }
+        ],
+        scheduledInterviews: [],
+        offerDetails: {
+          status: 'Pending Response',
+          date: '2024-01-18',
+          compensation: '$120k - $140k'
+        },
+        notes: 'Excellent candidate, quick response expected'
+      },
+      {
+        id: 'c2',
+        name: 'Emily Davis',
+        status: 'Interview Scheduled',
+        experience: '6+ years',
+        skills: ['Java', 'Spring', 'AWS'],
+        interviewFeedback: [
+          {
+            date: '2024-01-10',
+            rating: 4.2,
+            comments: 'Good technical background, needs system design assessment',
+            interviewer: 'Mike Chen'
+          }
+        ],
+        scheduledInterviews: [
+          {
+            date: '2024-01-25',
+            time: '10:00 AM',
+            mode: 'video',
+            panelists: ['Tech Lead - Alex Wilson', 'HR - Lisa Rodriguez']
+          }
+        ],
+        notes: 'Final round candidate'
+      }
+    ],
+    hiringProgress: 75,
+    targetCompletionDate: '2024-02-15',
+    notes: 'Priority role for Q1 expansion'
   },
   {
-    id: 'REQ-002',
-    name: 'DevOps Engineer',
-    client: 'StartupXYZ',
-    status: 'In Progress',
-    priority: 'Medium',
-    vacancies: 2,
-    filled: 0,
-    dueDate: '2024-02-28',
-    assignedTo: 'Sarah Johnson',
-    budget: '$70,000 - $100,000',
-    lastUpdated: '2024-01-08'
-  },
-  {
-    id: 'REQ-003',
-    name: 'Data Scientist',
-    client: 'DataDriven Co',
+    id: '2',
+    requirementId: 'REQ-2024-002',
+    roleName: 'Product Manager',
     status: 'Open',
-    priority: 'Critical',
-    vacancies: 1,
-    filled: 0,
-    dueDate: '2024-01-30',
-    assignedTo: 'Mike Wilson',
-    budget: '$90,000 - $130,000',
-    lastUpdated: '2024-01-12'
+    offeredCandidatesCount: 1,
+    scheduledInterviewsCount: 2,
+    candidates: [
+      {
+        id: 'c3',
+        name: 'Michael Johnson',
+        status: 'Offered',
+        experience: '4+ years',
+        skills: ['Product Strategy', 'Analytics', 'Agile'],
+        interviewFeedback: [
+          {
+            date: '2024-01-12',
+            rating: 4.8,
+            comments: 'Exceptional product thinking, strong leadership',
+            interviewer: 'David Park'
+          }
+        ],
+        scheduledInterviews: [],
+        offerDetails: {
+          status: 'Accepted',
+          date: '2024-01-16',
+          compensation: '$110k - $130k'
+        },
+        notes: 'Start date: Feb 1st'
+      }
+    ],
+    hiringProgress: 90,
+    targetCompletionDate: '2024-01-30',
+    notes: 'Near completion, one more backup candidate needed'
   }
 ];
 
-const StatusBadge: React.FC<{ status: Requirement['status'] }> = ({ status }) => {
-  const variants = {
-    'Open': 'bg-green-100 text-green-800 border-green-200',
-    'In Progress': 'bg-blue-100 text-blue-800 border-blue-200',
-    'Closed': 'bg-gray-100 text-gray-800 border-gray-200',
-    'On Hold': 'bg-yellow-100 text-yellow-800 border-yellow-200'
-  };
-
-  return (
-    <Badge variant="outline" className={variants[status]}>
-      {status}
-    </Badge>
-  );
-};
-
-const PriorityBadge: React.FC<{ priority: Requirement['priority'] }> = ({ priority }) => {
-  const variants = {
-    'Low': 'bg-gray-100 text-gray-800 border-gray-200',
-    'Medium': 'bg-blue-100 text-blue-800 border-blue-200',
-    'High': 'bg-orange-100 text-orange-800 border-orange-200',
-    'Critical': 'bg-red-100 text-red-800 border-red-200'
-  };
-
-  return (
-    <Badge variant="outline" className={variants[priority]}>
-      {priority}
-    </Badge>
-  );
-};
-
 const ClientRolesRequirementsPage: React.FC = () => {
-  const [requirements] = useState<Requirement[]>(mockRequirements);
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
-  const filteredRequirements = requirements.filter(req => {
-    const matchesSearch = req.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         req.client.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = selectedStatus === 'all' || req.status === selectedStatus;
-    return matchesSearch && matchesStatus;
-  });
+  const handleCandidateClick = (candidate: Candidate) => {
+    setSelectedCandidate(candidate);
+  };
 
-  const handleView = useCallback((requirement: Requirement) => {
-    console.log('View requirement:', requirement);
-  }, []);
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case 'Open': return 'bg-green-100 text-green-800';
+      case 'Closed': return 'bg-gray-100 text-gray-800';
+      case 'On Hold': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
-  const handleEdit = useCallback((requirement: Requirement) => {
-    console.log('Edit requirement:', requirement);
-  }, []);
+  const getCandidateStatusColor = (status: string) => {
+    switch (status) {
+      case 'Offered': return 'bg-purple-100 text-purple-800';
+      case 'Interview Scheduled': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
-  const handleDelete = useCallback((requirement: Requirement) => {
-    console.log('Delete requirement:', requirement);
-  }, []);
-
-  const columns: DataTableColumn<Requirement>[] = [
+  const columns = [
     {
-      id: 'name',
-      accessorKey: 'name',
-      header: 'Requirement Name',
+      id: 'roleName',
+      header: 'Role Name',
       enableSorting: true,
       enableFiltering: true,
-      cell: (requirement) => (
-        <div className="flex flex-col">
-          <span className="font-medium text-gray-900">{requirement.name}</span>
-          <span className="text-sm text-gray-500">{requirement.id}</span>
-        </div>
+      cell: (requirement: Requirement) => (
+        <div className="font-medium text-gray-900">{requirement.roleName}</div>
       )
     },
     {
-      id: 'client',
-      accessorKey: 'client',
-      header: 'Client',
+      id: 'requirementId',
+      header: 'Requirement ID',
       enableSorting: true,
-      cell: (requirement) => (
-        <span className="text-gray-900">{requirement.client}</span>
+      enableFiltering: true,
+      cell: (requirement: Requirement) => (
+        <div className="text-sm text-gray-600">{requirement.requirementId}</div>
       )
     },
     {
       id: 'status',
-      accessorKey: 'status',
       header: 'Status',
       enableSorting: true,
-      cell: (requirement) => (
-        <StatusBadge status={requirement.status} />
+      enableFiltering: true,
+      cell: (requirement: Requirement) => (
+        <Badge className={getStatusBadgeColor(requirement.status)}>
+          {requirement.status}
+        </Badge>
       )
     },
     {
-      id: 'priority',
-      accessorKey: 'priority',
-      header: 'Priority',
+      id: 'offeredCandidates',
+      header: 'Offered Candidates',
       enableSorting: true,
-      cell: (requirement) => (
-        <PriorityBadge priority={requirement.priority} />
-      )
-    },
-    {
-      id: 'progress',
-      accessorKey: 'filled',
-      header: 'Progress',
-      cell: (requirement) => (
-        <div className="flex items-center space-x-2">
-          <div className="flex items-center space-x-1">
-            <Users className="h-4 w-4 text-gray-400" />
-            <span className="text-sm">
-              {requirement.filled}/{requirement.vacancies}
-            </span>
-          </div>
-          <div className="w-20 bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-              style={{
-                width: `${(requirement.filled / requirement.vacancies) * 100}%`
-              }}
-            />
-          </div>
+      cell: (requirement: Requirement) => (
+        <div className="flex items-center gap-2">
+          <CheckCircle className="h-4 w-4 text-green-600" />
+          <span className="font-medium">{requirement.offeredCandidatesCount}</span>
         </div>
       )
     },
     {
-      id: 'dueDate',
-      accessorKey: 'dueDate',
-      header: 'Due Date',
+      id: 'scheduledInterviews',
+      header: 'Scheduled Interviews',
       enableSorting: true,
-      cell: (requirement) => (
-        <span className="text-gray-700">
-          {new Date(requirement.dueDate).toLocaleDateString()}
-        </span>
+      cell: (requirement: Requirement) => (
+        <div className="flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-blue-600" />
+          <span className="font-medium">{requirement.scheduledInterviewsCount}</span>
+        </div>
       )
     },
     {
-      id: 'assignedTo',
-      accessorKey: 'assignedTo',
-      header: 'Assigned To',
-      cell: (requirement) => (
-        <span className="text-gray-700">{requirement.assignedTo}</span>
+      id: 'candidates',
+      header: 'Candidates',
+      cell: (requirement: Requirement) => (
+        <div className="space-y-1">
+          {requirement.candidates.map((candidate) => (
+            <button
+              key={candidate.id}
+              onClick={() => handleCandidateClick(candidate)}
+              className="flex items-center gap-2 text-left hover:bg-gray-50 p-1 rounded"
+            >
+              <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs">
+                {candidate.name.charAt(0)}
+              </div>
+              <div>
+                <div className="text-sm font-medium text-blue-600 hover:text-blue-800">
+                  {candidate.name}
+                </div>
+                <Badge className={`text-xs ${getCandidateStatusColor(candidate.status)}`}>
+                  {candidate.status}
+                </Badge>
+              </div>
+            </button>
+          ))}
+        </div>
       )
     },
     {
-      id: 'budget',
-      accessorKey: 'budget',
-      header: 'Budget',
-      cell: (requirement) => (
-        <span className="text-gray-700 font-medium">{requirement.budget}</span>
+      id: 'hiringProgress',
+      header: 'Progress',
+      enableSorting: true,
+      cell: (requirement: Requirement) => (
+        <div className="w-24">
+          <Progress value={requirement.hiringProgress} className="h-2" />
+          <div className="text-xs text-gray-600 mt-1">{requirement.hiringProgress}%</div>
+        </div>
       )
     },
     {
-      id: 'actions',
-      accessorKey: 'id',
-      header: 'Actions',
-      cell: (requirement) => (
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleView(requirement)}
-            className="h-8 w-8 p-0"
-          >
-            <Eye className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleEdit(requirement)}
-            className="h-8 w-8 p-0"
-          >
-            <Edit className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleDelete(requirement)}
-            className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-          >
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
+      id: 'targetDate',
+      header: 'Target Date',
+      enableSorting: true,
+      cell: (requirement: Requirement) => (
+        <div className="text-sm text-gray-600">{requirement.targetCompletionDate}</div>
+      )
+    },
+    {
+      id: 'notes',
+      header: 'Notes',
+      cell: (requirement: Requirement) => (
+        <div className="max-w-xs truncate text-sm text-gray-600" title={requirement.notes}>
+          {requirement.notes}
         </div>
       )
     }
   ];
 
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Client Roles & Requirements</h1>
-          <p className="text-gray-600 mt-1">Manage and track all client requirements</p>
-        </div>
-        <Button className="flex items-center space-x-2">
-          <Plus className="h-4 w-4" />
-          <span>New Requirement</span>
-        </Button>
-      </div>
+  const filteredRequirements = mockRequirements.filter(req => {
+    const matchesSearch = req.roleName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         req.requirementId.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || req.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
-      {/* Filters and Search */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Filters & Search</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Roles & Requirements</h1>
+              <p className="text-gray-600">Track your active roles and candidate progress</p>
+            </div>
+            
+            {/* Filters */}
+            <div className="flex flex-wrap gap-3 items-center">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Search requirements or clients..."
+                  placeholder="Search roles or requirements..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-9 w-64"
                 />
               </div>
-            </div>
-            <div className="flex gap-2">
+              
               <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 bg-white"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="border border-gray-300 rounded-md px-3 py-2 text-sm"
               >
                 <option value="all">All Status</option>
                 <option value="Open">Open</option>
-                <option value="In Progress">In Progress</option>
                 <option value="Closed">Closed</option>
                 <option value="On Hold">On Hold</option>
               </select>
-              <Button variant="outline" className="flex items-center space-x-2">
-                <Filter className="h-4 w-4" />
-                <span>More Filters</span>
+              
+              <Button variant="outline" size="sm">
+                <Filter className="h-4 w-4 mr-2" />
+                More Filters
               </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Requirements Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Requirements ({filteredRequirements.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <DataTable
-            data={filteredRequirements}
-            columns={columns}
-            searchable={false} // We handle search externally
-          />
-        </CardContent>
-      </Card>
+      {/* Summary Cards */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6"
+        >
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-blue-600" />
+                <div>
+                  <div className="text-2xl font-bold">{mockRequirements.length}</div>
+                  <p className="text-sm text-gray-600">Active Requirements</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                <div>
+                  <div className="text-2xl font-bold">
+                    {mockRequirements.reduce((sum, req) => sum + req.offeredCandidatesCount, 0)}
+                  </div>
+                  <p className="text-sm text-gray-600">Offered Candidates</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-purple-600" />
+                <div>
+                  <div className="text-2xl font-bold">
+                    {mockRequirements.reduce((sum, req) => sum + req.scheduledInterviewsCount, 0)}
+                  </div>
+                  <p className="text-sm text-gray-600">Scheduled Interviews</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-orange-600" />
+                <div>
+                  <div className="text-2xl font-bold">
+                    {Math.round(mockRequirements.reduce((sum, req) => sum + req.hiringProgress, 0) / mockRequirements.length)}%
+                  </div>
+                  <p className="text-sm text-gray-600">Avg. Progress</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Main Table */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Requirements Overview</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DataTable
+                data={filteredRequirements}
+                columns={columns}
+              />
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+
+      {/* Candidate Detail Side Drawer */}
+      <SideDrawer
+        title="Candidate Details"
+        subtitle={selectedCandidate?.name}
+        open={!!selectedCandidate}
+        onOpenChange={() => setSelectedCandidate(null)}
+        size="lg"
+      >
+        {selectedCandidate && (
+          <div className="p-6 space-y-6">
+            {/* Profile Summary */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-xl font-bold">
+                  {selectedCandidate.name.charAt(0)}
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">{selectedCandidate.name}</h3>
+                  <p className="text-gray-600">{selectedCandidate.experience} experience</p>
+                  <Badge className={getCandidateStatusColor(selectedCandidate.status)}>
+                    {selectedCandidate.status}
+                  </Badge>
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold mb-2">Skills</h4>
+                <div className="flex flex-wrap gap-2">
+                  {selectedCandidate.skills.map((skill, index) => (
+                    <Badge key={index} variant="outline">{skill}</Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Interview Feedback */}
+            <div className="space-y-3">
+              <h4 className="font-semibold flex items-center gap-2">
+                <MessageSquare className="h-4 w-4" />
+                Interview Feedback
+              </h4>
+              <div className="space-y-3">
+                {selectedCandidate.interviewFeedback.map((feedback, index) => (
+                  <div key={index} className="border rounded-lg p-3 bg-gray-50">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">{feedback.interviewer}</span>
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 text-yellow-500" />
+                        <span className="text-sm">{feedback.rating}/5</span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-1">{feedback.comments}</p>
+                    <p className="text-xs text-gray-500">{feedback.date}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Scheduled Interviews */}
+            {selectedCandidate.scheduledInterviews.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="font-semibold flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  Scheduled Interviews
+                </h4>
+                <div className="space-y-3">
+                  {selectedCandidate.scheduledInterviews.map((interview, index) => (
+                    <div key={index} className="border rounded-lg p-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        {interview.mode === 'phone' && <Phone className="h-4 w-4 text-blue-500" />}
+                        {interview.mode === 'video' && <Video className="h-4 w-4 text-green-500" />}
+                        {interview.mode === 'in-person' && <MapPin className="h-4 w-4 text-purple-500" />}
+                        <span className="font-medium">{interview.date} at {interview.time}</span>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">Panelists:</p>
+                        <div className="space-y-1">
+                          {interview.panelists.map((panelist, pIndex) => (
+                            <span key={pIndex} className="text-sm bg-gray-100 px-2 py-1 rounded mr-2">
+                              {panelist}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Offer Details */}
+            {selectedCandidate.offerDetails && (
+              <div className="space-y-3">
+                <h4 className="font-semibold">Offer Details</h4>
+                <div className="border rounded-lg p-3 bg-green-50">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">Status</span>
+                    <Badge className="bg-green-100 text-green-800">
+                      {selectedCandidate.offerDetails.status}
+                    </Badge>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <p><span className="font-medium">Date:</span> {selectedCandidate.offerDetails.date}</p>
+                    <p><span className="font-medium">Compensation:</span> {selectedCandidate.offerDetails.compensation}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Notes */}
+            <div className="space-y-3">
+              <h4 className="font-semibold">Notes</h4>
+              <div className="border rounded-lg p-3 bg-gray-50">
+                <p className="text-sm text-gray-600">{selectedCandidate.notes}</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </SideDrawer>
     </div>
   );
 };

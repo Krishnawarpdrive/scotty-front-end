@@ -1,352 +1,252 @@
-import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState } from 'react';
 import { DataTable } from '@/components/ui/data-table/DataTable';
 import { DataTableColumn } from '@/components/ui/data-table/types';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { 
-  Eye,
-  MoreHorizontal,
-  MessageSquare,
+  Clock, 
+  AlertTriangle, 
   Calendar,
   FileText,
-  Building,
-  MapPin,
-  Briefcase
+  Play,
+  CheckCircle,
+  XCircle,
+  ArrowRight
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+interface ApplicationStage {
+  id: string;
+  name: string;
+  status: 'completed' | 'current' | 'pending' | 'blocked';
+  type: 'document' | 'interview' | 'assessment' | 'video' | 'questionnaire';
+  dueDate?: string;
+  completedDate?: string;
+  hasAction?: boolean;
+  actionType?: string;
+}
 
 interface CandidateApplication {
   id: string;
-  role: string;
-  company: string;
-  location: string;
+  roleName: string;
+  companyName: string;
   appliedDate: string;
-  stage: string;
-  status: 'active' | 'paused' | 'rejected' | 'offered' | 'withdrawn';
-  nextInterview?: string;
-  lastUpdate: string;
+  currentStage: string;
   progress: number;
-  feedback?: string;
+  status: 'active' | 'offer' | 'rejected' | 'withdrawn';
+  priority: 'high' | 'medium' | 'low';
+  nextAction?: string;
+  daysInStage: number;
+  hasPendingActions: boolean;
+  stages: ApplicationStage[];
+  alertReason?: string;
+  nextDueDate?: string;
 }
 
-const mockApplications: CandidateApplication[] = [
-  {
-    id: '1',
-    role: 'Software Engineer',
-    company: 'TechCorp Inc',
-    location: 'San Francisco, CA',
-    appliedDate: '2024-03-01',
-    stage: 'initial_application',
-    status: 'active',
-    nextInterview: '2024-03-15',
-    lastUpdate: '2024-03-08',
-    progress: 25,
-    feedback: 'Initial screening completed'
-  },
-  {
-    id: '2',
-    role: 'Data Scientist',
-    company: 'InnovateDB',
-    location: 'New York, NY',
-    appliedDate: '2024-02-15',
-    stage: 'phone_interview',
-    status: 'active',
-    nextInterview: '2024-03-22',
-    lastUpdate: '2024-03-08',
-    progress: 50,
-    feedback: 'Awaiting feedback from HM'
-  },
-  {
-    id: '3',
-    role: 'Product Manager',
-    company: 'Digital Solutions Ltd',
-    location: 'London, UK',
-    appliedDate: '2024-01-28',
-    stage: 'technical_assessment',
-    status: 'paused',
-    lastUpdate: '2024-03-01',
-    progress: 75,
-    feedback: 'Technical assessment in progress'
-  },
-  {
-    id: '4',
-    role: 'UX Designer',
-    company: 'Future Systems',
-    location: 'Berlin, Germany',
-    appliedDate: '2023-12-20',
-    stage: 'final_interview',
-    status: 'rejected',
-    lastUpdate: '2024-02-15',
-    progress: 100,
-    feedback: 'Candidate was not a good fit'
-  },
-  {
-    id: '5',
-    role: 'Frontend Developer',
-    company: 'Smart Tech Co',
-    location: 'Sydney, Australia',
-    appliedDate: '2024-03-05',
-    stage: 'offer_extended',
-    status: 'offered',
-    lastUpdate: '2024-03-10',
-    progress: 90,
-    feedback: 'Offer extended, awaiting response'
-  },
-  {
-    id: '6',
-    role: 'Backend Developer',
-    company: 'Global Innovations',
-    location: 'Toronto, Canada',
-    appliedDate: '2024-02-01',
-    stage: 'withdrawn',
-    status: 'withdrawn',
-    lastUpdate: '2024-02-10',
-    progress: 100,
-    feedback: 'Candidate withdrew application'
-  },
-  {
-    id: '7',
-    role: 'Full Stack Developer',
-    company: 'NextGen Corp',
-    location: 'Singapore',
-    appliedDate: '2024-01-15',
-    stage: 'phone_interview',
-    status: 'active',
-    nextInterview: '2024-03-29',
-    lastUpdate: '2024-03-08',
-    progress: 50,
-    feedback: 'Phone interview scheduled'
-  },
-  {
-    id: '8',
-    role: 'Business Analyst',
-    company: 'Alpha Technologies',
-    location: 'Bangalore, India',
-    appliedDate: '2023-11-30',
-    stage: 'technical_assessment',
-    status: 'active',
-    lastUpdate: '2024-02-28',
-    progress: 60,
-    feedback: 'Technical assessment completed'
-  },
-];
+interface CandidateApplicationsTableProps {
+  applications: CandidateApplication[];
+  onApplicationClick: (application: CandidateApplication) => void;
+  onCompanyClick: (application: CandidateApplication) => void;
+  onQuickAction: (applicationId: string, action: string) => void;
+}
 
-export const CandidateApplicationsTable = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [stageFilter, setStageFilter] = useState<string>('all');
+export const CandidateApplicationsTable: React.FC<CandidateApplicationsTableProps> = ({
+  applications,
+  onApplicationClick,
+  onCompanyClick,
+  onQuickAction
+}) => {
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
 
-  const filteredApplications = mockApplications.filter(application => {
-    const searchRegex = new RegExp(searchTerm, 'i');
-    const matchesSearch = searchRegex.test(application.role) || searchRegex.test(application.company);
-
-    const matchesStatus = statusFilter === 'all' || application.status === statusFilter;
-    const matchesStage = stageFilter === 'all' || application.stage === stageFilter;
-
-    return matchesSearch && matchesStatus && matchesStage;
-  });
-
-  const getStatusVariant = (status: string) => {
-    switch (status) {
-      case 'active': return 'default';
-      case 'paused': return 'secondary';
-      case 'rejected': return 'destructive';
-      case 'offered': return 'success';
-      case 'withdrawn': return 'muted';
-      default: return 'default';
-    }
+  const getStatusBadge = (status: string) => {
+    const variants = {
+      active: 'bg-blue-100 text-blue-700 border-blue-200',
+      offer: 'bg-green-100 text-green-700 border-green-200',
+      rejected: 'bg-red-100 text-red-700 border-red-200',
+      withdrawn: 'bg-gray-100 text-gray-700 border-gray-200'
+    };
+    return <Badge className={variants[status as keyof typeof variants]}>{status}</Badge>;
   };
 
-  const getStageVariant = (stage: string) => {
-    switch (stage) {
-      case 'initial_application': return 'outline';
-      case 'phone_interview': return 'secondary';
-      case 'technical_assessment': return 'default';
-      case 'final_interview': return 'primary';
-      case 'offer_extended': return 'success';
-      case 'withdrawn': return 'muted';
-      default: return 'default';
+  const getPriorityIndicator = (priority: string) => {
+    const colors = {
+      high: 'bg-red-500',
+      medium: 'bg-yellow-500',
+      low: 'bg-green-500'
+    };
+    return <div className={cn('w-2 h-8 rounded-full', colors[priority as keyof typeof colors])} />;
+  };
+
+  const getStageIcon = (stage: ApplicationStage) => {
+    const iconClass = 'h-4 w-4';
+    switch (stage.type) {
+      case 'document':
+        return <FileText className={iconClass} />;
+      case 'interview':
+        return <Calendar className={iconClass} />;
+      case 'assessment':
+        return <Clock className={iconClass} />;
+      case 'video':
+        return <Play className={iconClass} />;
+      case 'questionnaire':
+        return <FileText className={iconClass} />;
+      default:
+        return <CheckCircle className={iconClass} />;
     }
   };
 
   const columns: DataTableColumn<CandidateApplication>[] = [
     {
-      id: 'role',
-      accessorKey: 'role',
-      header: 'Role & Company',
-      cell: (application) => (
-        <div className="space-y-1">
-          <div className="font-medium">{application.role}</div>
-          <div className="text-sm text-muted-foreground flex items-center gap-1">
-            <Building className="h-3 w-3" />
-            {application.company}
-          </div>
-          <div className="text-sm text-muted-foreground flex items-center gap-1">
-            <MapPin className="h-3 w-3" />
-            {application.location}
-          </div>
-        </div>
-      ),
+      id: 'priority',
+      header: '',
+      cell: (application) => getPriorityIndicator(application.priority)
     },
     {
-      id: 'stage',
-      accessorKey: 'stage',
-      header: 'Stage & Progress',
+      id: 'role',
+      header: 'Role & Company',
       cell: (application) => (
-        <div className="space-y-2">
-          <Badge variant={getStageVariant(application.stage)}>
-            {application.stage}
-          </Badge>
-          <div className="w-24">
-            <div className="text-xs text-muted-foreground mb-1">{application.progress}%</div>
-            <div className="w-full bg-gray-200 rounded-full h-1.5">
-              <div 
-                className="bg-blue-600 h-1.5 rounded-full" 
-                style={{ width: `${application.progress}%` }}
-              ></div>
-            </div>
-          </div>
+        <div className="min-w-0">
+          <button
+            onClick={() => onApplicationClick(application)}
+            className="font-medium text-blue-600 hover:text-blue-800 truncate block text-left underline-offset-4 hover:underline"
+          >
+            {application.roleName}
+          </button>
+          <button
+            onClick={() => onCompanyClick(application)}
+            className="text-sm text-gray-500 truncate hover:text-blue-600 hover:underline underline-offset-4 block text-left"
+          >
+            {application.companyName}
+          </button>
         </div>
-      ),
+      )
+    },
+    {
+      id: 'currentStage',
+      header: 'Current Stage',
+      cell: (application) => {
+        const currentStage = application.stages.find(s => s.status === 'current');
+        return (
+          <div className="flex items-center gap-2">
+            {currentStage && getStageIcon(currentStage)}
+            <span className="text-sm">{application.currentStage}</span>
+          </div>
+        );
+      }
+    },
+    {
+      id: 'progress',
+      header: 'Progress',
+      cell: (application) => (
+        <div className="w-24">
+          <Progress value={application.progress} className="h-2" />
+          <div className="text-xs text-gray-500 mt-1">{application.progress}%</div>
+        </div>
+      )
+    },
+    {
+      id: 'daysInStage',
+      header: 'Days in Stage',
+      cell: (application) => (
+        <div className={cn(
+          'text-sm',
+          application.daysInStage > 5 ? 'text-red-600 font-medium' : 'text-gray-600'
+        )}>
+          {application.daysInStage}d
+        </div>
+      )
+    },
+    {
+      id: 'nextDueDate',
+      header: 'Next Due',
+      cell: (application) => (
+        <div className="text-sm text-gray-600">
+          {application.nextDueDate || '-'}
+        </div>
+      )
     },
     {
       id: 'status',
-      accessorKey: 'status',
       header: 'Status',
-      cell: (application) => (
-        <Badge variant={getStatusVariant(application.status)}>
-          {application.status}
-        </Badge>
-      ),
+      cell: (application) => getStatusBadge(application.status)
     },
     {
-      id: 'dates',
-      accessorKey: 'appliedDate',
-      header: 'Important Dates',
+      id: 'pendingActions',
+      header: 'Pending Actions',
       cell: (application) => (
-        <div className="space-y-1">
-          <div className="text-sm">
-            <span className="text-muted-foreground">Applied:</span> {application.appliedDate}
-          </div>
-          {application.nextInterview && (
-            <div className="text-sm">
-              <span className="text-muted-foreground">Next:</span> {application.nextInterview}
+        <div className="flex items-center gap-2">
+          {application.hasPendingActions && (
+            <div className="flex items-center gap-1 text-amber-600">
+              <AlertTriangle className="h-4 w-4" />
+              <span className="text-xs">Action Required</span>
             </div>
           )}
-          <div className="text-sm">
-            <span className="text-muted-foreground">Updated:</span> {application.lastUpdate}
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: 'feedback',
-      accessorKey: 'feedback',
-      header: 'Feedback',
-      cell: (application) => (
-        <div className="max-w-48">
-          {application.feedback ? (
-            <div className="text-sm text-muted-foreground truncate">
-              {application.feedback}
+          {application.alertReason && (
+            <div className="text-xs text-red-600 max-w-32 truncate">
+              {application.alertReason}
             </div>
-          ) : (
-            <span className="text-xs text-muted-foreground">No feedback yet</span>
           )}
         </div>
-      ),
-    },
-    {
-      id: 'quickActions',
-      accessorKey: 'id',
-      header: 'Quick Actions',
-      cell: (application) => (
-        <div className="flex gap-1">
-          <Button variant="ghost" size="sm">
-            <Eye className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="sm">
-            <MessageSquare className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Calendar className="h-4 w-4" />
-          </Button>
-        </div>
-      ),
-    },
-    {
-      id: 'menu',
-      accessorKey: 'id',
-      header: '',
-      cell: () => (
-        <Button variant="ghost" size="sm">
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      ),
+      )
     },
     {
       id: 'actions',
-      accessorKey: 'id',
-      header: 'Actions',
+      header: 'Quick Actions',
       cell: (application) => (
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            View Details
-          </Button>
-          <Button variant="ghost" size="sm">
-            <MoreHorizontal className="h-4 w-4" />
+        <div className="flex items-center gap-1">
+          {application.nextAction && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 px-2 text-xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                onQuickAction(application.id, 'continue');
+              }}
+            >
+              <ArrowRight className="h-3 w-3 mr-1" />
+              Continue
+            </Button>
+          )}
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 px-2 text-xs"
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuickAction(application.id, 'view');
+            }}
+          >
+            View
           </Button>
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Candidate Applications</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-between py-2">
-          <div className="flex items-center">
-            <input
-              type="search"
-              placeholder="Search applications..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="border rounded-md px-3 py-2 mr-2"
-            />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="border rounded-md px-3 py-2 mr-2"
-            >
-              <option value="all">All Statuses</option>
-              <option value="active">Active</option>
-              <option value="paused">Paused</option>
-              <option value="rejected">Rejected</option>
-              <option value="offered">Offered</option>
-              <option value="withdrawn">Withdrawn</option>
-            </select>
-            <select
-              value={stageFilter}
-              onChange={(e) => setStageFilter(e.target.value)}
-              className="border rounded-md px-3 py-2"
-            >
-              <option value="all">All Stages</option>
-              <option value="initial_application">Initial Application</option>
-              <option value="phone_interview">Phone Interview</option>
-              <option value="technical_assessment">Technical Assessment</option>
-              <option value="final_interview">Final Interview</option>
-              <option value="offer_extended">Offer Extended</option>
-              <option value="withdrawn">Withdrawn</option>
-            </select>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-gray-900">My Applications</h2>
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 bg-red-500 rounded-full" />
+            High Priority
           </div>
-          <div>
-            <Button>Add Application</Button>
+          <div className="flex items-center gap-1">
+            <AlertTriangle className="h-4 w-4 text-amber-600" />
+            Action Required
           </div>
         </div>
-        <DataTable columns={columns} data={filteredApplications} />
-      </CardContent>
-    </Card>
+      </div>
+
+      <DataTable
+        data={applications}
+        columns={columns}
+        onRowClick={onApplicationClick}
+        searchPlaceholder="Search applications..."
+      />
+    </div>
   );
 };

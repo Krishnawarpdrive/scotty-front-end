@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from './useAuth';
+import { useAuth, AppRole } from './useAuth';
 
 export interface Permission {
   id: string;
@@ -11,9 +11,6 @@ export interface Permission {
   description: string | null;
   created_at: string;
 }
-
-// Database role types
-type DatabaseRole = 'hr' | 'candidate' | 'interviewer' | 'ta' | 'vendor' | 'client-hr' | 'bo';
 
 export function usePermissions() {
   const { user, roles, loading: authLoading } = useAuth();
@@ -30,25 +27,6 @@ export function usePermissions() {
 
   const fetchPermissions = async () => {
     try {
-      // Map AppRole types to database role types
-      const validRoles: DatabaseRole[] = roles
-        .map(role => {
-          // Map AppRole to DatabaseRole
-          if (role === 'admin') return 'hr';
-          if (role === 'user') return null; // Skip user role
-          if (role === 'manager') return 'hr';
-          if (role === 'executive') return 'hr';
-          return role as DatabaseRole;
-        })
-        .filter((role): role is DatabaseRole => 
-          role !== null && ['hr', 'candidate', 'interviewer', 'ta', 'vendor', 'client-hr', 'bo'].includes(role)
-        );
-
-      if (validRoles.length === 0) {
-        setPermissions([]);
-        return;
-      }
-
       const { data, error } = await supabase
         .from('role_permissions')
         .select(`
@@ -62,7 +40,7 @@ export function usePermissions() {
             created_at
           )
         `)
-        .in('role', validRoles);
+        .in('role', roles);
 
       if (error) {
         console.error('Error fetching permissions:', error);
