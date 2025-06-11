@@ -86,7 +86,7 @@ export const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>
 );
 
 export const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
-  ({ className, value, children }, ref) => {
+  ({ className, children }, ref) => {
     return (
       <div
         ref={ref}
