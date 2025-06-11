@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth, AppRole } from './useAuth';
+import { useAuth } from './useAuth';
 
 export interface Permission {
   id: string;
@@ -27,6 +27,16 @@ export function usePermissions() {
 
   const fetchPermissions = async () => {
     try {
+      // Filter roles to only include those that exist in the database schema
+      const validRoles = roles.filter(role => 
+        ['hr', 'ta', 'candidate', 'vendor', 'interviewer', 'client-hr', 'bo'].includes(role)
+      );
+
+      if (validRoles.length === 0) {
+        setPermissions([]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('role_permissions')
         .select(`
@@ -40,7 +50,7 @@ export function usePermissions() {
             created_at
           )
         `)
-        .in('role', roles);
+        .in('role', validRoles);
 
       if (error) {
         console.error('Error fetching permissions:', error);

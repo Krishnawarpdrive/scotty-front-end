@@ -1,21 +1,29 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Plus, Edit2, Save, X } from 'lucide-react';
+import { 
+  Plus,
+  Save,
+  Edit,
+  Trash2,
+  Clock
+} from 'lucide-react';
 import { Interview } from '../../../MyInterviewsPage';
-
-interface InterviewerNotesProps {
-  interview: Interview;
-}
 
 interface Note {
   id: string;
+  title: string;
   content: string;
   timestamp: string;
-  type: 'interview' | 'preparation' | 'follow-up';
+  isPrivate: boolean;
+}
+
+interface InterviewerNotesProps {
+  interview: Interview;
 }
 
 export const InterviewerNotes: React.FC<InterviewerNotesProps> = ({
@@ -24,161 +32,161 @@ export const InterviewerNotes: React.FC<InterviewerNotesProps> = ({
   const [notes, setNotes] = useState<Note[]>([
     {
       id: '1',
-      content: 'Candidate shows strong understanding of React fundamentals. Good explanation of component lifecycle.',
+      title: 'Technical Skills Assessment',
+      content: 'Strong knowledge in React and TypeScript. Good problem-solving approach.',
       timestamp: '2024-01-15 10:30 AM',
-      type: 'interview'
+      isPrivate: false
     },
     {
       id: '2',
-      content: 'Need to ask about experience with state management libraries in the next session.',
-      timestamp: '2024-01-15 10:15 AM',
-      type: 'preparation'
+      title: 'Communication Skills',
+      content: 'Excellent communication skills. Explained technical concepts clearly.',
+      timestamp: '2024-01-15 10:45 AM',
+      isPrivate: true
     }
   ]);
-  
-  const [newNote, setNewNote] = useState('');
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editContent, setEditContent] = useState('');
 
-  const addNote = () => {
-    if (newNote.trim()) {
+  const [newNote, setNewNote] = useState({ title: '', content: '', isPrivate: false });
+  const [isAddingNote, setIsAddingNote] = useState(false);
+
+  const handleAddNote = () => {
+    if (newNote.title && newNote.content) {
       const note: Note = {
         id: Date.now().toString(),
-        content: newNote.trim(),
+        title: newNote.title,
+        content: newNote.content,
         timestamp: new Date().toLocaleString(),
-        type: 'interview'
+        isPrivate: newNote.isPrivate
       };
-      setNotes(prev => [note, ...prev]);
-      setNewNote('');
+      setNotes([...notes, note]);
+      setNewNote({ title: '', content: '', isPrivate: false });
+      setIsAddingNote(false);
     }
   };
 
-  const startEdit = (note: Note) => {
-    setEditingId(note.id);
-    setEditContent(note.content);
-  };
-
-  const saveEdit = () => {
-    setNotes(prev => prev.map(note => 
-      note.id === editingId 
-        ? { ...note, content: editContent, timestamp: `${note.timestamp} (edited)` }
-        : note
-    ));
-    setEditingId(null);
-    setEditContent('');
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditContent('');
-  };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'interview':
-        return 'bg-blue-100 text-blue-800';
-      case 'preparation':
-        return 'bg-green-100 text-green-800';
-      case 'follow-up':
-        return 'bg-orange-100 text-orange-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
+  const handleDeleteNote = (noteId: string) => {
+    setNotes(notes.filter(note => note.id !== noteId));
   };
 
   return (
     <div className="space-y-6">
-      {/* Add New Note */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center">
-            <Plus className="h-5 w-5 mr-2 text-blue-600" />
-            Add Note
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Textarea
-            value={newNote}
-            onChange={(e) => setNewNote(e.target.value)}
-            placeholder="Add your interview notes, observations, or follow-up items..."
-            rows={3}
-            className="resize-none"
-          />
-          <Button 
-            onClick={addNote}
-            disabled={!newNote.trim()}
-            size="sm"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Note
-          </Button>
-        </CardContent>
-      </Card>
+      {/* Add Note Button */}
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Interview Notes</h3>
+        <Button
+          onClick={() => setIsAddingNote(true)}
+          className="flex items-center space-x-2"
+          size="sm"
+        >
+          <Plus className="h-4 w-4" />
+          <span>Add Note</span>
+        </Button>
+      </div>
+
+      {/* Add Note Form */}
+      {isAddingNote && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">New Note</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input
+              placeholder="Note title..."
+              value={newNote.title}
+              onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
+            />
+            <Textarea
+              placeholder="Write your note here..."
+              value={newNote.content}
+              onChange={(e) => setNewNote({ ...newNote, content: e.target.value })}
+              className="min-h-[100px]"
+            />
+            <div className="flex items-center justify-between">
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={newNote.isPrivate}
+                  onChange={(e) => setNewNote({ ...newNote, isPrivate: e.target.checked })}
+                  className="rounded"
+                />
+                <span className="text-sm">Private note (only visible to you)</span>
+              </label>
+              <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsAddingNote(false)}
+                  size="sm"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleAddNote}
+                  size="sm"
+                  className="flex items-center space-x-2"
+                >
+                  <Save className="h-4 w-4" />
+                  <span>Save</span>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Notes List */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900">Interview Notes</h3>
-        
-        {notes.length === 0 ? (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <p className="text-gray-500">No notes yet. Add your first note above.</p>
-            </CardContent>
-          </Card>
-        ) : (
-          notes.map((note) => (
-            <Card key={note.id} className="border-l-4 border-l-blue-500">
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center space-x-2">
-                    <Badge className={getTypeColor(note.type)} variant="secondary">
-                      {note.type}
+        {notes.map((note) => (
+          <Card key={note.id}>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <CardTitle className="text-base">{note.title}</CardTitle>
+                  {note.isPrivate && (
+                    <Badge variant="secondary" className="text-xs">
+                      Private
                     </Badge>
-                    <div className="flex items-center text-xs text-gray-500">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {note.timestamp}
-                    </div>
-                  </div>
-                  
-                  <Button
-                    variant="ghost"
+                  )}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" size="sm">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
                     size="sm"
-                    onClick={() => startEdit(note)}
-                    className="h-6 w-6 p-0"
+                    onClick={() => handleDeleteNote(note.id)}
                   >
-                    <Edit2 className="h-3 w-3" />
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
-                
-                {editingId === note.id ? (
-                  <div className="space-y-2">
-                    <Textarea
-                      value={editContent}
-                      onChange={(e) => setEditContent(e.target.value)}
-                      rows={3}
-                      className="resize-none"
-                    />
-                    <div className="flex space-x-2">
-                      <Button size="sm" onClick={saveEdit}>
-                        <Save className="h-3 w-3 mr-1" />
-                        Save
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={cancelEdit}>
-                        <X className="h-3 w-3 mr-1" />
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    {note.content}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          ))
-        )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700 mb-3">{note.content}</p>
+              <div className="flex items-center text-xs text-gray-500">
+                <Clock className="h-3 w-3 mr-1" />
+                <span>{note.timestamp}</span>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
+
+      {notes.length === 0 && !isAddingNote && (
+        <Card>
+          <CardContent className="p-8 text-center">
+            <p className="text-gray-500 mb-4">No notes added yet</p>
+            <Button
+              onClick={() => setIsAddingNote(true)}
+              variant="outline"
+              className="flex items-center space-x-2"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add Your First Note</span>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
