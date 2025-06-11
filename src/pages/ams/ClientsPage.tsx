@@ -1,8 +1,9 @@
+
 import { useState } from 'react';
-import { ClientsPageContent } from './clients/components/ClientsPageContent';
-import { ClientsPageHeader } from './clients/components/ClientsPageHeader';
-import { ClientDetailDrawer } from './clients/components/ClientDetailDrawer';
-import { ClientAccountDrawer } from './clients/components/ClientAccountDrawer';
+import ClientsPageContent from './clients/components/ClientsPageContent';
+import ClientsPageHeader from './clients/components/ClientsPageHeader';
+import ClientDetailDrawer from './clients/components/ClientDetailDrawer';
+import ClientAccountDrawer from './clients/components/ClientAccountDrawer';
 import { UnifiedClient } from '@/data/unified-types';
 
 const mockClients: UnifiedClient[] = [
@@ -38,7 +39,7 @@ const mockClients: UnifiedClient[] = [
     budget_utilized: 200000,
     health_score: 75,
     last_activity_date: '2024-01-15',
-    notes: null,
+    notes: '',
     created_at: '2023-02-15',
     updated_at: '2024-01-15',
   },
@@ -46,7 +47,6 @@ const mockClients: UnifiedClient[] = [
 
 export const ClientsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [, setSelectedClient] = useState<UnifiedClient | null>(null);
   const [showAccountDrawer, setShowAccountDrawer] = useState(false);
   const [showDetailDrawer, setShowDetailDrawer] = useState(false);
   const [detailClient, setDetailClient] = useState<UnifiedClient | null>(null);
@@ -62,14 +62,14 @@ export const ClientsPage = () => {
     const contactMatch = searchRegex.test(client.contact);
 
     const statusMatch = filterStatus === 'all' || client.status === filterStatus;
-    const tierMatch = filterTier === 'all' || client.client_tier === filterTier;
+    const tierMatch = filterTier === 'all' || client.client_tier === tierMatch;
 
     return (nameMatch || emailMatch || contactMatch) && statusMatch && tierMatch;
   }).sort((a, b) => {
     if (sortBy === 'name') {
       return a.name.localeCompare(b.name);
     } else if (sortBy === 'health') {
-      return b.health_score - a.health_score;
+      return (b.health_score || 0) - (a.health_score || 0);
     }
     return 0;
   });
