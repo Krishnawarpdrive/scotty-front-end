@@ -28,9 +28,16 @@ export function usePermissions() {
   const fetchPermissions = async () => {
     try {
       // Filter roles to only include those that exist in the database schema
-      const validRoles = roles.filter(role => 
-        ['hr', 'ta', 'candidate', 'vendor', 'interviewer', 'client-hr', 'bo'].includes(role)
-      );
+      // Map AppRole types to database role types
+      const validRoles = roles
+        .map(role => {
+          // Map admin to hr for database compatibility
+          if (role === 'admin') return 'hr';
+          return role;
+        })
+        .filter(role => 
+          ['hr', 'candidate', 'interviewer', 'ta', 'vendor', 'client-hr', 'bo'].includes(role)
+        );
 
       if (validRoles.length === 0) {
         setPermissions([]);

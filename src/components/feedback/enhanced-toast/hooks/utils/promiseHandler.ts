@@ -26,15 +26,14 @@ export const usePromiseHandler = (
           const result = options.success(data);
           successOptions = typeof result === 'string' 
             ? { title: result, type: 'success' as const }
-            : { type: 'success' as const, title: 'Success', ...result };
+            : { type: 'success' as const, ...result };
         } else if (typeof options.success === 'string') {
           successOptions = { title: options.success, type: 'success' as const };
         } else {
           // Only spread if it's an object
           successOptions = { 
             type: 'success' as const,
-            title: 'Success',
-            ...(typeof options.success === 'object' && options.success !== null ? options.success : {})
+            ...(typeof options.success === 'object' && options.success !== null ? options.success : { title: 'Success' })
           };
         }
 
@@ -49,15 +48,14 @@ export const usePromiseHandler = (
           const result = options.error(error);
           errorOptions = typeof result === 'string'
             ? { title: result, type: 'error' as const }
-            : { type: 'error' as const, title: 'Error', ...result };
+            : { type: 'error' as const, ...result };
         } else if (typeof options.error === 'string') {
           errorOptions = { title: options.error, type: 'error' as const };
         } else {
           // Only spread if it's an object
           errorOptions = { 
             type: 'error' as const,
-            title: 'Error',
-            ...(typeof options.error === 'object' && options.error !== null ? options.error : {})
+            ...(typeof options.error === 'object' && options.error !== null ? options.error : { title: 'Error' })
           };
         }
 
