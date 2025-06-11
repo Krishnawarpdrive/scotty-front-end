@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
-export type AppRole = 'admin' | 'user' | 'manager' | 'hr' | 'candidate' | 'interviewer' | 'executive' | 'ta' | 'vendor' | 'client-hr' | 'bo';
+export type AppRole = 'admin' | 'user' | 'manager' | 'hr' | 'candidate' | 'interviewer' | 'executive' | 'ta' | 'vendor' | 'client-hr' | 'bo' | 'ams';
 
 export interface UserProfile {
   id: string;
