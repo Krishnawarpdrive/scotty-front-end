@@ -14,6 +14,9 @@ import { useEnhancedToast } from '@/components/feedback/EnhancedToast';
 import { Users, UserPlus, Search, Filter } from 'lucide-react';
 import { AppRole } from '@/contexts/AuthContext';
 
+// Database role types that match the Supabase schema
+type DatabaseRole = 'hr' | 'candidate' | 'interviewer' | 'ta' | 'vendor' | 'client-hr' | 'bo' | 'ams';
+
 interface UserWithProfile {
   id: string;
   email: string;
@@ -23,7 +26,7 @@ interface UserWithProfile {
     department: string | null;
   };
   user_roles: Array<{
-    role: AppRole;
+    role: DatabaseRole;
     is_active: boolean;
     assigned_at: string;
   }>;
@@ -42,6 +45,29 @@ const roleLabels: Record<AppRole, string> = {
   user: 'User',
   manager: 'Manager',
   executive: 'Executive'
+};
+
+// Map AppRole to DatabaseRole
+const mapAppRoleToDbRole = (appRole: AppRole): DatabaseRole => {
+  switch (appRole) {
+    case 'admin':
+    case 'ams':
+      return 'ams';
+    case 'manager':
+    case 'executive':
+      return 'hr';
+    default:
+      // For roles that exist in both, use them directly
+      if (['hr', 'candidate', 'interviewer', 'ta', 'vendor', 'client-hr', 'bo'].includes(appRole)) {
+        return appRole as DatabaseRole;
+      }
+      return 'candidate'; // Default fallback
+  }
+};
+
+// Map DatabaseRole back to AppRole for display
+const mapDbRoleToAppRole = (dbRole: DatabaseRole): AppRole => {
+  return dbRole as AppRole;
 };
 
 export default function UserManagementPage() {
@@ -90,11 +116,11 @@ export default function UserManagementPage() {
             };
           }
 
-          // Filter and map roles to ensure they match AppRole type
+          // Filter and map roles to ensure they match DatabaseRole type
           const validRoles = (rolesData || [])
-            .filter((roleData: any) => roleData.is_active && Object.keys(roleLabels).includes(roleData.role))
+            .filter((roleData: any) => roleData.is_active)
             .map((roleData: any) => ({
-              role: roleData.role as AppRole,
+              role: roleData.role as DatabaseRole,
               is_active: roleData.is_active || false,
               assigned_at: roleData.assigned_at || ''
             }));
@@ -126,11 +152,7 @@ export default function UserManagementPage() {
 
   const assignRole = async (userId: string, role: AppRole) => {
     try {
-      // Map AppRole to database role if needed
-      let dbRole = role;
-      if (role === 'admin') dbRole = 'ams';
-      if (role === 'manager') dbRole = 'hr';
-      if (role === 'executive') dbRole = 'hr';
+      const dbRole = mapAppRoleToDbRole(role);
 
       const { error } = await supabase
         .from('user_roles')
@@ -159,11 +181,7 @@ export default function UserManagementPage() {
 
   const removeRole = async (userId: string, role: AppRole) => {
     try {
-      // Map AppRole to database role if needed
-      let dbRole = role;
-      if (role === 'admin') dbRole = 'ams';
-      if (role === 'manager') dbRole = 'hr';
-      if (role === 'executive') dbRole = 'hr';
+      const dbRole = mapAppRoleToDbRole(role);
 
       const { error } = await supabase
         .from('user_roles')
@@ -194,7 +212,10 @@ export default function UserManagementPage() {
       `${user.user_profiles?.first_name} ${user.user_profiles?.last_name}`.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesRole = selectedRole === 'all' || 
-      user.user_roles.some(ur => ur.role === selectedRole && ur.is_active);
+      user.user_roles.some(ur => {
+        const appRole = mapDbRoleToAppRole(ur.role);
+        return appRole === selectedRole && ur.is_active;
+      });
 
     return matchesSearch && matchesRole;
   });
@@ -293,17 +314,20 @@ export default function UserManagementPage() {
                       <div className="flex flex-wrap gap-2">
                         {user.user_roles
                           .filter(ur => ur.is_active)
-                          .map((userRole) => (
-                            <Badge key={userRole.role} variant="secondary" className="flex items-center space-x-1">
-                              <span>{roleLabels[userRole.role]}</span>
-                              <button
-                                onClick={() => removeRole(user.id, userRole.role)}
-                                className="ml-1 text-red-500 hover:text-red-700"
-                              >
-                                ×
-                              </button>
-                            </Badge>
-                          ))}
+                          .map((userRole) => {
+                            const appRole = mapDbRoleToAppRole(userRole.role);
+                            return (
+                              <Badge key={userRole.role} variant="secondary" className="flex items-center space-x-1">
+                                <span>{roleLabels[appRole]}</span>
+                                <button
+                                  onClick={() => removeRole(user.id, appRole)}
+                                  className="ml-1 text-red-500 hover:text-red-700"
+                                >
+                                  ×
+                                </button>
+                              </Badge>
+                            );
+                          })}
                         {user.user_roles.filter(ur => ur.is_active).length === 0 && (
                           <span className="text-sm text-gray-500">No active roles</span>
                         )}
@@ -318,7 +342,10 @@ export default function UserManagementPage() {
                         </SelectTrigger>
                         <SelectContent>
                           {Object.entries(roleLabels)
-                            .filter(([role]) => !user.user_roles.some(ur => ur.role === role && ur.is_active))
+                            .filter(([role]) => !user.user_roles.some(ur => {
+                              const appRole = mapDbRoleToAppRole(ur.role);
+                              return appRole === role && ur.is_active;
+                            }))
                             .map(([value, label]) => (
                               <SelectItem key={value} value={value}>{label}</SelectItem>
                             ))}

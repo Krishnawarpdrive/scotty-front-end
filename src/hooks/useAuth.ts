@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -74,8 +75,20 @@ export const useAuth = () => {
         setProfile(transformedProfile);
       }
 
-      // Fetch user roles (mock for now)
-      setRoles(['user']);
+      // Fetch user roles from the database
+      const { data: rolesData, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('is_active', true);
+
+      if (rolesError) {
+        console.error('Error fetching user roles:', rolesError);
+        setRoles(['user']); // Default role
+      } else {
+        const userRoles = rolesData?.map(r => r.role as AppRole) || ['user'];
+        setRoles(userRoles);
+      }
     } catch (error) {
       console.error('Error in fetchUserProfile:', error);
     }
@@ -90,7 +103,7 @@ export const useAuth = () => {
   };
 
   const isAdmin = (): boolean => {
-    return roles.includes('admin');
+    return roles.includes('admin') || roles.includes('ams');
   };
 
   const signOut = async () => {
