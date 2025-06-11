@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -34,17 +35,11 @@ const mockChecklists: Checklist[] = [
 
 export const ChecklistsPage = () => {
   const [activeTab, setActiveTab] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedType, setSelectedType] = useState('all');
   const [showCreationDrawer, setShowCreationDrawer] = useState(false);
 
   const filteredChecklists = mockChecklists.filter((checklist) => {
-    const searchRegex = new RegExp(searchTerm, 'i');
-    const matchesSearch = searchRegex.test(checklist.name);
     const matchesTab = activeTab === 'all' || activeTab === checklist.type;
-    const matchesType = selectedType === 'all' || selectedType === checklist.type;
-
-    return matchesSearch && matchesTab && matchesType;
+    return matchesTab;
   });
 
   return (
@@ -59,11 +54,14 @@ export const ChecklistsPage = () => {
         </CardHeader>
         <CardContent>
           <p>Manage and organize checklists for various processes.</p>
+          <div className="mt-4">
+            <p>Total checklists: {filteredChecklists.length}</p>
+          </div>
         </CardContent>
       </Card>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-3">
+        <TabsList className="grid grid-cols-4">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="onboarding">Onboarding</TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
