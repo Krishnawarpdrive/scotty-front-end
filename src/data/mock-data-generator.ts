@@ -1,6 +1,6 @@
 
 // Unified Mock Data Generator for Cross-Module Testing
-import { UnifiedVendor, UnifiedRole, UnifiedRequirement, UnifiedClient, UnifiedCandidate } from './unified-types';
+import { UnifiedVendor, UnifiedRole, UnifiedRequirement, UnifiedClient } from './unified-types';
 
 // Helper function to generate random IDs
 const generateId = () => Math.random().toString(36).substring(2) + Date.now().toString(36);
