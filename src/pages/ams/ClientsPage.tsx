@@ -45,7 +45,7 @@ const mockClients: UnifiedClient[] = [
   },
 ];
 
-export const ClientsPage = () => {
+const ClientsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAccountDrawer, setShowAccountDrawer] = useState(false);
   const [showDetailDrawer, setShowDetailDrawer] = useState(false);
@@ -62,7 +62,7 @@ export const ClientsPage = () => {
     const contactMatch = searchRegex.test(client.contact);
 
     const statusMatch = filterStatus === 'all' || client.status === filterStatus;
-    const tierMatch = filterTier === 'all' || client.client_tier === tierMatch;
+    const tierMatch = filterTier === 'all' || client.client_tier === filterTier;
 
     return (nameMatch || emailMatch || contactMatch) && statusMatch && tierMatch;
   }).sort((a, b) => {
@@ -89,19 +89,14 @@ export const ClientsPage = () => {
     setShowAccountDrawer(false);
   };
 
+  const handleCreateClient = () => {
+    setShowAccountDrawer(true);
+  };
+
   return (
     <div className="space-y-6">
       <ClientsPageHeader
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        filterStatus={filterStatus}
-        setFilterStatus={setFilterStatus}
-        filterTier={filterTier}
-        setFilterTier={setFilterTier}
+        onCreateClient={handleCreateClient}
       />
 
       <ClientsPageContent
@@ -115,15 +110,15 @@ export const ClientsPage = () => {
         open={showDetailDrawer}
         onOpenChange={setShowDetailDrawer}
         client={detailClient}
-        onClose={handleCloseDrawer}
       />
 
       <ClientAccountDrawer
         open={showAccountDrawer}
         onOpenChange={setShowAccountDrawer}
         client={detailClient}
-        onClose={handleCloseDrawer}
       />
     </div>
   );
 };
+
+export default ClientsPage;
