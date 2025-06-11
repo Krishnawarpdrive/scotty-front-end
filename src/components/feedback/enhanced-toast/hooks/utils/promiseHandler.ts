@@ -13,7 +13,7 @@ export const usePromiseHandler = (
     // Show loading toast
     const loadingOptions = typeof options.loading === 'string' 
       ? { title: options.loading, type: 'loading' as const }
-      : { ...options.loading, type: 'loading' as const };
+      : { type: 'loading' as const, ...options.loading };
     
     const loadingId = showToast(loadingOptions);
 
@@ -26,14 +26,16 @@ export const usePromiseHandler = (
           const result = options.success(data);
           successOptions = typeof result === 'string' 
             ? { title: result, type: 'success' as const }
-            : { type: 'success' as const, title: 'Success', ...result };
+            : { type: 'success' as const, ...result };
         } else if (typeof options.success === 'string') {
           successOptions = { title: options.success, type: 'success' as const };
         } else {
           successOptions = { 
             type: 'success' as const,
-            title: 'Success',
-            ...(typeof options.success === 'object' && options.success !== null ? options.success : {})
+            ...(typeof options.success === 'object' && options.success !== null ? options.success : {}),
+            title: (typeof options.success === 'object' && options.success !== null && 'title' in options.success) 
+              ? options.success.title as string 
+              : 'Success'
           };
         }
 
@@ -48,14 +50,16 @@ export const usePromiseHandler = (
           const result = options.error(error);
           errorOptions = typeof result === 'string'
             ? { title: result, type: 'error' as const }
-            : { type: 'error' as const, title: 'Error', ...result };
+            : { type: 'error' as const, ...result };
         } else if (typeof options.error === 'string') {
           errorOptions = { title: options.error, type: 'error' as const };
         } else {
           errorOptions = { 
             type: 'error' as const,
-            title: 'Error',
-            ...(typeof options.error === 'object' && options.error !== null ? options.error : {})
+            ...(typeof options.error === 'object' && options.error !== null ? options.error : {}),
+            title: (typeof options.error === 'object' && options.error !== null && 'title' in options.error) 
+              ? options.error.title as string 
+              : 'Error'
           };
         }
 

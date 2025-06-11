@@ -29,12 +29,22 @@ export function usePermissions() {
     try {
       // Convert roles to the database enum format
       const dbRoles = roles.map(role => {
-        // Map 'admin' to 'hr' for database compatibility
-        if (role === 'admin') return 'hr';
-        return role;
+        // Map roles to database enum values
+        switch (role) {
+          case 'admin': return 'hr';
+          case 'user': return 'candidate';
+          case 'manager': return 'hr';
+          case 'executive': return 'hr';
+          default: return role;
+        }
       }).filter(role => 
         ['hr', 'ta', 'candidate', 'vendor', 'interviewer', 'client-hr', 'bo'].includes(role)
       );
+
+      if (dbRoles.length === 0) {
+        setLoading(false);
+        return;
+      }
 
       const { data, error } = await supabase
         .from('role_permissions')
