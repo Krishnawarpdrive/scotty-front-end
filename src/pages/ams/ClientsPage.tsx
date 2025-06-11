@@ -59,7 +59,7 @@ const ClientsPage = () => {
     const searchRegex = new RegExp(searchTerm, 'i');
     const nameMatch = searchRegex.test(client.name);
     const emailMatch = searchRegex.test(client.email);
-    const contactMatch = searchRegex.test(client.contact);
+    const contactMatch = searchRegex.test(client.contact || '');
 
     const statusMatch = filterStatus === 'all' || client.status === filterStatus;
     const tierMatch = filterTier === 'all' || client.client_tier === filterTier;
@@ -84,12 +84,8 @@ const ClientsPage = () => {
     setShowAccountDrawer(true);
   };
 
-  const handleCloseDrawer = () => {
-    setShowDetailDrawer(false);
-    setShowAccountDrawer(false);
-  };
-
   const handleCreateClient = () => {
+    setDetailClient(null);
     setShowAccountDrawer(true);
   };
 
@@ -100,10 +96,18 @@ const ClientsPage = () => {
       />
 
       <ClientsPageContent
-        clients={filteredClients}
-        viewMode={viewMode}
-        onClientClick={handleClientClick}
-        onViewAccount={handleViewAccount}
+        filteredClients={filteredClients}
+        isLoading={false}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        selectedClients={[]}
+        toggleFilterPanel={() => {}}
+        onEditClient={handleViewAccount}
+        onDeleteClient={() => {}}
+        onViewClientDetails={handleClientClick}
+        onSelectClient={() => {}}
+        onSelectAll={() => {}}
+        onSort={() => {}}
       />
 
       <ClientDetailDrawer
@@ -116,6 +120,7 @@ const ClientsPage = () => {
         open={showAccountDrawer}
         onOpenChange={setShowAccountDrawer}
         client={detailClient}
+        onClose={() => setShowAccountDrawer(false)}
       />
     </div>
   );
