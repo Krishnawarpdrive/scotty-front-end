@@ -34,7 +34,6 @@ import RolesLibraryPage from './pages/ams/RolesLibraryPage';
 import SkillsPage from './pages/ams/SkillsPage';
 import ChecklistsPage from './pages/ams/ChecklistsPage';
 import CertificationsPage from './pages/ams/CertificationsPage';
-import VendorManagementPage from './pages/ams/VendorManagementPage';
 import CommissionsPage from './pages/ams/CommissionsPage';
 import CandidatePoolPage from './pages/ams/hr/CandidatePoolPage';
 import RoleManagementPage from './pages/ams/hr/RoleManagementPage';
@@ -82,6 +81,7 @@ function App() {
                         <Route path="/ams/roles" element={<RolesLibraryPage />} />
                         <Route path="/ams/skills/library" element={<SkillsPage />} />
                         <Route path="/ams/vendors" element={<VendorsPage />} />
+                        <Route path="/ams/vendors/:vendorId" element={<VendorDetailPage />} />
                         <Route path="/ams/talent-acquisition" element={<TalentAcquisitionPage />} />
                         <Route path="/ams/ta/management" element={<TAManagementPage />} />
                         <Route path="/ams/ta/mission-control" element={<TalentAcquisitionPage />} />
@@ -102,8 +102,6 @@ function App() {
                         <Route path="/ams/interview-panelists" element={<InterviewPanelistLibraryPage />} />
                         <Route path="/ams/checklists" element={<ChecklistsPage />} />
                         <Route path="/ams/certifications" element={<CertificationsPage />} />
-                        <Route path="/ams/vendor-management" element={<VendorManagementPage />} />
-                        <Route path="/ams/vendor-management/:vendorId" element={<VendorDetailPage />} />
                         <Route path="/ams/commissions" element={<CommissionsPage />} />
                         <Route path="/ams/analytics" element={<Dashboard />} />
                         <Route path="/ams/admin/users" element={<UserManagementPage />} />
