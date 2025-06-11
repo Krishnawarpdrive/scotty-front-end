@@ -2,192 +2,241 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 import { 
-  Calendar,
-  Clock,
-  User,
+  Calendar, 
+  Clock, 
+  User, 
+  Star,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
   MessageSquare,
-  FileText,
+  Phone,
   Video
 } from 'lucide-react';
-import { Interview } from '../../../MyInterviewsPage';
-
-interface HistoryEvent {
-  id: string;
-  type: 'interview' | 'note' | 'status_change' | 'document' | 'message';
-  title: string;
-  description: string;
-  timestamp: string;
-  user: string;
-  metadata?: any;
-}
+import { Interview } from '../../MyInterviewsPage';
 
 interface InterviewerHistoryProps {
   interview: Interview;
 }
 
+interface HistoryEvent {
+  id: string;
+  type: 'scheduled' | 'completed' | 'rescheduled' | 'cancelled' | 'feedback' | 'note';
+  title: string;
+  description: string;
+  timestamp: string;
+  author: string;
+  metadata?: {
+    rating?: number;
+    status?: string;
+    previousDate?: string;
+    newDate?: string;
+  };
+}
+
 export const InterviewerHistory: React.FC<InterviewerHistoryProps> = ({
   interview
 }) => {
-  // Mock history data
   const historyEvents: HistoryEvent[] = [
     {
       id: '1',
-      type: 'interview',
+      type: 'scheduled',
       title: 'Interview Scheduled',
-      description: 'Technical interview scheduled with Sarah Johnson',
+      description: 'Technical interview scheduled with John Smith',
       timestamp: '2024-01-10 09:00 AM',
-      user: 'John Doe',
-      metadata: { type: 'technical', duration: 60 }
+      author: 'System',
+      metadata: { status: 'scheduled' }
     },
     {
       id: '2',
-      type: 'document',
-      title: 'Resume Reviewed',
-      description: 'Candidate resume reviewed and assessment notes added',
-      timestamp: '2024-01-10 09:15 AM',
-      user: 'John Doe'
+      type: 'rescheduled',
+      title: 'Interview Rescheduled',
+      description: 'Interview moved due to candidate request',
+      timestamp: '2024-01-12 02:30 PM',
+      author: 'Sarah Johnson',
+      metadata: { 
+        previousDate: '2024-01-14 10:00 AM',
+        newDate: '2024-01-15 10:00 AM'
+      }
     },
     {
       id: '3',
-      type: 'interview',
-      title: 'Interview Started',
-      description: 'Technical interview session began',
-      timestamp: '2024-01-15 10:00 AM',
-      user: 'John Doe',
-      metadata: { platform: 'video' }
+      type: 'note',
+      title: 'Pre-interview Note Added',
+      description: 'Candidate has strong background in React and Node.js',
+      timestamp: '2024-01-14 04:00 PM',
+      author: 'John Smith'
     },
     {
       id: '4',
-      type: 'note',
-      title: 'Interview Notes Added',
-      description: 'Technical assessment notes and observations recorded',
-      timestamp: '2024-01-15 10:30 AM',
-      user: 'John Doe'
+      type: 'completed',
+      title: 'Interview Completed',
+      description: 'Technical interview conducted successfully',
+      timestamp: '2024-01-15 11:00 AM',
+      author: 'John Smith',
+      metadata: { status: 'completed' }
     },
     {
       id: '5',
-      type: 'status_change',
-      title: 'Status Updated',
-      description: 'Interview status changed to "Completed"',
-      timestamp: '2024-01-15 11:00 AM',
-      user: 'System'
+      type: 'feedback',
+      title: 'Feedback Submitted',
+      description: 'Interview feedback and rating submitted',
+      timestamp: '2024-01-15 11:30 AM',
+      author: 'John Smith',
+      metadata: { rating: 4, status: 'positive' }
     }
   ];
 
   const getEventIcon = (type: string) => {
     switch (type) {
-      case 'interview':
-        return <Video className="h-4 w-4 text-blue-600" />;
+      case 'scheduled':
+        return <Calendar className="h-4 w-4 text-blue-600" />;
+      case 'completed':
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case 'rescheduled':
+        return <Clock className="h-4 w-4 text-yellow-600" />;
+      case 'cancelled':
+        return <XCircle className="h-4 w-4 text-red-600" />;
+      case 'feedback':
+        return <Star className="h-4 w-4 text-purple-600" />;
       case 'note':
-        return <MessageSquare className="h-4 w-4 text-green-600" />;
-      case 'status_change':
-        return <Clock className="h-4 w-4 text-orange-600" />;
-      case 'document':
-        return <FileText className="h-4 w-4 text-purple-600" />;
-      case 'message':
         return <MessageSquare className="h-4 w-4 text-gray-600" />;
       default:
-        return <Clock className="h-4 w-4 text-gray-600" />;
+        return <AlertCircle className="h-4 w-4 text-gray-600" />;
     }
   };
 
-  const getEventBadge = (type: string) => {
+  const getEventColor = (type: string) => {
     switch (type) {
-      case 'interview':
-        return <Badge variant="secondary" className="bg-blue-100 text-blue-800">Interview</Badge>;
+      case 'scheduled':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'completed':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'rescheduled':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'feedback':
+        return 'bg-purple-100 text-purple-800 border-purple-200';
       case 'note':
-        return <Badge variant="secondary" className="bg-green-100 text-green-800">Note</Badge>;
-      case 'status_change':
-        return <Badge variant="secondary" className="bg-orange-100 text-orange-800">Status</Badge>;
-      case 'document':
-        return <Badge variant="secondary" className="bg-purple-100 text-purple-800">Document</Badge>;
-      case 'message':
-        return <Badge variant="secondary" className="bg-gray-100 text-gray-800">Message</Badge>;
+        return 'bg-gray-100 text-gray-800 border-gray-200';
       default:
-        return <Badge variant="secondary">Event</Badge>;
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
+  };
+
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
   return (
     <div className="space-y-6">
-      {/* Summary Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">3</div>
-            <div className="text-sm text-gray-600">Total Events</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">1</div>
-            <div className="text-sm text-gray-600">Interviews</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-purple-600">2</div>
-            <div className="text-sm text-gray-600">Documents</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Timeline */}
+      {/* Current Interview Status */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Activity Timeline</CardTitle>
+          <CardTitle className="text-lg">Current Status</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-blue-100 rounded-full">
+                <Video className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="font-medium text-blue-900">Technical Interview</p>
+                <p className="text-sm text-blue-700">{interview.scheduledDate} - {interview.duration} minutes</p>
+              </div>
+            </div>
+            <Badge className={getEventColor(interview.status)} variant="secondary">
+              {interview.status}
+            </Badge>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Interview Timeline */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Interview Timeline</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {historyEvents.map((event, index) => (
-              <div key={event.id} className="flex items-start space-x-4 relative">
-                {/* Timeline line */}
-                {index < historyEvents.length - 1 && (
-                  <div className="absolute left-4 top-8 w-0.5 h-12 bg-gray-200"></div>
-                )}
-                
-                {/* Event icon */}
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center">
-                  {getEventIcon(event.type)}
-                </div>
-                
-                {/* Event content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <h4 className="font-medium text-gray-900">{event.title}</h4>
-                    {getEventBadge(event.type)}
+              <div key={event.id}>
+                <div className="flex items-start space-x-4">
+                  {/* Timeline dot */}
+                  <div className="flex flex-col items-center">
+                    <div className="p-2 bg-white border-2 border-gray-200 rounded-full">
+                      {getEventIcon(event.type)}
+                    </div>
+                    {index < historyEvents.length - 1 && (
+                      <div className="w-px h-8 bg-gray-200 mt-2" />
+                    )}
                   </div>
-                  
-                  <p className="text-sm text-gray-600 mb-2">{event.description}</p>
-                  
-                  <div className="flex items-center text-xs text-gray-500 space-x-4">
-                    <div className="flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span>{event.timestamp}</span>
+
+                  {/* Event content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="text-sm font-medium text-gray-900">{event.title}</h4>
+                      <span className="text-xs text-gray-500">{event.timestamp}</span>
                     </div>
-                    <div className="flex items-center">
-                      <User className="h-3 w-3 mr-1" />
-                      <span>{event.user}</span>
+                    
+                    <p className="text-sm text-gray-700 mb-2">{event.description}</p>
+
+                    {/* Event metadata */}
+                    {event.metadata && (
+                      <div className="flex items-center space-x-3 mb-2">
+                        {event.metadata.rating && (
+                          <div className="flex items-center space-x-1">
+                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                            <span className="text-xs text-gray-600">{event.metadata.rating}/5</span>
+                          </div>
+                        )}
+                        {event.metadata.previousDate && event.metadata.newDate && (
+                          <div className="text-xs text-gray-600">
+                            From: {event.metadata.previousDate} → {event.metadata.newDate}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Event author */}
+                    <div className="flex items-center space-x-2">
+                      <Avatar className="h-5 w-5">
+                        <AvatarImage src="" alt={event.author} />
+                        <AvatarFallback className="bg-gray-100 text-gray-600 text-xs">
+                          {getInitials(event.author)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-xs text-gray-600">{event.author}</span>
                     </div>
                   </div>
-                  
-                  {event.metadata && (
-                    <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
-                      {event.metadata.type && (
-                        <span className="font-medium">Type: {event.metadata.type}</span>
-                      )}
-                      {event.metadata.duration && (
-                        <span className="ml-2">Duration: {event.metadata.duration} min</span>
-                      )}
-                      {event.metadata.platform && (
-                        <span className="ml-2">Platform: {event.metadata.platform}</span>
-                      )}
-                    </div>
-                  )}
                 </div>
+                {index < historyEvents.length - 1 && <div className="mt-4" />}
               </div>
             ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Interview Statistics */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Interview Statistics</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="text-2xl font-bold text-gray-900">1</div>
+              <div className="text-sm text-gray-600">Total Rounds</div>
+            </div>
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="text-2xl font-bold text-gray-900">2</div>
+              <div className="text-sm text-gray-600">Schedule Changes</div>
+            </div>
           </div>
         </CardContent>
       </Card>

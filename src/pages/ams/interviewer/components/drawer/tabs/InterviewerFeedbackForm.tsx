@@ -1,16 +1,21 @@
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { 
-  Star,
-  ThumbsUp,
-  ThumbsDown,
+  Star, 
+  ThumbsUp, 
+  ThumbsDown, 
+  CheckCircle,
   Save
 } from 'lucide-react';
-import { Interview } from '../../../MyInterviewsPage';
+import { Interview } from '../../MyInterviewsPage';
 
 interface InterviewerFeedbackFormProps {
   interview: Interview;
@@ -19,108 +24,204 @@ interface InterviewerFeedbackFormProps {
 export const InterviewerFeedbackForm: React.FC<InterviewerFeedbackFormProps> = ({
   interview
 }) => {
-  const [rating, setRating] = useState(0);
-  const [feedback, setFeedback] = useState('');
-  const [recommendation, setRecommendation] = useState<'hire' | 'reject' | null>(null);
+  const [feedback, setFeedback] = useState({
+    overallRating: [4],
+    technicalSkills: [4],
+    communication: [4],
+    problemSolving: [4],
+    culturalFit: [4],
+    recommendation: 'proceed',
+    notes: '',
+    strengths: '',
+    improvements: ''
+  });
 
-  const handleRatingClick = (value: number) => {
-    setRating(value);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      console.log('Feedback submitted:', feedback);
+    }, 1000);
   };
 
-  const handleSaveFeedback = () => {
-    console.log('Saving feedback:', { rating, feedback, recommendation });
-    // Implementation for saving feedback
+  const ratingLabels = {
+    1: 'Poor',
+    2: 'Below Average',
+    3: 'Average',
+    4: 'Good',
+    5: 'Excellent'
   };
+
+  const RatingSlider = ({ 
+    label, 
+    value, 
+    onChange 
+  }: { 
+    label: string; 
+    value: number[]; 
+    onChange: (value: number[]) => void 
+  }) => (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <Label className="text-sm font-medium">{label}</Label>
+        <div className="flex items-center space-x-1">
+          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+          <span className="text-sm font-medium">{value[0]}/5</span>
+          <Badge variant="outline" className="text-xs">
+            {ratingLabels[value[0] as keyof typeof ratingLabels]}
+          </Badge>
+        </div>
+      </div>
+      <Slider
+        value={value}
+        onValueChange={onChange}
+        max={5}
+        min={1}
+        step={1}
+        className="w-full"
+      />
+    </div>
+  );
 
   return (
     <div className="space-y-6">
-      {/* Rating Section */}
+      {/* Overall Assessment */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Overall Rating</CardTitle>
+          <CardTitle className="text-lg">Overall Assessment</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center space-x-2 mb-4">
-            {[1, 2, 3, 4, 5].map((value) => (
-              <button
-                key={value}
-                onClick={() => handleRatingClick(value)}
-                className="focus:outline-none"
-              >
-                <Star
-                  className={`h-8 w-8 ${
-                    value <= rating
-                      ? 'text-yellow-500 fill-yellow-500'
-                      : 'text-gray-300'
-                  }`}
-                />
-              </button>
-            ))}
-          </div>
-          <p className="text-sm text-gray-600">
-            Click to rate the candidate's performance
-          </p>
-        </CardContent>
-      </Card>
+        <CardContent className="space-y-6">
+          <RatingSlider
+            label="Overall Rating"
+            value={feedback.overallRating}
+            onChange={(value) => setFeedback(prev => ({ ...prev, overallRating: value }))}
+          />
 
-      {/* Recommendation Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Recommendation</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex space-x-4">
-            <Button
-              variant={recommendation === 'hire' ? 'default' : 'outline'}
-              onClick={() => setRecommendation('hire')}
-              className="flex items-center space-x-2"
+          <Separator />
+
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Recommendation</Label>
+            <RadioGroup
+              value={feedback.recommendation}
+              onValueChange={(value) => setFeedback(prev => ({ ...prev, recommendation: value }))}
             >
-              <ThumbsUp className="h-4 w-4" />
-              <span>Recommend Hire</span>
-            </Button>
-            <Button
-              variant={recommendation === 'reject' ? 'destructive' : 'outline'}
-              onClick={() => setRecommendation('reject')}
-              className="flex items-center space-x-2"
-            >
-              <ThumbsDown className="h-4 w-4" />
-              <span>Do Not Recommend</span>
-            </Button>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="proceed" id="proceed" />
+                <Label htmlFor="proceed" className="flex items-center space-x-2 cursor-pointer">
+                  <ThumbsUp className="h-4 w-4 text-green-600" />
+                  <span>Proceed to next round</span>
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="hold" id="hold" />
+                <Label htmlFor="hold" className="flex items-center space-x-2 cursor-pointer">
+                  <span className="h-4 w-4 rounded-full bg-yellow-400" />
+                  <span>Hold/Undecided</span>
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="reject" id="reject" />
+                <Label htmlFor="reject" className="flex items-center space-x-2 cursor-pointer">
+                  <ThumbsDown className="h-4 w-4 text-red-600" />
+                  <span>Do not proceed</span>
+                </Label>
+              </div>
+            </RadioGroup>
           </div>
         </CardContent>
       </Card>
 
-      {/* Feedback Section */}
+      {/* Detailed Ratings */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Detailed Feedback</CardTitle>
+          <CardTitle className="text-lg">Detailed Evaluation</CardTitle>
         </CardHeader>
-        <CardContent>
-          <Textarea
-            placeholder="Provide detailed feedback about the candidate's performance, strengths, areas for improvement, and any other relevant observations..."
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-            className="min-h-[150px]"
+        <CardContent className="space-y-6">
+          <RatingSlider
+            label="Technical Skills"
+            value={feedback.technicalSkills}
+            onChange={(value) => setFeedback(prev => ({ ...prev, technicalSkills: value }))}
+          />
+          
+          <RatingSlider
+            label="Communication"
+            value={feedback.communication}
+            onChange={(value) => setFeedback(prev => ({ ...prev, communication: value }))}
+          />
+          
+          <RatingSlider
+            label="Problem Solving"
+            value={feedback.problemSolving}
+            onChange={(value) => setFeedback(prev => ({ ...prev, problemSolving: value }))}
+          />
+          
+          <RatingSlider
+            label="Cultural Fit"
+            value={feedback.culturalFit}
+            onChange={(value) => setFeedback(prev => ({ ...prev, culturalFit: value }))}
           />
         </CardContent>
       </Card>
 
-      {/* Status and Actions */}
-      <div className="flex items-center justify-between pt-4 border-t">
-        <div className="flex items-center space-x-2">
-          <span className="text-sm font-medium">Status:</span>
-          <Badge variant={interview.status === 'completed' ? 'default' : 'secondary'}>
-            {interview.status === 'completed' ? 'Ready for Review' : 'Pending Completion'}
-          </Badge>
-        </div>
-        
-        <Button 
-          onClick={handleSaveFeedback}
-          disabled={!rating || !recommendation}
-          className="flex items-center space-x-2"
-        >
-          <Save className="h-4 w-4" />
-          <span>Save Feedback</span>
+      {/* Written Feedback */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Written Feedback</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="strengths">Key Strengths</Label>
+            <Textarea
+              id="strengths"
+              placeholder="What impressed you about this candidate?"
+              value={feedback.strengths}
+              onChange={(e) => setFeedback(prev => ({ ...prev, strengths: e.target.value }))}
+              rows={3}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="improvements">Areas for Improvement</Label>
+            <Textarea
+              id="improvements"
+              placeholder="What areas could the candidate work on?"
+              value={feedback.improvements}
+              onChange={(e) => setFeedback(prev => ({ ...prev, improvements: e.target.value }))}
+              rows={3}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="notes">Additional Notes</Label>
+            <Textarea
+              id="notes"
+              placeholder="Any additional comments or observations..."
+              value={feedback.notes}
+              onChange={(e) => setFeedback(prev => ({ ...prev, notes: e.target.value }))}
+              rows={4}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Submit Button */}
+      <div className="flex justify-end space-x-3">
+        <Button variant="outline">Save as Draft</Button>
+        <Button onClick={handleSubmit} disabled={isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <Save className="h-4 w-4 mr-2 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            <>
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Submit Feedback
+            </>
+          )}
         </Button>
       </div>
     </div>

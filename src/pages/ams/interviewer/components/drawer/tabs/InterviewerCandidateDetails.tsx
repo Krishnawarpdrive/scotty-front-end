@@ -2,18 +2,18 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 import { 
-  Mail, 
-  Phone, 
   MapPin, 
-  Building, 
+  Phone, 
+  Mail, 
+  Calendar, 
   Briefcase,
-  Download,
-  ExternalLink,
-  Calendar
+  GraduationCap,
+  Clock
 } from 'lucide-react';
-import { Interview } from '../../../MyInterviewsPage';
+import { Interview } from '../../MyInterviewsPage';
 
 interface InterviewerCandidateDetailsProps {
   interview: Interview;
@@ -22,140 +22,126 @@ interface InterviewerCandidateDetailsProps {
 export const InterviewerCandidateDetails: React.FC<InterviewerCandidateDetailsProps> = ({
   interview
 }) => {
-  // Mock candidate data
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  };
+
+  // Mock candidate data - in real implementation, this would come from props
   const candidateDetails = {
-    email: 'sarah.johnson@email.com',
+    email: interview.candidateEmail,
     phone: '+1 (555) 123-4567',
     location: 'San Francisco, CA',
-    currentCompany: 'TechCorp Inc.',
-    currentPosition: 'Senior Frontend Developer',
-    experience: '5 years',
-    skills: ['React', 'TypeScript', 'Node.js', 'GraphQL', 'AWS', 'Docker'],
-    education: 'B.S. Computer Science - Stanford University',
-    resumeUrl: '#',
-    linkedinUrl: '#'
+    experience: '5+ years',
+    education: 'BS Computer Science, Stanford University',
+    currentRole: 'Senior Software Engineer at TechCorp',
+    skills: ['React', 'Node.js', 'TypeScript', 'Python', 'AWS'],
+    summary: 'Experienced full-stack developer with a passion for building scalable web applications. Strong background in modern JavaScript frameworks and cloud technologies.'
   };
 
   return (
     <div className="space-y-6">
+      {/* Candidate Profile Card */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-4">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src="" alt={interview.candidateName} />
+              <AvatarFallback className="bg-blue-100 text-blue-700 text-lg">
+                {getInitials(interview.candidateName)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <CardTitle className="text-xl">{interview.candidateName}</CardTitle>
+              <p className="text-gray-600">{candidateDetails.currentRole}</p>
+              <div className="flex items-center gap-2 mt-2">
+                <Badge variant="outline">{candidateDetails.experience}</Badge>
+                <Badge variant="secondary">{interview.roleName}</Badge>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-700 leading-relaxed">{candidateDetails.summary}</p>
+        </CardContent>
+      </Card>
+
       {/* Contact Information */}
       <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center">
-            <Mail className="h-5 w-5 mr-2 text-blue-600" />
-            Contact Information
-          </CardTitle>
+        <CardHeader>
+          <CardTitle className="text-lg">Contact Information</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center text-sm">
-            <Mail className="h-4 w-4 mr-3 text-gray-400" />
-            <span>{candidateDetails.email}</span>
+        <CardContent className="space-y-4">
+          <div className="flex items-center space-x-3">
+            <Mail className="h-4 w-4 text-gray-500" />
+            <span className="text-sm">{candidateDetails.email}</span>
           </div>
-          <div className="flex items-center text-sm">
-            <Phone className="h-4 w-4 mr-3 text-gray-400" />
-            <span>{candidateDetails.phone}</span>
+          <div className="flex items-center space-x-3">
+            <Phone className="h-4 w-4 text-gray-500" />
+            <span className="text-sm">{candidateDetails.phone}</span>
           </div>
-          <div className="flex items-center text-sm">
-            <MapPin className="h-4 w-4 mr-3 text-gray-400" />
-            <span>{candidateDetails.location}</span>
+          <div className="flex items-center space-x-3">
+            <MapPin className="h-4 w-4 text-gray-500" />
+            <span className="text-sm">{candidateDetails.location}</span>
           </div>
         </CardContent>
       </Card>
 
-      {/* Professional Background */}
+      {/* Interview Details */}
       <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center">
-            <Briefcase className="h-5 w-5 mr-2 text-green-600" />
-            Professional Background
-          </CardTitle>
+        <CardHeader>
+          <CardTitle className="text-lg">Interview Details</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center space-x-3">
+            <Calendar className="h-4 w-4 text-gray-500" />
+            <span className="text-sm">{interview.scheduledDate}</span>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Clock className="h-4 w-4 text-gray-500" />
+            <span className="text-sm">{interview.duration} minutes</span>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Briefcase className="h-4 w-4 text-gray-500" />
+            <span className="text-sm">{interview.interviewType}</span>
+          </div>
+          {interview.location && (
+            <div className="flex items-center space-x-3">
+              <MapPin className="h-4 w-4 text-gray-500" />
+              <span className="text-sm">{interview.location}</span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Education & Experience */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Background</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <h4 className="font-medium text-gray-900 mb-1">Current Position</h4>
-            <div className="flex items-center text-sm text-gray-600">
-              <Building className="h-4 w-4 mr-2" />
-              <span>{candidateDetails.currentPosition} at {candidateDetails.currentCompany}</span>
+            <div className="flex items-center space-x-2 mb-2">
+              <GraduationCap className="h-4 w-4 text-gray-500" />
+              <span className="text-sm font-medium">Education</span>
             </div>
+            <p className="text-sm text-gray-700 ml-6">{candidateDetails.education}</p>
           </div>
           
-          <div>
-            <h4 className="font-medium text-gray-900 mb-1">Experience</h4>
-            <p className="text-sm text-gray-600">{candidateDetails.experience}</p>
-          </div>
+          <Separator />
           
           <div>
-            <h4 className="font-medium text-gray-900 mb-2">Skills</h4>
-            <div className="flex flex-wrap gap-2">
-              {candidateDetails.skills.map((skill, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
+            <div className="flex items-center space-x-2 mb-2">
+              <Briefcase className="h-4 w-4 text-gray-500" />
+              <span className="text-sm font-medium">Skills</span>
+            </div>
+            <div className="flex flex-wrap gap-2 ml-6">
+              {candidateDetails.skills.map((skill) => (
+                <Badge key={skill} variant="outline" className="text-xs">
                   {skill}
                 </Badge>
               ))}
             </div>
           </div>
-          
-          <div>
-            <h4 className="font-medium text-gray-900 mb-1">Education</h4>
-            <p className="text-sm text-gray-600">{candidateDetails.education}</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Documents & Links */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center">
-            <Download className="h-5 w-5 mr-2 text-purple-600" />
-            Documents & Links
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Button variant="outline" size="sm" className="w-full justify-start">
-            <Download className="h-4 w-4 mr-2" />
-            Download Resume
-          </Button>
-          <Button variant="outline" size="sm" className="w-full justify-start">
-            <ExternalLink className="h-4 w-4 mr-2" />
-            View LinkedIn Profile
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Interview Schedule */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center">
-            <Calendar className="h-5 w-5 mr-2 text-orange-600" />
-            Interview Details
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="font-medium text-gray-700">Date:</span>
-              <p className="text-gray-600">{interview.date}</p>
-            </div>
-            <div>
-              <span className="font-medium text-gray-700">Time:</span>
-              <p className="text-gray-600">{interview.time}</p>
-            </div>
-            <div>
-              <span className="font-medium text-gray-700">Type:</span>
-              <p className="text-gray-600">{interview.type}</p>
-            </div>
-            <div>
-              <span className="font-medium text-gray-700">Duration:</span>
-              <p className="text-gray-600">60 minutes</p>
-            </div>
-          </div>
-          
-          {interview.location && (
-            <div className="pt-2 border-t">
-              <span className="font-medium text-gray-700 text-sm">Location:</span>
-              <p className="text-gray-600 text-sm">{interview.location}</p>
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>
