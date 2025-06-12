@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { UserProfile } from '@/types/profile';
 
-export const useProfile = (persona?: string) => {
+export const useProfile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(() => {
     // Return a default profile with proper structure
     return {

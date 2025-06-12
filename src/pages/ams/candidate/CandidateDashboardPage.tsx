@@ -21,6 +21,7 @@ import { useCandidateApplicationDetails } from './hooks/useCandidateApplicationD
 import { CandidateCompanyProgressDrawer } from './components/CandidateCompanyProgressDrawer';
 import { SmartActionCenter } from '@/components/smart-action-center/SmartActionCenter';
 import { BellIcon, MessageSquareIcon, CalendarIcon, TrendingUpIcon } from 'lucide-react';
+import { CandidateApplication } from './types/CandidateTypes';
 
 const CandidateDashboardPage: React.FC = () => {
   const [selectedCandidateId] = useState('123e4567-e89b-12d3-a456-426614174000');
@@ -37,9 +38,13 @@ const CandidateDashboardPage: React.FC = () => {
   const { applicationDetails, submitInterviewReview } = useCandidateApplicationDetails(selectedApplicationId);
 
   // Mock data for the mission control interface
-  const mockApplications = [
+  const mockApplications: CandidateApplication[] = [
     {
       id: '1',
+      title: 'Senior Frontend Developer',
+      company: 'TechCorp Inc',
+      location: 'San Francisco, CA',
+      salary: '$120,000 - $140,000',
       roleName: 'Senior Frontend Developer',
       companyName: 'TechCorp Inc',
       appliedDate: '2024-01-15',
@@ -106,6 +111,10 @@ const CandidateDashboardPage: React.FC = () => {
     },
     {
       id: '2',
+      title: 'Full Stack Engineer',
+      company: 'DataFlow Systems',
+      location: 'New York, NY',
+      salary: '$110,000 - $130,000',
       roleName: 'Full Stack Engineer',
       companyName: 'DataFlow Systems',
       appliedDate: '2024-01-20',
@@ -142,6 +151,10 @@ const CandidateDashboardPage: React.FC = () => {
     },
     {
       id: '3',
+      title: 'React Developer',
+      company: 'StartupXYZ',
+      location: 'Remote',
+      salary: '$95,000 - $115,000',
       roleName: 'React Developer',
       companyName: 'StartupXYZ',
       appliedDate: '2024-01-10',
@@ -293,8 +306,8 @@ const CandidateDashboardPage: React.FC = () => {
     setShowCompanyProgressDrawer(true);
   };
 
-  const handleQuickAction = (applicationId: string, action: string) => {
-    console.log('Quick action:', action, 'for application:', applicationId);
+  const handleQuickAction = (appId: string, action: string) => {
+    console.log('Quick action:', action, 'for application:', appId);
     if (action === 'continue') {
       setSelectedStage(mockStageData);
       setShowStageDrawer(true);
@@ -316,7 +329,7 @@ const CandidateDashboardPage: React.FC = () => {
     setShowStageDrawer(false);
   };
 
-  const handleViewFullDetails = (applicationId: string) => {
+  const handleViewFullDetails = (appId: string) => {
     setShowApplicationDetailDrawer(false);
     setShowApplicationDetailPage(true);
   };
@@ -476,7 +489,6 @@ const CandidateDashboardPage: React.FC = () => {
           <CandidatePendingActions
             actions={mockPendingActions}
             onActionClick={handlePendingActionClick}
-            onDismiss={(actionId) => console.log('Dismiss action:', actionId)}
           />
         </div>
       </div>
