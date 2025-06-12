@@ -74,8 +74,15 @@ export const useCandidateApplicationDetails = (applicationId: string | null) => 
     fetchApplicationDetails();
   }, [applicationId]);
 
+  const submitInterviewReview = (interviewId: string, review: any) => {
+    console.log('Submitting interview review:', { interviewId, review });
+    // Mock implementation - replace with actual API call
+  };
+
   return {
+    applicationDetails: application, // Alias for expected property name
     application,
-    isLoading
+    isLoading,
+    submitInterviewReview
   };
 };

@@ -1,9 +1,11 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
 import { 
   TrendingUp, 
   Calendar, 
@@ -12,7 +14,10 @@ import {
   CheckCircle,
   Users,
   Star,
-  Award
+  Award,
+  Bell,
+  MessageSquare,
+  AlertTriangle
 } from 'lucide-react';
 
 interface CandidateRightDrawerProps {

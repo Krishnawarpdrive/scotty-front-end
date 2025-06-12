@@ -1,17 +1,15 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DataTable } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
+  Eye, 
   FileText, 
-  Building, 
-  Briefcase, 
-  TrendingUp,
-  Download,
-  Eye,
-  Calendar,
+  Calendar, 
+  Clock,
+  Building2,
   MapPin
 } from 'lucide-react';
 
@@ -19,7 +17,7 @@ interface CandidateDataTablesProps {
   candidateId: string;
 }
 
-export const CandidateDataTables: React.FC<CandidateDataTablesProps> = ({ candidateId }) => {
+export const CandidateDataTables: React.FC<CandidateDataTablesProps> = () => {
   const [activeTab, setActiveTab] = useState('documents');
 
   // Mock data - in real implementation, this would come from API
@@ -157,7 +155,7 @@ export const CandidateDataTables: React.FC<CandidateDataTablesProps> = ({ candid
             Documents
           </TabsTrigger>
           <TabsTrigger value="companies" className="flex items-center gap-2">
-            <Building className="h-4 w-4" />
+            <Building2 className="h-4 w-4" />
             Companies
           </TabsTrigger>
           <TabsTrigger value="roles" className="flex items-center gap-2">
