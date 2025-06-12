@@ -3,7 +3,7 @@ export interface ApplicationStage {
   id: string;
   name: string;
   status: 'completed' | 'current' | 'pending';
-  type?: 'document' | 'interview' | 'assessment';
+  type: 'document' | 'interview' | 'assessment' | 'video' | 'questionnaire';
   date?: string;
   completedDate?: string;
   dueDate?: string;
