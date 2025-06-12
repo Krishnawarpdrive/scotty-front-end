@@ -1,26 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { 
   BarChart3, 
-  Settings, 
-  User, 
   Briefcase,
-  TrendingUp,
-  Bell,
   Search,
-  Calendar,
-  MessageSquare,
-  Target,
-  AlertTriangle,
-  CheckCircle
 } from 'lucide-react';
 import { CandidateLeftSidebar } from './components/CandidateLeftSidebar';
 import { CandidateQuickInsights } from './components/CandidateQuickInsights';
 import { CandidateRightDrawer } from './components/CandidateRightDrawer';
-import { CandidateApplicationsTable } from './components/CandidateApplicationsTable';
+import CandidateApplicationsTable from './components/CandidateApplicationsTable';
 import { CandidateStageDrawer } from './components/CandidateStageDrawer';
 import { CandidatePendingActions } from './components/CandidatePendingActions';
 import { CandidateApplicationDetailDrawer } from './components/CandidateApplicationDetailDrawer';
@@ -29,7 +20,7 @@ import { useCandidateDashboardData } from './hooks/useCandidateDashboardData';
 import { useCandidateApplicationDetails } from './hooks/useCandidateApplicationDetails';
 import { CandidateCompanyProgressDrawer } from './components/CandidateCompanyProgressDrawer';
 import { SmartActionCenter } from '@/components/smart-action-center/SmartActionCenter';
-import { BellIcon, MessageSquareIcon, CalendarIcon, BookOpenIcon, ClipboardListIcon, TrendingUpIcon, StarIcon } from 'lucide-react';
+import { BellIcon, MessageSquareIcon, CalendarIcon, TrendingUpIcon } from 'lucide-react';
 
 const CandidateDashboardPage: React.FC = () => {
   const [selectedCandidateId] = useState('123e4567-e89b-12d3-a456-426614174000');
@@ -39,13 +30,11 @@ const CandidateDashboardPage: React.FC = () => {
   const [showApplicationDetailPage, setShowApplicationDetailPage] = useState(false);
   const [showCompanyProgressDrawer, setShowCompanyProgressDrawer] = useState(false);
   const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null);
-  const [selectedStage, setSelectedStage] = useState(null);
+  const [selectedStage, setSelectedStage] = useState<any>(null);
   const [activeMainTab, setActiveMainTab] = useState('applications');
-  const [selectedProgram, setSelectedProgram] = useState<any>(null);
-  const [selectedModule, setSelectedModule] = useState<any>(null);
 
-  const { dashboardData, notifications, messages, isLoading } = useCandidateDashboardData(selectedCandidateId);
-  const { applicationDetails, isLoading: applicationLoading, submitInterviewReview } = useCandidateApplicationDetails(selectedApplicationId);
+  const { dashboardData, isLoading } = useCandidateDashboardData(selectedCandidateId);
+  const { applicationDetails, submitInterviewReview } = useCandidateApplicationDetails(selectedApplicationId);
 
   // Mock data for the mission control interface
   const mockApplications = [
@@ -338,14 +327,6 @@ const CandidateDashboardPage: React.FC = () => {
   };
 
   const urgentActionsCount = mockPendingActions.filter(a => a.type === 'urgent' || a.type === 'overdue').length;
-
-  const handleStartProgram = (program: any) => {
-    setSelectedProgram(program);
-  };
-
-  const handleStartModule = (module: any) => {
-    setSelectedModule(module);
-  };
 
   if (isLoading) {
     return (

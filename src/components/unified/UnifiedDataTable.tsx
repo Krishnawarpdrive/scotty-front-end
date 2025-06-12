@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { DataTable } from '@/components/ui/data-table/DataTable';
 import { DataTableColumn } from '@/components/ui/data-table/types';
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +19,6 @@ interface UnifiedDataTableProps<T extends { id: string }> {
 export function UnifiedDataTable<T extends { id: string }>({
   data,
   columns,
-  searchPlaceholder = 'Search...',
   onRowClick,
   onBulkAction,
   bulkActions = [],
