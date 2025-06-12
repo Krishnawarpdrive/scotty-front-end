@@ -2,7 +2,6 @@
 import React, { useState, useMemo } from 'react';
 import { DataTable } from '@/components/ui/data-table';
 import { DataTableColumn } from '@/components/ui/data-table/types';
-import { useUI } from '@/store/hooks/useUI';
 
 interface UnifiedDataTableProps<T> {
   data: T[];
@@ -25,7 +24,6 @@ export function UnifiedDataTable<T extends { id: string }>({
   actions,
   selectable = false
 }: UnifiedDataTableProps<T>) {
-  const { selectedItems, toggleItemSelection } = useUI();
   const [searchQuery, setSearchQuery] = useState('');
 
   // Filter data based on search query
@@ -44,9 +42,6 @@ export function UnifiedDataTable<T extends { id: string }>({
   }, [data, searchQuery, columns]);
 
   const handleRowClick = (item: T) => {
-    if (selectable) {
-      toggleItemSelection(item.id);
-    }
     onRowClick?.(item);
   };
 

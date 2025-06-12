@@ -3,8 +3,8 @@ import React, { createContext, useContext } from 'react';
 import { useAuth, AppRole, UserProfile } from '@/hooks/useAuth';
 import { User } from '@supabase/supabase-js';
 
-// Export AppRole so it can be used by other components
-export type { AppRole };
+// Update AppRole to include all missing role types
+export type AppRole = 'hr' | 'candidate' | 'interviewer' | 'vendor' | 'client-hr' | 'bo' | 'ams' | 'ta' | 'admin' | 'user' | 'manager' | 'executive';
 
 interface AuthContextType {
   user: User | null;

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -190,7 +190,7 @@ const ProfilePage = () => {
             <div>
               <h3 className="font-medium mb-2">Skills</h3>
               <div className="flex flex-wrap gap-2">
-                {formData.skills?.map((skill, index) => (
+                {formData.skills?.map((skill: string, index: number) => (
                   <Badge key={index} variant="outline">{skill}</Badge>
                 ))}
               </div>
@@ -202,7 +202,7 @@ const ProfilePage = () => {
             <div>
               <h3 className="font-medium mb-2">Achievements</h3>
               <div className="flex flex-wrap gap-2">
-                {formData.achievements?.map((achievement, index) => (
+                {formData.achievements?.map((achievement: string, index: number) => (
                   <Badge key={index} className="bg-yellow-100 text-yellow-800">
                     {achievement}
                   </Badge>

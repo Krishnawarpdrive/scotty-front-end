@@ -17,7 +17,7 @@ import SupportPage from "./pages/SupportPage";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
 import { EnhancedAMSLayout } from "./layouts/EnhancedAMSLayout";
-import AMSRoutes from "./pages/ams";
+import AMSRoutes from "./pages/ams/index";
 import "./App.css";
 
 const queryClient = new QueryClient({

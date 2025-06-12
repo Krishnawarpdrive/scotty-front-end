@@ -1,5 +1,4 @@
 
-import { motion } from 'framer-motion';
 import { CheckCircle, Target, Star } from 'lucide-react';
 import { useUnifiedToast } from '@/hooks/useUnifiedToast';
 
@@ -13,15 +12,6 @@ interface Goal {
 
 export const triggerGoalCompletionToast = (goal: Goal) => {
   const toast = useUnifiedToast();
-  
-  const getIcon = () => {
-    switch (goal.type) {
-      case 'daily': return <CheckCircle className="h-5 w-5 text-green-500" />;
-      case 'weekly': return <Target className="h-5 w-5 text-blue-500" />;
-      case 'monthly': return <Star className="h-5 w-5 text-yellow-500" />;
-      default: return <CheckCircle className="h-5 w-5 text-green-500" />;
-    }
-  };
 
   toast.success({
     title: "Goal Completed! 🎉",

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -9,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { supabase } from '@/integrations/supabase/client';
-import { useEnhancedToast } from '@/components/feedback/EnhancedToast';
+import { useUnifiedToast } from '@/hooks/useUnifiedToast';
 import { Users, UserPlus, Search, Filter } from 'lucide-react';
 import { AppRole } from '@/contexts/AuthContext';
 
@@ -38,13 +39,18 @@ const roleLabels: Record<AppRole, string> = {
   admin: 'Admin',
   user: 'User',
   manager: 'Manager',
-  executive: 'Executive'
+  executive: 'Executive',
+  vendor: 'Vendor',
+  'client-hr': 'Client HR',
+  bo: 'Business Owner',
+  ams: 'AMS',
+  ta: 'Talent Acquisition'
 };
 
 // Map AppRole to DatabaseRole
 const mapToDbRole = (role: AppRole): DatabaseRole => {
   switch (role) {
-    case 'admin': return 'hr';
+    case 'admin': return 'ams';
     case 'user': return 'candidate';
     case 'manager': return 'hr';
     case 'executive': return 'hr';
@@ -62,7 +68,7 @@ const mapFromDbRole = (role: string): AppRole => {
 };
 
 export default function UserManagementPage() {
-  const toast = useEnhancedToast();
+  const toast = useUnifiedToast();
   const [users, setUsers] = useState<UserWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
