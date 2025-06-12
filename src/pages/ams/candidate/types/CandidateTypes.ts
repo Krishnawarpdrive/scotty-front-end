@@ -6,7 +6,7 @@ export interface CandidateApplication {
   location: string;
   salary: string;
   appliedDate: string;
-  status: 'active' | 'pending' | 'rejected' | 'offer';
+  status: 'active' | 'rejected' | 'offer' | 'withdrawn'; // Aligned with CompanyApplication
   roleName: string; // Made required to match CompanyApplication
   companyName: string; // Made required to match CompanyApplication
   currentStage: string; // Made required to match CompanyApplication
