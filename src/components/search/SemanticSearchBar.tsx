@@ -3,23 +3,37 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Filter } from 'lucide-react';
+import { useSemanticSearch, SemanticSearchResult } from '@/hooks/useSemanticSearch';
 
 interface SemanticSearchBarProps {
-  onSearch: (query: string) => void;
+  onSearch?: (query: string) => void;
+  onResults?: (results: SemanticSearchResult[]) => void;
   placeholder?: string;
   className?: string;
 }
 
 export const SemanticSearchBar: React.FC<SemanticSearchBarProps> = ({
   onSearch,
+  onResults,
   placeholder = "Search with natural language...",
   className = ""
 }) => {
   const [query, setQuery] = useState('');
+  const { searchAsync } = useSemanticSearch();
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (query.trim()) {
-      onSearch(query.trim());
+      onSearch?.(query.trim());
+      
+      if (onResults) {
+        try {
+          const results = await searchAsync(query.trim());
+          onResults(results);
+        } catch (error) {
+          console.error('Search failed:', error);
+          onResults([]);
+        }
+      }
     }
   };
 

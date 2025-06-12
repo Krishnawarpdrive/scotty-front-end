@@ -27,19 +27,19 @@ export function usePermissions() {
 
   const fetchPermissions = async () => {
     try {
-      // Convert roles to the database enum format
-      const dbRoles = roles.map(role => {
-        // Map roles to database enum values
-        switch (role) {
-          case 'admin': return 'hr';
-          case 'user': return 'candidate';
-          case 'manager': return 'hr';
-          case 'executive': return 'hr';
-          default: return role;
-        }
-      }).filter(role => 
-        ['hr', 'ta', 'candidate', 'vendor', 'interviewer', 'client-hr', 'bo'].includes(role)
-      );
+      // Map roles to the database enum values, filtering out invalid ones
+      const validDbRoles = ['hr', 'ta', 'candidate', 'vendor', 'interviewer', 'client-hr', 'bo'];
+      const dbRoles = roles
+        .map(role => {
+          switch (role) {
+            case 'admin': return 'hr';
+            case 'user': return 'candidate';
+            case 'manager': return 'hr';
+            case 'executive': return 'hr';
+            default: return role;
+          }
+        })
+        .filter(role => validDbRoles.includes(role));
 
       if (dbRoles.length === 0) {
         setLoading(false);

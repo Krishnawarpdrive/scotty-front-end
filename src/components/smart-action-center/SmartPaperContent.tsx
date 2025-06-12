@@ -6,25 +6,39 @@ import { Badge } from '@/components/ui/badge';
 import { Clock, Target, AlertCircle, CheckCircle } from 'lucide-react';
 
 interface SmartPaperContentProps {
-  title: string;
-  description: string;
-  priority: 'high' | 'medium' | 'low';
-  estimatedTime: string;
-  actionType: 'create' | 'update' | 'review' | 'analyze';
-  onAction: () => void;
-  onDismiss: () => void;
+  title?: string;
+  description?: string;
+  priority?: 'high' | 'medium' | 'low';
+  estimatedTime?: string;
+  actionType?: 'create' | 'update' | 'review' | 'analyze';
+  onAction?: () => void;
+  onDismiss?: () => void;
   insights?: string[];
+  type?: 'urgent' | 'important' | 'contextual';
+  tasks?: any[];
+  notifications?: any[];
+  actions?: any[];
+  onTaskClick?: (task: any) => void;
+  onActionClick?: (action: any) => void;
+  onNotificationDismiss?: (notificationId: string) => void;
 }
 
 export const SmartPaperContent: React.FC<SmartPaperContentProps> = ({
-  title,
-  description,
-  priority,
-  estimatedTime,
-  actionType,
-  onAction,
-  onDismiss,
-  insights = []
+  title = "Smart Action Required",
+  description = "Review and take action on important items",
+  priority = 'medium',
+  estimatedTime = "5 min",
+  actionType = 'review',
+  onAction = () => {},
+  onDismiss = () => {},
+  insights = [],
+  type,
+  tasks = [],
+  notifications = [],
+  actions = [],
+  onTaskClick,
+  onActionClick,
+  onNotificationDismiss
 }) => {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -71,6 +85,32 @@ export const SmartPaperContent: React.FC<SmartPaperContentProps> = ({
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {type && (
+          <div>
+            <h4 className="font-medium text-sm mb-2">{type} Items:</h4>
+            <div className="space-y-2">
+              {tasks.map((task, index) => (
+                <div key={index} className="p-2 bg-gray-50 rounded cursor-pointer" onClick={() => onTaskClick?.(task)}>
+                  {task.title || `Task ${index + 1}`}
+                </div>
+              ))}
+              {notifications.map((notification, index) => (
+                <div key={index} className="p-2 bg-blue-50 rounded flex justify-between items-center">
+                  <span>{notification.message || `Notification ${index + 1}`}</span>
+                  <Button size="sm" variant="ghost" onClick={() => onNotificationDismiss?.(notification.id)}>
+                    ×
+                  </Button>
+                </div>
+              ))}
+              {actions.map((action, index) => (
+                <div key={index} className="p-2 bg-green-50 rounded cursor-pointer" onClick={() => onActionClick?.(action)}>
+                  {action.title || `Action ${index + 1}`}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {insights.length > 0 && (
           <div>
             <h4 className="font-medium text-sm mb-2">Key Insights:</h4>
