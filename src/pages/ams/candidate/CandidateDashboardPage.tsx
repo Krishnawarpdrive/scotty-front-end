@@ -1,15 +1,9 @@
-
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { 
-  FileText, 
-  Calendar, 
-  CheckCircle, 
-  Clock,
   BarChart3, 
   Briefcase,
   Search,
@@ -18,7 +12,6 @@ import {
   CalendarIcon,
   TrendingUpIcon
 } from 'lucide-react';
-import { PersonaRoute } from '@/components/auth/PersonaRoute';
 import { CandidateLeftSidebar } from './components/CandidateLeftSidebar';
 import { CandidateQuickInsights } from './components/CandidateQuickInsights';
 import { CandidateRightDrawer } from './components/CandidateRightDrawer';
