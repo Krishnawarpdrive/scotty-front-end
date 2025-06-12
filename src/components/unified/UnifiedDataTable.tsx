@@ -1,62 +1,64 @@
 
-import { useState } from 'react';
-import { DataTable } from '@/components/ui/data-table/DataTable';
+import React, { useState, useMemo } from 'react';
+import { DataTable } from '@/components/ui/data-table';
 import { DataTableColumn } from '@/components/ui/data-table/types';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { useUI } from '@/store/hooks/useUI';
 
-interface UnifiedDataTableProps<T extends { id: string }> {
+interface UnifiedDataTableProps<T> {
   data: T[];
   columns: DataTableColumn<T>[];
-  searchPlaceholder?: string;
   onRowClick?: (item: T) => void;
-  onBulkAction?: (action: string, items: T[]) => void;
-  bulkActions?: Array<{ key: string; label: string; variant?: 'default' | 'destructive' }>;
-  className?: string;
+  loading?: boolean;
+  emptyMessage?: string;
+  searchable?: boolean;
+  actions?: React.ReactNode;
+  selectable?: boolean;
 }
 
 export function UnifiedDataTable<T extends { id: string }>({
   data,
   columns,
   onRowClick,
-  onBulkAction,
-  bulkActions = [],
-  className,
+  loading = false,
+  emptyMessage = "No data available",
+  searchable = true,
+  actions,
+  selectable = false
 }: UnifiedDataTableProps<T>) {
-  const [selectedItems, setSelectedItems] = useState<T[]>([]);
+  const { selectedItems, toggleItemSelection } = useUI();
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const handleBulkAction = (actionKey: string) => {
-    if (onBulkAction) {
-      onBulkAction(actionKey, selectedItems);
+  // Filter data based on search query
+  const filteredData = useMemo(() => {
+    if (!searchQuery.trim()) return data;
+    
+    return data.filter(item => {
+      return columns.some(column => {
+        if (column.accessorKey) {
+          const value = item[column.accessorKey as keyof T];
+          return String(value).toLowerCase().includes(searchQuery.toLowerCase());
+        }
+        return false;
+      });
+    });
+  }, [data, searchQuery, columns]);
+
+  const handleRowClick = (item: T) => {
+    if (selectable) {
+      toggleItemSelection(item.id);
     }
+    onRowClick?.(item);
   };
 
   return (
-    <div className={cn('space-y-4', className)}>
-      {selectedItems.length > 0 && bulkActions.length > 0 && (
-        <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <Badge variant="secondary">{selectedItems.length} selected</Badge>
-          {bulkActions.map((action) => (
-            <Button
-              key={action.key}
-              variant={action.variant || 'outline'}
-              size="sm"
-              onClick={() => handleBulkAction(action.key)}
-            >
-              {action.label}
-            </Button>
-          ))}
-        </div>
-      )}
-      
-      <DataTable
-        data={data}
-        columns={columns}
-        onRowClick={onRowClick}
-        searchable={true}
-        emptyMessage="No data available"
-      />
-    </div>
+    <DataTable
+      data={filteredData}
+      columns={columns}
+      onRowClick={handleRowClick}
+      loading={loading}
+      emptyMessage={emptyMessage}
+      searchable={searchable}
+      actions={actions}
+    />
   );
 }
