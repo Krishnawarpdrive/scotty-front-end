@@ -6,16 +6,9 @@ import {
   createErrorToast,
   createWarningToast,
   createInfoToast,
-  createLoadingToast,
-  createUploadToast,
-  createDownloadToast,
-  createSaveToast,
-  createDeleteToast,
-  createUserActionToast,
-  createSystemToast
+  createLoadingToast
 } from '../../enhanced-toast';
-import { ToastOptions } from '../../enhanced-toast/types/ToastTypes';
-import { SuperEnhancedToastOptions, PromiseToastOptions } from '../types/SuperEnhancedToastTypes';
+import { SuperEnhancedToastOptions } from '../types/SuperEnhancedToastTypes';
 
 export const useSuperEnhancedToast = () => {
   const { showToast, dismissToast, dismissAll, updateToast, promise } = useToast();

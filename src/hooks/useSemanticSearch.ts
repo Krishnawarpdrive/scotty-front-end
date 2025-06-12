@@ -63,6 +63,48 @@ export const useSemanticSearch = () => {
     }
   }, []);
 
+  const searchAsync = useCallback(async (
+    query: string, 
+    options: SemanticSearchOptions = {}
+  ): Promise<SemanticSearchResult[]> => {
+    if (!query.trim()) {
+      return [];
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { data, error: searchError } = await supabase.functions.invoke('semantic-search', {
+        body: {
+          query: query.trim(),
+          tables: options.tables,
+          limit: options.limit || 10,
+          threshold: options.threshold || 0.5
+        }
+      });
+
+      if (searchError) {
+        throw searchError;
+      }
+
+      const searchResults = data?.results || [];
+      setResults(searchResults);
+      
+      // Log successful search
+      console.log(`Semantic search completed: ${searchResults.length} results in ${data?.search_time_ms || 0}ms`);
+
+      return searchResults;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Search failed';
+      setError(errorMessage);
+      console.error('Semantic search error:', err);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const generateEmbedding = useCallback(async (
     text: string,
     table: string,
@@ -91,6 +133,7 @@ export const useSemanticSearch = () => {
 
   return {
     search,
+    searchAsync,
     generateEmbedding,
     clearResults,
     isLoading,

@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/data-table/DataTable';
 import { Vendor } from '../types/VendorTypes';
 import { createVendorTableColumns } from './table/vendorTableColumns';
-import { useVendorTableActions } from './table/vendorTableActions';
 
 interface VendorsTableProps {
   vendors: Vendor[];
@@ -15,7 +14,13 @@ export const VendorsTable: React.FC<VendorsTableProps> = ({
   vendors, 
   onVendorSelect 
 }) => {
-  const { handleVendorClick } = useVendorTableActions();
+  const handleVendorClick = (vendor: Vendor) => {
+    console.log('Vendor clicked:', vendor);
+    if (onVendorSelect) {
+      onVendorSelect(vendor);
+    }
+  };
+
   const columns = createVendorTableColumns({ onVendorClick: handleVendorClick });
 
   return (

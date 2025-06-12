@@ -12,7 +12,6 @@ interface ClientsPageContentProps {
   searchTerm: string;
   onSearchChange: (query: string) => void;
   selectedClients: string[];
-  toggleFilterPanel: () => void;
   onEditClient: (client: Client) => void;
   onDeleteClient: (id: string) => void;
   onViewClientDetails: (client: Client) => void;
@@ -27,7 +26,6 @@ const ClientsPageContent: React.FC<ClientsPageContentProps> = ({
   searchTerm,
   onSearchChange,
   selectedClients,
-  toggleFilterPanel,
   onEditClient,
   onDeleteClient,
   onViewClientDetails,
@@ -35,6 +33,10 @@ const ClientsPageContent: React.FC<ClientsPageContentProps> = ({
   onSelectAll,
   onSort
 }) => {
+  const toggleFilterPanel = () => {
+    // Empty implementation for now
+  };
+
   if (!isLoading && filteredClients.length === 0 && !searchTerm) {
     return <EmptyState />;
   }

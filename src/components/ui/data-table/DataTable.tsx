@@ -1,142 +1,76 @@
 
-import React, { useState, useEffect } from 'react';
-import { Table, TableHeader, TableBody, TableRow, TableCell } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { X } from 'lucide-react';
-import { DataTableColumn } from './types';
+import { useState } from 'react';
 import { DataTableHeader } from './DataTableHeader';
 import { DataTableRow } from './DataTableRow';
 import { useDataTableFilters } from './useDataTableFilters';
 import { useDataTableSort } from './useDataTableSort';
-import { cn } from "@/lib/utils";
+import { filterData, sortData } from './utils';
+import { DataTableProps } from './types';
 
-export interface DataTableProps<T> {
-  data: T[];
-  columns: DataTableColumn<T>[];
-  onRowClick?: (item: T) => void;
-  isLoading?: boolean;
-  searchPlaceholder?: string;
-}
-
-export function DataTable<T extends Record<string, any>>({ 
-  data, 
+export function DataTable<T extends Record<string, any>>({
+  data,
   columns,
   onRowClick,
-  isLoading = false,
-  searchPlaceholder = "Search..."
+  loading = false,
+  emptyMessage = "No data available",
+  searchable = true,
+  actions,
 }: DataTableProps<T>) {
-  const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [activeColumnFilter, setActiveColumnFilter] = useState<string | null>(null);
+  const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
   
-  const { 
-    filters, 
-    setFilters, 
-    columnValues, 
-    selectedFilterValues, 
-    setSelectedFilterValues,
-    handleFilterChange, 
-    toggleFilterValue, 
-    clearFilter, 
-    clearAllFilters, 
-    filteredData 
+  const {
+    columnValues,
+    selectedFilterValues,
+    handleFilterChange,
+    toggleFilterValue,
+    clearFilter,
+    filteredData: dataFilteredByFilters
   } = useDataTableFilters(data, columns);
+
+  const { sortConfig, handleSort } = useDataTableSort();
+
+  // Apply search filtering
+  let filteredData = filterData(dataFilteredByFilters, searchTerm, columns);
   
-  const { sortConfig, handleSort, sortedData } = useDataTableSort(filteredData);
-  
-  const activeFilterCount = Object.keys(filters).length;
-  
-  // Final data after applying both filtering and sorting
-  const finalData = sortedData;
-  
-  if (isLoading) {
+  // Apply sorting
+  if (sortConfig && sortConfig.key) {
+    filteredData = sortData(filteredData, sortConfig);
+  }
+
+  if (loading) {
     return (
-      <div className="border rounded-md overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {columns.map((column) => (
-                  <DataTableHeader
-                    key={column.id}
-                    column={column}
-                    sortConfig={sortConfig}
-                    handleSort={handleSort}
-                    activeColumnFilter={activeColumnFilter}
-                    setActiveColumnFilter={setActiveColumnFilter}
-                    hoveredColumn={hoveredColumn}
-                    setHoveredColumn={setHoveredColumn}
-                    filters={filters}
-                    columnValues={new Set()}
-                    selectedFilterValues={[]}
-                    handleFilterChange={handleFilterChange}
-                    toggleFilterValue={toggleFilterValue}
-                    clearFilter={clearFilter}
-                  />
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {Array.from({ length: 5 }).map((_, index) => (
-                <TableRow key={index}>
-                  {columns.map((column) => (
-                    <TableCell key={column.id} className="h-[60px]">
-                      <div className="bg-gray-200 h-4 rounded animate-pulse"></div>
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+      <div className="flex items-center justify-center py-8">
+        <div className="text-sm text-muted-foreground">Loading...</div>
       </div>
     );
   }
-  
+
   return (
-    <div className="space-y-4">
-      {/* Master Filter Controls */}
-      {activeFilterCount > 0 && (
-        <div className="flex flex-wrap items-center gap-2 bg-gray-50 p-2 rounded-md">
-          <span className="text-sm font-medium">Active Filters:</span>
-          {Object.entries(filters).map(([columnId, value]) => {
-            const column = columns.find(col => col.id === columnId);
-            return (
-              <Badge 
-                key={columnId} 
-                variant="outline"
-                className="bg-gray-100 text-gray-800 flex items-center gap-1"
-              >
-                {column?.header}: {value.includes('|') ? `${selectedFilterValues[columnId]?.length} selected` : value}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-4 w-4 p-0 ml-1" 
-                  onClick={() => clearFilter(columnId)}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </Badge>
-            );
-          })}
-          {activeFilterCount > 1 && (
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="text-xs h-7" 
-              onClick={clearAllFilters}
-            >
-              Clear all
-            </Button>
+    <div className="w-full">
+      {(searchable || actions) && (
+        <div className="flex items-center justify-between mb-4">
+          {searchable && (
+            <div className="flex-1 max-w-sm">
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
+            </div>
           )}
+          {actions && <div>{actions}</div>}
         </div>
       )}
       
-      <div className="border rounded-md overflow-hidden">
+      <div className="rounded-md border">
         <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
+          <table className="w-full">
+            <thead>
+              <tr className="border-b bg-muted/50">
                 {columns.map((column) => (
                   <DataTableHeader
                     key={column.id}
@@ -147,7 +81,7 @@ export function DataTable<T extends Record<string, any>>({
                     setActiveColumnFilter={setActiveColumnFilter}
                     hoveredColumn={hoveredColumn}
                     setHoveredColumn={setHoveredColumn}
-                    filters={filters}
+                    filters={{}}
                     columnValues={columnValues[column.id] || new Set()}
                     selectedFilterValues={selectedFilterValues[column.id] || []}
                     handleFilterChange={handleFilterChange}
@@ -155,11 +89,17 @@ export function DataTable<T extends Record<string, any>>({
                     clearFilter={clearFilter}
                   />
                 ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {finalData.length > 0 ? (
-                finalData.map((item, index) => (
+              </tr>
+            </thead>
+            <tbody>
+              {filteredData.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="h-24 text-center">
+                    {emptyMessage}
+                  </td>
+                </tr>
+              ) : (
+                filteredData.map((item, index) => (
                   <DataTableRow
                     key={index}
                     item={item}
@@ -167,15 +107,9 @@ export function DataTable<T extends Record<string, any>>({
                     onRowClick={onRowClick}
                   />
                 ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    No results.
-                  </TableCell>
-                </TableRow>
               )}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

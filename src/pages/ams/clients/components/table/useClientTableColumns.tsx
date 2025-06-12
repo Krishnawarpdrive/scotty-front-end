@@ -57,14 +57,15 @@ export const useClientTableColumns = ({
     {
       id: 'createdOn',
       header: 'Created On',
-      accessorKey: (client) => new Date(client.createdOn).toLocaleDateString(),
+      accessorKey: 'createdOn',
       enableSorting: true,
       enableFiltering: true,
+      cell: (client) => new Date(client.createdOn).toLocaleDateString(),
     },
     {
       id: 'lastActivity',
       header: 'Last Activity',
-      accessorKey: (client) => client.lastActivity?.days || 0,
+      accessorKey: 'lastActivity',
       enableSorting: true,
       enableFiltering: false,
       cell: (client) => (
@@ -77,7 +78,7 @@ export const useClientTableColumns = ({
     {
       id: 'roles',
       header: 'Active Roles',
-      accessorKey: (client) => client.roles?.length || 0,
+      accessorKey: 'roles',
       enableFiltering: false,
       cell: (client) => (
         <RolesPopover client={client} />

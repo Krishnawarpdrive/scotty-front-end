@@ -2,11 +2,19 @@
 export interface DataTableColumn<T> {
   id: string;
   header: string;
-  accessorKey?: keyof T | ((data: T) => any);
-  cell?: (data: T) => React.ReactNode;
+  accessorKey?: keyof T;
   enableSorting?: boolean;
   enableFiltering?: boolean;
-  sortable?: boolean;
-  filterable?: boolean;
+  cell?: (value: T) => React.ReactNode;
   width?: string;
+}
+
+export interface DataTableProps<T> {
+  data: T[];
+  columns: DataTableColumn<T>[];
+  onRowClick?: (item: T) => void;
+  loading?: boolean;
+  emptyMessage?: string;
+  searchable?: boolean;
+  actions?: React.ReactNode;
 }
