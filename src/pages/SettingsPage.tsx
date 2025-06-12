@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,8 +13,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const SettingsPage: React.FC = () => {
   const location = useLocation();
-  const persona = getPersonaFromPath(location.pathname) || 'ams';
-  const { profile, loading, error, updateProfile } = useProfile(persona);
+  const { profile, loading, error, updateProfile } = useProfile();
   const [saving, setSaving] = useState(false);
 
   const handlePreferenceChange = async (key: string, value: any) => {
@@ -131,7 +129,7 @@ const SettingsPage: React.FC = () => {
                   <label className="text-sm font-medium">First Name</label>
                   <input 
                     type="text" 
-                    value={profile.first_name}
+                    value={profile.first_name || ''}
                     className="w-full p-2 border rounded-md"
                     disabled={saving}
                   />
@@ -140,7 +138,7 @@ const SettingsPage: React.FC = () => {
                   <label className="text-sm font-medium">Last Name</label>
                   <input 
                     type="text" 
-                    value={profile.last_name}
+                    value={profile.last_name || ''}
                     className="w-full p-2 border rounded-md"
                     disabled={saving}
                   />
@@ -405,7 +403,7 @@ const SettingsPage: React.FC = () => {
                     <h4 className="font-medium">Activity Visibility</h4>
                     <p className="text-sm text-gray-500">Show your activity to team members</p>
                   </div>
-                  <Switch checked={profile.privacy_settings.activity_visibility} />
+                  <Switch checked={profile.privacy_settings.activity_visibility === 'public'} />
                 </div>
                 
                 <div className="flex items-center justify-between">
@@ -452,7 +450,7 @@ const SettingsPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Language</label>
-                  <Select value={profile.language}>
+                  <Select value={profile.language || 'en'}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -467,7 +465,7 @@ const SettingsPage: React.FC = () => {
                 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Timezone</label>
-                  <Select value={profile.timezone}>
+                  <Select value={profile.timezone || 'America/New_York'}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>

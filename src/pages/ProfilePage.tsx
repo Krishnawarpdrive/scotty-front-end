@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -43,13 +42,34 @@ const ProfilePage = () => {
         preferences: {
           theme: "light",
           notifications: true,
-          emailUpdates: true
+          emailUpdates: true,
+          compact_mode: false,
+          dashboard_layout: "default",
+          notification_preferences: {
+            email: true,
+            push: true,
+            inApp: true,
+            email_notifications: true,
+            push_notifications: true,
+            in_app_notifications: true,
+            digest_frequency: "daily"
+          },
+          accessibility_settings: {
+            highContrast: false,
+            fontSize: "medium",
+            reduceMotion: false
+          }
         },
         privacy_settings: {
           profile_visibility: "public",
           contact_visibility: "connections",
-          activity_visibility: "private"
-        }
+          activity_visibility: "private",
+          data_sharing_consent: false
+        },
+        first_name: "John",
+        last_name: "Doe",
+        language: "en",
+        timezone: "America/New_York"
       };
       setFormData(defaultUser);
     }

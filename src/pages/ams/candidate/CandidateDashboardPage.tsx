@@ -306,8 +306,8 @@ const CandidateDashboardPage: React.FC = () => {
     setShowCompanyProgressDrawer(true);
   };
 
-  const handleQuickAction = (appId: string, action: string) => {
-    console.log('Quick action:', action, 'for application:', appId);
+  const handleQuickAction = (action: string) => {
+    console.log('Quick action:', action);
     if (action === 'continue') {
       setSelectedStage(mockStageData);
       setShowStageDrawer(true);
