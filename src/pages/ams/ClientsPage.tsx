@@ -37,7 +37,7 @@ const ClientsPage = () => {
     setIsAccountDrawerOpen(true);
   };
 
-  const handleEditClient = () => {
+  const handleEditClient = (client: Client) => {
     toast({
       title: "Not implemented",
       description: "This feature is not implemented yet.",

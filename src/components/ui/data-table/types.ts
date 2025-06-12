@@ -15,4 +15,6 @@ export interface DataTableProps<T> {
   onRowClick?: (item: T) => void;
   loading?: boolean;
   emptyMessage?: string;
+  searchable?: boolean;
+  actions?: React.ReactNode;
 }

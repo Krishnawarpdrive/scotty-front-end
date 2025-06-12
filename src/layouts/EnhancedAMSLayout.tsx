@@ -1,7 +1,6 @@
-
-import React from "react";
-import { Outlet } from "react-router-dom";
-import AMSSidebar from "./AMSSidebar";
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import AMSSidebar from './AMSSidebar';
 import { BreadcrumbNavigation } from "@/components/navigation/BreadcrumbNavigation";
 import { useUI } from "@/store/hooks/useUI";
 import { Button } from "@/components/ui/button";

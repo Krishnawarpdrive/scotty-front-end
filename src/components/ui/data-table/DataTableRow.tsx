@@ -21,7 +21,7 @@ export function DataTableRow<T>({
       {columns.map((column) => {
         const value = column.cell 
           ? column.cell(item)
-          : column.accessorKey ? getColumnValue(item, column.accessorKey) : '';
+          : column.accessorKey ? getColumnValue(item, String(column.accessorKey)) : '';
         
         return (
           <td 

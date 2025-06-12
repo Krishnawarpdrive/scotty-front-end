@@ -10,7 +10,8 @@ export const filterData = <T>(
   
   return data.filter((item) =>
     columns.some((column) => {
-      const value = getColumnValue(item, column.accessorKey);
+      if (!column.accessorKey) return false;
+      const value = getColumnValue(item, String(column.accessorKey));
       return value?.toString().toLowerCase().includes(searchTerm.toLowerCase());
     })
   );

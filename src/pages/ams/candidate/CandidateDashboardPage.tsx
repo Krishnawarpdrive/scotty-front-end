@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -29,6 +29,7 @@ import { useCandidateDashboardData } from './hooks/useCandidateDashboardData';
 import { useCandidateApplicationDetails } from './hooks/useCandidateApplicationDetails';
 import { CandidateCompanyProgressDrawer } from './components/CandidateCompanyProgressDrawer';
 import { SmartActionCenter } from '@/components/smart-action-center/SmartActionCenter';
+import { BellIcon, MessageSquareIcon, CalendarIcon, BookOpenIcon, ClipboardListIcon, TrendingUpIcon, StarIcon } from 'lucide-react';
 
 const CandidateDashboardPage: React.FC = () => {
   const [selectedCandidateId] = useState('123e4567-e89b-12d3-a456-426614174000');
@@ -40,7 +41,9 @@ const CandidateDashboardPage: React.FC = () => {
   const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null);
   const [selectedStage, setSelectedStage] = useState(null);
   const [activeMainTab, setActiveMainTab] = useState('applications');
-  
+  const [selectedProgram, setSelectedProgram] = useState<any>(null);
+  const [selectedModule, setSelectedModule] = useState<any>(null);
+
   const { dashboardData, notifications, messages, isLoading } = useCandidateDashboardData(selectedCandidateId);
   const { applicationDetails, isLoading: applicationLoading, submitInterviewReview } = useCandidateApplicationDetails(selectedApplicationId);
 
@@ -336,6 +339,14 @@ const CandidateDashboardPage: React.FC = () => {
 
   const urgentActionsCount = mockPendingActions.filter(a => a.type === 'urgent' || a.type === 'overdue').length;
 
+  const handleStartProgram = (program: any) => {
+    setSelectedProgram(program);
+  };
+
+  const handleStartModule = (module: any) => {
+    setSelectedModule(module);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -377,7 +388,7 @@ const CandidateDashboardPage: React.FC = () => {
                   Quick Search
                 </Button>
                 <Button variant="outline" size="sm" className="flex items-center gap-2">
-                  <Bell className="h-4 w-4" />
+                  <BellIcon className="h-4 w-4" />
                   {urgentActionsCount > 0 && (
                     <Badge className="bg-red-500 text-white text-xs px-1 py-0 min-w-[16px] h-4">
                       {urgentActionsCount}
@@ -411,21 +422,21 @@ const CandidateDashboardPage: React.FC = () => {
                   value="insights" 
                   className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
                 >
-                  <TrendingUp className="h-4 w-4 mr-2" />
+                  <TrendingUpIcon className="h-4 w-4 mr-2" />
                   Insights
                 </TabsTrigger>
                 <TabsTrigger 
                   value="calendar" 
                   className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
                 >
-                  <Calendar className="h-4 w-4 mr-2" />
+                  <CalendarIcon className="h-4 w-4 mr-2" />
                   Schedule
                 </TabsTrigger>
                 <TabsTrigger 
                   value="messages" 
                   className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
                 >
-                  <MessageSquare className="h-4 w-4 mr-2" />
+                  <MessageSquareIcon className="h-4 w-4 mr-2" />
                   Messages
                 </TabsTrigger>
               </TabsList>
@@ -459,7 +470,7 @@ const CandidateDashboardPage: React.FC = () => {
               <TabsContent value="calendar" className="p-6 m-0">
                 <Card>
                   <CardContent className="p-12 text-center">
-                    <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <CalendarIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Interview Calendar</h3>
                     <p className="text-gray-600">Your upcoming interviews and important dates will appear here.</p>
                   </CardContent>
@@ -469,7 +480,7 @@ const CandidateDashboardPage: React.FC = () => {
               <TabsContent value="messages" className="p-6 m-0">
                 <Card>
                   <CardContent className="p-12 text-center">
-                    <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <MessageSquareIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Messages & Communications</h3>
                     <p className="text-gray-600">All your communications with recruiters and hiring teams will be here.</p>
                   </CardContent>

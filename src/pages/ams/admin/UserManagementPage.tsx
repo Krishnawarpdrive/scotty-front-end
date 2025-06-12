@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -36,7 +35,6 @@ const roleLabels: Record<AppRole, string> = {
   hr: 'HR Manager',
   candidate: 'Candidate',
   interviewer: 'Interviewer',
-  bo: 'Business Owner',
   admin: 'Admin',
   user: 'User',
   manager: 'Manager',

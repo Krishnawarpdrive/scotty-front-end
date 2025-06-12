@@ -12,10 +12,10 @@ export const useDataTableFilters = <T>(data: T[], columns: DataTableColumn<T>[])
     const values: Record<string, Set<string>> = {};
     
     columns.forEach(column => {
-      if (column.enableFiltering) {
+      if (column.enableFiltering && column.accessorKey) {
         values[column.id] = new Set();
         data.forEach(item => {
-          const value = getColumnValue(item, column.accessorKey);
+          const value = getColumnValue(item, String(column.accessorKey));
           if (value !== null && value !== undefined && value !== '') {
             values[column.id].add(String(value));
           }
@@ -33,9 +33,9 @@ export const useDataTableFilters = <T>(data: T[], columns: DataTableColumn<T>[])
         if (values.length === 0) return true;
         
         const column = columns.find(col => col.id === columnId);
-        if (!column) return true;
+        if (!column || !column.accessorKey) return true;
         
-        const itemValue = getColumnValue(item, column.accessorKey);
+        const itemValue = getColumnValue(item, String(column.accessorKey));
         return values.includes(String(itemValue));
       });
     });
