@@ -25,6 +25,7 @@ import { useCandidateApplicationDetails } from './hooks/useCandidateApplicationD
 import { CandidateCompanyProgressDrawer } from './components/CandidateCompanyProgressDrawer';
 import { SmartActionCenter } from '@/components/smart-action-center/SmartActionCenter';
 import { CandidateApplication } from './types/CandidateTypes';
+import { CompanyApplication } from './types/CompanyTypes';
 
 const CandidateDashboardPage: React.FC = () => {
   const [selectedCandidateId] = useState('123e4567-e89b-12d3-a456-426614174000');
@@ -352,6 +353,30 @@ const CandidateDashboardPage: React.FC = () => {
     );
   }
 
+  // Convert CandidateApplication to CompanyApplication when needed
+  const convertToCompanyApplication = (candidateApp: CandidateApplication): CompanyApplication => {
+    return {
+      id: candidateApp.id,
+      title: candidateApp.title,
+      company: candidateApp.company,
+      location: candidateApp.location,
+      salary: candidateApp.salary,
+      appliedDate: candidateApp.appliedDate,
+      status: candidateApp.status,
+      roleName: candidateApp.roleName,
+      companyName: candidateApp.companyName,
+      currentStage: candidateApp.currentStage,
+      progress: candidateApp.progress,
+      priority: candidateApp.priority,
+      nextAction: candidateApp.nextAction,
+      daysInStage: candidateApp.daysInStage,
+      hasPendingActions: candidateApp.hasPendingActions,
+      alertReason: candidateApp.alertReason,
+      nextDueDate: candidateApp.nextDueDate,
+      stages: candidateApp.stages
+    };
+  };
+
   // Show detail page if selected
   if (showApplicationDetailPage && selectedApplicationId) {
     return (
@@ -534,7 +559,12 @@ const CandidateDashboardPage: React.FC = () => {
           setShowCompanyProgressDrawer(false);
           setSelectedApplicationId(null);
         }}
-        application={selectedApplicationId ? mockApplications.find(app => app.id === selectedApplicationId) || null : null}
+        application={selectedApplicationId ? 
+          (() => {
+            const candidateApp = mockApplications.find(app => app.id === selectedApplicationId);
+            return candidateApp ? convertToCompanyApplication(candidateApp) : null;
+          })() : null
+        }
       />
     </div>
   );

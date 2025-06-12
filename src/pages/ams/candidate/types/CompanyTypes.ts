@@ -1,4 +1,6 @@
 
+import { ApplicationStage } from './SharedApplicationTypes';
+
 export interface CompanyApplication {
   id: string;
   title: string;
@@ -17,21 +19,5 @@ export interface CompanyApplication {
   hasPendingActions?: boolean;
   alertReason?: string;
   nextDueDate?: string;
-  stages?: Array<{
-    id: string;
-    name: string;
-    status: 'completed' | 'current' | 'pending';
-    type?: 'document' | 'interview' | 'assessment';
-    date?: string;
-    completedDate?: string;
-    dueDate?: string;
-    description?: string;
-    duration?: string;
-    interviewer?: string;
-    location?: string;
-    hasAction?: boolean;
-    actionType?: string;
-    documents?: string[];
-    notes?: string;
-  }>;
+  stages?: ApplicationStage[]; // Using shared type to ensure compatibility
 }
