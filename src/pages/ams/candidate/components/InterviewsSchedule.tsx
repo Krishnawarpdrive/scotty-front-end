@@ -10,10 +10,10 @@ import {
 } from 'lucide-react';
 
 interface InterviewsScheduleProps {
-  dashboardData: any;
+  // Remove unused dashboardData prop
 }
 
-export const InterviewsSchedule: React.FC<InterviewsScheduleProps> = ({ dashboardData }) => {
+export const InterviewsSchedule: React.FC<InterviewsScheduleProps> = () => {
   const mockInterviews = [
     {
       id: '1',

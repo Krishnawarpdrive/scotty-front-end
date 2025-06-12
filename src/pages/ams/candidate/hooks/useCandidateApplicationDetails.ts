@@ -21,6 +21,14 @@ export interface ApplicationDetails {
   responsibilities: string[];
   benefits: string[];
   companyDescription: string;
+  interviewHistory?: Array<{
+    id: string;
+    date: string;
+    type: string;
+    interviewer: string;
+    feedback?: string;
+    status: string;
+  }>;
   applicationStages: Array<{
     name: string;
     status: 'completed' | 'current' | 'pending';
@@ -64,6 +72,16 @@ export const useCandidateApplicationDetails = (applicationId: string | null) => 
       'Competitive salary and equity package',
       'Comprehensive health, dental, and vision insurance',
       'Flexible work arrangements'
+    ],
+    interviewHistory: [
+      {
+        id: '1',
+        date: '2024-01-18',
+        type: 'Phone Screening',
+        interviewer: 'Sarah Chen (HR Manager)',
+        feedback: 'Positive feedback on communication skills and technical background.',
+        status: 'completed'
+      }
     ],
     applicationStages: [
       {

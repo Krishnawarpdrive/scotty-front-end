@@ -10,6 +10,7 @@ export const checklistFormSchema = z.object({
   roleId: z.string().optional(),
   clientId: z.string().optional(),
   subdomain: z.string().optional(),
+  description: z.string().optional(),
   items: z.array(
     z.object({
       id: z.string(),
@@ -40,3 +41,4 @@ export const checklistFormSchema = z.object({
 });
 
 export type ChecklistFormValues = z.infer<typeof checklistFormSchema>;
+export type ChecklistFormData = ChecklistFormValues; // Export alias for backward compatibility

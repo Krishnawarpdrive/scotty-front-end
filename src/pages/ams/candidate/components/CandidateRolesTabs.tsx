@@ -5,10 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 interface CandidateRolesTabsProps {
-  dashboardData: any;
+  // Remove unused dashboardData prop
 }
 
-export const CandidateRolesTabs: React.FC<CandidateRolesTabsProps> = ({ dashboardData }) => {
+export const CandidateRolesTabs: React.FC<CandidateRolesTabsProps> = () => {
   const mockRoles = [
     {
       id: '1',
