@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import ClientsPageContent from './components/ClientsPageContent';
-import ClientDrawer from './components/drawer/ClientDrawer';
-import { Client } from './types/ClientTypes';
+import ClientsPageContent from './clients/components/ClientsPageContent';
+import ClientDrawer from './clients/components/drawer/ClientDrawer';
+import { Client } from './clients/types/ClientTypes';
 import { generateMockClients } from '@/data/mock-data-generator';
 import { useTableSelection } from '@/design-system/hooks/useDesignSystem';
 
@@ -69,11 +70,7 @@ const ClientsPage: React.FC = () => {
   const {
     selectedItems: selectedClients,
     toggleItem: toggleClient,
-    toggleAll: toggleSelectAll,
-    isSelected: isClientSelected,
-    isAllSelected: areAllClientsSelected,
-    isPartiallySelected: areSomeClientsSelected,
-    selectedCount
+    toggleAll: toggleSelectAll
   } = useTableSelection(sortedClients);
 
   const handleEditClient = (client: Client) => {
@@ -98,18 +95,6 @@ const ClientsPage: React.FC = () => {
 
   const handleSelectAll = () => {
     toggleSelectAll();
-  };
-
-  const handleBulkAction = (action: string, clients: Client[]) => {
-    console.log(`Bulk action: ${action}`, clients);
-    switch (action) {
-      case 'delete':
-        console.log('Deleting clients:', clients.map(c => c.id));
-        break;
-      case 'export':
-        console.log('Exporting clients:', clients.map(c => c.id));
-        break;
-    }
   };
 
   const handleClientCreated = (newClient: Client) => {
