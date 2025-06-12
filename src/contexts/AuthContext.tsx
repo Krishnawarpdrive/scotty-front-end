@@ -1,9 +1,9 @@
 
 import React, { createContext, useContext } from 'react';
-import { useAuth, AppRole, UserProfile } from '@/hooks/useAuth';
+import { useAuth, UserProfile } from '@/hooks/useAuth';
 import { User } from '@supabase/supabase-js';
 
-// Update AppRole to include all missing role types
+// Define AppRole type consistently
 export type AppRole = 'hr' | 'candidate' | 'interviewer' | 'vendor' | 'client-hr' | 'bo' | 'ams' | 'ta' | 'admin' | 'user' | 'manager' | 'executive';
 
 interface AuthContextType {

@@ -11,7 +11,6 @@ interface UnifiedDataTableProps<T> {
   emptyMessage?: string;
   searchable?: boolean;
   actions?: React.ReactNode;
-  selectable?: boolean;
 }
 
 export function UnifiedDataTable<T extends { id: string }>({
@@ -21,8 +20,7 @@ export function UnifiedDataTable<T extends { id: string }>({
   loading = false,
   emptyMessage = "No data available",
   searchable = true,
-  actions,
-  selectable = false
+  actions
 }: UnifiedDataTableProps<T>) {
   const [searchQuery, setSearchQuery] = useState('');
 

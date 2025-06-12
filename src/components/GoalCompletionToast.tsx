@@ -1,5 +1,4 @@
 
-import { CheckCircle, Target, Star } from 'lucide-react';
 import { useUnifiedToast } from '@/hooks/useUnifiedToast';
 
 interface Goal {

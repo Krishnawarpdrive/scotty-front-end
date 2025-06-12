@@ -52,7 +52,7 @@ export const useAuth = () => {
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchUserProfile(session.user.id);
@@ -80,22 +80,22 @@ export const useAuth = () => {
           id: profileData.user_id,
           name: `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim(),
           email: profileData.email || '',
-          role: profileData.role || 'user',
+          role: 'user', // Default role
           department: profileData.department || '',
-          avatarUrl: profileData.avatar_url,
-          bio: profileData.bio,
-          location: profileData.location,
-          phone: profileData.phone,
-          joinDate: profileData.created_at,
-          skills: profileData.skills || [],
-          achievements: profileData.achievements || [],
-          socialLinks: profileData.social_links || {},
-          preferences: profileData.preferences || {
+          avatarUrl: profileData.avatar_url || undefined,
+          bio: undefined, // Not in current schema
+          location: undefined, // Not in current schema
+          phone: profileData.phone || undefined,
+          joinDate: profileData.created_at || '',
+          skills: [], // Not in current schema
+          achievements: [], // Not in current schema
+          socialLinks: {}, // Not in current schema
+          preferences: {
             theme: 'light',
             notifications: true,
             emailUpdates: true
           },
-          privacy_settings: profileData.privacy_settings || {
+          privacy_settings: {
             profile_visibility: 'public',
             contact_visibility: 'connections',
             activity_visibility: 'private'

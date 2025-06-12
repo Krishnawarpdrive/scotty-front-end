@@ -17,14 +17,28 @@ export interface UserProfile {
     github?: string;
     twitter?: string;
   };
-  preferences?: {
-    theme: string;
-    notifications: boolean;
-    emailUpdates: boolean;
-  };
+  preferences?: UserPreferences;
   privacy_settings?: {
     profile_visibility: string;
     contact_visibility: string;
     activity_visibility: string;
+  };
+}
+
+export interface UserPreferences {
+  theme: string;
+  notifications: boolean;
+  emailUpdates: boolean;
+  compact_mode?: boolean;
+  dashboard_layout?: string;
+  notification_preferences?: {
+    email: boolean;
+    push: boolean;
+    inApp: boolean;
+  };
+  accessibility_settings?: {
+    highContrast: boolean;
+    fontSize: string;
+    reduceMotion: boolean;
   };
 }

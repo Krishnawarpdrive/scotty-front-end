@@ -1,12 +1,14 @@
 
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { SmartActionContextService, ActionContext, PendingTask, SmartAction } from '@/services/SmartActionContextService';
+import { SmartActionContextService, ActionContext, PendingTask, SmartAction, SmartNotification } from '@/services/SmartActionContextService';
 
 interface SmartActionState {
   context: ActionContext | null;
   pendingTasks: PendingTask[];
-  notifications: any[];
+  notifications: SmartNotification[];
   isLoading: boolean;
+  actions: any[];
+  isVisible: boolean;
 }
 
 interface SmartActionContextType extends SmartActionState {
@@ -14,6 +16,10 @@ interface SmartActionContextType extends SmartActionState {
   addPendingTask: (task: PendingTask) => void;
   removePendingTask: (taskId: string) => void;
   executeAction: (action: SmartAction) => Promise<void>;
+  toggleVisibility: () => void;
+  handleTaskClick: (task: PendingTask) => void;
+  handleActionClick: (action: any) => void;
+  handleNotificationDismiss: (id: string) => void;
 }
 
 const initialState: SmartActionState = {
@@ -21,13 +27,18 @@ const initialState: SmartActionState = {
   pendingTasks: [],
   notifications: [],
   isLoading: false,
+  actions: [],
+  isVisible: false,
 };
 
 type SmartActionActionType =
   | { type: 'SET_CONTEXT'; payload: Partial<ActionContext> }
   | { type: 'ADD_PENDING_TASK'; payload: PendingTask }
   | { type: 'REMOVE_PENDING_TASK'; payload: string }
-  | { type: 'SET_LOADING'; payload: boolean };
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'TOGGLE_VISIBILITY' }
+  | { type: 'ADD_NOTIFICATION'; payload: SmartNotification }
+  | { type: 'REMOVE_NOTIFICATION'; payload: string };
 
 const smartActionReducer = (state: SmartActionState, action: SmartActionActionType): SmartActionState => {
   switch (action.type) {
@@ -50,6 +61,21 @@ const smartActionReducer = (state: SmartActionState, action: SmartActionActionTy
       return {
         ...state,
         isLoading: action.payload,
+      };
+    case 'TOGGLE_VISIBILITY':
+      return {
+        ...state,
+        isVisible: !state.isVisible,
+      };
+    case 'ADD_NOTIFICATION':
+      return {
+        ...state,
+        notifications: [...state.notifications, action.payload],
+      };
+    case 'REMOVE_NOTIFICATION':
+      return {
+        ...state,
+        notifications: state.notifications.filter(n => n.id !== action.payload),
       };
     default:
       return state;
@@ -86,12 +112,32 @@ export const SmartActionProvider: React.FC<SmartActionProviderProps> = ({ childr
     }
   };
 
+  const toggleVisibility = () => {
+    dispatch({ type: 'TOGGLE_VISIBILITY' });
+  };
+
+  const handleTaskClick = (task: PendingTask) => {
+    console.log('Task clicked:', task);
+  };
+
+  const handleActionClick = (action: any) => {
+    console.log('Action clicked:', action);
+  };
+
+  const handleNotificationDismiss = (id: string) => {
+    dispatch({ type: 'REMOVE_NOTIFICATION', payload: id });
+  };
+
   const value: SmartActionContextType = {
     ...state,
     updateContext,
     addPendingTask,
     removePendingTask,
     executeAction,
+    toggleVisibility,
+    handleTaskClick,
+    handleActionClick,
+    handleNotificationDismiss,
   };
 
   return (

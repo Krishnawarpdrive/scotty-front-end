@@ -1,28 +1,15 @@
 
 import React from 'react';
-import { EnhancedToastProvider } from '@/components/feedback/enhanced-toast';
+import { SuperEnhancedToastProvider } from '@/components/feedback/super-enhanced-toast';
 
 interface UnifiedToastProviderProps {
   children: React.ReactNode;
 }
 
-/**
- * Unified Toast Provider - Single provider for all toast functionality
- * 
- * This provider ensures consistent toast behavior across the entire application
- * with smart positioning, enhanced animations, and optimal user experience.
- */
 export const UnifiedToastProvider: React.FC<UnifiedToastProviderProps> = ({ children }) => {
   return (
-    <EnhancedToastProvider
-      position="top-right"
-      maxToasts={5}
-      adaptToViewport={true}
-      avoidOverlap={true}
-    >
+    <SuperEnhancedToastProvider>
       {children}
-    </EnhancedToastProvider>
+    </SuperEnhancedToastProvider>
   );
 };
-
-export default UnifiedToastProvider;

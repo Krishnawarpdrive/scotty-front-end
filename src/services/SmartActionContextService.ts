@@ -4,6 +4,9 @@ export interface ActionContext {
   selectedItems?: string[];
   recentActions?: string[];
   userRole?: string;
+  pendingTasks?: PendingTask[];
+  notifications?: SmartNotification[];
+  isUrgent?: boolean;
 }
 
 export interface PendingTask {
@@ -12,6 +15,14 @@ export interface PendingTask {
   description?: string;
   priority: 'high' | 'medium' | 'low';
   dueDate?: string;
+}
+
+export interface SmartNotification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'warning' | 'error' | 'success';
+  timestamp: string;
 }
 
 export interface SmartAction {
@@ -32,7 +43,10 @@ export class SmartActionContextService {
       currentPage: window.location.pathname,
       selectedItems: [],
       recentActions: [],
-      userRole: 'user'
+      userRole: 'user',
+      pendingTasks: [],
+      notifications: [],
+      isUrgent: false
     };
   }
 }
