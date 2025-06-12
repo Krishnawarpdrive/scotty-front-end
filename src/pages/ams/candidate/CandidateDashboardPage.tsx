@@ -298,6 +298,17 @@ const CandidateDashboardPage: React.FC = () => {
     supportContact: 'sarah.recruiter@techcorp.com'
   };
 
+  // Mock data for sidebar
+  const mockNotifications = [
+    { id: '1', title: 'Interview Tomorrow', message: 'Technical interview at 2:00 PM' },
+    { id: '2', title: 'Document Update', message: 'Portfolio submission required' }
+  ];
+
+  const mockMessages = [
+    { id: '1', sender: 'HR Team', preview: 'Interview confirmation...' },
+    { id: '2', sender: 'Sarah Chen', preview: 'Additional documents needed...' }
+  ];
+
   const handleApplicationClick = (application: any) => {
     console.log('Opening application details:', application.roleName);
     setSelectedApplicationId(application.id);
@@ -390,7 +401,11 @@ const CandidateDashboardPage: React.FC = () => {
   return (
     <div className="h-screen flex bg-gray-50">
       {/* Left Sidebar */}
-      <CandidateLeftSidebar data={dashboardData} />
+      <CandidateLeftSidebar 
+        dashboardData={dashboardData} 
+        notifications={mockNotifications}
+        messages={mockMessages}
+      />
 
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden">
@@ -478,15 +493,7 @@ const CandidateDashboardPage: React.FC = () => {
               </TabsContent>
 
               <TabsContent value="insights" className="p-6 m-0">
-                <CandidateQuickInsights 
-                  insights={[]} 
-                  overallStats={dashboardData?.quickStats || {
-                    responseRate: 0,
-                    averageProgressTime: '0d',
-                    interviewSuccessRate: 0,
-                    activeApplications: 0
-                  }} 
-                />
+                <CandidateQuickInsights dashboardData={dashboardData} />
               </TabsContent>
 
               <TabsContent value="calendar" className="p-6 m-0">
@@ -536,8 +543,6 @@ const CandidateDashboardPage: React.FC = () => {
         open={showStageDrawer}
         onClose={() => setShowStageDrawer(false)}
         stageData={selectedStage}
-        onContentAction={handleContentAction}
-        onStageComplete={handleStageComplete}
       />
 
       {/* Application Detail Drawer */}

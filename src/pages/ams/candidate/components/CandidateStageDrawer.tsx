@@ -1,19 +1,8 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { 
-  ArrowRight,
-  Calendar,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  FileText,
-  MessageSquare
-} from 'lucide-react';
 
 interface CandidateStageDrawerProps {
   open: boolean;
@@ -26,8 +15,6 @@ export const CandidateStageDrawer: React.FC<CandidateStageDrawerProps> = ({
   onClose,
   stageData
 }) => {
-  const [activeContent] = useState('overview');
-
   return (
     <Drawer open={open} onOpenChange={onClose}>
       <DrawerContent className="max-h-[90vh] w-[60%] ml-auto">
