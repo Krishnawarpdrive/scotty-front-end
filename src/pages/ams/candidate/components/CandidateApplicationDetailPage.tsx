@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { 
   ArrowLeft,
   MapPin,
-  Briefcase,
-  Star,
-  MessageSquare
+  Briefcase
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -170,7 +168,6 @@ Key responsibilities include:
             <div>
               <h1 className="text-2xl font-bold text-gray-900">{application.roleName}</h1>
               <div className="flex items-center gap-2 mt-2">
-                <Building className="h-4 w-4 text-gray-600" />
                 <span className="text-lg text-gray-600">{application.companyName}</span>
               </div>
               <div className="flex items-center gap-4 mt-3 text-sm text-gray-600">
@@ -183,7 +180,6 @@ Key responsibilities include:
                   {application.employmentType} • {application.workMode}
                 </div>
                 <div className="flex items-center gap-1">
-                  <DollarSign className="h-4 w-4" />
                   {application.salaryRange}
                 </div>
               </div>
@@ -223,14 +219,11 @@ Key responsibilities include:
                     stage.status === 'completed' ? 'bg-green-100' :
                     stage.status === 'current' ? 'bg-blue-100' : 'bg-gray-100'
                   )}>
-                    {stage.status === 'completed' ? (
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <div className={cn(
-                        'w-3 h-3 rounded-full',
-                        stage.status === 'current' ? 'bg-blue-600' : 'bg-gray-400'
-                      )} />
-                    )}
+                    <div className={cn(
+                      'w-3 h-3 rounded-full',
+                      stage.status === 'completed' ? 'bg-green-600' :
+                      stage.status === 'current' ? 'bg-blue-600' : 'bg-gray-400'
+                    )} />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3">
@@ -256,7 +249,6 @@ Key responsibilities include:
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Building className="h-5 w-5" />
               About {application.companyName}
             </CardTitle>
           </CardHeader>
@@ -269,7 +261,6 @@ Key responsibilities include:
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
               Job Description
             </CardTitle>
           </CardHeader>
@@ -355,7 +346,7 @@ Key responsibilities include:
             <div className="grid grid-cols-2 gap-3">
               {application.benefits.map((benefit, index) => (
                 <div key={index} className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                  <div className="w-2 h-2 bg-green-600 rounded-full mt-2"></div>
                   <p className="text-gray-700">{benefit}</p>
                 </div>
               ))}
