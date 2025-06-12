@@ -19,7 +19,7 @@ export interface CandidateApplication {
   hasPendingActions?: boolean;
   alertReason?: string;
   nextDueDate?: string;
-  stages?: ApplicationStage[]; // Using shared type and making it required to match usage
+  stages: ApplicationStage[]; // Made required to match CompanyApplication
 }
 
 export interface CandidateStats {

@@ -19,5 +19,5 @@ export interface CompanyApplication {
   hasPendingActions?: boolean;
   alertReason?: string;
   nextDueDate?: string;
-  stages?: ApplicationStage[]; // Using shared type to ensure compatibility
+  stages: ApplicationStage[]; // Made required (not optional) to fix type compatibility
 }

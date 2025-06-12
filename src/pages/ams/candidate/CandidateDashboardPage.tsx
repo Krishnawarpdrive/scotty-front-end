@@ -1,27 +1,38 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
-  BarChart3, 
+  Calendar, 
+  Clock, 
+  FileText, 
+  MessageSquare, 
+  Bell, 
+  ChevronRight, 
+  TrendingUp,
+  AlertCircle,
+  CheckCircle,
+  User,
+  Building,
+  MapPin,
+  Phone,
+  Mail,
   Briefcase,
-  Search,
-  BellIcon,
-  MessageSquareIcon,
-  CalendarIcon,
-  TrendingUpIcon
+  Star
 } from 'lucide-react';
-import { CandidateLeftSidebar } from './components/CandidateLeftSidebar';
-import { CandidateQuickInsights } from './components/CandidateQuickInsights';
-import { CandidateRightDrawer } from './components/CandidateRightDrawer';
-import CandidateApplicationsTable from './components/CandidateApplicationsTable';
-import { CandidateStageDrawer } from './components/CandidateStageDrawer';
-import { CandidatePendingActions } from './components/CandidatePendingActions';
-import { CandidateApplicationDetailDrawer } from './components/CandidateApplicationDetailDrawer';
+import { CandidateMetricsCards } from './components/CandidateMetricsCards';
+import { ApplicationsOverview } from './components/ApplicationsOverview';
+import { CandidateActivityFeed } from './components/CandidateActivityFeed';
+import { InterviewsSchedule } from './components/InterviewsSchedule';
+import { DocumentsStatus } from './components/DocumentsStatus';
+import { MessagesPanel } from './components/MessagesPanel';
+import { NotificationsPanel } from './components/NotificationsPanel';
+import { ProfileCompletionWidget } from './components/ProfileCompletionWidget';
 import { CandidateApplicationDetailPage } from './components/CandidateApplicationDetailPage';
-import { useCandidateDashboardData } from './hooks/useCandidateDashboardData';
-import { useCandidateApplicationDetails } from './hooks/useCandidateApplicationDetails';
 import { CandidateCompanyProgressDrawer } from './components/CandidateCompanyProgressDrawer';
 import { SmartActionCenter } from '@/components/smart-action-center/SmartActionCenter';
 import { CandidateApplication } from './types/CandidateTypes';
@@ -373,7 +384,7 @@ const CandidateDashboardPage: React.FC = () => {
       hasPendingActions: candidateApp.hasPendingActions,
       alertReason: candidateApp.alertReason,
       nextDueDate: candidateApp.nextDueDate,
-      stages: candidateApp.stages
+      stages: candidateApp.stages || [] // Provide default empty array if stages is undefined
     };
   };
 
