@@ -1,147 +1,111 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { PageHeader } from '@/components/layout/PageHeader';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import React, { useState } from 'react';
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { useClients } from './clients/hooks/useClients';
+import { useClientSelection } from './clients/hooks/useClientSelection';
+import { useClientSearch } from './clients/hooks/useClientSearch';
+import ClientsPageHeader from './clients/components/ClientsPageHeader';
 import ClientsPageContent from './clients/components/ClientsPageContent';
-import ClientDrawer from './clients/components/drawer/ClientDrawer';
+import ClientDetailDrawer from './clients/components/ClientDetailDrawer';
+import ClientAccountDrawer from './clients/components/ClientAccountDrawer';
 import { Client } from './clients/types/ClientTypes';
-import { generateMockClients } from '@/data/mock-data-generator';
-import { useTableSelection } from '@/design-system/hooks/useDesignSystem';
 
-const ClientsPage: React.FC = () => {
-  const [clients, setClients] = useState<Client[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortColumn, setSortColumn] = useState<string | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  const [isLoading, setIsLoading] = useState(false);
-  const [showCreateDrawer, setShowCreateDrawer] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+const ClientsPage = () => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const { clients, isLoading, deleteClient } = useClients();
+  const { 
+    selectedClients, 
+    selectedClient, 
+    isDetailsOpen, 
+    setIsDetailsOpen,
+    handleViewClientDetails,
+    handleSelectClient,
+    handleSelectAll,
+    setSelectedClient
+  } = useClientSelection(clients);
+  
+  const {
+    searchTerm,
+    setSearchTerm,
+    filteredClients,
+    showFilterPanel,
+    toggleFilterPanel
+  } = useClientSearch(clients);
 
-  useEffect(() => {
-    fetchClients();
-  }, []);
+  const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false);
 
-  const fetchClients = useCallback(async () => {
-    setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      const mockClients = generateMockClients(15);
-      setClients(mockClients);
-      setIsLoading(false);
-    }, 500);
-  }, []);
+  const handleCreateClient = () => {
+    setIsAccountDrawerOpen(true);
+  };
 
-  const filteredClients = clients.filter(client =>
-    client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.industry.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleEditClient = (client: Client) => {
+    toast({
+      title: "Not implemented",
+      description: "This feature is not implemented yet.",
+    });
+  };
 
+  // Handle search change - now expects a string directly
   const handleSearchChange = (query: string) => {
     setSearchTerm(query);
   };
 
-  const handleSort = (column: string) => {
-    if (sortColumn === column) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortColumn(column);
-      setSortDirection('asc');
-    }
+  // Add a sort handler function
+  const handleSort = (column: string, direction: 'asc' | 'desc') => {
+    console.log(`Sorting by ${column} in ${direction} order`);
+    // Implement sorting logic if needed
   };
 
-  const sortedClients = React.useMemo(() => {
-    if (!sortColumn) return filteredClients;
-
-    return [...filteredClients].sort((a, b) => {
-      const aValue = a[sortColumn as keyof Client];
-      const bValue = b[sortColumn as keyof Client];
-
-      if (aValue < bValue) {
-        return sortDirection === 'asc' ? -1 : 1;
-      }
-      if (aValue > bValue) {
-        return sortDirection === 'asc' ? 1 : -1;
-      }
-      return 0;
-    });
-  }, [filteredClients, sortColumn, sortDirection]);
-
-  const {
-    selectedItems: selectedClients,
-    toggleItem: toggleClient,
-    toggleAll: toggleSelectAll
-  } = useTableSelection(sortedClients);
-
-  const handleEditClient = (client: Client) => {
-    setSelectedClient(client);
-    setShowCreateDrawer(true);
-  };
-
-  const handleDeleteClient = (id: string) => {
-    setClients(prev => prev.filter(client => client.id !== id));
-  };
-
-  const handleViewClientDetails = (client: Client) => {
-    console.log('View client details:', client);
-  };
-
-  const handleSelectClient = (id: string) => {
-    const client = clients.find(c => c.id === id);
-    if (client) {
-      toggleClient(client);
-    }
-  };
-
-  const handleSelectAll = () => {
-    toggleSelectAll();
-  };
-
+  // Handle client creation success
   const handleClientCreated = (newClient: Client) => {
-    setClients(prev => [...prev, newClient]);
-    setShowCreateDrawer(false);
+    toast({
+      title: "Awesome!",
+      description: `Client ${newClient.name} has been created successfully.`,
+    });
+    
+    // Option to navigate to client details page
+    navigate(`/ams/clients/${newClient.id}`);
   };
 
-  const handleClientUpdated = (updatedClient: Client) => {
-    setClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
+  // Fix the client selection handler to match expected signature
+  const handleClientSelect = (clientId: string) => {
+    const client = clients.find(c => c.id === clientId);
+    if (client) {
+      handleSelectClient(client);
+    }
   };
 
   return (
-    <div className="container mx-auto py-10">
-      <PageHeader
-        title="Clients"
-        subtitle="Manage your clients and their information"
-        actions={
-          <Button onClick={() => setShowCreateDrawer(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Add Client
-          </Button>
-        }
-        badge={{
-          label: clients.length.toString(),
-        }}
-      />
+    <div className="space-y-4">
+      <ClientsPageHeader onCreateClient={handleCreateClient} />
 
-      <ClientsPageContent
-        filteredClients={sortedClients}
+      <ClientsPageContent 
+        filteredClients={filteredClients}
         isLoading={isLoading}
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
-        selectedClients={selectedClients.map(c => c.id)}
+        selectedClients={selectedClients}
+        toggleFilterPanel={toggleFilterPanel}
         onEditClient={handleEditClient}
-        onDeleteClient={handleDeleteClient}
+        onDeleteClient={deleteClient}
         onViewClientDetails={handleViewClientDetails}
-        onSelectClient={handleSelectClient}
+        onSelectClient={handleClientSelect}
         onSelectAll={handleSelectAll}
         onSort={handleSort}
       />
 
-      <ClientDrawer
-        open={showCreateDrawer}
-        onOpenChange={setShowCreateDrawer}
-        onClientCreated={handleClientCreated}
-        onClientUpdated={handleClientUpdated}
+      <ClientDetailDrawer
         client={selectedClient}
+        open={isDetailsOpen}
+        onOpenChange={() => setIsDetailsOpen(false)}
+      />
+
+      <ClientAccountDrawer
+        open={isAccountDrawerOpen}
+        onOpenChange={setIsAccountDrawerOpen}
+        onClientCreated={handleClientCreated}
       />
     </div>
   );

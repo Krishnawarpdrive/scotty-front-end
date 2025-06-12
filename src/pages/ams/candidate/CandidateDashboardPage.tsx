@@ -5,13 +5,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { 
   BarChart3, 
+  Settings, 
+  User, 
   Briefcase,
+  TrendingUp,
+  Bell,
   Search,
+  Calendar,
+  MessageSquare,
+  Target,
+  AlertTriangle,
+  CheckCircle
 } from 'lucide-react';
 import { CandidateLeftSidebar } from './components/CandidateLeftSidebar';
 import { CandidateQuickInsights } from './components/CandidateQuickInsights';
 import { CandidateRightDrawer } from './components/CandidateRightDrawer';
-import CandidateApplicationsTable from './components/CandidateApplicationsTable';
+import { CandidateApplicationsTable } from './components/CandidateApplicationsTable';
 import { CandidateStageDrawer } from './components/CandidateStageDrawer';
 import { CandidatePendingActions } from './components/CandidatePendingActions';
 import { CandidateApplicationDetailDrawer } from './components/CandidateApplicationDetailDrawer';
@@ -19,8 +28,6 @@ import { CandidateApplicationDetailPage } from './components/CandidateApplicatio
 import { useCandidateDashboardData } from './hooks/useCandidateDashboardData';
 import { useCandidateApplicationDetails } from './hooks/useCandidateApplicationDetails';
 import { CandidateCompanyProgressDrawer } from './components/CandidateCompanyProgressDrawer';
-import { SmartActionCenter } from '@/components/smart-action-center/SmartActionCenter';
-import { BellIcon, MessageSquareIcon, CalendarIcon, TrendingUpIcon } from 'lucide-react';
 
 const CandidateDashboardPage: React.FC = () => {
   const [selectedCandidateId] = useState('123e4567-e89b-12d3-a456-426614174000');
@@ -30,11 +37,11 @@ const CandidateDashboardPage: React.FC = () => {
   const [showApplicationDetailPage, setShowApplicationDetailPage] = useState(false);
   const [showCompanyProgressDrawer, setShowCompanyProgressDrawer] = useState(false);
   const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null);
-  const [selectedStage, setSelectedStage] = useState<any>(null);
+  const [selectedStage, setSelectedStage] = useState(null);
   const [activeMainTab, setActiveMainTab] = useState('applications');
-
-  const { dashboardData, isLoading } = useCandidateDashboardData(selectedCandidateId);
-  const { applicationDetails, submitInterviewReview } = useCandidateApplicationDetails(selectedApplicationId);
+  
+  const { dashboardData, notifications, messages, isLoading } = useCandidateDashboardData(selectedCandidateId);
+  const { applicationDetails, isLoading: applicationLoading, submitInterviewReview } = useCandidateApplicationDetails(selectedApplicationId);
 
   // Mock data for the mission control interface
   const mockApplications = [
@@ -369,7 +376,7 @@ const CandidateDashboardPage: React.FC = () => {
                   Quick Search
                 </Button>
                 <Button variant="outline" size="sm" className="flex items-center gap-2">
-                  <BellIcon className="h-4 w-4" />
+                  <Bell className="h-4 w-4" />
                   {urgentActionsCount > 0 && (
                     <Badge className="bg-red-500 text-white text-xs px-1 py-0 min-w-[16px] h-4">
                       {urgentActionsCount}
@@ -403,21 +410,21 @@ const CandidateDashboardPage: React.FC = () => {
                   value="insights" 
                   className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
                 >
-                  <TrendingUpIcon className="h-4 w-4 mr-2" />
+                  <TrendingUp className="h-4 w-4 mr-2" />
                   Insights
                 </TabsTrigger>
                 <TabsTrigger 
                   value="calendar" 
                   className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
                 >
-                  <CalendarIcon className="h-4 w-4 mr-2" />
+                  <Calendar className="h-4 w-4 mr-2" />
                   Schedule
                 </TabsTrigger>
                 <TabsTrigger 
                   value="messages" 
                   className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
                 >
-                  <MessageSquareIcon className="h-4 w-4 mr-2" />
+                  <MessageSquare className="h-4 w-4 mr-2" />
                   Messages
                 </TabsTrigger>
               </TabsList>
@@ -439,11 +446,11 @@ const CandidateDashboardPage: React.FC = () => {
               <TabsContent value="insights" className="p-6 m-0">
                 <CandidateQuickInsights 
                   insights={[]} 
-                  overallStats={dashboardData?.quickStats || {
-                    responseRate: 0,
-                    averageProgressTime: '0d',
-                    interviewSuccessRate: 0,
-                    activeApplications: 0
+                  overallStats={{
+                    responseRate: 85,
+                    averageProgressTime: '2.4d',
+                    interviewSuccessRate: 78,
+                    activeApplications: 3
                   }} 
                 />
               </TabsContent>
@@ -451,7 +458,7 @@ const CandidateDashboardPage: React.FC = () => {
               <TabsContent value="calendar" className="p-6 m-0">
                 <Card>
                   <CardContent className="p-12 text-center">
-                    <CalendarIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Interview Calendar</h3>
                     <p className="text-gray-600">Your upcoming interviews and important dates will appear here.</p>
                   </CardContent>
@@ -461,7 +468,7 @@ const CandidateDashboardPage: React.FC = () => {
               <TabsContent value="messages" className="p-6 m-0">
                 <Card>
                   <CardContent className="p-12 text-center">
-                    <MessageSquareIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Messages & Communications</h3>
                     <p className="text-gray-600">All your communications with recruiters and hiring teams will be here.</p>
                   </CardContent>
@@ -480,9 +487,6 @@ const CandidateDashboardPage: React.FC = () => {
           />
         </div>
       </div>
-
-      {/* Smart Action Center */}
-      <SmartActionCenter position="bottom-right" />
 
       {/* Right Drawer for Analytics */}
       <CandidateRightDrawer

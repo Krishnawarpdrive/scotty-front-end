@@ -1,53 +1,43 @@
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { DataTableColumn } from './types';
 import { getColumnValue } from './utils';
 
-export const useDataTableFilters = <T>(data: T[], columns: DataTableColumn<T>[]) => {
+export function useDataTableFilters<T extends Record<string, any>>(
+  data: T[],
+  columns: DataTableColumn<T>[]
+) {
   const [filters, setFilters] = useState<Record<string, string>>({});
+  const [columnValues, setColumnValues] = useState<Record<string, Set<string>>>({});
   const [selectedFilterValues, setSelectedFilterValues] = useState<Record<string, string[]>>({});
-
-  // Get unique values for each filterable column
-  const columnValues = useMemo(() => {
+  
+  // Extract unique values for each column for filtering
+  useEffect(() => {
     const values: Record<string, Set<string>> = {};
     
     columns.forEach(column => {
-      if (column.enableFiltering && column.accessorKey) {
-        values[column.id] = new Set();
+      if (column.enableFiltering) {
+        const uniqueValues = new Set<string>();
         data.forEach(item => {
-          const value = getColumnValue(item, String(column.accessorKey));
-          if (value !== null && value !== undefined && value !== '') {
-            values[column.id].add(String(value));
+          const value = getColumnValue(item, column);
+          if (value !== undefined && value !== null) {
+            uniqueValues.add(String(value));
           }
         });
+        values[column.id] = uniqueValues;
       }
     });
     
-    return values;
+    setColumnValues(values);
   }, [data, columns]);
-
-  // Filter data based on selected filter values
-  const filteredData = useMemo(() => {
-    return data.filter(item => {
-      return Object.entries(selectedFilterValues).every(([columnId, values]) => {
-        if (values.length === 0) return true;
-        
-        const column = columns.find(col => col.id === columnId);
-        if (!column || !column.accessorKey) return true;
-        
-        const itemValue = getColumnValue(item, String(column.accessorKey));
-        return values.includes(String(itemValue));
-      });
-    });
-  }, [data, columns, selectedFilterValues]);
-
+  
   const handleFilterChange = (columnId: string, value: string) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [columnId]: value
+      [columnId]: value,
     }));
   };
-
+  
   const toggleFilterValue = (columnId: string, value: string) => {
     setSelectedFilterValues(prev => {
       const currentValues = prev[columnId] || [];
@@ -55,36 +45,73 @@ export const useDataTableFilters = <T>(data: T[], columns: DataTableColumn<T>[])
         ? currentValues.filter(v => v !== value)
         : [...currentValues, value];
       
-      return {
-        ...prev,
-        [columnId]: newValues
-      };
+      // If no values are selected, remove the filter
+      if (newValues.length === 0) {
+        const newFilters = { ...filters };
+        delete newFilters[columnId];
+        setFilters(newFilters);
+        return { ...prev, [columnId]: [] };
+      }
+      
+      // Apply the filter
+      setFilters(current => ({
+        ...current,
+        [columnId]: newValues.join('|')
+      }));
+      
+      return { ...prev, [columnId]: newValues };
     });
   };
-
+  
   const clearFilter = (columnId: string) => {
-    setFilters(prev => {
-      const newFilters = { ...prev };
-      delete newFilters[columnId];
-      return newFilters;
-    });
-    
+    const newFilters = { ...filters };
+    delete newFilters[columnId];
+    setFilters(newFilters);
     setSelectedFilterValues(prev => {
       const newValues = { ...prev };
       delete newValues[columnId];
       return newValues;
     });
   };
-
+  
+  const clearAllFilters = () => {
+    setFilters({});
+    setSelectedFilterValues({});
+  };
+  
+  // Apply filters
+  const filteredData = data.filter(item => {
+    return Object.entries(filters).every(([columnId, filterValue]) => {
+      if (!filterValue || filterValue.trim() === '') {
+        return true;
+      }
+      
+      const column = columns.find(col => col.id === columnId);
+      if (!column) return true;
+      
+      // If the filter contains pipe characters, it's a multi-value filter
+      if (filterValue.includes('|')) {
+        const filterValues = filterValue.split('|');
+        const value = String(getColumnValue(item, column));
+        return filterValues.some(fv => value === fv);
+      } else {
+        // Text search filter
+        const value = getColumnValue(item, column);
+        return String(value).toLowerCase().includes(filterValue.toLowerCase());
+      }
+    });
+  });
+  
   return {
     filters,
     setFilters,
     columnValues,
     selectedFilterValues,
     setSelectedFilterValues,
-    filteredData,
     handleFilterChange,
     toggleFilterValue,
-    clearFilter
+    clearFilter,
+    clearAllFilters,
+    filteredData
   };
-};
+}

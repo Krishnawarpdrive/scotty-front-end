@@ -13,7 +13,7 @@ export const usePromiseHandler = (
     // Show loading toast
     const loadingOptions = typeof options.loading === 'string' 
       ? { title: options.loading, type: 'loading' as const }
-      : { type: 'loading' as const, ...options.loading };
+      : { ...options.loading, type: 'loading' as const };
     
     const loadingId = showToast(loadingOptions);
 
@@ -26,14 +26,16 @@ export const usePromiseHandler = (
           const result = options.success(data);
           successOptions = typeof result === 'string' 
             ? { title: result, type: 'success' as const }
-            : { type: 'success' as const, ...result };
+            : { ...result, type: 'success' as const };
         } else if (typeof options.success === 'string') {
           successOptions = { title: options.success, type: 'success' as const };
         } else {
+          // Type guard to ensure we have an object before spreading
+          const successObj = options.success as ToastOptions;
           successOptions = { 
+            title: successObj.title || 'Success',
             type: 'success' as const,
-            ...(typeof options.success === 'object' && options.success !== null ? options.success : {}),
-            title: 'Success'
+            ...successObj 
           };
         }
 
@@ -48,14 +50,16 @@ export const usePromiseHandler = (
           const result = options.error(error);
           errorOptions = typeof result === 'string'
             ? { title: result, type: 'error' as const }
-            : { type: 'error' as const, ...result };
+            : { ...result, type: 'error' as const };
         } else if (typeof options.error === 'string') {
           errorOptions = { title: options.error, type: 'error' as const };
         } else {
+          // Type guard to ensure we have an object before spreading
+          const errorObj = options.error as ToastOptions;
           errorOptions = { 
+            title: errorObj.title || 'Error',
             type: 'error' as const,
-            ...(typeof options.error === 'object' && options.error !== null ? options.error : {}),
-            title: 'Error'
+            ...errorObj 
           };
         }
 

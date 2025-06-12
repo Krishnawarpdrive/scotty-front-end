@@ -2,7 +2,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { Interview } from '../MyInterviewsPage';
-import { InterviewerHiringPipelineContainer } from './hiring-pipeline/InterviewerHiringPipelineContainer';
+import { InterviewerStageFormRenderer } from './InterviewerStageFormRenderer';
 
 interface InterviewerSplitLayoutContainerProps {
   interview: Interview;
@@ -28,7 +28,11 @@ export const InterviewerSplitLayoutContainer: React.FC<InterviewerSplitLayoutCon
         display: 'flex',
         flexDirection: 'column'
       }}>
-        <InterviewerHiringPipelineContainer interview={interview} />
+        <InterviewerStageFormRenderer
+          interview={interview}
+          stageId={stageId}
+          stageName={stageName}
+        />
       </Box>
     </Box>
   );

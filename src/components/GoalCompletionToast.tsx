@@ -1,4 +1,4 @@
-
+import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, Target, Star } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';

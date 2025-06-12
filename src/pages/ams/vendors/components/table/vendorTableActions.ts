@@ -1,12 +1,13 @@
 
-import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Vendor } from '../../types/VendorTypes';
 
 export const useVendorTableActions = () => {
-  const handleVendorClick = useCallback((vendor: Vendor) => {
-    console.log('Vendor clicked:', vendor);
-    // This will be handled by the parent component
-  }, []);
+  const navigate = useNavigate();
+
+  const handleVendorClick = (vendor: Vendor) => {
+    navigate(`/ams/vendor-management/${vendor.id}`);
+  };
 
   return {
     handleVendorClick

@@ -1,213 +1,252 @@
 import React, { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  CalendarIcon, 
-  MapPinIcon, 
-  BuildingIcon, 
-  DollarSignIcon, 
-  ClockIcon,
-  EyeIcon,
-  ExternalLinkIcon,
-  FilterIcon,
-  SearchIcon
-} from 'lucide-react';
 import { DataTable } from '@/components/ui/data-table/DataTable';
 import { DataTableColumn } from '@/components/ui/data-table/types';
-import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { 
+  Clock, 
+  AlertTriangle, 
+  Calendar,
+  FileText,
+  Play,
+  CheckCircle,
+  XCircle,
+  ArrowRight
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+interface ApplicationStage {
+  id: string;
+  name: string;
+  status: 'completed' | 'current' | 'pending' | 'blocked';
+  type: 'document' | 'interview' | 'assessment' | 'video' | 'questionnaire';
+  dueDate?: string;
+  completedDate?: string;
+  hasAction?: boolean;
+  actionType?: string;
+}
 
 interface CandidateApplication {
   id: string;
-  title: string;
-  company: string;
-  location: string;
-  salary: number;
-  dateApplied: string;
-  status: 'pending' | 'reviewed' | 'interviewing' | 'offered' | 'rejected';
-  detailsUrl: string;
+  roleName: string;
+  companyName: string;
+  appliedDate: string;
+  currentStage: string;
+  progress: number;
+  status: 'active' | 'offer' | 'rejected' | 'withdrawn';
+  priority: 'high' | 'medium' | 'low';
+  nextAction?: string;
+  daysInStage: number;
+  hasPendingActions: boolean;
+  stages: ApplicationStage[];
+  alertReason?: string;
+  nextDueDate?: string;
 }
 
 interface CandidateApplicationsTableProps {
   applications: CandidateApplication[];
-  onViewDetails: (application: CandidateApplication) => void;
-  onWithdraw: (application: CandidateApplication) => void;
-  showSearch?: boolean;
-  showFilters?: boolean;
-  className?: string;
+  onApplicationClick: (application: CandidateApplication) => void;
+  onCompanyClick: (application: CandidateApplication) => void;
+  onQuickAction: (applicationId: string, action: string) => void;
 }
 
-const CandidateApplicationsTable: React.FC<CandidateApplicationsTableProps> = ({
+export const CandidateApplicationsTable: React.FC<CandidateApplicationsTableProps> = ({
   applications,
-  onViewDetails,
-  onWithdraw,
-  showSearch = true,
-  showFilters = true,
-  className = ''
+  onApplicationClick,
+  onCompanyClick,
+  onQuickAction
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
 
-  const filteredApplications = applications.filter(application => {
-    const searchMatch =
-      application.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      application.company.toLowerCase().includes(searchTerm.toLowerCase());
+  const getStatusBadge = (status: string) => {
+    const variants = {
+      active: 'bg-blue-100 text-blue-700 border-blue-200',
+      offer: 'bg-green-100 text-green-700 border-green-200',
+      rejected: 'bg-red-100 text-red-700 border-red-200',
+      withdrawn: 'bg-gray-100 text-gray-700 border-gray-200'
+    };
+    return <Badge className={variants[status as keyof typeof variants]}>{status}</Badge>;
+  };
 
-    const statusMatch = statusFilter === 'all' || application.status === statusFilter;
+  const getPriorityIndicator = (priority: string) => {
+    const colors = {
+      high: 'bg-red-500',
+      medium: 'bg-yellow-500',
+      low: 'bg-green-500'
+    };
+    return <div className={cn('w-2 h-8 rounded-full', colors[priority as keyof typeof colors])} />;
+  };
 
-    return searchMatch && statusMatch;
-  });
+  const getStageIcon = (stage: ApplicationStage) => {
+    const iconClass = 'h-4 w-4';
+    switch (stage.type) {
+      case 'document':
+        return <FileText className={iconClass} />;
+      case 'interview':
+        return <Calendar className={iconClass} />;
+      case 'assessment':
+        return <Clock className={iconClass} />;
+      case 'video':
+        return <Play className={iconClass} />;
+      case 'questionnaire':
+        return <FileText className={iconClass} />;
+      default:
+        return <CheckCircle className={iconClass} />;
+    }
+  };
 
   const columns: DataTableColumn<CandidateApplication>[] = [
     {
-      id: 'title',
-      header: 'Job Title',
-      accessorKey: 'title',
-      cell: (application) => (
-        <div className="flex items-center gap-2">
-          {application.title}
-          <a href={application.detailsUrl} target="_blank" rel="noopener noreferrer">
-            <ExternalLinkIcon className="h-4 w-4 text-gray-500 hover:text-gray-700" />
-          </a>
-        </div>
-      ),
+      id: 'priority',
+      header: '',
+      cell: (application) => getPriorityIndicator(application.priority)
     },
     {
-      id: 'company',
-      header: 'Company',
-      accessorKey: 'company',
+      id: 'role',
+      header: 'Role & Company',
       cell: (application) => (
-        <div className="flex items-center gap-1">
-          <BuildingIcon className="h-4 w-4 text-gray-500" />
-          {application.company}
+        <div className="min-w-0">
+          <button
+            onClick={() => onApplicationClick(application)}
+            className="font-medium text-blue-600 hover:text-blue-800 truncate block text-left underline-offset-4 hover:underline"
+          >
+            {application.roleName}
+          </button>
+          <button
+            onClick={() => onCompanyClick(application)}
+            className="text-sm text-gray-500 truncate hover:text-blue-600 hover:underline underline-offset-4 block text-left"
+          >
+            {application.companyName}
+          </button>
         </div>
-      ),
+      )
     },
     {
-      id: 'location',
-      header: 'Location',
-      accessorKey: 'location',
-      cell: (application) => (
-        <div className="flex items-center gap-1">
-          <MapPinIcon className="h-4 w-4 text-gray-500" />
-          {application.location}
-        </div>
-      ),
+      id: 'currentStage',
+      header: 'Current Stage',
+      cell: (application) => {
+        const currentStage = application.stages.find(s => s.status === 'current');
+        return (
+          <div className="flex items-center gap-2">
+            {currentStage && getStageIcon(currentStage)}
+            <span className="text-sm">{application.currentStage}</span>
+          </div>
+        );
+      }
     },
     {
-      id: 'salary',
-      header: 'Salary',
-      accessorKey: 'salary',
+      id: 'progress',
+      header: 'Progress',
       cell: (application) => (
-        <div className="flex items-center gap-1">
-          <DollarSignIcon className="h-4 w-4 text-gray-500" />
-          {application.salary}
+        <div className="w-24">
+          <Progress value={application.progress} className="h-2" />
+          <div className="text-xs text-gray-500 mt-1">{application.progress}%</div>
         </div>
-      ),
+      )
     },
     {
-      id: 'dateApplied',
-      header: 'Date Applied',
-      accessorKey: 'dateApplied',
+      id: 'daysInStage',
+      header: 'Days in Stage',
       cell: (application) => (
-        <div className="flex items-center gap-1">
-          <CalendarIcon className="h-4 w-4 text-gray-500" />
-          {application.dateApplied}
+        <div className={cn(
+          'text-sm',
+          application.daysInStage > 5 ? 'text-red-600 font-medium' : 'text-gray-600'
+        )}>
+          {application.daysInStage}d
         </div>
-      ),
+      )
+    },
+    {
+      id: 'nextDueDate',
+      header: 'Next Due',
+      cell: (application) => (
+        <div className="text-sm text-gray-600">
+          {application.nextDueDate || '-'}
+        </div>
+      )
     },
     {
       id: 'status',
       header: 'Status',
-      accessorKey: 'status',
+      cell: (application) => getStatusBadge(application.status)
+    },
+    {
+      id: 'pendingActions',
+      header: 'Pending Actions',
       cell: (application) => (
-        <Badge
-          variant={
-            application.status === 'pending'
-              ? 'secondary'
-              : application.status === 'reviewed'
-              ? 'default'
-              : application.status === 'interviewing'
-              ? 'primary'
-              : application.status === 'offered'
-              ? 'success'
-              : 'destructive'
-          }
-        >
-          {application.status}
-        </Badge>
-      ),
+        <div className="flex items-center gap-2">
+          {application.hasPendingActions && (
+            <div className="flex items-center gap-1 text-amber-600">
+              <AlertTriangle className="h-4 w-4" />
+              <span className="text-xs">Action Required</span>
+            </div>
+          )}
+          {application.alertReason && (
+            <div className="text-xs text-red-600 max-w-32 truncate">
+              {application.alertReason}
+            </div>
+          )}
+        </div>
+      )
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: 'Quick Actions',
       cell: (application) => (
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={() => onViewDetails(application)}>
-            <EyeIcon className="h-4 w-4 mr-2" />
+        <div className="flex items-center gap-1">
+          {application.nextAction && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 px-2 text-xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                onQuickAction(application.id, 'continue');
+              }}
+            >
+              <ArrowRight className="h-3 w-3 mr-1" />
+              Continue
+            </Button>
+          )}
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 px-2 text-xs"
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuickAction(application.id, 'view');
+            }}
+          >
             View
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => onWithdraw(application)}>
-            <ClockIcon className="h-4 w-4 mr-2" />
-            Withdraw
-          </Button>
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   return (
-    <Card className={`${className}`}>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>My Applications</span>
-          <Badge variant="outline">{filteredApplications.length} total</Badge>
-        </CardTitle>
-      </CardHeader>
-      
-      <CardContent>
-        <div className="flex items-center justify-between mb-4">
-          {showSearch && (
-            <div className="relative flex-1 max-w-sm">
-              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="Search applications..."
-                className="pl-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          )}
-
-          {showFilters && (
-            <div className="flex items-center gap-2">
-              <FilterIcon className="h-4 w-4 text-gray-500" />
-              <select
-                className="border rounded px-2 py-1 text-sm"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-              >
-                <option value="all">All Statuses</option>
-                <option value="pending">Pending</option>
-                <option value="reviewed">Reviewed</option>
-                <option value="interviewing">Interviewing</option>
-                <option value="offered">Offered</option>
-                <option value="rejected">Rejected</option>
-              </select>
-            </div>
-          )}
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-gray-900">My Applications</h2>
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 bg-red-500 rounded-full" />
+            High Priority
+          </div>
+          <div className="flex items-center gap-1">
+            <AlertTriangle className="h-4 w-4 text-amber-600" />
+            Action Required
+          </div>
         </div>
-        
-        <DataTable
-          data={filteredApplications}
-          columns={columns}
-          onRowClick={(application) => onViewDetails(application)}
-          emptyMessage="No applications found matching your criteria."
-        />
-      </CardContent>
-    </Card>
+      </div>
+
+      <DataTable
+        data={applications}
+        columns={columns}
+        onRowClick={onApplicationClick}
+        searchPlaceholder="Search applications..."
+      />
+    </div>
   );
 };
-
-export default CandidateApplicationsTable;
