@@ -17,7 +17,11 @@ import SupportPage from "./pages/SupportPage";
 import NotFound from "./pages/NotFound";
 import { Onboarding } from "./pages/Onboarding";
 import { EnhancedAMSLayout } from "./layouts/EnhancedAMSLayout";
+import { PersonaLayout } from "./layouts/PersonaLayout";
 import AMSRoutes from "./pages/ams/index";
+import HRDashboard from "./pages/personas/hr/HRDashboard";
+import TADashboard from "./pages/personas/ta/TADashboard";
+import CandidatePortal from "./pages/personas/candidate/CandidatePortal";
 import "./App.css";
 
 const queryClient = new QueryClient({
@@ -47,11 +51,21 @@ function App() {
                         <Route path="/settings" element={<SettingsPage />} />
                         <Route path="/support" element={<SupportPage />} />
                         <Route path="/onboarding" element={<Onboarding />} />
+                        
+                        {/* AMS Admin Routes */}
                         <Route path="/ams/*" element={
                           <EnhancedAMSLayout>
                             <AMSRoutes />
                           </EnhancedAMSLayout>
                         } />
+                        
+                        {/* Persona-based Routes */}
+                        <Route path="/personas/*" element={<PersonaLayout />}>
+                          <Route path="hr/dashboard" element={<HRDashboard />} />
+                          <Route path="ta/dashboard" element={<TADashboard />} />
+                          <Route path="candidate/dashboard" element={<CandidatePortal />} />
+                        </Route>
+                        
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </Suspense>

@@ -34,7 +34,7 @@ export const personaConfigs: Record<PersonaType, PersonaConfig> = {
     id: 'hr',
     name: 'HR Manager',
     description: 'Human resources management and hiring oversight',
-    routes: ['/ams/hr/dashboard', '/ams/hr/candidates', '/ams/hr/roles'],
+    routes: ['/personas/hr/dashboard', '/personas/hr/candidates', '/personas/hr/roles'],
     permissions: ['read:hr', 'write:hr', 'delete:hr'],
     color: 'bg-blue-100 text-blue-800'
   },
@@ -42,7 +42,7 @@ export const personaConfigs: Record<PersonaType, PersonaConfig> = {
     id: 'ta',
     name: 'Talent Acquisition',
     description: 'Candidate sourcing and recruitment management',
-    routes: ['/ams/ta/dashboard', '/ams/ta/candidates', '/ams/ta/pipeline'],
+    routes: ['/personas/ta/dashboard', '/personas/ta/candidates', '/personas/ta/pipeline'],
     permissions: ['read:ta', 'write:ta'],
     color: 'bg-green-100 text-green-800'
   },
@@ -50,7 +50,7 @@ export const personaConfigs: Record<PersonaType, PersonaConfig> = {
     id: 'candidate',
     name: 'Candidate',
     description: 'Job seeker with application tracking',
-    routes: ['/ams/candidate/dashboard', '/candidate/applications', '/candidate/interviews'],
+    routes: ['/personas/candidate/dashboard', '/personas/candidate/applications', '/personas/candidate/interviews'],
     permissions: ['read:own', 'write:own'],
     color: 'bg-yellow-100 text-yellow-800'
   },
@@ -58,7 +58,7 @@ export const personaConfigs: Record<PersonaType, PersonaConfig> = {
     id: 'vendor',
     name: 'Vendor',
     description: 'External recruitment partner',
-    routes: ['/ams/vendors/dashboard', '/vendor/candidates', '/vendor/jobs'],
+    routes: ['/personas/vendor/dashboard', '/personas/vendor/candidates', '/personas/vendor/jobs'],
     permissions: ['read:vendor', 'write:vendor'],
     color: 'bg-orange-100 text-orange-800'
   },
@@ -66,7 +66,7 @@ export const personaConfigs: Record<PersonaType, PersonaConfig> = {
     id: 'interviewer',
     name: 'Interviewer',
     description: 'Interview panel member and feedback provider',
-    routes: ['/interviewer/schedule', '/interviewer/candidates', '/interviewer/feedback'],
+    routes: ['/personas/interviewer/schedule', '/personas/interviewer/candidates', '/personas/interviewer/feedback'],
     permissions: ['read:interview', 'write:feedback'],
     color: 'bg-indigo-100 text-indigo-800'
   },
@@ -74,7 +74,7 @@ export const personaConfigs: Record<PersonaType, PersonaConfig> = {
     id: 'client-hr',
     name: 'Client HR',
     description: 'Client-side human resources representative',
-    routes: ['/client-hr/candidates', '/client-hr/jobs', '/client-hr/feedback'],
+    routes: ['/personas/client-hr/candidates', '/personas/client-hr/jobs', '/personas/client-hr/feedback'],
     permissions: ['read:client', 'approve:client'],
     color: 'bg-pink-100 text-pink-800'
   },
@@ -82,7 +82,7 @@ export const personaConfigs: Record<PersonaType, PersonaConfig> = {
     id: 'bo',
     name: 'Business Owner',
     description: 'Executive oversight and strategic management',
-    routes: ['/ams/executive/dashboard', '/bo/analytics', '/bo/reports'],
+    routes: ['/personas/bo/dashboard', '/personas/bo/analytics', '/personas/bo/reports'],
     permissions: ['read:all', 'write:all', 'delete:all', 'admin'],
     color: 'bg-red-100 text-red-800'
   },
