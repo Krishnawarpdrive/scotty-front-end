@@ -48,17 +48,7 @@ export const DocumentsStatus: React.FC<DocumentsStatusProps> = ({ candidateId })
           return;
         }
 
-        // Transform the data to match our Document interface
-        const transformedDocuments: Document[] = (data || []).map((doc: any) => ({
-          id: doc.id,
-          document_type: doc.document_type,
-          document_name: doc.document_name,
-          status: doc.status,
-          uploaded_at: doc.uploaded_at,
-          verified_at: doc.verified_at
-        }));
-
-        setDocuments(transformedDocuments);
+        setDocuments(data || []);
       } catch (error) {
         console.error('Error in fetchDocuments:', error);
       } finally {

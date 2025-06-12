@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { SimplifiedDragDropTAAllocation } from './SimplifiedDragDropTAAllocation';
-import { sampleTAProfiles, sampleRequirements } from './SampleTAData';
+import { SimplifiedTAAllocation } from './SimplifiedTAAllocation';
+import { SmartAssignmentRecommendations } from './SmartAssignmentRecommendations';
+import { sampleTAProfiles, sampleRequirements, sampleAIRecommendations } from './SampleTAData';
 
 interface RestructuredTAAllocationProps {
   onAssignTA: (taId: string, requirementId: string) => void;
@@ -12,41 +13,72 @@ export const RestructuredTAAllocation: React.FC<RestructuredTAAllocationProps> =
   onAssignTA,
   onApplyRecommendation
 }) => {
-  // Transform sample data for the simplified component
+  // Transform sample data for the components
   const transformedTAs = sampleTAProfiles.map(ta => ({
     id: ta.id,
     name: ta.name,
     email: ta.email,
-    availability: ta.availability
+    currentWorkload: ta.currentWorkload,
+    maxWorkload: ta.maxWorkload,
+    efficiencyScore: ta.efficiencyScore,
+    skills: ta.skills,
+    availability: ta.availability,
+    assignments: ta.assignments
   }));
 
-  const transformedRequirements = sampleRequirements.map(req => ({
-    id: req.id,
-    name: req.name,
-    client: req.client,
-    priority: req.priority,
-    assignedTAs: req.assignedTAs
-  }));
+  const transformedRecommendations = sampleAIRecommendations.map(rec => {
+    const ta = sampleTAProfiles.find(t => t.id === rec.taId);
+    const requirement = sampleRequirements.find(r => r.id === rec.requirementId);
+    
+    return {
+      id: rec.id,
+      type: 'optimal_assignment' as const,
+      priority: 'high' as const,
+      title: `Assign ${ta?.name} to ${requirement?.name}`,
+      description: rec.reason,
+      impact: rec.impact,
+      confidence: rec.confidence,
+      suggestedAction: {
+        taId: rec.taId,
+        taName: ta?.name || '',
+        requirementId: rec.requirementId,
+        requirementName: requirement?.name || '',
+        client: requirement?.client || ''
+      },
+      score: {
+        overall: rec.confidence,
+        skillMatch: rec.matchScore?.skills || 90,
+        workloadFit: rec.matchScore?.workload || 85,
+        efficiency: rec.matchScore?.experience || 88,
+        availability: rec.matchScore?.availability || 95
+      },
+      reasoning: [rec.reason],
+      estimatedOutcome: {
+        efficiencyGain: 25,
+        timeToFill: '8 days',
+        riskReduction: 15
+      }
+    };
+  });
 
-  const handleUnassignTA = (taId: string, requirementId: string) => {
-    console.log(`Unassigning TA ${taId} from requirement ${requirementId}`);
-    // This would typically update the state to remove the assignment
+  const handleDismissRecommendation = (recommendationId: string) => {
+    console.log(`Dismissing recommendation ${recommendationId}`);
   };
 
   return (
     <div className="space-y-6">
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold">TA Assignment</h3>
-        <p className="text-sm text-gray-600">
-          Drag TAs from the right panel to requirements on the left to assign them
-        </p>
-      </div>
+      <SmartAssignmentRecommendations
+        recommendations={transformedRecommendations}
+        onApplyRecommendation={onApplyRecommendation}
+        onDismissRecommendation={handleDismissRecommendation}
+      />
       
-      <SimplifiedDragDropTAAllocation
+      <SimplifiedTAAllocation
         availableTAs={transformedTAs}
-        requirements={transformedRequirements}
+        requirements={sampleRequirements}
+        recommendations={sampleAIRecommendations}
         onAssignTA={onAssignTA}
-        onUnassignTA={handleUnassignTA}
+        onApplyRecommendation={onApplyRecommendation}
       />
     </div>
   );

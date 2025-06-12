@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import {
   Star,
   MessageSquare,
   FileText,
+  Building,
   MapPin,
   Briefcase
 } from 'lucide-react';

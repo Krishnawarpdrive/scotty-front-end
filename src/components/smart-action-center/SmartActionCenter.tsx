@@ -47,13 +47,10 @@ export const SmartActionCenter: React.FC<SmartActionCenterProps> = ({
   const getTotalBadgeCount = () => {
     if (!context) return 0;
     
-    const pendingTasks = context.pendingTasks || [];
-    const notifications = context.notifications || [];
-    
-    const urgentCount = pendingTasks.filter(t => t.priority === 'high').length +
-                      notifications.filter(n => n.type === 'error').length;
-    const importantCount = pendingTasks.filter(t => t.priority === 'medium').length +
-                          notifications.filter(n => n.type === 'warning').length;
+    const urgentCount = context.pendingTasks.filter(t => t.priority === 'urgent').length +
+                      context.notifications.filter(n => n.type === 'urgent').length;
+    const importantCount = context.pendingTasks.filter(t => t.priority === 'high').length +
+                          context.notifications.filter(n => n.type === 'important').length;
     
     return urgentCount + importantCount;
   };
@@ -61,17 +58,14 @@ export const SmartActionCenter: React.FC<SmartActionCenterProps> = ({
   const getPaperBadgeCount = (paperType: 'urgent' | 'important' | 'contextual') => {
     if (!context) return 0;
     
-    const pendingTasks = context.pendingTasks || [];
-    const notifications = context.notifications || [];
-    
     if (paperType === 'urgent') {
-      return pendingTasks.filter(t => t.priority === 'high').length +
-             notifications.filter(n => n.type === 'error').length;
+      return context.pendingTasks.filter(t => t.priority === 'urgent').length +
+             context.notifications.filter(n => n.type === 'urgent').length;
     }
     
     if (paperType === 'important') {
-      return pendingTasks.filter(t => t.priority === 'medium').length +
-             notifications.filter(n => n.type === 'warning').length;
+      return context.pendingTasks.filter(t => t.priority === 'high').length +
+             context.notifications.filter(n => n.type === 'important').length;
     }
     
     return actions.filter(a => a.priority === 'contextual').length;

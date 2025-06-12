@@ -12,7 +12,6 @@ export interface Checklist {
   roleId?: string;
   clientId?: string;
   subdomain?: string;
-  description?: string;
   items: ChecklistItem[];
   createdAt: string;
   updatedAt: string;

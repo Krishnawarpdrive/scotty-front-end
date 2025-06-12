@@ -1,110 +1,95 @@
+
 import { useState, useCallback } from 'react';
+import { sampleTAProfiles, sampleRequirements, sampleAIRecommendations } from '@/pages/ams/hr/components/ta-mapping/SampleTAData';
 
-export interface TAWorkloadData {
-  id: string;
-  name: string;
-  workload: number;
-  efficiency: number;
-  skills: string[];
-}
-
-interface Collaboration {
-  id: string;
-  role: string;
-  tas: string[];
-  type: 'shared' | 'backup' | 'mentor';
-}
-
-export const useEnhancedTAMapping = () => {
-  const [workloadData, setWorkloadData] = useState<TAWorkloadData[]>([]);
-  const [collaborations, setCollaborations] = useState<Collaboration[]>([]);
-  const [taProfiles] = useState<any[]>([]);
-  const [assignments] = useState<any[]>([]);
-  const [roleTargets] = useState<any[]>([]);
-  const [assignmentMetrics] = useState<any[]>([]);
-  const [performanceInsights] = useState<any[]>([]);
+export const useEnhancedTAMapping = (roleId?: string) => {
   const [loading, setLoading] = useState(false);
 
-  const updateTAWorkload = useCallback((taId: string, newWorkload: Partial<TAWorkloadData>) => {
-    setWorkloadData(prev => 
-      prev.map(ta => 
-        ta.id === taId ? { ...ta, ...newWorkload } : ta
-      )
-    );
-  }, []);
+  // Transform sample data to match expected interface
+  const taProfiles = sampleTAProfiles.map(ta => ({
+    id: ta.id,
+    name: ta.name,
+    email: ta.email,
+    current_workload: ta.currentWorkload,
+    max_workload: ta.maxWorkload,
+    efficiency_score: ta.efficiencyScore,
+    skills: ta.skills,
+    status: ta.availability === 'available' ? 'active' : 'inactive',
+    assignments: ta.assignments,
+    department: ta.department,
+    experience: ta.experience,
+    last_activity: ta.lastActivity,
+    success_rate: ta.successRate,
+    avg_time_to_fill: ta.avgTimeToFill
+  }));
 
-  const addCollaboration = useCallback((collaboration: Collaboration) => {
-    setCollaborations(prev => [...prev, collaboration]);
-  }, []);
+  const assignments = sampleRequirements.map(req => ({
+    id: req.id,
+    ta_id: req.assignedTAs[0] || '',
+    requirement_id: req.id,
+    assigned_at: new Date().toISOString(),
+    status: 'active',
+    progress: req.progress
+  }));
 
-  const removeCollaboration = useCallback((collaborationId: string) => {
-    setCollaborations(prev => 
-      prev.filter(collab => collab.id !== collaborationId)
-    );
-  }, []);
+  const workloadData = taProfiles.map(ta => ({
+    ta_id: ta.id,
+    current_load: ta.current_workload,
+    target_load: ta.max_workload,
+    efficiency: ta.efficiency_score
+  }));
 
-  const getOptimalAssignments = useCallback(() => {
-    return workloadData
-      .filter(ta => ta.efficiency > 80 && ta.workload < 90)
-      .sort((a, b) => b.efficiency - a.efficiency);
-  }, [workloadData]);
+  const roleTargets = {
+    candidates: 50,
+    interviews: 25,
+    closures: 10
+  };
 
-  const getWorkloadInsights = useCallback(() => {
-    const overloaded = workloadData.filter(ta => ta.workload > 90);
-    const underutilized = workloadData.filter(ta => ta.workload < 50);
-    const optimal = workloadData.filter(ta => ta.workload >= 50 && ta.workload <= 90);
+  const assignmentMetrics = assignments.map(assignment => ({
+    id: assignment.id,
+    efficiency: Math.floor(Math.random() * 30) + 70,
+    time_to_fill: Math.floor(Math.random() * 20) + 5,
+    success_rate: Math.floor(Math.random() * 30) + 70
+  }));
 
-    return {
-      overloaded,
-      underutilized,
-      optimal,
-      averageWorkload: workloadData.reduce((acc, ta) => acc + ta.workload, 0) / workloadData.length,
-      averageEfficiency: workloadData.reduce((acc, ta) => acc + ta.efficiency, 0) / workloadData.length,
-    };
-  }, [workloadData]);
+  const collaborations = [];
 
-  const getTARecommendations = useCallback((roleRequirements: any) => {
-    return workloadData
-      .filter(ta => ta.skills.some((skill: string) => 
-        roleRequirements.skills?.includes(skill)
-      ))
-      .sort((a, b) => {
-        const aScore = a.efficiency * (100 - a.workload) / 100;
-        const bScore = b.efficiency * (100 - b.workload) / 100;
-        return bScore - aScore;
-      })
-      .slice(0, 3);
-  }, [workloadData]);
+  const performanceInsights = [
+    {
+      id: 'insight-1',
+      ta_id: taProfiles[0]?.id || '',
+      insight_type: 'efficiency_improvement',
+      confidence_score: 0.85,
+      insight_data: { recommendation: 'Consider optimizing workload distribution' },
+      created_at: new Date().toISOString()
+    }
+  ];
 
-  // Action functions that the component expects
-  const assignTAToRole = useCallback((taId: string, requirementId: string) => {
-    console.log(`Assigning TA ${taId} to requirement ${requirementId}`);
-    // Implementation would go here
-  }, []);
+  const actions = {
+    assignTAToRole: useCallback((taId: string, requirementId: string) => {
+      console.log(`Assigning TA ${taId} to requirement ${requirementId}`);
+      setLoading(true);
+      setTimeout(() => setLoading(false), 1000);
+    }, []),
 
-  const updateWorkload = useCallback((taId: string, workload: any) => {
-    console.log(`Updating workload for TA ${taId}:`, workload);
-    updateTAWorkload(taId, workload);
-  }, [updateTAWorkload]);
+    updateWorkload: useCallback((taId: string, newWorkload: number) => {
+      console.log(`Updating workload for ${taId} to ${newWorkload}`);
+    }, []),
 
-  const createCollaboration = useCallback((collaboration: any) => {
-    console.log('Creating collaboration:', collaboration);
-    addCollaboration(collaboration);
-  }, [addCollaboration]);
+    createCollaboration: useCallback((primaryTaId: string, secondaryTaId: string, assignmentId: string) => {
+      console.log(`Creating collaboration between ${primaryTaId} and ${secondaryTaId} for ${assignmentId}`);
+    }, []),
 
-  const updateAssignmentStatus = useCallback((assignmentId: string, status: string) => {
-    console.log(`Updating assignment ${assignmentId} status to ${status}`);
-    // Implementation would go here
-  }, []);
+    updateAssignmentStatus: useCallback((assignmentId: string, status: string) => {
+      console.log(`Updating assignment ${assignmentId} status to ${status}`);
+    }, []),
 
-  const refreshData = useCallback(() => {
-    console.log('Refreshing TA mapping data');
-    setLoading(true);
-    // Simulate data refresh
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-  }, []);
+    refreshData: useCallback(() => {
+      console.log('Refreshing TA mapping data');
+      setLoading(true);
+      setTimeout(() => setLoading(false), 1000);
+    }, [])
+  };
 
   return {
     taProfiles,
@@ -115,24 +100,6 @@ export const useEnhancedTAMapping = () => {
     collaborations,
     performanceInsights,
     loading,
-    // Group all actions in an actions object as expected by the component
-    actions: {
-      assignTAToRole,
-      updateWorkload,
-      createCollaboration,
-      updateAssignmentStatus,
-      refreshData
-    },
-    // Keep the original functions for backward compatibility
-    updateTAWorkload,
-    addCollaboration,
-    removeCollaboration,
-    getOptimalAssignments,
-    getWorkloadInsights,
-    getTARecommendations,
-    setWorkloadData,
-    setCollaborations,
+    actions
   };
 };
-
-export default useEnhancedTAMapping;

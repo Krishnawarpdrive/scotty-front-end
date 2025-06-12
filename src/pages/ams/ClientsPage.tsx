@@ -1,130 +1,114 @@
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Search, Plus, Building2, Users, Phone, Mail } from 'lucide-react';
+import React, { useState } from 'react';
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { useClients } from './clients/hooks/useClients';
+import { useClientSelection } from './clients/hooks/useClientSelection';
+import { useClientSearch } from './clients/hooks/useClientSearch';
+import ClientsPageHeader from './clients/components/ClientsPageHeader';
+import ClientsPageContent from './clients/components/ClientsPageContent';
+import ClientDetailDrawer from './clients/components/ClientDetailDrawer';
+import ClientAccountDrawer from './clients/components/ClientAccountDrawer';
+import { Client } from './clients/types/ClientTypes';
 
-interface Client {
-  id: string;
-  name: string;
-  email: string;
-  contact: string;
-  status: 'Active' | 'Inactive' | 'Paused';
-  totalRequirements: number;
-  assignedHr?: string;
-}
+const ClientsPage = () => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const { clients, isLoading, deleteClient } = useClients();
+  const { 
+    selectedClients, 
+    selectedClient, 
+    isDetailsOpen, 
+    setIsDetailsOpen,
+    handleViewClientDetails,
+    handleSelectClient,
+    handleSelectAll,
+    setSelectedClient
+  } = useClientSelection(clients);
+  
+  const {
+    searchTerm,
+    setSearchTerm,
+    filteredClients,
+    showFilterPanel,
+    toggleFilterPanel
+  } = useClientSearch(clients);
 
-const mockClients: Client[] = [
-  {
-    id: '1',
-    name: 'Tech Solutions Inc',
-    email: 'contact@techsolutions.com',
-    contact: '+1 (555) 123-4567',
-    status: 'Active',
-    totalRequirements: 5,
-    assignedHr: 'Sarah Johnson'
-  },
-  {
-    id: '2',
-    name: 'Digital Innovations',
-    email: 'hr@digitalinnovations.com',
-    contact: '+1 (555) 987-6543',
-    status: 'Active',
-    totalRequirements: 3,
-    assignedHr: 'Mike Chen'
-  }
-];
+  const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false);
 
-export default function ClientsPage() {
-  const [clients] = useState<Client[]>(mockClients);
-  const [searchQuery, setSearchQuery] = useState('');
+  const handleCreateClient = () => {
+    setIsAccountDrawerOpen(true);
+  };
 
-  const filteredClients = clients.filter(client =>
-    client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    client.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleEditClient = (client: Client) => {
+    toast({
+      title: "Not implemented",
+      description: "This feature is not implemented yet.",
+    });
+  };
 
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case 'Active': return 'default';
-      case 'Inactive': return 'secondary';
-      case 'Paused': return 'outline';
-      default: return 'secondary';
+  // Handle search change - now expects a string directly
+  const handleSearchChange = (query: string) => {
+    setSearchTerm(query);
+  };
+
+  // Add a sort handler function
+  const handleSort = (column: string, direction: 'asc' | 'desc') => {
+    console.log(`Sorting by ${column} in ${direction} order`);
+    // Implement sorting logic if needed
+  };
+
+  // Handle client creation success
+  const handleClientCreated = (newClient: Client) => {
+    toast({
+      title: "Awesome!",
+      description: `Client ${newClient.name} has been created successfully.`,
+    });
+    
+    // Option to navigate to client details page
+    navigate(`/ams/clients/${newClient.id}`);
+  };
+
+  // Fix the client selection handler to match expected signature
+  const handleClientSelect = (clientId: string) => {
+    const client = clients.find(c => c.id === clientId);
+    if (client) {
+      handleSelectClient(client);
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Clients</h1>
-          <p className="text-muted-foreground">Manage your client accounts and relationships</p>
-        </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Client
-        </Button>
-      </div>
+    <div className="space-y-4">
+      <ClientsPageHeader onCreateClient={handleCreateClient} />
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <Search className="h-4 w-4" />
-            <Input
-              placeholder="Search clients..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="max-w-sm"
-            />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4">
-            {filteredClients.map((client) => (
-              <Card key={client.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="p-2 bg-blue-100 rounded-lg">
-                        <Building2 className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-lg">{client.name}</h3>
-                        <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
-                          <div className="flex items-center space-x-1">
-                            <Mail className="h-3 w-3" />
-                            <span>{client.email}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Phone className="h-3 w-3" />
-                            <span>{client.contact}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right space-y-2">
-                      <Badge variant={getStatusBadgeVariant(client.status)}>
-                        {client.status}
-                      </Badge>
-                      <div className="text-sm text-muted-foreground">
-                        <div className="flex items-center space-x-1">
-                          <Users className="h-3 w-3" />
-                          <span>{client.totalRequirements} requirements</span>
-                        </div>
-                        {client.assignedHr && (
-                          <div className="mt-1">HR: {client.assignedHr}</div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <ClientsPageContent 
+        filteredClients={filteredClients}
+        isLoading={isLoading}
+        searchTerm={searchTerm}
+        onSearchChange={handleSearchChange}
+        selectedClients={selectedClients}
+        toggleFilterPanel={toggleFilterPanel}
+        onEditClient={handleEditClient}
+        onDeleteClient={deleteClient}
+        onViewClientDetails={handleViewClientDetails}
+        onSelectClient={handleClientSelect}
+        onSelectAll={handleSelectAll}
+        onSort={handleSort}
+      />
+
+      <ClientDetailDrawer
+        client={selectedClient}
+        open={isDetailsOpen}
+        onOpenChange={() => setIsDetailsOpen(false)}
+      />
+
+      <ClientAccountDrawer
+        open={isAccountDrawerOpen}
+        onOpenChange={setIsAccountDrawerOpen}
+        onClientCreated={handleClientCreated}
+      />
     </div>
   );
-}
+};
+
+export default ClientsPage;

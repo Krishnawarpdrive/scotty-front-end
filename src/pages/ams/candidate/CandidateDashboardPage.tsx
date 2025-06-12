@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,17 +5,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { 
   BarChart3, 
+  Settings, 
+  User, 
   Briefcase,
+  TrendingUp,
+  Bell,
   Search,
-  Bell as BellIcon,
-  MessageSquare as MessageSquareIcon,
-  Calendar as CalendarIcon,
-  TrendingUp as TrendingUpIcon
- } from 'lucide-react';
+  Calendar,
+  MessageSquare,
+  Target,
+  AlertTriangle,
+  CheckCircle
+} from 'lucide-react';
 import { CandidateLeftSidebar } from './components/CandidateLeftSidebar';
 import { CandidateQuickInsights } from './components/CandidateQuickInsights';
 import { CandidateRightDrawer } from './components/CandidateRightDrawer';
-import CandidateApplicationsTable from './components/CandidateApplicationsTable';
+import { CandidateApplicationsTable } from './components/CandidateApplicationsTable';
 import { CandidateStageDrawer } from './components/CandidateStageDrawer';
 import { CandidatePendingActions } from './components/CandidatePendingActions';
 import { CandidateApplicationDetailDrawer } from './components/CandidateApplicationDetailDrawer';
@@ -25,8 +29,6 @@ import { useCandidateDashboardData } from './hooks/useCandidateDashboardData';
 import { useCandidateApplicationDetails } from './hooks/useCandidateApplicationDetails';
 import { CandidateCompanyProgressDrawer } from './components/CandidateCompanyProgressDrawer';
 import { SmartActionCenter } from '@/components/smart-action-center/SmartActionCenter';
-import { CandidateApplication } from './types/CandidateTypes';
-import { CompanyApplication } from './types/CompanyTypes';
 
 const CandidateDashboardPage: React.FC = () => {
   const [selectedCandidateId] = useState('123e4567-e89b-12d3-a456-426614174000');
@@ -36,20 +38,16 @@ const CandidateDashboardPage: React.FC = () => {
   const [showApplicationDetailPage, setShowApplicationDetailPage] = useState(false);
   const [showCompanyProgressDrawer, setShowCompanyProgressDrawer] = useState(false);
   const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null);
-  const [selectedStage, setSelectedStage] = useState<any>(null);
+  const [selectedStage, setSelectedStage] = useState(null);
   const [activeMainTab, setActiveMainTab] = useState('applications');
-
-  const { dashboardData, isLoading } = useCandidateDashboardData(selectedCandidateId);
-  const { applicationDetails, submitInterviewReview } = useCandidateApplicationDetails(selectedApplicationId);
+  
+  const { dashboardData, notifications, messages, isLoading } = useCandidateDashboardData(selectedCandidateId);
+  const { applicationDetails, isLoading: applicationLoading, submitInterviewReview } = useCandidateApplicationDetails(selectedApplicationId);
 
   // Mock data for the mission control interface
-  const mockApplications: CandidateApplication[] = [
+  const mockApplications = [
     {
       id: '1',
-      title: 'Senior Frontend Developer',
-      company: 'TechCorp Inc',
-      location: 'San Francisco, CA',
-      salary: '$120,000 - $140,000',
       roleName: 'Senior Frontend Developer',
       companyName: 'TechCorp Inc',
       appliedDate: '2024-01-15',
@@ -116,10 +114,6 @@ const CandidateDashboardPage: React.FC = () => {
     },
     {
       id: '2',
-      title: 'Full Stack Engineer',
-      company: 'DataFlow Systems',
-      location: 'New York, NY',
-      salary: '$110,000 - $130,000',
       roleName: 'Full Stack Engineer',
       companyName: 'DataFlow Systems',
       appliedDate: '2024-01-20',
@@ -156,10 +150,6 @@ const CandidateDashboardPage: React.FC = () => {
     },
     {
       id: '3',
-      title: 'React Developer',
-      company: 'StartupXYZ',
-      location: 'Remote',
-      salary: '$95,000 - $115,000',
       roleName: 'React Developer',
       companyName: 'StartupXYZ',
       appliedDate: '2024-01-10',
@@ -299,17 +289,6 @@ const CandidateDashboardPage: React.FC = () => {
     supportContact: 'sarah.recruiter@techcorp.com'
   };
 
-  // Mock data for sidebar
-  const mockNotifications = [
-    { id: '1', title: 'Interview Tomorrow', message: 'Technical interview at 2:00 PM' },
-    { id: '2', title: 'Document Update', message: 'Portfolio submission required' }
-  ];
-
-  const mockMessages = [
-    { id: '1', sender: 'HR Team', preview: 'Interview confirmation...' },
-    { id: '2', sender: 'Sarah Chen', preview: 'Additional documents needed...' }
-  ];
-
   const handleApplicationClick = (application: any) => {
     console.log('Opening application details:', application.roleName);
     setSelectedApplicationId(application.id);
@@ -322,8 +301,8 @@ const CandidateDashboardPage: React.FC = () => {
     setShowCompanyProgressDrawer(true);
   };
 
-  const handleQuickAction = (action: string) => {
-    console.log('Quick action:', action);
+  const handleQuickAction = (applicationId: string, action: string) => {
+    console.log('Quick action:', action, 'for application:', applicationId);
     if (action === 'continue') {
       setSelectedStage(mockStageData);
       setShowStageDrawer(true);
@@ -336,7 +315,16 @@ const CandidateDashboardPage: React.FC = () => {
     setShowStageDrawer(true);
   };
 
-  const handleViewFullDetails = () => {
+  const handleContentAction = (contentId: string, action: string) => {
+    console.log('Content action:', action, 'for content:', contentId);
+  };
+
+  const handleStageComplete = () => {
+    console.log('Stage completed');
+    setShowStageDrawer(false);
+  };
+
+  const handleViewFullDetails = (applicationId: string) => {
     setShowApplicationDetailDrawer(false);
     setShowApplicationDetailPage(true);
   };
@@ -356,30 +344,6 @@ const CandidateDashboardPage: React.FC = () => {
     );
   }
 
-  // Convert CandidateApplication to CompanyApplication when needed
-  const convertToCompanyApplication = (candidateApp: CandidateApplication): CompanyApplication => {
-    return {
-      id: candidateApp.id,
-      title: candidateApp.title,
-      company: candidateApp.company,
-      location: candidateApp.location,
-      salary: candidateApp.salary,
-      appliedDate: candidateApp.appliedDate,
-      status: candidateApp.status,
-      roleName: candidateApp.roleName,
-      companyName: candidateApp.companyName,
-      currentStage: candidateApp.currentStage,
-      progress: candidateApp.progress,
-      priority: candidateApp.priority,
-      nextAction: candidateApp.nextAction,
-      daysInStage: candidateApp.daysInStage,
-      hasPendingActions: candidateApp.hasPendingActions,
-      alertReason: candidateApp.alertReason,
-      nextDueDate: candidateApp.nextDueDate,
-      stages: candidateApp.stages || []
-    };
-  };
-
   // Show detail page if selected
   if (showApplicationDetailPage && selectedApplicationId) {
     return (
@@ -393,11 +357,7 @@ const CandidateDashboardPage: React.FC = () => {
   return (
     <div className="h-screen flex bg-gray-50">
       {/* Left Sidebar */}
-      <CandidateLeftSidebar 
-        dashboardData={dashboardData} 
-        notifications={mockNotifications}
-        messages={mockMessages}
-      />
+      <CandidateLeftSidebar data={dashboardData} />
 
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden">
@@ -417,7 +377,7 @@ const CandidateDashboardPage: React.FC = () => {
                   Quick Search
                 </Button>
                 <Button variant="outline" size="sm" className="flex items-center gap-2">
-                  <BellIcon className="h-4 w-4" />
+                  <Bell className="h-4 w-4" />
                   {urgentActionsCount > 0 && (
                     <Badge className="bg-red-500 text-white text-xs px-1 py-0 min-w-[16px] h-4">
                       {urgentActionsCount}
@@ -451,21 +411,21 @@ const CandidateDashboardPage: React.FC = () => {
                   value="insights" 
                   className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
                 >
-                  <TrendingUpIcon className="h-4 w-4 mr-2" />
+                  <TrendingUp className="h-4 w-4 mr-2" />
                   Insights
                 </TabsTrigger>
                 <TabsTrigger 
                   value="calendar" 
                   className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
                 >
-                  <CalendarIcon className="h-4 w-4 mr-2" />
+                  <Calendar className="h-4 w-4 mr-2" />
                   Schedule
                 </TabsTrigger>
                 <TabsTrigger 
                   value="messages" 
                   className="h-12 px-6 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent rounded-none"
                 >
-                  <MessageSquareIcon className="h-4 w-4 mr-2" />
+                  <MessageSquare className="h-4 w-4 mr-2" />
                   Messages
                 </TabsTrigger>
               </TabsList>
@@ -485,13 +445,21 @@ const CandidateDashboardPage: React.FC = () => {
               </TabsContent>
 
               <TabsContent value="insights" className="p-6 m-0">
-                <CandidateQuickInsights dashboardData={dashboardData} />
+                <CandidateQuickInsights 
+                  insights={[]} 
+                  overallStats={dashboardData?.quickStats || {
+                    responseRate: 0,
+                    averageProgressTime: '0d',
+                    interviewSuccessRate: 0,
+                    activeApplications: 0
+                  }} 
+                />
               </TabsContent>
 
               <TabsContent value="calendar" className="p-6 m-0">
                 <Card>
                   <CardContent className="p-12 text-center">
-                    <CalendarIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Interview Calendar</h3>
                     <p className="text-gray-600">Your upcoming interviews and important dates will appear here.</p>
                   </CardContent>
@@ -501,7 +469,7 @@ const CandidateDashboardPage: React.FC = () => {
               <TabsContent value="messages" className="p-6 m-0">
                 <Card>
                   <CardContent className="p-12 text-center">
-                    <MessageSquareIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Messages & Communications</h3>
                     <p className="text-gray-600">All your communications with recruiters and hiring teams will be here.</p>
                   </CardContent>
@@ -516,6 +484,7 @@ const CandidateDashboardPage: React.FC = () => {
           <CandidatePendingActions
             actions={mockPendingActions}
             onActionClick={handlePendingActionClick}
+            onDismiss={(actionId) => console.log('Dismiss action:', actionId)}
           />
         </div>
       </div>
@@ -535,6 +504,8 @@ const CandidateDashboardPage: React.FC = () => {
         open={showStageDrawer}
         onClose={() => setShowStageDrawer(false)}
         stageData={selectedStage}
+        onContentAction={handleContentAction}
+        onStageComplete={handleStageComplete}
       />
 
       {/* Application Detail Drawer */}
@@ -556,12 +527,7 @@ const CandidateDashboardPage: React.FC = () => {
           setShowCompanyProgressDrawer(false);
           setSelectedApplicationId(null);
         }}
-        application={selectedApplicationId ? 
-          (() => {
-            const candidateApp = mockApplications.find(app => app.id === selectedApplicationId);
-            return candidateApp ? convertToCompanyApplication(candidateApp) : null;
-          })() : null
-        }
+        application={selectedApplicationId ? mockApplications.find(app => app.id === selectedApplicationId) || null : null}
       />
     </div>
   );

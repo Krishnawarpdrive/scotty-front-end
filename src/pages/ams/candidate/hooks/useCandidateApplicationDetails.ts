@@ -1,7 +1,19 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-export interface ApplicationDetails {
+interface InterviewHistory {
+  id: string;
+  type: string;
+  date: string;
+  interviewer: string;
+  status: 'completed' | 'scheduled' | 'cancelled';
+  feedback?: string;
+  rating?: number;
+  duration: string;
+  notes?: string;
+}
+
+interface ApplicationDetails {
   id: string;
   roleName: string;
   companyName: string;
@@ -12,106 +24,115 @@ export interface ApplicationDetails {
   location: string;
   employmentType: string;
   workMode: string;
-  salaryRange: string;
-  teamSize: string;
-  reportingTo: string;
   jobDescription: string;
   requirements: string[];
   skillsRequired: string[];
-  responsibilities: string[];
-  benefits: string[];
-  companyDescription: string;
-  interviewHistory?: Array<{
-    id: string;
-    date: string;
-    type: string;
-    interviewer: string;
-    feedback?: string;
-    status: string;
-  }>;
-  applicationStages: Array<{
-    name: string;
-    status: 'completed' | 'current' | 'pending';
-    completedDate?: string;
-    description: string;
-  }>;
+  interviewHistory: InterviewHistory[];
 }
 
 export const useCandidateApplicationDetails = (applicationId: string | null) => {
+  const [applicationDetails, setApplicationDetails] = useState<ApplicationDetails | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Mock application details
-  const applicationDetails: ApplicationDetails | null = applicationId ? {
-    id: applicationId,
-    roleName: 'Senior Frontend Developer',
-    companyName: 'TechCorp Inc',
-    appliedDate: '2024-01-15',
-    currentStage: 'Technical Interview',
-    progress: 65,
-    status: 'active',
-    location: 'San Francisco, CA',
-    employmentType: 'Full-time',
-    workMode: 'Hybrid',
-    salaryRange: '$120,000 - $150,000',
-    teamSize: '8-12 developers',
-    reportingTo: 'Engineering Manager',
-    companyDescription: 'TechCorp Inc is a leading technology company focused on building innovative solutions.',
-    jobDescription: 'We are seeking a Senior Frontend Developer to join our dynamic team.',
-    requirements: [
-      'Bachelor\'s degree in Computer Science or related field',
-      '5+ years of experience in frontend development',
-      'Strong proficiency in JavaScript, HTML5, and CSS3'
-    ],
-    skillsRequired: ['JavaScript', 'React.js', 'TypeScript', 'HTML5', 'CSS3'],
-    responsibilities: [
-      'Develop and maintain user-facing web applications',
-      'Collaborate with UI/UX designers to implement designs',
-      'Write clean, maintainable, and efficient code'
-    ],
-    benefits: [
-      'Competitive salary and equity package',
-      'Comprehensive health, dental, and vision insurance',
-      'Flexible work arrangements'
-    ],
-    interviewHistory: [
-      {
-        id: '1',
-        date: '2024-01-18',
-        type: 'Phone Screening',
-        interviewer: 'Sarah Chen (HR Manager)',
-        feedback: 'Positive feedback on communication skills and technical background.',
-        status: 'completed'
-      }
-    ],
-    applicationStages: [
-      {
-        name: 'Application Submitted',
-        status: 'completed',
-        completedDate: '2024-01-15',
-        description: 'Your application has been received and is under review'
-      },
-      {
-        name: 'Technical Interview',
-        status: 'current',
-        description: 'Technical assessment and coding interview'
-      }
-    ]
-  } : null;
+  useEffect(() => {
+    if (!applicationId) return;
 
-  const submitInterviewReview = async (reviewData: any) => {
-    setIsLoading(true);
-    try {
-      // Mock API call
-      console.log('Submitting review:', reviewData);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    } finally {
-      setIsLoading(false);
+    const fetchApplicationDetails = async () => {
+      setIsLoading(true);
+      
+      // Mock API call - replace with actual API integration
+      setTimeout(() => {
+        const mockData: ApplicationDetails = {
+          id: applicationId,
+          roleName: 'Senior Frontend Developer',
+          companyName: 'TechCorp Inc',
+          appliedDate: '2024-01-15',
+          currentStage: 'Technical Interview',
+          progress: 65,
+          status: 'active',
+          location: 'San Francisco, CA',
+          employmentType: 'Full-time',
+          workMode: 'Hybrid',
+          jobDescription: `We are seeking a Senior Frontend Developer to join our dynamic team. You will be responsible for developing user-facing features, ensuring technical feasibility of UI/UX designs, and optimizing applications for maximum speed and scalability.
+
+This role offers the opportunity to work with cutting-edge technologies and collaborate with a talented team of engineers, designers, and product managers.`,
+          requirements: [
+            'Bachelor\'s degree in Computer Science or related field',
+            '5+ years of experience in frontend development',
+            'Strong proficiency in JavaScript, HTML5, and CSS3',
+            'Experience with React.js and its ecosystem',
+            'Knowledge of state management (Redux, Context API)',
+            'Experience with RESTful APIs and GraphQL',
+            'Familiarity with version control systems (Git)',
+            'Understanding of responsive design principles',
+            'Experience with testing frameworks (Jest, Cypress)',
+            'Strong problem-solving and communication skills'
+          ],
+          skillsRequired: [
+            'JavaScript', 'React.js', 'TypeScript', 'HTML5', 'CSS3', 'Redux',
+            'GraphQL', 'Node.js', 'Git', 'Jest', 'Webpack', 'Responsive Design'
+          ],
+          interviewHistory: [
+            {
+              id: '1',
+              type: 'Phone Screening',
+              date: 'January 18, 2024',
+              interviewer: 'Sarah Chen (HR Manager)',
+              status: 'completed',
+              feedback: 'Great communication skills and enthusiasm for the role. Technical background looks solid.',
+              rating: 4,
+              duration: '30 minutes'
+            },
+            {
+              id: '2',
+              type: 'Technical Interview',
+              date: 'January 25, 2024',
+              interviewer: 'Mike Johnson (Lead Developer)',
+              status: 'completed',
+              feedback: 'Strong technical skills demonstrated. Good problem-solving approach and clean code.',
+              rating: 5,
+              duration: '60 minutes'
+            },
+            {
+              id: '3',
+              type: 'Team Interview',
+              date: 'February 1, 2024',
+              interviewer: 'Development Team',
+              status: 'scheduled',
+              duration: '45 minutes'
+            }
+          ]
+        };
+        
+        setApplicationDetails(mockData);
+        setIsLoading(false);
+      }, 500);
+    };
+
+    fetchApplicationDetails();
+  }, [applicationId]);
+
+  const submitInterviewReview = async (interviewId: string, review: any) => {
+    console.log('Submitting review for interview:', interviewId, review);
+    
+    // Mock API call - replace with actual API integration
+    if (applicationDetails) {
+      const updatedHistory = applicationDetails.interviewHistory.map(interview => 
+        interview.id === interviewId 
+          ? { ...interview, rating: review.rating, feedback: review.feedback }
+          : interview
+      );
+      
+      setApplicationDetails({
+        ...applicationDetails,
+        interviewHistory: updatedHistory
+      });
     }
   };
 
   return {
     applicationDetails,
-    submitInterviewReview,
-    isLoading
+    isLoading,
+    submitInterviewReview
   };
 };

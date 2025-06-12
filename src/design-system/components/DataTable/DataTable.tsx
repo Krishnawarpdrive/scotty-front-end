@@ -4,7 +4,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { SearchIcon, FilterIcon, ArrowUpDownIcon } from 'lucide-react';
+import { SearchIcon, FilterIcon, MoreHorizontalIcon, ArrowUpDownIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface DataTableColumn<T> {

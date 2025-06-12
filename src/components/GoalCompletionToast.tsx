@@ -1,5 +1,7 @@
-
-import { useUnifiedToast } from '@/hooks/useUnifiedToast';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { CheckCircle, Target, Star } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 interface Goal {
   id: string;
@@ -10,57 +12,82 @@ interface Goal {
 }
 
 export const triggerGoalCompletionToast = (goal: Goal) => {
-  const toast = useUnifiedToast();
-
-  toast.success({
-    title: "Goal Completed! 🎉",
-    description: `You've completed your ${goal.type} goal: "${goal.title}" (${goal.value}/${goal.target})`,
-    duration: 5000,
-    action: {
-      label: "View Details",
-      onClick: () => {
-        console.log('Goal details:', goal);
-        // Navigate to goals page or show goal details
-      }
+  const getIcon = () => {
+    switch (goal.type) {
+      case 'daily': return CheckCircle;
+      case 'weekly': return Target;
+      case 'monthly': return Star;
+      default: return CheckCircle;
     }
+  };
+
+  const Icon = getIcon();
+  
+  toast({
+    title: (
+      <motion.div 
+        className="flex items-center gap-2"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <motion.div
+          animate={{ 
+            rotate: [0, 360],
+            scale: [1, 1.2, 1]
+          }}
+          transition={{ duration: 0.6 }}
+        >
+          <Icon className="h-5 w-5 text-green-500" />
+        </motion.div>
+        Goal Completed! 🎉
+      </motion.div>
+    ) as any,
+    description: (
+      <motion.div
+        initial={{ y: 10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.3 }}
+      >
+        You've completed your {goal.type} goal: "{goal.title}"
+        <div className="mt-1 text-xs text-gray-500">
+          {goal.value}/{goal.target} ✓
+        </div>
+      </motion.div>
+    ) as any,
+    duration: 3000,
   });
 };
 
 export const triggerMilestoneToast = (milestone: number, label: string) => {
-  const toast = useUnifiedToast();
-
-  toast.success({
-    title: `${milestone}% Milestone! 🎯`,
-    description: `Great progress on ${label}! Keep it up!`,
-    duration: 4000
+  toast({
+    title: (
+      <motion.div 
+        className="flex items-center gap-2"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <motion.div
+          animate={{ 
+            scale: [1, 1.3, 1],
+          }}
+          transition={{ duration: 0.5, repeat: 2 }}
+        >
+          🎯
+        </motion.div>
+        {milestone}% Milestone!
+      </motion.div>
+    ) as any,
+    description: (
+      <motion.div
+        initial={{ y: 10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.3 }}
+      >
+        Great progress on {label}! Keep it up!
+      </motion.div>
+    ) as any,
+    duration: 3000,
   });
-};
-
-// Export as utility functions for easy usage
-export const useGoalToasts = () => {
-  const toast = useUnifiedToast();
-
-  return {
-    goalCompleted: triggerGoalCompletionToast,
-    milestone: triggerMilestoneToast,
-    
-    // Additional goal-related toasts
-    goalCreated: (goalTitle: string) => {
-      toast.success({
-        title: "Goal Created!",
-        description: `New goal "${goalTitle}" has been set up successfully.`
-      });
-    },
-    
-    goalUpdated: (goalTitle: string) => {
-      toast.info({
-        title: "Goal Updated",
-        description: `Goal "${goalTitle}" has been updated.`
-      });
-    },
-    
-    goalDeleted: (goalTitle: string, onUndo?: () => void) => {
-      toast.remove(goalTitle, onUndo);
-    }
-  };
 };

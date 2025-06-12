@@ -1,18 +1,52 @@
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { DataTableColumn } from './types';
+import { getColumnValue } from './utils';
 
-export const useDataTableSort = () => {
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
-
-  const handleSort = (key: string) => {
+export function useDataTableSort<T extends Record<string, any>>(
+  data: T[]
+) {
+  const [sortConfig, setSortConfig] = useState<{
+    key: string | null;
+    direction: 'asc' | 'desc';
+  }>({
+    key: null,
+    direction: 'asc',
+  });
+  
+  const handleSort = (columnId: string) => {
     let direction: 'asc' | 'desc' = 'asc';
     
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+    if (sortConfig.key === columnId && sortConfig.direction === 'asc') {
       direction = 'desc';
+    } else if (sortConfig.key === columnId && sortConfig.direction === 'desc') {
+      return setSortConfig({ key: null, direction: 'asc' });
     }
     
-    setSortConfig({ key, direction });
+    setSortConfig({ key: columnId, direction });
   };
-
-  return { sortConfig, handleSort };
-};
+  
+  // Apply sorting
+  const sortedData = useMemo(() => {
+    if (!sortConfig.key) return data;
+    
+    return [...data].sort((a, b) => {
+      const valueA = a[sortConfig.key as keyof T];
+      const valueB = b[sortConfig.key as keyof T];
+      
+      if (valueA < valueB) {
+        return sortConfig.direction === 'asc' ? -1 : 1;
+      }
+      if (valueA > valueB) {
+        return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  }, [data, sortConfig.key, sortConfig.direction]);
+  
+  return {
+    sortConfig,
+    handleSort,
+    sortedData
+  };
+}

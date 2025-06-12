@@ -1,137 +1,187 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Target, AlertCircle, CheckCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { 
+  Clock, 
+  AlertTriangle, 
+  Star, 
+  Calendar,
+  UserPlus,
+  FileText,
+  MessageSquare,
+  TrendingUp
+} from 'lucide-react';
+import { PendingTask, SmartNotification, SmartAction } from '@/services/SmartActionContextService';
+import { cn } from '@/lib/utils';
 
 interface SmartPaperContentProps {
-  title?: string;
-  description?: string;
-  priority?: 'high' | 'medium' | 'low';
-  estimatedTime?: string;
-  actionType?: 'create' | 'update' | 'review' | 'analyze';
-  onAction?: () => void;
-  onDismiss?: () => void;
-  insights?: string[];
-  type?: 'urgent' | 'important' | 'contextual';
-  tasks?: any[];
-  notifications?: any[];
-  actions?: any[];
-  onTaskClick?: (task: any) => void;
-  onActionClick?: (action: any) => void;
-  onNotificationDismiss?: (notificationId: string) => void;
+  type: 'urgent' | 'important' | 'contextual';
+  tasks: PendingTask[];
+  notifications: SmartNotification[];
+  actions: SmartAction[];
+  onTaskClick: (task: PendingTask) => void;
+  onActionClick: (action: SmartAction) => void;
+  onNotificationDismiss: (notificationId: string) => void;
 }
 
 export const SmartPaperContent: React.FC<SmartPaperContentProps> = ({
-  title = "Smart Action Required",
-  description = "Review and take action on important items",
-  priority = 'medium',
-  estimatedTime = "5 min",
-  actionType = 'review',
-  onAction = () => {},
-  onDismiss = () => {},
-  insights = [],
   type,
-  tasks = [],
-  notifications = [],
-  actions = [],
+  tasks,
+  notifications,
+  actions,
   onTaskClick,
   onActionClick,
   onNotificationDismiss
 }) => {
+  const getPriorityIcon = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return <AlertTriangle className="h-4 w-4 text-red-500" />;
+      case 'important': return <Star className="h-4 w-4 text-amber-500" />;
+      default: return <Clock className="h-4 w-4 text-blue-500" />;
+    }
+  };
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'urgent': return 'border-l-red-500 bg-red-50';
+      case 'important': return 'border-l-amber-500 bg-amber-50';
+      default: return 'border-l-blue-500 bg-blue-50';
     }
   };
 
-  const getActionIcon = (type: string) => {
+  const getTypeLabel = () => {
     switch (type) {
-      case 'create': return <Target className="h-4 w-4" />;
-      case 'update': return <AlertCircle className="h-4 w-4" />;
-      case 'review': return <CheckCircle className="h-4 w-4" />;
-      case 'analyze': return <Target className="h-4 w-4" />;
-      default: return <Target className="h-4 w-4" />;
+      case 'urgent': return 'Urgent Actions';
+      case 'important': return 'Important Tasks';
+      case 'contextual': return 'Quick Actions';
     }
   };
+
+  const filteredTasks = tasks.filter(task => {
+    if (type === 'urgent') return task.priority === 'urgent';
+    if (type === 'important') return task.priority === 'high';
+    return task.priority === 'medium' || task.priority === 'low';
+  });
+
+  const filteredNotifications = notifications.filter(notif => notif.type === type);
+  const filteredActions = actions.filter(action => action.priority === type);
+
+  if (filteredTasks.length === 0 && filteredNotifications.length === 0 && filteredActions.length === 0) {
+    return (
+      <Card className="w-80">
+        <CardContent className="p-4">
+          <div className="text-center text-gray-500">
+            <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
+            <p className="text-sm">All caught up!</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="space-y-2">
-            <CardTitle className="text-lg">{title}</CardTitle>
-            <CardDescription>{description}</CardDescription>
-          </div>
-          <Badge className={getPriorityColor(priority)}>
-            {priority.toUpperCase()}
-          </Badge>
+    <Card className="w-80 max-h-96 overflow-hidden">
+      <CardContent className="p-0">
+        <div className="p-4 border-b bg-gray-50">
+          <h3 className="font-semibold text-sm flex items-center gap-2">
+            {getPriorityIcon(type)}
+            {getTypeLabel()}
+            {(filteredTasks.length + filteredNotifications.length) > 0 && (
+              <Badge variant="secondary" className="ml-auto">
+                {filteredTasks.length + filteredNotifications.length}
+              </Badge>
+            )}
+          </h3>
         </div>
-        
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <Clock className="h-4 w-4" />
-            <span>{estimatedTime}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            {getActionIcon(actionType)}
-            <span className="capitalize">{actionType}</span>
-          </div>
-        </div>
-      </CardHeader>
 
-      <CardContent className="space-y-4">
-        {type && (
-          <div>
-            <h4 className="font-medium text-sm mb-2">{type} Items:</h4>
-            <div className="space-y-2">
-              {tasks.map((task, index) => (
-                <div key={index} className="p-2 bg-gray-50 rounded cursor-pointer" onClick={() => onTaskClick?.(task)}>
-                  {task.title || `Task ${index + 1}`}
+        <div className="max-h-80 overflow-y-auto">
+          {/* Urgent Notifications */}
+          {filteredNotifications.map((notification) => (
+            <div
+              key={notification.id}
+              className={cn(
+                'p-3 border-b border-l-4 hover:bg-gray-50 transition-colors',
+                getPriorityColor(notification.type)
+              )}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm truncate">{notification.title}</p>
+                  <p className="text-xs text-gray-600 mt-1">{notification.message}</p>
+                  <p className="text-xs text-gray-400 mt-1">{notification.timestamp}</p>
                 </div>
-              ))}
-              {notifications.map((notification, index) => (
-                <div key={index} className="p-2 bg-blue-50 rounded flex justify-between items-center">
-                  <span>{notification.message || `Notification ${index + 1}`}</span>
-                  <Button size="sm" variant="ghost" onClick={() => onNotificationDismiss?.(notification.id)}>
+                {notification.dismissible && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0"
+                    onClick={() => onNotificationDismiss(notification.id)}
+                  >
                     ×
                   </Button>
-                </div>
-              ))}
-              {actions.map((action, index) => (
-                <div key={index} className="p-2 bg-green-50 rounded cursor-pointer" onClick={() => onActionClick?.(action)}>
-                  {action.title || `Action ${index + 1}`}
-                </div>
-              ))}
+                )}
+              </div>
+              {notification.action && (
+                <Button size="sm" className="mt-2 h-6 text-xs" onClick={notification.action}>
+                  Take Action
+                </Button>
+              )}
             </div>
-          </div>
-        )}
+          ))}
 
-        {insights.length > 0 && (
-          <div>
-            <h4 className="font-medium text-sm mb-2">Key Insights:</h4>
-            <ul className="space-y-1">
-              {insights.map((insight, index) => (
-                <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                  <span className="text-blue-500">•</span>
-                  <span>{insight}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+          {/* Pending Tasks */}
+          {filteredTasks.map((task) => (
+            <div
+              key={task.id}
+              className={cn(
+                'p-3 border-b border-l-4 hover:bg-gray-50 transition-colors cursor-pointer',
+                getPriorityColor(task.priority)
+              )}
+              onClick={() => onTaskClick(task)}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm truncate">{task.title}</p>
+                  <p className="text-xs text-gray-600 mt-1">{task.context}</p>
+                  {task.dueDate && (
+                    <div className="flex items-center gap-1 mt-1">
+                      <Calendar className="h-3 w-3 text-gray-400" />
+                      <p className="text-xs text-gray-400">{task.dueDate}</p>
+                    </div>
+                  )}
+                </div>
+                {getPriorityIcon(task.priority)}
+              </div>
+            </div>
+          ))}
 
-        <div className="flex gap-2">
-          <Button onClick={onAction} className="flex-1">
-            Take Action
-          </Button>
-          <Button onClick={onDismiss} variant="outline">
-            Dismiss
-          </Button>
+          {/* Quick Actions */}
+          {filteredActions.map((action) => (
+            <div
+              key={action.id}
+              className="p-3 border-b hover:bg-gray-50 transition-colors cursor-pointer"
+              onClick={() => onActionClick(action)}
+            >
+              <div className="flex items-center gap-3">
+                <div className={cn(
+                  'w-8 h-8 rounded-lg flex items-center justify-center',
+                  action.color || 'bg-blue-100 text-blue-600'
+                )}>
+                  {action.icon}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm truncate">{action.title}</p>
+                </div>
+                {action.badge && (
+                  <Badge variant="secondary" className="text-xs">
+                    {action.badge}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>

@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,15 +8,11 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { supabase } from '@/integrations/supabase/client';
-import { useUnifiedToast } from '@/hooks/useUnifiedToast';
-import { Users, UserPlus, Search, Filter, Shield } from 'lucide-react';
-import { PersonaType, personaConfigs, getPersonaFromRoles } from '@/types/persona';
-import { PersonaAssignmentCard } from './components/PersonaAssignmentCard';
-import { PersonaUsersDrawer } from './components/PersonaUsersDrawer';
-import { PersonaPermissionsDrawer } from './components/PersonaPermissionsDrawer';
+import { useEnhancedToast } from '@/components/feedback/EnhancedToast';
+import { Users, UserPlus, Search, Filter } from 'lucide-react';
+import { AppRole } from '@/contexts/AuthContext';
 
 interface UserWithProfile {
   id: string;
@@ -27,43 +23,29 @@ interface UserWithProfile {
     department: string | null;
   };
   user_roles: Array<{
-    role: PersonaType;
+    role: AppRole;
     is_active: boolean;
     assigned_at: string;
   }>;
-  persona?: PersonaType;
 }
 
-interface PersonaUser {
-  id: string;
-  name: string;
-  email: string;
-  assignedAt: string;
-}
-
-// Database role mapping
-type DatabaseRole = 'hr' | 'candidate' | 'interviewer' | 'vendor' | 'client-hr' | 'bo' | 'ams' | 'ta';
-
-const mapToDbRole = (role: PersonaType): DatabaseRole => {
-  return role as DatabaseRole;
-};
-
-const mapFromDbRole = (role: string): PersonaType => {
-  return role as PersonaType;
+const roleLabels: Record<AppRole, string> = {
+  ams: 'AMS Admin',
+  hr: 'HR Manager',
+  ta: 'Talent Acquisition',
+  candidate: 'Candidate',
+  vendor: 'Vendor',
+  interviewer: 'Interviewer',
+  'client-hr': 'Client HR',
+  bo: 'Business Owner'
 };
 
 export default function UserManagementPage() {
-  const toast = useUnifiedToast();
+  const toast = useEnhancedToast();
   const [users, setUsers] = useState<UserWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedPersona, setSelectedPersona] = useState<string>('all');
-  
-  // Drawer states
-  const [showUsersDrawer, setShowUsersDrawer] = useState(false);
-  const [showPermissionsDrawer, setShowPermissionsDrawer] = useState(false);
-  const [currentPersona, setCurrentPersona] = useState<PersonaType | null>(null);
-  const [personaUsers, setPersonaUsers] = useState<PersonaUser[]>([]);
+  const [selectedRole, setSelectedRole] = useState<string>('all');
 
   useEffect(() => {
     fetchUsers();
@@ -73,12 +55,16 @@ export default function UserManagementPage() {
     try {
       setLoading(true);
       
+      // First fetch user profiles
       const { data: profiles, error: profilesError } = await supabase
         .from('user_profiles')
         .select('*');
 
-      if (profilesError) throw profilesError;
+      if (profilesError) {
+        throw profilesError;
+      }
 
+      // Then fetch user roles for each user
       const usersWithRoles = await Promise.all(
         (profiles || []).map(async (profile) => {
           const { data: rolesData, error: rolesError } = await supabase
@@ -100,16 +86,6 @@ export default function UserManagementPage() {
             };
           }
 
-          const activeRoles = (rolesData || [])
-            .filter(role => role.is_active)
-            .map(role => ({
-              role: mapFromDbRole(role.role),
-              is_active: role.is_active || false,
-              assigned_at: role.assigned_at || ''
-            }));
-
-          const userPersona = getPersonaFromRoles(activeRoles.map(r => r.role));
-
           return {
             id: profile.user_id,
             email: profile.email || '',
@@ -118,8 +94,7 @@ export default function UserManagementPage() {
               last_name: profile.last_name,
               department: profile.department
             },
-            user_roles: activeRoles,
-            persona: userPersona || undefined
+            user_roles: rolesData || []
           };
         })
       );
@@ -136,14 +111,13 @@ export default function UserManagementPage() {
     }
   };
 
-  const assignPersona = async (userId: string, persona: PersonaType) => {
+  const assignRole = async (userId: string, role: AppRole) => {
     try {
-      const dbRole = mapToDbRole(persona);
       const { error } = await supabase
         .from('user_roles')
         .insert({
           user_id: userId,
-          role: dbRole,
+          role: role,
           assigned_by: 'admin'
         });
 
@@ -151,79 +125,42 @@ export default function UserManagementPage() {
 
       toast.success({
         title: 'Success',
-        description: `Persona ${personaConfigs[persona].name} assigned successfully`
+        description: `Role ${roleLabels[role]} assigned successfully`
       });
 
       fetchUsers();
     } catch (error) {
-      console.error('Error assigning persona:', error);
+      console.error('Error assigning role:', error);
       toast.error({
         title: 'Error',
-        description: 'Failed to assign persona'
+        description: 'Failed to assign role'
       });
     }
   };
 
-  const removePersona = async (userId: string, persona: PersonaType) => {
+  const removeRole = async (userId: string, role: AppRole) => {
     try {
-      const dbRole = mapToDbRole(persona);
       const { error } = await supabase
         .from('user_roles')
         .update({ is_active: false })
         .eq('user_id', userId)
-        .eq('role', dbRole);
+        .eq('role', role);
 
       if (error) throw error;
 
       toast.success({
         title: 'Success',
-        description: `Persona ${personaConfigs[persona].name} removed successfully`
+        description: `Role ${roleLabels[role]} removed successfully`
       });
 
       fetchUsers();
     } catch (error) {
-      console.error('Error removing persona:', error);
+      console.error('Error removing role:', error);
       toast.error({
         title: 'Error',
-        description: 'Failed to remove persona'
+        description: 'Failed to remove role'
       });
     }
-  };
-
-  const handleViewUsers = (persona: PersonaType) => {
-    const usersWithPersona = users
-      .filter(user => user.persona === persona)
-      .map(user => ({
-        id: user.id,
-        name: `${user.user_profiles?.first_name || ''} ${user.user_profiles?.last_name || ''}`.trim() || user.email,
-        email: user.email,
-        assignedAt: user.user_roles.find(r => r.role === persona)?.assigned_at || ''
-      }));
-    
-    setPersonaUsers(usersWithPersona);
-    setCurrentPersona(persona);
-    setShowUsersDrawer(true);
-  };
-
-  const handleManagePermissions = (persona: PersonaType) => {
-    setCurrentPersona(persona);
-    setShowPermissionsDrawer(true);
-  };
-
-  const handleSavePermissions = (persona: PersonaType) => {
-    // This would typically save to a permissions configuration
-    toast.success({
-      title: 'Success',
-      description: `Permissions updated for ${personaConfigs[persona].name}`
-    });
-  };
-
-  const getPersonaCounts = () => {
-    const counts: Record<PersonaType, number> = {} as Record<PersonaType, number>;
-    Object.keys(personaConfigs).forEach(persona => {
-      counts[persona as PersonaType] = users.filter(user => user.persona === persona).length;
-    });
-    return counts;
   };
 
   const filteredUsers = users.filter(user => {
@@ -231,19 +168,18 @@ export default function UserManagementPage() {
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       `${user.user_profiles?.first_name} ${user.user_profiles?.last_name}`.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesPersona = selectedPersona === 'all' || user.persona === selectedPersona;
+    const matchesRole = selectedRole === 'all' || 
+      user.user_roles.some(ur => ur.role === selectedRole && ur.is_active);
 
-    return matchesSearch && matchesPersona;
+    return matchesSearch && matchesRole;
   });
-
-  const personaCounts = getPersonaCounts();
 
   if (loading) {
     return <div className="p-6">Loading users...</div>;
   }
 
   return (
-    <ProtectedRoute requiredRoles={['admin']}>
+    <ProtectedRoute requiredRoles={['ams', 'bo']}>
       <motion.div 
         className="space-y-6"
         initial={{ opacity: 0 }}
@@ -252,7 +188,7 @@ export default function UserManagementPage() {
       >
         <PageHeader
           title="User Management"
-          subtitle="Manage user personas and permissions"
+          subtitle="Manage user roles and permissions"
           actions={
             <Button size="sm">
               <UserPlus className="h-4 w-4 mr-2" />
@@ -261,165 +197,121 @@ export default function UserManagementPage() {
           }
         />
 
-        <Tabs defaultValue="personas" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="personas" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Personas
-            </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Users
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="personas" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Persona Overview</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {Object.entries(personaConfigs).map(([key]) => (
-                    <PersonaAssignmentCard
-                      key={key}
-                      persona={key as PersonaType}
-                      userCount={personaCounts[key as PersonaType] || 0}
-                      onViewUsers={handleViewUsers}
-                      onManagePermissions={handleManagePermissions}
-                    />
-                  ))}
+        {/* Filters */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Filter className="h-5 w-5" />
+              <span>Filters</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="search">Search Users</Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="search"
+                    placeholder="Search by name or email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="role-filter">Filter by Role</Label>
+                <Select value={selectedRole} onValueChange={setSelectedRole}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All roles" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Roles</SelectItem>
+                    {Object.entries(roleLabels).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>{label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-          <TabsContent value="users" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Filter className="h-5 w-5" />
-                  <span>Filters</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="search">Search Users</Label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="search"
-                        placeholder="Search by name or email..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10"
-                      />
+        {/* Users List */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Users className="h-5 w-5" />
+              <span>Users ({filteredUsers.length})</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {filteredUsers.map((user) => (
+                <div key={user.id} className="border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium">
+                        {user.user_profiles?.first_name} {user.user_profiles?.last_name}
+                      </h4>
+                      <p className="text-sm text-gray-600">{user.email}</p>
+                      {user.user_profiles?.department && (
+                        <p className="text-sm text-gray-500">{user.user_profiles.department}</p>
+                      )}
                     </div>
                   </div>
+                  
                   <div className="space-y-2">
-                    <Label htmlFor="persona-filter">Filter by Persona</Label>
-                    <Select value={selectedPersona} onValueChange={setSelectedPersona}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="All personas" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Personas</SelectItem>
-                        {Object.entries(personaConfigs).map(([value, config]) => (
-                          <SelectItem key={value} value={value}>{config.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Users className="h-5 w-5" />
-                  <span>Users ({filteredUsers.length})</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {filteredUsers.map((user) => (
-                    <div key={user.id} className="border rounded-lg p-4 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="font-medium">
-                            {user.user_profiles?.first_name} {user.user_profiles?.last_name}
-                          </h4>
-                          <p className="text-sm text-gray-600">{user.email}</p>
-                          {user.user_profiles?.department && (
-                            <p className="text-sm text-gray-500">{user.user_profiles.department}</p>
-                          )}
-                        </div>
-                        {user.persona && (
-                          <Badge className={personaConfigs[user.persona].color}>
-                            {personaConfigs[user.persona].name}
-                          </Badge>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium">Current Roles:</span>
+                      <div className="flex flex-wrap gap-2">
+                        {user.user_roles
+                          .filter(ur => ur.is_active)
+                          .map((userRole) => (
+                            <Badge key={userRole.role} variant="secondary" className="flex items-center space-x-1">
+                              <span>{roleLabels[userRole.role]}</span>
+                              <button
+                                onClick={() => removeRole(user.id, userRole.role)}
+                                className="ml-1 text-red-500 hover:text-red-700"
+                              >
+                                ×
+                              </button>
+                            </Badge>
+                          ))}
+                        {user.user_roles.filter(ur => ur.is_active).length === 0 && (
+                          <span className="text-sm text-gray-500">No active roles</span>
                         )}
                       </div>
-                      
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm font-medium">Current Persona:</span>
-                          {user.persona ? (
-                            <Badge className={personaConfigs[user.persona].color}>
-                              {personaConfigs[user.persona].name}
-                            </Badge>
-                          ) : (
-                            <span className="text-sm text-gray-500">No persona assigned</span>
-                          )}
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm font-medium">Assign Persona:</span>
-                          <Select onValueChange={(persona) => assignPersona(user.id, persona as PersonaType)}>
-                            <SelectTrigger className="w-48">
-                              <SelectValue placeholder="Select persona to assign" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Object.entries(personaConfigs)
-                                .filter(([persona]) => user.persona !== persona)
-                                .map(([value, config]) => (
-                                  <SelectItem key={value} value={value}>{config.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
                     </div>
-                  ))}
-                  
-                  {filteredUsers.length === 0 && (
-                    <div className="text-center py-8 text-gray-500">
-                      No users found matching your criteria
+                    
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium">Assign Role:</span>
+                      <Select onValueChange={(role) => assignRole(user.id, role as AppRole)}>
+                        <SelectTrigger className="w-48">
+                          <SelectValue placeholder="Select role to assign" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(roleLabels)
+                            .filter(([role]) => !user.user_roles.some(ur => ur.role === role && ur.is_active))
+                            .map(([value, label]) => (
+                              <SelectItem key={value} value={value}>{label}</SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                  )}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
-        {/* Drawers */}
-        <PersonaUsersDrawer
-          open={showUsersDrawer}
-          onClose={() => setShowUsersDrawer(false)}
-          persona={currentPersona}
-          users={personaUsers}
-          onRemoveUser={removePersona}
-        />
-
-        <PersonaPermissionsDrawer
-          open={showPermissionsDrawer}
-          onClose={() => setShowPermissionsDrawer(false)}
-          persona={currentPersona}
-          onSavePermissions={handleSavePermissions}
-        />
+              ))}
+              
+              {filteredUsers.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No users found matching your criteria
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </motion.div>
     </ProtectedRoute>
   );

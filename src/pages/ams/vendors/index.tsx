@@ -1,3 +1,2 @@
 
-export { VendorDashboard as VendorsPage } from './components/VendorDashboard';
-export { default as VendorDetailPage } from './VendorDetailPage';
+export { default as VendorsPage } from '../vendors/VendorDetailPage';

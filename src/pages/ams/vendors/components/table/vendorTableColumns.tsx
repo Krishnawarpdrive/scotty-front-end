@@ -2,114 +2,161 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye } from 'lucide-react';
+import { DataTableColumn } from '@/components/ui/data-table/types';
+import { 
+  MoreHorizontalIcon, 
+  EditIcon, 
+  TrashIcon, 
+  EyeIcon,
+  MailIcon,
+  PhoneIcon
+} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Vendor } from '../../types/VendorTypes';
+import { format } from 'date-fns';
+import { getStatusBadgeVariant, getSLABadgeVariant } from './badgeUtils';
 
-interface VendorTableColumnsProps {
+interface ColumnProps {
   onVendorClick: (vendor: Vendor) => void;
 }
 
-export const createVendorTableColumns = ({ onVendorClick }: VendorTableColumnsProps) => [
+export const createVendorTableColumns = ({ onVendorClick }: ColumnProps): DataTableColumn<Vendor>[] => [
   {
     id: 'name',
-    accessorKey: 'name',
     header: 'Vendor Name',
     enableSorting: true,
     enableFiltering: true,
-    cell: (vendor: Vendor) => (
-      <div className="flex flex-col">
-        <span className="font-medium">{vendor.name}</span>
-        <span className="text-sm text-gray-500">{vendor.vendorId}</span>
+    cell: (vendor) => (
+      <div className="space-y-1">
+        <button
+          onClick={() => onVendorClick(vendor)}
+          className="text-blue-600 hover:text-blue-800 font-medium text-left"
+        >
+          {vendor.name}
+        </button>
+        <div className="text-xs text-gray-500">{vendor.vendorId}</div>
       </div>
     )
   },
   {
-    id: 'contact',
-    accessorKey: 'contactInfo.email',
-    header: 'Contact',
-    enableSorting: false,
-    cell: (vendor: Vendor) => (
-      <div className="flex flex-col">
-        <span className="text-sm">{vendor.contactInfo.primaryContact}</span>
-        <span className="text-xs text-gray-500">{vendor.contactInfo.email}</span>
-      </div>
+    id: 'tier',
+    header: 'Tier',
+    enableSorting: true,
+    enableFiltering: true,
+    cell: (vendor) => (
+      <Badge variant="outline" className="text-xs">
+        {vendor.tier}
+      </Badge>
     )
   },
   {
     id: 'status',
-    accessorKey: 'status',
     header: 'Status',
     enableSorting: true,
-    cell: (vendor: Vendor) => (
-      <Badge 
-        variant={vendor.status === 'Active' ? 'default' : 'secondary'}
-        className={vendor.status === 'Active' ? 'bg-green-100 text-green-800' : ''}
-      >
+    enableFiltering: true,
+    cell: (vendor) => (
+      <Badge variant={getStatusBadgeVariant(vendor.status)}>
         {vendor.status}
       </Badge>
     )
   },
   {
-    id: 'tier',
-    accessorKey: 'tier',
-    header: 'Tier',
+    id: 'slaStatus',
+    header: 'SLA Status',
     enableSorting: true,
-    cell: (vendor: Vendor) => (
-      <Badge variant="outline">{vendor.tier}</Badge>
-    )
-  },
-  {
-    id: 'rating',
-    accessorKey: 'rating',
-    header: 'Rating',
-    enableSorting: true,
-    cell: (vendor: Vendor) => (
-      <div className="flex items-center gap-1">
-        <span>{vendor.rating.toFixed(1)}</span>
-        <span className="text-yellow-500">★</span>
-      </div>
-    )
-  },
-  {
-    id: 'roles',
-    accessorKey: 'rolesAssigned',
-    header: 'Roles',
-    enableSorting: true,
-    cell: (vendor: Vendor) => (
-      <span className="font-medium">{vendor.rolesAssigned}</span>
-    )
-  },
-  {
-    id: 'sla',
-    accessorKey: 'slaStatus',
-    header: 'SLA',
-    enableSorting: true,
-    cell: (vendor: Vendor) => (
-      <Badge 
-        variant={vendor.slaStatus === 'Good' ? 'default' : 'destructive'}
-        className={
-          vendor.slaStatus === 'Good' ? 'bg-green-100 text-green-800' :
-          vendor.slaStatus === 'Warning' ? 'bg-yellow-100 text-yellow-800' :
-          'bg-red-100 text-red-800'
-        }
-      >
+    enableFiltering: true,
+    cell: (vendor) => (
+      <Badge variant={getSLABadgeVariant(vendor.slaStatus)}>
         {vendor.slaStatus}
       </Badge>
     )
   },
   {
+    id: 'rolesAssigned',
+    header: 'Roles',
+    enableSorting: true,
+    cell: (vendor) => (
+      <div className="text-center">
+        <div className="font-medium">{vendor.rolesAssigned}</div>
+        <div className="text-xs text-gray-500">assigned</div>
+      </div>
+    )
+  },
+  {
+    id: 'activeRequirements',
+    header: 'Active Req.',
+    enableSorting: true,
+    cell: (vendor) => (
+      <div className="text-center">
+        <div className="font-medium">{vendor.activeRequirements}</div>
+        <div className="text-xs text-gray-500">active</div>
+      </div>
+    )
+  },
+  {
+    id: 'rating',
+    header: 'Rating',
+    enableSorting: true,
+    cell: (vendor) => (
+      <div className="flex items-center gap-1">
+        <span className="font-medium">{vendor.rating}</span>
+        <span className="text-yellow-400">★</span>
+      </div>
+    )
+  },
+  {
+    id: 'contact',
+    header: 'Contact',
+    cell: (vendor) => (
+      <div className="flex items-center gap-2">
+        <MailIcon className="h-3 w-3 text-gray-400" />
+        <PhoneIcon className="h-3 w-3 text-gray-400" />
+        <span className="text-xs text-gray-600">
+          {vendor.contactInfo.primaryContact}
+        </span>
+      </div>
+    )
+  },
+  {
+    id: 'lastActive',
+    header: 'Last Active',
+    enableSorting: true,
+    cell: (vendor) => (
+      <div className="text-xs text-gray-600">
+        {format(new Date(vendor.lastActiveDate), 'MMM dd, yyyy')}
+      </div>
+    )
+  },
+  {
     id: 'actions',
-    accessorKey: 'id',
     header: 'Actions',
-    enableSorting: false,
-    cell: (vendor: Vendor) => (
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onVendorClick(vendor)}
-      >
-        <Eye className="h-4 w-4" />
-      </Button>
+    cell: (vendor) => (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm">
+            <MoreHorizontalIcon className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => onVendorClick(vendor)}>
+            <EyeIcon className="h-4 w-4 mr-2" />
+            View Details
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <EditIcon className="h-4 w-4 mr-2" />
+            Edit Vendor
+          </DropdownMenuItem>
+          <DropdownMenuItem className="text-red-600">
+            <TrashIcon className="h-4 w-4 mr-2" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     )
   }
 ];

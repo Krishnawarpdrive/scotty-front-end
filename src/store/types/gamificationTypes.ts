@@ -1,23 +1,18 @@
 
-export interface UserStats {
-  id: string;
-  level: number;
-  xp: number;
-  totalXP: number;
-  rank: string;
-  badges: string[];
-}
-
 export interface Mission {
   id: string;
   title: string;
   description: string;
-  type: 'daily' | 'weekly' | 'monthly';
-  target: number;
+  type: 'daily' | 'weekly' | 'monthly' | 'special';
+  status: 'active' | 'completed' | 'expired';
   progress: number;
+  target: number;
+  reward: number;
   xpReward: number;
-  status: 'active' | 'completed' | 'failed';
-  deadline: string;
+  category: 'screening' | 'interviews' | 'placements' | 'client_relations' | 'general';
+  startDate: string;
+  endDate: string;
+  requirements?: string[];
 }
 
 export interface Achievement {
@@ -25,52 +20,75 @@ export interface Achievement {
   title: string;
   description: string;
   icon: string;
+  category: 'milestone' | 'streak' | 'performance' | 'special';
+  tier: 'bronze' | 'silver' | 'gold' | 'platinum';
   unlockedAt?: string;
-  progress: number;
-  maxProgress: number;
+  isLocked: boolean;
+  requirements: {
+    type: string;
+    value: number;
+    description: string;
+  }[];
 }
 
 export interface Goal {
   id: string;
   title: string;
-  description: string;
   type: 'daily' | 'weekly' | 'monthly';
+  value: number;
   target: number;
-  current: number;
-  status: 'pending' | 'completed' | 'failed';
-  deadline: string;
+  unit?: string;
+  category: string;
+  status: 'active' | 'completed' | 'failed';
+  dueDate: string;
 }
 
-export interface StreakData {
-  currentStreak: number;
-  longestStreak: number;
-  lastActivityDate: string;
-}
-
-export type CelebrationType = 'mission_complete' | 'level_up' | 'achievement_unlock' | 'streak_milestone';
-
-export interface Celebration {
+export interface TAProfile {
   id: string;
+  name: string;
+  email: string;
+  level: number;
+  xp: number;
+  xpToNext: number;
+  rank: string;
+  streak: number;
+  totalMissionsCompleted: number;
+  currentMissions: Mission[];
+  achievements: Achievement[];
+  goals: Goal[];
+  stats: {
+    totalScreenings: number;
+    totalInterviews: number;
+    totalPlacements: number;
+    averageRating: number;
+    efficiency: number;
+  };
+}
+
+export type CelebrationType = 'mission' | 'achievement' | 'goal' | 'streak';
+
+export interface CelebrationData {
   type: CelebrationType;
   data: any;
-  timestamp: string;
-}
-
-export interface GamificationSettings {
-  enabled: boolean;
-  showNotifications: boolean;
-  autoTrackProgress: boolean;
-  celebrationAnimations: boolean;
+  id: string;
 }
 
 export interface GamificationState {
-  currentUser: UserStats | null;
+  currentUser: TAProfile | null;
   missions: Mission[];
   achievements: Achievement[];
   goals: Goal[];
-  streakData: StreakData;
-  celebrationQueue: Celebration[];
-  settings: GamificationSettings;
+  streakData: {
+    currentStreak: number;
+    longestStreak: number;
+    lastActivityDate: string;
+  };
+  celebrationQueue: CelebrationData[];
+  settings: {
+    notificationsEnabled: boolean;
+    soundEnabled: boolean;
+    celebrationsEnabled: boolean;
+  };
   isLoading: boolean;
   error: string | null;
 }

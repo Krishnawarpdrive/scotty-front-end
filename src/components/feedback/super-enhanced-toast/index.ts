@@ -9,9 +9,6 @@ export {
   usePromiseToasts
 } from './hooks';
 
-// Provider component
-export { SuperEnhancedToastProvider } from './components/SuperEnhancedToastProvider';
-
 // Types
 export type { 
   SuperEnhancedToastOptions, 

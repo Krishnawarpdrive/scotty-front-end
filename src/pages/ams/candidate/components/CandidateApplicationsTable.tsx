@@ -1,251 +1,252 @@
-
 import React, { useState } from 'react';
+import { DataTable } from '@/components/ui/data-table/DataTable';
+import { DataTableColumn } from '@/components/ui/data-table/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { 
-  Calendar, 
-  ChevronRight, 
-  AlertTriangle,
+  Clock, 
+  AlertTriangle, 
+  Calendar,
+  FileText,
   Play,
-  Building2,
-  MapPin,
-  DollarSign,
-  Clock
+  CheckCircle,
+  XCircle,
+  ArrowRight
 } from 'lucide-react';
-import { CandidateApplication } from '../types/CandidateTypes';
+import { cn } from '@/lib/utils';
+
+interface ApplicationStage {
+  id: string;
+  name: string;
+  status: 'completed' | 'current' | 'pending' | 'blocked';
+  type: 'document' | 'interview' | 'assessment' | 'video' | 'questionnaire';
+  dueDate?: string;
+  completedDate?: string;
+  hasAction?: boolean;
+  actionType?: string;
+}
+
+interface CandidateApplication {
+  id: string;
+  roleName: string;
+  companyName: string;
+  appliedDate: string;
+  currentStage: string;
+  progress: number;
+  status: 'active' | 'offer' | 'rejected' | 'withdrawn';
+  priority: 'high' | 'medium' | 'low';
+  nextAction?: string;
+  daysInStage: number;
+  hasPendingActions: boolean;
+  stages: ApplicationStage[];
+  alertReason?: string;
+  nextDueDate?: string;
+}
 
 interface CandidateApplicationsTableProps {
   applications: CandidateApplication[];
-  onApplicationClick?: (application: CandidateApplication) => void;
-  onCompanyClick?: (application: CandidateApplication) => void;
-  onQuickAction?: (applicationId: string, action: string) => void;
+  onApplicationClick: (application: CandidateApplication) => void;
+  onCompanyClick: (application: CandidateApplication) => void;
+  onQuickAction: (applicationId: string, action: string) => void;
 }
 
-const CandidateApplicationsTable: React.FC<CandidateApplicationsTableProps> = ({
+export const CandidateApplicationsTable: React.FC<CandidateApplicationsTableProps> = ({
   applications,
   onApplicationClick,
   onCompanyClick,
   onQuickAction
 }) => {
-  const [sortBy, setSortBy] = useState<'recent' | 'priority' | 'progress'>('recent');
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'default';
-      case 'pending': return 'secondary';
-      case 'rejected': return 'destructive';
-      case 'offer': return 'default';
-      default: return 'secondary';
-    }
+  const getStatusBadge = (status: string) => {
+    const variants = {
+      active: 'bg-blue-100 text-blue-700 border-blue-200',
+      offer: 'bg-green-100 text-green-700 border-green-200',
+      rejected: 'bg-red-100 text-red-700 border-red-200',
+      withdrawn: 'bg-gray-100 text-gray-700 border-gray-200'
+    };
+    return <Badge className={variants[status as keyof typeof variants]}>{status}</Badge>;
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'text-red-600 bg-red-50';
-      case 'medium': return 'text-yellow-600 bg-yellow-50';
-      case 'low': return 'text-green-600 bg-green-50';
-      default: return 'text-gray-600 bg-gray-50';
-    }
+  const getPriorityIndicator = (priority: string) => {
+    const colors = {
+      high: 'bg-red-500',
+      medium: 'bg-yellow-500',
+      low: 'bg-green-500'
+    };
+    return <div className={cn('w-2 h-8 rounded-full', colors[priority as keyof typeof colors])} />;
   };
 
-  const sortedApplications = [...applications].sort((a, b) => {
-    switch (sortBy) {
-      case 'recent':
-        return new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime();
-      case 'priority':
-        const priorityOrder = { high: 3, medium: 2, low: 1 };
-        return (priorityOrder[b.priority as keyof typeof priorityOrder] || 0) - 
-               (priorityOrder[a.priority as keyof typeof priorityOrder] || 0);
-      case 'progress':
-        return (b.progress || 0) - (a.progress || 0);
+  const getStageIcon = (stage: ApplicationStage) => {
+    const iconClass = 'h-4 w-4';
+    switch (stage.type) {
+      case 'document':
+        return <FileText className={iconClass} />;
+      case 'interview':
+        return <Calendar className={iconClass} />;
+      case 'assessment':
+        return <Clock className={iconClass} />;
+      case 'video':
+        return <Play className={iconClass} />;
+      case 'questionnaire':
+        return <FileText className={iconClass} />;
       default:
-        return 0;
+        return <CheckCircle className={iconClass} />;
     }
-  });
+  };
+
+  const columns: DataTableColumn<CandidateApplication>[] = [
+    {
+      id: 'priority',
+      header: '',
+      cell: (application) => getPriorityIndicator(application.priority)
+    },
+    {
+      id: 'role',
+      header: 'Role & Company',
+      cell: (application) => (
+        <div className="min-w-0">
+          <button
+            onClick={() => onApplicationClick(application)}
+            className="font-medium text-blue-600 hover:text-blue-800 truncate block text-left underline-offset-4 hover:underline"
+          >
+            {application.roleName}
+          </button>
+          <button
+            onClick={() => onCompanyClick(application)}
+            className="text-sm text-gray-500 truncate hover:text-blue-600 hover:underline underline-offset-4 block text-left"
+          >
+            {application.companyName}
+          </button>
+        </div>
+      )
+    },
+    {
+      id: 'currentStage',
+      header: 'Current Stage',
+      cell: (application) => {
+        const currentStage = application.stages.find(s => s.status === 'current');
+        return (
+          <div className="flex items-center gap-2">
+            {currentStage && getStageIcon(currentStage)}
+            <span className="text-sm">{application.currentStage}</span>
+          </div>
+        );
+      }
+    },
+    {
+      id: 'progress',
+      header: 'Progress',
+      cell: (application) => (
+        <div className="w-24">
+          <Progress value={application.progress} className="h-2" />
+          <div className="text-xs text-gray-500 mt-1">{application.progress}%</div>
+        </div>
+      )
+    },
+    {
+      id: 'daysInStage',
+      header: 'Days in Stage',
+      cell: (application) => (
+        <div className={cn(
+          'text-sm',
+          application.daysInStage > 5 ? 'text-red-600 font-medium' : 'text-gray-600'
+        )}>
+          {application.daysInStage}d
+        </div>
+      )
+    },
+    {
+      id: 'nextDueDate',
+      header: 'Next Due',
+      cell: (application) => (
+        <div className="text-sm text-gray-600">
+          {application.nextDueDate || '-'}
+        </div>
+      )
+    },
+    {
+      id: 'status',
+      header: 'Status',
+      cell: (application) => getStatusBadge(application.status)
+    },
+    {
+      id: 'pendingActions',
+      header: 'Pending Actions',
+      cell: (application) => (
+        <div className="flex items-center gap-2">
+          {application.hasPendingActions && (
+            <div className="flex items-center gap-1 text-amber-600">
+              <AlertTriangle className="h-4 w-4" />
+              <span className="text-xs">Action Required</span>
+            </div>
+          )}
+          {application.alertReason && (
+            <div className="text-xs text-red-600 max-w-32 truncate">
+              {application.alertReason}
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      id: 'actions',
+      header: 'Quick Actions',
+      cell: (application) => (
+        <div className="flex items-center gap-1">
+          {application.nextAction && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 px-2 text-xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                onQuickAction(application.id, 'continue');
+              }}
+            >
+              <ArrowRight className="h-3 w-3 mr-1" />
+              Continue
+            </Button>
+          )}
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 px-2 text-xs"
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuickAction(application.id, 'view');
+            }}
+          >
+            View
+          </Button>
+        </div>
+      )
+    }
+  ];
 
   return (
-    <div className="space-y-6">
-      {/* Header with Controls */}
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold">Your Applications</h2>
-          <p className="text-sm text-muted-foreground">
-            {applications.length} total applications • {applications.filter(a => a.status === 'active').length} active
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Button
-            variant={sortBy === 'recent' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setSortBy('recent')}
-          >
-            Recent
-          </Button>
-          <Button
-            variant={sortBy === 'priority' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setSortBy('priority')}
-          >
-            Priority
-          </Button>
-          <Button
-            variant={sortBy === 'progress' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setSortBy('progress')}
-          >
-            Progress
-          </Button>
+        <h2 className="text-lg font-semibold text-gray-900">My Applications</h2>
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 bg-red-500 rounded-full" />
+            High Priority
+          </div>
+          <div className="flex items-center gap-1">
+            <AlertTriangle className="h-4 w-4 text-amber-600" />
+            Action Required
+          </div>
         </div>
       </div>
 
-      {/* Applications Grid */}
-      <div className="space-y-4">
-        {sortedApplications.map((application) => (
-          <Card 
-            key={application.id} 
-            className={`transition-all duration-200 hover:shadow-md cursor-pointer ${
-              application.hasPendingActions ? 'ring-2 ring-orange-200 ring-opacity-50' : ''
-            }`}
-          >
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                {/* Left Section - Job Details */}
-                <div className="flex-1">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 
-                          className="font-semibold text-lg hover:text-blue-600 cursor-pointer"
-                          onClick={() => onApplicationClick?.(application)}
-                        >
-                          {application.title || application.roleName}
-                        </h3>
-                        {application.hasPendingActions && (
-                          <AlertTriangle className="h-4 w-4 text-orange-500" />
-                        )}
-                      </div>
-                      
-                      <div 
-                        className="flex items-center gap-2 text-gray-600 mb-2 hover:text-blue-600 cursor-pointer"
-                        onClick={() => onCompanyClick?.(application)}
-                      >
-                        <Building2 className="h-4 w-4" />
-                        <span className="font-medium">{application.company || application.companyName}</span>
-                      </div>
-
-                      <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-3 w-3" />
-                          <span>{application.location}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <DollarSign className="h-3 w-3" />
-                          <span>{application.salary}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          <span>Applied {application.appliedDate}</span>
-                        </div>
-                      </div>
-
-                      {/* Current Stage and Progress */}
-                      <div className="flex items-center gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-sm font-medium">{application.currentStage}</span>
-                            <span className="text-sm text-gray-500">{application.progress}%</span>
-                          </div>
-                          <Progress value={application.progress} className="h-2" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Section - Status and Actions */}
-                <div className="flex flex-col items-end gap-3 ml-4">
-                  <div className="flex items-center gap-2">
-                    <Badge 
-                      variant={getStatusColor(application.status)}
-                      className="capitalize"
-                    >
-                      {application.status}
-                    </Badge>
-                    {application.priority && (
-                      <Badge 
-                        variant="outline"
-                        className={`${getPriorityColor(application.priority)} border-0 capitalize`}
-                      >
-                        {application.priority}
-                      </Badge>
-                    )}
-                  </div>
-
-                  {/* Next Action Alert */}
-                  {application.hasPendingActions && (
-                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 max-w-xs">
-                      <div className="flex items-center gap-2 mb-1">
-                        <AlertTriangle className="h-4 w-4 text-orange-500" />
-                        <span className="text-sm font-medium text-orange-800">Action Required</span>
-                      </div>
-                      <p className="text-xs text-orange-700 mb-2">{application.alertReason}</p>
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-3 w-3 text-orange-500" />
-                        <span className="text-xs text-orange-600">{application.nextDueDate}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Quick Actions */}
-                  <div className="flex items-center gap-2">
-                    {application.hasPendingActions && (
-                      <Button
-                        size="sm"
-                        className="flex items-center gap-1"
-                        onClick={() => onQuickAction?.(application.id, 'continue')}
-                      >
-                        <Play className="h-3 w-3" />
-                        Continue
-                      </Button>
-                    )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center gap-1"
-                      onClick={() => onApplicationClick?.(application)}
-                    >
-                      View Details
-                      <ChevronRight className="h-3 w-3" />
-                    </Button>
-                  </div>
-
-                  {/* Days in Stage */}
-                  {application.daysInStage && (
-                    <div className="text-xs text-gray-500">
-                      {application.daysInStage} days in current stage
-                    </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {applications.length === 0 && (
-        <Card>
-          <CardContent className="p-12 text-center">
-            <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Applications Yet</h3>
-            <p className="text-gray-600">Start applying to jobs to see your applications here.</p>
-          </CardContent>
-        </Card>
-      )}
+      <DataTable
+        data={applications}
+        columns={columns}
+        onRowClick={onApplicationClick}
+        searchPlaceholder="Search applications..."
+      />
     </div>
   );
 };
-
-export default CandidateApplicationsTable;

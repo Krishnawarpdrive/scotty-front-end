@@ -1,10 +1,10 @@
 
-import { useState } from 'react';
-import { Search, Plus } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, Plus, Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ChecklistCreationDrawer from './checklists/components/ChecklistCreationDrawer';
 import { useChecklistsData } from './checklists/hooks/useChecklistsData';
 import { ChecklistTypeFilter } from './checklists/components/ChecklistTypeFilter';
@@ -21,6 +21,7 @@ const ChecklistsPage = () => {
   
   const { 
     checklists,
+    isLoading,
     deleteChecklist
   } = useChecklistsData();
   

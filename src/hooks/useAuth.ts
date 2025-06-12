@@ -3,118 +3,107 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
-export type AppRole = 'hr' | 'candidate' | 'interviewer' | 'vendor' | 'client-hr' | 'bo' | 'ams' | 'ta' | 'admin' | 'user' | 'manager' | 'executive';
+export type AppRole = 'ams' | 'hr' | 'ta' | 'candidate' | 'vendor' | 'interviewer' | 'client-hr' | 'bo';
 
 export interface UserProfile {
   id: string;
-  name: string;
-  email: string;
-  role: string;
-  department: string;
-  avatarUrl?: string;
-  bio?: string;
-  location?: string;
-  phone?: string;
-  joinDate: string;
-  skills?: string[];
-  achievements?: string[];
-  socialLinks?: {
-    linkedin?: string;
-    github?: string;
-    twitter?: string;
-  };
-  preferences?: {
-    theme: string;
-    notifications: boolean;
-    emailUpdates: boolean;
-  };
-  privacy_settings?: {
-    profile_visibility: string;
-    contact_visibility: string;
-    activity_visibility: string;
-  };
+  user_id: string;
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
+  phone: string | null;
+  avatar_url: string | null;
+  department: string | null;
+  timezone: string;
+  preferences: Record<string, any>;
+  created_at: string;
+  updated_at: string;
 }
 
-export const useAuth = () => {
+export interface UserRole {
+  id: string;
+  user_id: string;
+  role: AppRole;
+  assigned_at: string;
+  assigned_by: string | null;
+  is_active: boolean;
+  metadata: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
+
+export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial user
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-      if (user) {
-        fetchUserProfile(user.id);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchUserData(session.user.id);
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchUserProfile(session.user.id);
-      } else {
-        setProfile(null);
-        setRoles([]);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          fetchUserData(session.user.id);
+        } else {
+          setProfile(null);
+          setRoles([]);
+          setLoading(false);
+        }
       }
-      setLoading(false);
-    });
+    );
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchUserProfile = async (userId: string) => {
+  const fetchUserData = async (userId: string) => {
     try {
       // Fetch user profile
-      const { data: profileData } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('user_id', userId)
         .single();
 
-      if (profileData) {
-        setProfile({
-          id: profileData.user_id,
-          name: `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim(),
-          email: profileData.email || '',
-          role: 'user', // Default role
-          department: profileData.department || '',
-          avatarUrl: profileData.avatar_url || undefined,
-          bio: undefined, // Not in current schema
-          location: undefined, // Not in current schema
-          phone: profileData.phone || undefined,
-          joinDate: profileData.created_at || '',
-          skills: [], // Not in current schema
-          achievements: [], // Not in current schema
-          socialLinks: {}, // Not in current schema
-          preferences: {
-            theme: 'light',
-            notifications: true,
-            emailUpdates: true
-          },
-          privacy_settings: {
-            profile_visibility: 'public',
-            contact_visibility: 'connections',
-            activity_visibility: 'private'
-          }
-        });
+      if (profileError && profileError.code !== 'PGRST116') {
+        console.error('Error fetching profile:', profileError);
+      } else {
+        // Handle preferences type conversion
+        const processedProfile = profileData ? {
+          ...profileData,
+          preferences: typeof profileData.preferences === 'string' 
+            ? JSON.parse(profileData.preferences) 
+            : (profileData.preferences || {})
+        } : null;
+        setProfile(processedProfile);
       }
 
       // Fetch user roles
-      const { data: rolesData } = await supabase
+      const { data: rolesData, error: rolesError } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', userId)
         .eq('is_active', true);
 
-      if (rolesData) {
-        setRoles(rolesData.map(r => r.role as AppRole));
+      if (rolesError) {
+        console.error('Error fetching roles:', rolesError);
+      } else {
+        setRoles(rolesData?.map(r => r.role) || []);
       }
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('Error in fetchUserData:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -122,22 +111,16 @@ export const useAuth = () => {
     return roles.includes(role);
   };
 
-  const hasAnyRole = (requiredRoles: AppRole[]): boolean => {
-    return requiredRoles.some(role => roles.includes(role));
+  const hasAnyRole = (checkRoles: AppRole[]): boolean => {
+    return checkRoles.some(role => roles.includes(role));
   };
 
   const isAdmin = (): boolean => {
-    return hasAnyRole(['admin', 'ams']);
+    return hasAnyRole(['ams', 'bo']);
   };
 
   const signOut = async () => {
     await supabase.auth.signOut();
-  };
-
-  const refetch = () => {
-    if (user) {
-      fetchUserProfile(user.id);
-    }
   };
 
   return {
@@ -149,6 +132,6 @@ export const useAuth = () => {
     hasAnyRole,
     isAdmin,
     signOut,
-    refetch
+    refetch: () => user && fetchUserData(user.id)
   };
-};
+}
