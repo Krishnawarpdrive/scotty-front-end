@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PersonaType, personaConfigs } from '@/types/persona';
-import { Users, Shield, Eye } from 'lucide-react';
+import { Users, Shield } from 'lucide-react';
 
 interface PersonaAssignmentCardProps {
   persona: PersonaType;

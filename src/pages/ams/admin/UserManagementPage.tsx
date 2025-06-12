@@ -119,7 +119,7 @@ export default function UserManagementPage() {
               department: profile.department
             },
             user_roles: activeRoles,
-            persona: userPersona
+            persona: userPersona || undefined
           };
         })
       );
@@ -210,7 +210,7 @@ export default function UserManagementPage() {
     setShowPermissionsDrawer(true);
   };
 
-  const handleSavePermissions = (persona: PersonaType, permissions: string[]) => {
+  const handleSavePermissions = (persona: PersonaType) => {
     // This would typically save to a permissions configuration
     toast.success({
       title: 'Success',
@@ -280,7 +280,7 @@ export default function UserManagementPage() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {Object.entries(personaConfigs).map(([key, config]) => (
+                  {Object.entries(personaConfigs).map(([key]) => (
                     <PersonaAssignmentCard
                       key={key}
                       persona={key as PersonaType}
