@@ -29,7 +29,7 @@ interface SidebarItem {
 
 export const AMSSidebar: React.FC = () => {
   const location = useLocation();
-  const { user, hasAnyRole } = useAuthContext();
+  const { hasAnyRole } = useAuthContext();
   const [expandedItems, setExpandedItems] = useState<string[]>(['Talent Management']);
 
   const toggleExpanded = (title: string) => {
@@ -142,3 +142,5 @@ export const AMSSidebar: React.FC = () => {
     </div>
   );
 };
+
+export default AMSSidebar;

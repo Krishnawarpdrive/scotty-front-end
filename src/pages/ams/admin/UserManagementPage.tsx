@@ -36,7 +36,6 @@ const roleLabels: Record<AppRole, string> = {
   hr: 'HR Manager',
   candidate: 'Candidate',
   interviewer: 'Interviewer',
-  'client-hr': 'Client HR',
   bo: 'Business Owner',
   admin: 'Admin',
   user: 'User',

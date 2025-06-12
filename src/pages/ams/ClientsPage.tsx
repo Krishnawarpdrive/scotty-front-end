@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useClients } from './clients/hooks/useClients';
@@ -22,16 +22,13 @@ const ClientsPage = () => {
     setIsDetailsOpen,
     handleViewClientDetails,
     handleSelectClient,
-    handleSelectAll,
-    setSelectedClient
+    handleSelectAll
   } = useClientSelection(clients);
   
   const {
     searchTerm,
     setSearchTerm,
-    filteredClients,
-    showFilterPanel,
-    toggleFilterPanel
+    filteredClients
   } = useClientSearch(clients);
 
   const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false);
@@ -40,7 +37,7 @@ const ClientsPage = () => {
     setIsAccountDrawerOpen(true);
   };
 
-  const handleEditClient = (client: Client) => {
+  const handleEditClient = () => {
     toast({
       title: "Not implemented",
       description: "This feature is not implemented yet.",
@@ -87,7 +84,6 @@ const ClientsPage = () => {
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
         selectedClients={selectedClients}
-        toggleFilterPanel={toggleFilterPanel}
         onEditClient={handleEditClient}
         onDeleteClient={deleteClient}
         onViewClientDetails={handleViewClientDetails}

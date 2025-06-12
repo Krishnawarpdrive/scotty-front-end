@@ -2,12 +2,11 @@
 export interface DataTableColumn<T> {
   id: string;
   header: string;
-  accessorKey: string;
-  width?: string;
-  sortable?: boolean;
+  accessorKey?: keyof T;
   enableSorting?: boolean;
   enableFiltering?: boolean;
-  cell?: (item: T) => React.ReactNode;
+  cell?: (value: T) => React.ReactNode;
+  width?: string;
 }
 
 export interface DataTableProps<T> {
@@ -16,13 +15,4 @@ export interface DataTableProps<T> {
   onRowClick?: (item: T) => void;
   loading?: boolean;
   emptyMessage?: string;
-  searchable?: boolean;
-  sortable?: boolean;
-  filterable?: boolean;
-  filters?: Array<{
-    id: string;
-    label: string;
-    options: Array<{ label: string; value: string }>;
-  }>;
-  actions?: React.ReactNode;
 }
