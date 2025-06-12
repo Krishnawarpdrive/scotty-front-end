@@ -43,7 +43,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
     };
 
     return (
-      <div ref={ref} className={cn('', className)}>
+      <div ref={ref} className={cn('', className)} {...props}>
         {React.Children.map(children, (child) => {
           if (React.isValidElement(child)) {
             return React.cloneElement(child, { value, onChange: handleChange } as any);

@@ -29,10 +29,12 @@ interface UserWithProfile {
   }>;
 }
 
+// Database role mapping - ensure these match your database enum
+type DatabaseRole = 'hr' | 'candidate' | 'interviewer' | 'vendor' | 'client-hr' | 'bo' | 'ams' | 'ta';
+
 const roleLabels: Record<AppRole, string> = {
   hr: 'HR Manager',
   candidate: 'Candidate',
-  vendor: 'Vendor',
   interviewer: 'Interviewer',
   'client-hr': 'Client HR',
   bo: 'Business Owner',
@@ -40,6 +42,26 @@ const roleLabels: Record<AppRole, string> = {
   user: 'User',
   manager: 'Manager',
   executive: 'Executive'
+};
+
+// Map AppRole to DatabaseRole
+const mapToDbRole = (role: AppRole): DatabaseRole => {
+  switch (role) {
+    case 'admin': return 'hr';
+    case 'user': return 'candidate';
+    case 'manager': return 'hr';
+    case 'executive': return 'hr';
+    default: return role as DatabaseRole;
+  }
+};
+
+// Map DatabaseRole to AppRole
+const mapFromDbRole = (role: string): AppRole => {
+  switch (role) {
+    case 'ams': return 'admin';
+    case 'ta': return 'manager';
+    default: return role as AppRole;
+  }
 };
 
 export default function UserManagementPage() {
@@ -97,7 +119,7 @@ export default function UserManagementPage() {
               department: profile.department
             },
             user_roles: (rolesData || []).map(role => ({
-              role: role.role as AppRole,
+              role: mapFromDbRole(role.role),
               is_active: role.is_active || false,
               assigned_at: role.assigned_at || ''
             }))
@@ -119,11 +141,12 @@ export default function UserManagementPage() {
 
   const assignRole = async (userId: string, role: AppRole) => {
     try {
+      const dbRole = mapToDbRole(role);
       const { error } = await supabase
         .from('user_roles')
         .insert({
           user_id: userId,
-          role: role,
+          role: dbRole,
           assigned_by: 'admin'
         });
 
@@ -146,11 +169,12 @@ export default function UserManagementPage() {
 
   const removeRole = async (userId: string, role: AppRole) => {
     try {
+      const dbRole = mapToDbRole(role);
       const { error } = await supabase
         .from('user_roles')
         .update({ is_active: false })
         .eq('user_id', userId)
-        .eq('role', role);
+        .eq('role', dbRole);
 
       if (error) throw error;
 
@@ -185,7 +209,7 @@ export default function UserManagementPage() {
   }
 
   return (
-    <ProtectedRoute requiredRoles={['admin', 'bo']}>
+    <ProtectedRoute requiredRoles={['admin']}>
       <motion.div 
         className="space-y-6"
         initial={{ opacity: 0 }}
