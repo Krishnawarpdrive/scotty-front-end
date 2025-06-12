@@ -10,7 +10,7 @@ export interface CandidateApplication {
   roleName: string; // Made required to match CompanyApplication
   companyName: string; // Made required to match CompanyApplication
   currentStage: string; // Made required to match CompanyApplication
-  progress?: number;
+  progress: number; // Made required to match CompanyApplication
   priority?: 'high' | 'medium' | 'low';
   nextAction?: string;
   daysInStage?: number;

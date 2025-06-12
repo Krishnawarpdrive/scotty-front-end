@@ -9,8 +9,8 @@ export interface CompanyApplication {
   status: 'active' | 'pending' | 'rejected' | 'offer';
   roleName: string; // Required for CompanyApplication
   companyName: string; // Required for CompanyApplication
-  currentStage?: string;
-  progress?: number;
+  currentStage: string; // Made required to match CandidateApplication
+  progress: number; // Made required to match CandidateApplication
   priority?: 'high' | 'medium' | 'low';
   nextAction?: string;
   daysInStage?: number;
