@@ -1,44 +1,43 @@
 
 import React from 'react';
-import { CheckSquare, Plus, Search, Filter } from 'lucide-react';
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
+import { Plus, Search } from 'lucide-react';
 
 interface ChecklistEmptyStateProps {
   onCreateClick: () => void;
   isFiltering: boolean;
 }
 
-export const ChecklistEmptyState: React.FC<ChecklistEmptyStateProps> = ({
-  onCreateClick,
-  isFiltering
+export const ChecklistEmptyState: React.FC<ChecklistEmptyStateProps> = ({ 
+  onCreateClick, 
+  isFiltering 
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4 text-center border border-dashed rounded-lg bg-gray-50 space-y-4">
-      {isFiltering ? (
-        <>
-          <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
-            <Search className="h-6 w-6 text-gray-500" />
-          </div>
-          <h3 className="text-lg font-medium">No checklists found</h3>
-          <p className="text-sm text-gray-500 max-w-sm">
-            No checklists match your current search or filter criteria. Try adjusting your filters or create a new checklist.
-          </p>
-        </>
-      ) : (
-        <>
-          <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
-            <CheckSquare className="h-6 w-6 text-gray-500" />
-          </div>
-          <h3 className="text-lg font-medium">No Checklists Yet</h3>
-          <p className="text-sm text-gray-500 max-w-sm">
-            Create your first checklist to help standardize processes across your organization. 
-            Checklists can be assigned to roles, clients or kept as general templates.
-          </p>
-          <Button onClick={onCreateClick} className="mt-4">
-            <Plus className="mr-2 h-4 w-4" />
-            Create First Checklist
-          </Button>
-        </>
+    <div className="text-center py-12">
+      <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+        {isFiltering ? (
+          <Search className="h-8 w-8 text-gray-400" />
+        ) : (
+          <Plus className="h-8 w-8 text-gray-400" />
+        )}
+      </div>
+      
+      <h3 className="text-lg font-medium text-gray-900 mb-2">
+        {isFiltering ? 'No matching checklists found' : 'No checklists created yet'}
+      </h3>
+      
+      <p className="text-gray-500 mb-6 max-w-md mx-auto">
+        {isFiltering 
+          ? 'Try adjusting your search criteria or filters to find what you\'re looking for.'
+          : 'Get started by creating your first checklist to streamline your recruitment processes.'
+        }
+      </p>
+      
+      {!isFiltering && (
+        <Button onClick={onCreateClick} className="inline-flex items-center gap-2">
+          <Plus className="h-4 w-4" />
+          Create Your First Checklist
+        </Button>
       )}
     </div>
   );

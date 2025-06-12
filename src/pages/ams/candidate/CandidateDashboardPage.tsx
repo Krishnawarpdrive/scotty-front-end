@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -335,15 +336,6 @@ const CandidateDashboardPage: React.FC = () => {
     setShowStageDrawer(true);
   };
 
-  const handleContentAction = (contentId: string, action: string) => {
-    console.log('Content action:', action, 'for content:', contentId);
-  };
-
-  const handleStageComplete = () => {
-    console.log('Stage completed');
-    setShowStageDrawer(false);
-  };
-
   const handleViewFullDetails = () => {
     setShowApplicationDetailDrawer(false);
     setShowApplicationDetailPage(true);
@@ -384,7 +376,7 @@ const CandidateDashboardPage: React.FC = () => {
       hasPendingActions: candidateApp.hasPendingActions,
       alertReason: candidateApp.alertReason,
       nextDueDate: candidateApp.nextDueDate,
-      stages: candidateApp.stages || [] // Provide default empty array if stages is undefined
+      stages: candidateApp.stages || []
     };
   };
 

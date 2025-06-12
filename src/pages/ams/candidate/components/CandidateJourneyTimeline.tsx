@@ -1,19 +1,33 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { 
   CheckCircle, 
-  Clock, 
   Circle,
-  Calendar,
-  MapPin,
-  Users,
   FileText
 } from 'lucide-react';
 
+interface Application {
+  id: string;
+  roleName: string;
+  clientName: string;
+  status: string;
+  stage_progress: number;
+  total_stages: number;
+  current_stage: string;
+  stages: Array<{
+    id: string;
+    name: string;
+    status: 'completed' | 'current' | 'pending';
+    completed_date?: string;
+    estimated_date?: string;
+  }>;
+}
+
 interface CandidateJourneyTimelineProps {
-  applications: any[];
+  applications: Application[];
 }
 
 export const CandidateJourneyTimeline: React.FC<CandidateJourneyTimelineProps> = ({ applications }) => {
@@ -55,7 +69,7 @@ export const CandidateJourneyTimeline: React.FC<CandidateJourneyTimelineProps> =
                     </div>
                     <div>
                       <h4 className="text-sm font-medium">{stage.name}</h4>
-                      {stage.status === 'completed' && (
+                      {stage.status === 'completed' && stage.completed_date && (
                         <p className="text-xs text-gray-500">Completed on {stage.completed_date}</p>
                       )}
                       {stage.status === 'current' && stage.estimated_date && (

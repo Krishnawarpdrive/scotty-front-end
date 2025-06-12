@@ -1,76 +1,62 @@
-import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import React from 'react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { 
-  Eye, 
-  MoreHorizontal, 
-  Calendar, 
-  MapPin,
-  Briefcase,
-  Star
-} from 'lucide-react';
 
 interface CandidateRolesTabsProps {
-  applications: any[];
-  onViewApplication: (applicationId: string) => void;
+  dashboardData: any;
 }
 
-export const CandidateRolesTabs: React.FC<CandidateRolesTabsProps> = ({ 
-  applications, 
-  onViewApplication 
-}) => {
-  const [activeTab, setActiveTab] = useState('all');
-
-  const filteredApplications = activeTab === 'all' ? applications : applications.filter(app => app.status === activeTab);
+export const CandidateRolesTabs: React.FC<CandidateRolesTabsProps> = ({ dashboardData }) => {
+  const mockRoles = [
+    {
+      id: '1',
+      title: 'Senior Frontend Developer',
+      company: 'TechCorp Inc',
+      status: 'Active',
+      stage: 'Technical Interview'
+    },
+    {
+      id: '2',
+      title: 'Full Stack Engineer',
+      company: 'DataFlow Systems',
+      status: 'Applied',
+      stage: 'Initial Review'
+    }
+  ];
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-4">
-        <TabsTrigger value="all">All Applications</TabsTrigger>
-        <TabsTrigger value="active">Active</TabsTrigger>
-        <TabsTrigger value="offer">Offer</TabsTrigger>
-        <TabsTrigger value="rejected">Rejected</TabsTrigger>
-      </TabsList>
-      
-      <div className="mt-4">
-        {filteredApplications.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center">
-              <p className="text-gray-500">No applications found for the selected status.</p>
-            </CardContent>
-          </Card>
-        ) : (
-          filteredApplications.map(application => (
-            <Card key={application.id} className="mb-4">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>{application.roleName} at {application.companyName}</span>
-                  <Button variant="outline" size="sm" onClick={() => onViewApplication(application.id)}>
-                    View Application
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+    <Card>
+      <CardHeader>
+        <CardTitle>Applied Roles</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue="all" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="active">Active</TabsTrigger>
+            <TabsTrigger value="completed">Completed</TabsTrigger>
+          </TabsList>
+          
+          <div className="mt-4 space-y-3">
+            {mockRoles.map((role) => (
+              <div key={role.id} className="p-4 border rounded-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-500">Current Stage: {application.currentStage}</p>
-                    <Progress value={application.progress} className="h-2 mt-1" />
-                    <div className="flex items-center gap-2 mt-2">
-                      <Badge variant="secondary">{application.status}</Badge>
-                      {application.priority && (
-                        <Badge variant="outline">{application.priority}</Badge>
-                      )}
-                    </div>
+                    <h3 className="font-medium">{role.title}</h3>
+                    <p className="text-sm text-gray-600">{role.company}</p>
+                    <p className="text-xs text-gray-500">Current: {role.stage}</p>
                   </div>
+                  <Badge variant={role.status === 'Active' ? 'default' : 'secondary'}>
+                    {role.status}
+                  </Badge>
                 </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
-    </Tabs>
+              </div>
+            ))}
+          </div>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 };

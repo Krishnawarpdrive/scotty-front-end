@@ -1,78 +1,92 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
-  Calendar, 
-  Clock, 
-  Video, 
-  Users,
-  MapPin,
-  Phone,
-  Laptop,
-  ExternalLink,
-  Edit,
-  Trash2
+  Calendar,
+  Clock,
+  Video
 } from 'lucide-react';
 
 interface InterviewsScheduleProps {
-  interviews: any[];
+  dashboardData: any;
 }
 
-export const InterviewsSchedule: React.FC<InterviewsScheduleProps> = ({ interviews }) => {
+export const InterviewsSchedule: React.FC<InterviewsScheduleProps> = ({ dashboardData }) => {
+  const mockInterviews = [
+    {
+      id: '1',
+      role: 'Senior Frontend Developer',
+      company: 'TechCorp Inc',
+      date: '2024-01-25',
+      time: '2:00 PM',
+      type: 'Technical',
+      interviewer: 'John Smith',
+      mode: 'Video Call'
+    },
+    {
+      id: '2',
+      role: 'Full Stack Engineer',
+      company: 'DataFlow Systems',
+      date: '2024-01-28',
+      time: '10:00 AM',
+      type: 'HR Round',
+      interviewer: 'Sarah Johnson',
+      mode: 'Phone'
+    }
+  ];
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Upcoming Interviews</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Calendar className="h-5 w-5" />
+          Upcoming Interviews
+        </CardTitle>
       </CardHeader>
-      <CardContent className="p-4">
-        {interviews.length === 0 ? (
-          <div className="text-center py-6">
-            <p className="text-gray-500">No interviews scheduled yet.</p>
-          </div>
-        ) : (
+      <CardContent>
+        {mockInterviews.length > 0 ? (
           <div className="space-y-4">
-            {interviews.map((interview) => (
-              <div key={interview.id} className="border rounded-md p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold">{interview.title}</h3>
-                    <p className="text-gray-600">{interview.company}</p>
+            {mockInterviews.map((interview) => (
+              <div key={interview.id} className="p-4 border rounded-lg">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="font-medium">{interview.role}</h3>
+                    <p className="text-sm text-gray-600">{interview.company}</p>
+                    
+                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        {interview.date}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        {interview.time}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Video className="h-4 w-4" />
+                        {interview.mode}
+                      </div>
+                    </div>
+                    
+                    <p className="text-sm text-gray-600 mt-1">
+                      Interviewer: {interview.interviewer}
+                    </p>
                   </div>
-                  <Badge variant="secondary">{interview.status}</Badge>
-                </div>
-                <div className="flex items-center space-x-4 mt-2">
-                  <div className="flex items-center text-gray-600">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    <span>{interview.date}</span>
+                  
+                  <div className="flex flex-col items-end gap-2">
+                    <Badge variant="outline">{interview.type}</Badge>
+                    <Button size="sm">Join</Button>
                   </div>
-                  <div className="flex items-center text-gray-600">
-                    <Clock className="h-4 w-4 mr-1" />
-                    <span>{interview.time}</span>
-                  </div>
-                  <div className="flex items-center text-gray-600">
-                    <Video className="h-4 w-4 mr-1" />
-                    <span>{interview.type} Interview</span>
-                  </div>
-                </div>
-                <div className="mt-4 flex justify-between items-center">
-                  <div className="flex items-center space-x-2">
-                    <Button variant="outline" size="sm">
-                      <Edit className="h-4 w-4 mr-1" />
-                      Edit
-                    </Button>
-                    <Button variant="destructive" size="sm">
-                      <Trash2 className="h-4 w-4 mr-1" />
-                      Cancel
-                    </Button>
-                  </div>
-                  <Button size="sm">
-                    Join Interview
-                    <ExternalLink className="h-4 w-4 ml-1" />
-                  </Button>
                 </div>
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="text-center py-6">
+            <Calendar className="h-10 w-10 mx-auto text-gray-400 mb-2" />
+            <p className="text-gray-500">No upcoming interviews</p>
           </div>
         )}
       </CardContent>
