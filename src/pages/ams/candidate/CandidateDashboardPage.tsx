@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,6 +8,10 @@ import {
   BarChart3, 
   Briefcase,
   Search,
+  BellIcon,
+  MessageSquareIcon,
+  CalendarIcon,
+  TrendingUpIcon
 } from 'lucide-react';
 import { CandidateLeftSidebar } from './components/CandidateLeftSidebar';
 import { CandidateQuickInsights } from './components/CandidateQuickInsights';
@@ -20,7 +25,6 @@ import { useCandidateDashboardData } from './hooks/useCandidateDashboardData';
 import { useCandidateApplicationDetails } from './hooks/useCandidateApplicationDetails';
 import { CandidateCompanyProgressDrawer } from './components/CandidateCompanyProgressDrawer';
 import { SmartActionCenter } from '@/components/smart-action-center/SmartActionCenter';
-import { BellIcon, MessageSquareIcon, CalendarIcon, TrendingUpIcon } from 'lucide-react';
 import { CandidateApplication } from './types/CandidateTypes';
 
 const CandidateDashboardPage: React.FC = () => {
@@ -329,7 +333,7 @@ const CandidateDashboardPage: React.FC = () => {
     setShowStageDrawer(false);
   };
 
-  const handleViewFullDetails = (appId: string) => {
+  const handleViewFullDetails = () => {
     setShowApplicationDetailDrawer(false);
     setShowApplicationDetailPage(true);
   };
