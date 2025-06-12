@@ -1,169 +1,130 @@
 
-import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { PageHeader } from '@/components/layout/PageHeader';
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { UnifiedDataTable } from '@/components/unified/UnifiedDataTable';
-import { DataTableColumn } from '@/components/ui/data-table/types';
-import { useUnifiedToast } from '@/hooks/useUnifiedToast';
-import { useUI } from '@/store/hooks/useUI';
-import { Plus, Search, Filter } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Search, Plus, Building2, Users, Phone, Mail } from 'lucide-react';
 
 interface Client {
   id: string;
   name: string;
-  industry?: string;
   email: string;
-  phone: string;
-  status: string;
-  budget: number;
-  healthScore: number;
-  assignedHRs: string[];
-  roles: string[];
-  lastActivity: string;
-  description: string;
+  contact: string;
+  status: 'Active' | 'Inactive' | 'Paused';
+  totalRequirements: number;
+  assignedHr?: string;
 }
 
-const ClientsPage = () => {
-  const toast = useUnifiedToast();
-  const { openDrawer } = useUI();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [clients, setClients] = useState<Client[]>([
-    {
-      id: '1',
-      name: 'Acme Corporation',
-      industry: 'Technology',
-      email: 'contact@acme.com',
-      phone: '+1-555-0123',
-      status: 'Active',
-      budget: 100000,
-      healthScore: 85,
-      assignedHRs: ['John Doe'],
-      roles: ['Developer', 'Designer'],
-      lastActivity: '2023-12-15',
-      description: 'Leading technology company'
+const mockClients: Client[] = [
+  {
+    id: '1',
+    name: 'Tech Solutions Inc',
+    email: 'contact@techsolutions.com',
+    contact: '+1 (555) 123-4567',
+    status: 'Active',
+    totalRequirements: 5,
+    assignedHr: 'Sarah Johnson'
+  },
+  {
+    id: '2',
+    name: 'Digital Innovations',
+    email: 'hr@digitalinnovations.com',
+    contact: '+1 (555) 987-6543',
+    status: 'Active',
+    totalRequirements: 3,
+    assignedHr: 'Mike Chen'
+  }
+];
+
+export default function ClientsPage() {
+  const [clients] = useState<Client[]>(mockClients);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredClients = clients.filter(client =>
+    client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    client.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case 'Active': return 'default';
+      case 'Inactive': return 'secondary';
+      case 'Paused': return 'outline';
+      default: return 'secondary';
     }
-  ]);
-
-  const filteredClients = useMemo(() => {
-    return clients.filter(client => {
-      const matchesSearch = client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          (client.industry || '').toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === 'all' || client.status === statusFilter;
-      return matchesSearch && matchesStatus;
-    });
-  }, [clients, searchTerm, statusFilter]);
-
-  const columns: DataTableColumn<Client>[] = [
-    {
-      id: 'name',
-      header: 'Client Name',
-      accessorKey: 'name',
-    },
-    {
-      id: 'industry',
-      header: 'Industry',
-      accessorKey: 'industry',
-      cell: (client) => client.industry || 'N/A',
-    },
-    {
-      id: 'status',
-      header: 'Status',
-      accessorKey: 'status',
-    },
-    {
-      id: 'healthScore',
-      header: 'Health Score',
-      accessorKey: 'healthScore',
-      cell: (client) => `${client.healthScore}%`,
-    },
-    {
-      id: 'budget',
-      header: 'Budget',
-      accessorKey: 'budget',
-      cell: (client) => `$${client.budget.toLocaleString()}`,
-    },
-  ];
-
-  const handleClientCreated = (client: Client) => {
-    setClients(prev => [...prev, client]);
-    toast.success({
-      title: 'Success',
-      description: 'Client created successfully'
-    });
-  };
-
-  const handleClientUpdated = (updatedClient: Client) => {
-    setClients(prev => prev.map(client => 
-      client.id === updatedClient.id ? updatedClient : client
-    ));
-    toast.success({
-      title: 'Success',
-      description: 'Client updated successfully'
-    });
-  };
-
-  const handleRowClick = (client: Client) => {
-    openDrawer('client-detail', client);
   };
 
   return (
-    <motion.div 
-      className="space-y-6"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <PageHeader
-        title="Clients"
-        subtitle="Manage your client relationships"
-        actions={
-          <Button 
-            onClick={() => openDrawer('client-create')}
-            size="sm"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Client
-          </Button>
-        }
-      />
-
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search clients..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Clients</h1>
+          <p className="text-muted-foreground">Manage your client accounts and relationships</p>
         </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[200px]">
-            <Filter className="h-4 w-4 mr-2" />
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="Active">Active</SelectItem>
-            <SelectItem value="Inactive">Inactive</SelectItem>
-            <SelectItem value="Paused">Paused</SelectItem>
-          </SelectContent>
-        </Select>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Client
+        </Button>
       </div>
 
-      <UnifiedDataTable
-        data={filteredClients}
-        columns={columns}
-        onRowClick={handleRowClick}
-        searchable={false}
-        emptyMessage="No clients found"
-      />
-    </motion.div>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-2">
+            <Search className="h-4 w-4" />
+            <Input
+              placeholder="Search clients..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="max-w-sm"
+            />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4">
+            {filteredClients.map((client) => (
+              <Card key={client.id} className="cursor-pointer hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <Building2 className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg">{client.name}</h3>
+                        <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
+                          <div className="flex items-center space-x-1">
+                            <Mail className="h-3 w-3" />
+                            <span>{client.email}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Phone className="h-3 w-3" />
+                            <span>{client.contact}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right space-y-2">
+                      <Badge variant={getStatusBadgeVariant(client.status)}>
+                        {client.status}
+                      </Badge>
+                      <div className="text-sm text-muted-foreground">
+                        <div className="flex items-center space-x-1">
+                          <Users className="h-3 w-3" />
+                          <span>{client.totalRequirements} requirements</span>
+                        </div>
+                        {client.assignedHr && (
+                          <div className="mt-1">HR: {client.assignedHr}</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
-};
-
-export default ClientsPage;
+}

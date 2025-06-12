@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { DataTable } from '@/components/ui/data-table';
 import { DataTableColumn } from '@/components/ui/data-table/types';
 
@@ -22,22 +22,11 @@ export function UnifiedDataTable<T extends { id: string }>({
   searchable = true,
   actions
 }: UnifiedDataTableProps<T>) {
-  const [searchQuery, setSearchQuery] = useState('');
-
-  // Filter data based on search query
+  // For now, we'll just pass the data through without filtering
+  // Search functionality can be added later when needed
   const filteredData = useMemo(() => {
-    if (!searchQuery.trim()) return data;
-    
-    return data.filter(item => {
-      return columns.some(column => {
-        if (column.accessorKey) {
-          const value = item[column.accessorKey as keyof T];
-          return String(value).toLowerCase().includes(searchQuery.toLowerCase());
-        }
-        return false;
-      });
-    });
-  }, [data, searchQuery, columns]);
+    return data;
+  }, [data]);
 
   const handleRowClick = (item: T) => {
     onRowClick?.(item);
