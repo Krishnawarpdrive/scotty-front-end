@@ -32,7 +32,7 @@ export interface TabsContentProps {
 }
 
 export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
-  ({ className, defaultValue, onValueChange, children, ...otherProps }, ref) => {
+  ({ className, defaultValue, onValueChange, children, ...props }, ref) => {
     const [value, setValue] = React.useState(defaultValue || '');
 
     const handleChange = (_: React.SyntheticEvent, newValue: string) => {
@@ -68,10 +68,9 @@ export const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
 );
 
 export const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
-  ({ className, value, children, disabled }) => {
+  ({ className, children, disabled }) => {
     return (
       <MuiTab
-        value={value}
         label={children}
         disabled={disabled}
         className={cn(
@@ -84,7 +83,7 @@ export const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>
 );
 
 export const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
-  ({ className, value, children }) => {
+  ({ className, children }) => {
     return (
       <div
         role="tabpanel"

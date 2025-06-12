@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,14 +30,16 @@ interface UserWithProfile {
 }
 
 const roleLabels: Record<AppRole, string> = {
-  ams: 'AMS Admin',
   hr: 'HR Manager',
-  ta: 'Talent Acquisition',
   candidate: 'Candidate',
   vendor: 'Vendor',
   interviewer: 'Interviewer',
   'client-hr': 'Client HR',
-  bo: 'Business Owner'
+  bo: 'Business Owner',
+  admin: 'Admin',
+  user: 'User',
+  manager: 'Manager',
+  executive: 'Executive'
 };
 
 export default function UserManagementPage() {
@@ -94,7 +96,11 @@ export default function UserManagementPage() {
               last_name: profile.last_name,
               department: profile.department
             },
-            user_roles: rolesData || []
+            user_roles: (rolesData || []).map(role => ({
+              role: role.role as AppRole,
+              is_active: role.is_active || false,
+              assigned_at: role.assigned_at || ''
+            }))
           };
         })
       );
@@ -179,7 +185,7 @@ export default function UserManagementPage() {
   }
 
   return (
-    <ProtectedRoute requiredRoles={['ams', 'bo']}>
+    <ProtectedRoute requiredRoles={['admin', 'bo']}>
       <motion.div 
         className="space-y-6"
         initial={{ opacity: 0 }}
