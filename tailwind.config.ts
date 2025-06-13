@@ -20,25 +20,21 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        inter: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Rubik', 'system-ui', 'sans-serif'],
+        rubik: ['Rubik', 'system-ui', 'sans-serif'],
       },
       fontSize: {
-        'xs': '12px',
-        'sm': '14px',
-        'base': '16px',
-        'lg': '18px',
-        'xl': '20px',
-        '2xl': '24px',
-        '3xl': '30px',
-        '4xl': '36px',
-        '5xl': '48px',
-        '6xl': '60px',
+        'xs': '10px',
+        'sm': '11px',
+        'base': '12px', // 12px base font size
+        'lg': '14px',
+        'xl': '16px',
+        '2xl': '18px',
+        '3xl': '20px',
+        '4xl': '24px',
       },
       boxShadow: {
         'card': '0 2px 8px rgba(0, 0, 0, 0.08)',
-        'lg': '0 10px 25px rgba(0, 0, 0, 0.1)',
-        'xl': '0 20px 50px rgba(0, 0, 0, 0.15)',
       },
       colors: {
         border: "hsl(var(--border))",
@@ -47,7 +43,7 @@ const config: Config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#ea5c24",
+          DEFAULT: "#ea5c24", // Scotty orange color
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
