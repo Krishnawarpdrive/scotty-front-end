@@ -47,7 +47,7 @@ const LandingPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 flex flex-col">
       {/* Header */}
       <header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-8 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Users className="h-5 w-5 text-primary-foreground" />
@@ -68,12 +68,12 @@ const LandingPage = () => {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 container mx-auto px-4 py-8 lg:py-12">
-        <div className="grid lg:grid-cols-2 gap-12 items-center h-full">
+      <div className="flex-1 container mx-auto px-8 py-8 lg:py-12 max-w-7xl">
+        <div className="grid lg:grid-cols-2 gap-16 items-center h-full">
           {/* Left Column - Content */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             <div className="space-y-4">
-              <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
+              <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
                 Revolutionize Your
                 <span className="text-primary block">Hiring Process</span>
               </h1>
@@ -98,21 +98,19 @@ const LandingPage = () => {
               ))}
             </div>
 
-            {/* Small QR Code */}
+            {/* Compact QR Code with CTA */}
             <div className="pt-4">
-              <div className="w-32">
-                <QRCodeDisplay />
-              </div>
+              <QRCodeDisplay />
             </div>
           </div>
 
           {/* Right Column - Lead Capture Form */}
           <div className="flex justify-center lg:justify-end">
             <Card className="w-full max-w-md shadow-2xl border-0 bg-background/80 backdrop-blur-sm">
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl">Request Information</CardTitle>
-                <p className="text-muted-foreground">
-                  Let our team show you how Scotty can transform your hiring process
+              <CardHeader className="text-center pb-4">
+                <CardTitle className="text-2xl">Join Scotty</CardTitle>
+                <p className="text-muted-foreground text-sm">
+                  Streamlined hiring process
                 </p>
               </CardHeader>
               <CardContent>

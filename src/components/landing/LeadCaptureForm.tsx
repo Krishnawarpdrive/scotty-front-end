@@ -12,7 +12,8 @@ interface FormData {
   businessEmail: string;
   phoneNumber: string;
   companyWebsite: string;
-  companyType: string;
+  industryType: string;
+  companySize: string;
 }
 
 interface FormErrors {
@@ -30,23 +31,35 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({ onSubmit }) =>
     businessEmail: '',
     phoneNumber: '',
     companyWebsite: '',
-    companyType: ''
+    industryType: '',
+    companySize: ''
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
 
-  const companyTypes = [
-    'Startup (1-50 employees)',
-    'Small Business (51-200 employees)',
-    'Mid-size Company (201-1000 employees)',
-    'Large Enterprise (1000+ employees)',
-    'Recruitment Agency',
-    'Consulting Firm',
-    'Non-profit Organization',
-    'Government Agency',
+  const industryTypes = [
+    'Technology',
+    'Healthcare',
+    'Finance',
+    'Manufacturing',
+    'Retail',
+    'Education',
+    'Real Estate',
+    'Consulting',
+    'Media & Entertainment',
+    'Non-profit',
+    'Government',
     'Other'
+  ];
+
+  const companySizes = [
+    '1-10 employees',
+    '11-50 employees',
+    '51-200 employees',
+    '201-1000 employees',
+    '1000+ employees'
   ];
 
   const validateField = (name: string, value: string): string => {
@@ -91,8 +104,12 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({ onSubmit }) =>
           return 'Please enter a valid website URL';
         }
 
-      case 'companyType':
-        if (!value) return 'Please select your company type';
+      case 'industryType':
+        if (!value) return 'Please select your industry type';
+        return '';
+
+      case 'companySize':
+        if (!value) return 'Please select your company size';
         return '';
 
       default:
@@ -156,7 +173,8 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({ onSubmit }) =>
         businessEmail: '',
         phoneNumber: '',
         companyWebsite: '',
-        companyType: ''
+        industryType: '',
+        companySize: ''
       });
       setErrors({});
       setTouchedFields(new Set());
@@ -302,27 +320,51 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({ onSubmit }) =>
         )}
       </div>
 
-      {/* Company Type */}
+      {/* Industry Type */}
       <div className="space-y-2">
-        <Label htmlFor="companyType">Type of Company *</Label>
+        <Label htmlFor="industryType">Industry Type *</Label>
         <Select
-          value={formData.companyType}
-          onValueChange={(value) => handleInputChange('companyType', value)}
+          value={formData.industryType}
+          onValueChange={(value) => handleInputChange('industryType', value)}
         >
-          <SelectTrigger className={getFieldStatus('companyType') === 'error' ? 'border-destructive' : 
-            getFieldStatus('companyType') === 'success' ? 'border-green-500' : ''}>
-            <SelectValue placeholder="Select your company type" />
+          <SelectTrigger className={getFieldStatus('industryType') === 'error' ? 'border-destructive' : 
+            getFieldStatus('industryType') === 'success' ? 'border-green-500' : ''}>
+            <SelectValue placeholder="Select your industry" />
           </SelectTrigger>
           <SelectContent>
-            {companyTypes.map((type) => (
+            {industryTypes.map((type) => (
               <SelectItem key={type} value={type}>
                 {type}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        {errors.companyType && (
-          <p className="text-sm text-destructive">{errors.companyType}</p>
+        {errors.industryType && (
+          <p className="text-sm text-destructive">{errors.industryType}</p>
+        )}
+      </div>
+
+      {/* Company Size */}
+      <div className="space-y-2">
+        <Label htmlFor="companySize">Company Size *</Label>
+        <Select
+          value={formData.companySize}
+          onValueChange={(value) => handleInputChange('companySize', value)}
+        >
+          <SelectTrigger className={getFieldStatus('companySize') === 'error' ? 'border-destructive' : 
+            getFieldStatus('companySize') === 'success' ? 'border-green-500' : ''}>
+            <SelectValue placeholder="Select company size" />
+          </SelectTrigger>
+          <SelectContent>
+            {companySizes.map((size) => (
+              <SelectItem key={size} value={size}>
+                {size}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.companySize && (
+          <p className="text-sm text-destructive">{errors.companySize}</p>
         )}
       </div>
 
