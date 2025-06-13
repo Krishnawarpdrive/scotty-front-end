@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { 
   CheckCircle, 
@@ -10,7 +9,9 @@ import {
   Shield, 
   Phone, 
   Mail, 
-  MapPin
+  Trophy,
+  Globe,
+  Workflow
 } from "lucide-react";
 import { QRCodeDisplay } from "@/components/landing/QRCodeDisplay";
 import { LeadCaptureForm } from "@/components/landing/LeadCaptureForm";
@@ -20,19 +21,19 @@ const LandingPage = () => {
 
   const features = [
     {
-      icon: Users,
-      title: "Streamlined Hiring",
-      description: "Reduce time-to-hire by 60% with our intelligent candidate matching"
+      icon: Trophy,
+      title: "AI-Powered Matching",
+      description: "Our advanced AI algorithms match candidates to roles with 95% accuracy, ensuring perfect fits every time."
     },
     {
-      icon: Clock,
-      title: "Save Time",
-      description: "Automate repetitive tasks and focus on what matters most"
+      icon: Globe,
+      title: "Global Talent Pool",
+      description: "Access a worldwide network of pre-vetted professionals across all industries and skill levels."
     },
     {
-      icon: Shield,
-      title: "Secure & Compliant",
-      description: "Enterprise-grade security with full compliance support"
+      icon: Workflow,
+      title: "Streamlined Process",
+      description: "From sourcing to onboarding, our platform automates every step of your hiring workflow."
     }
   ];
 
@@ -75,9 +76,6 @@ const LandingPage = () => {
           {/* Left Column - Content */}
           <div className="space-y-8">
             <div className="space-y-4">
-              <Badge className="w-fit">
-                Trusted by 2,500+ Companies
-              </Badge>
               <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
                 Revolutionize Your
                 <span className="text-primary block">Hiring Process</span>
@@ -101,29 +99,6 @@ const LandingPage = () => {
                   </div>
                 </div>
               ))}
-            </div>
-
-            {/* Company Benefits */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Why Leading Companies Choose Scotty</h3>
-              <div className="grid gap-2">
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                  <span className="text-sm">Cut hiring time by 60% on average</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                  <span className="text-sm">Improve candidate quality with AI matching</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                  <span className="text-sm">Reduce cost-per-hire significantly</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                  <span className="text-sm">Scale your hiring operations seamlessly</span>
-                </div>
-              </div>
             </div>
           </div>
 
