@@ -43,7 +43,7 @@ const config: Config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#009933", // Your custom green color
+          DEFAULT: "#ea5c24", // Scotty orange color
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {

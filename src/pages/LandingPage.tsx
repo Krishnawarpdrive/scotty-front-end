@@ -1,9 +1,5 @@
 
-import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -14,9 +10,7 @@ import {
   Shield, 
   Phone, 
   Mail, 
-  MapPin,
-  ArrowRight,
-  Star
+  MapPin
 } from "lucide-react";
 import { QRCodeDisplay } from "@/components/landing/QRCodeDisplay";
 import { LeadCaptureForm } from "@/components/landing/LeadCaptureForm";
@@ -42,25 +36,12 @@ const LandingPage = () => {
     }
   ];
 
-  const testimonials = [
-    {
-      company: "TechCorp Inc.",
-      quote: "Reduced our hiring time by 50% and improved candidate quality significantly.",
-      rating: 5
-    },
-    {
-      company: "StartupXYZ",
-      quote: "The best ATS investment we've made. ROI was evident within the first month.",
-      rating: 5
-    }
-  ];
-
   const handleFormSubmit = (formData: any) => {
     console.log('Form submitted:', formData);
     
     toast({
       title: "Thank you for your interest!",
-      description: "Our team will contact you within 24 hours to schedule a personalized demo.",
+      description: "Our team will contact you within 24 hours to discuss your hiring needs.",
     });
   };
 
@@ -73,7 +54,7 @@ const LandingPage = () => {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Users className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold">AMS Pro</span>
+            <span className="text-xl font-bold">Scotty</span>
           </div>
           <div className="hidden md:flex items-center space-x-6 text-sm">
             <div className="flex items-center space-x-1">
@@ -82,7 +63,7 @@ const LandingPage = () => {
             </div>
             <div className="flex items-center space-x-1">
               <Mail className="h-4 w-4" />
-              <span>sales@amspro.com</span>
+              <span>sales@scotty.com</span>
             </div>
           </div>
         </div>
@@ -95,14 +76,14 @@ const LandingPage = () => {
           <div className="space-y-8">
             <div className="space-y-4">
               <Badge className="w-fit">
-                #1 Rated ATS Solution
+                Trusted by 2,500+ Companies
               </Badge>
               <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
-                Transform Your
+                Revolutionize Your
                 <span className="text-primary block">Hiring Process</span>
               </h1>
               <p className="text-lg text-muted-foreground max-w-lg">
-                Join 2,500+ companies using our AI-powered ATS to hire faster, 
+                Join thousands of companies using Scotty's AI-powered ATS to hire faster, 
                 smarter, and more efficiently than ever before.
               </p>
             </div>
@@ -122,35 +103,26 @@ const LandingPage = () => {
               ))}
             </div>
 
-            {/* Social Proof */}
+            {/* Company Benefits */}
             <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  ))}
+              <h3 className="text-lg font-semibold">Why Leading Companies Choose Scotty</h3>
+              <div className="grid gap-2">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-4 w-4 text-primary" />
+                  <span className="text-sm">Cut hiring time by 60% on average</span>
                 </div>
-                <span className="text-sm font-medium">4.9/5 from 500+ reviews</span>
-              </div>
-              
-              <div className="space-y-3">
-                {testimonials.map((testimonial, index) => (
-                  <Card key={index} className="p-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-sm">{testimonial.company}</span>
-                        <div className="flex">
-                          {[...Array(testimonial.rating)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                          ))}
-                        </div>
-                      </div>
-                      <p className="text-sm text-muted-foreground italic">
-                        "{testimonial.quote}"
-                      </p>
-                    </div>
-                  </Card>
-                ))}
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-4 w-4 text-primary" />
+                  <span className="text-sm">Improve candidate quality with AI matching</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-4 w-4 text-primary" />
+                  <span className="text-sm">Reduce cost-per-hire significantly</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-4 w-4 text-primary" />
+                  <span className="text-sm">Scale your hiring operations seamlessly</span>
+                </div>
               </div>
             </div>
           </div>
@@ -160,9 +132,9 @@ const LandingPage = () => {
             {/* Lead Capture Form */}
             <Card className="shadow-2xl border-0 bg-background/80 backdrop-blur-sm">
               <CardHeader className="text-center">
-                <CardTitle className="text-2xl">Get Your Free Demo</CardTitle>
+                <CardTitle className="text-2xl">Request Information</CardTitle>
                 <p className="text-muted-foreground">
-                  See how AMS Pro can transform your hiring in just 15 minutes
+                  Let our team show you how Scotty can transform your hiring process
                 </p>
               </CardHeader>
               <CardContent>
@@ -194,7 +166,7 @@ const LandingPage = () => {
                 <Mail className="h-4 w-4" />
                 <span>Email Us</span>
               </h3>
-              <p className="text-muted-foreground">sales@amspro.com</p>
+              <p className="text-muted-foreground">sales@scotty.com</p>
               <p className="text-sm text-muted-foreground">Response within 2 hours</p>
             </div>
             
@@ -210,7 +182,7 @@ const LandingPage = () => {
           
           <div className="mt-8 pt-8 border-t text-center">
             <p className="text-sm text-muted-foreground">
-              © 2024 AMS Pro. All rights reserved. | 
+              © 2024 Scotty. All rights reserved. | 
               <span className="ml-2">Privacy Policy | Terms of Service</span>
             </p>
           </div>

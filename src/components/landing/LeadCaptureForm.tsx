@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -334,10 +333,10 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({ onSubmit }) =>
         {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Requesting Demo...
+            Submitting Request...
           </>
         ) : (
-          'Get Your Free Demo'
+          'Request Information'
         )}
       </Button>
 
