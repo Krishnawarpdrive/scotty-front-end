@@ -12,7 +12,6 @@ import {
   AlertCircle,
   Video,
   MapPin,
-  Plus,
   Filter,
   Search
 } from 'lucide-react';
@@ -78,10 +77,6 @@ export const InterviewDashboard: React.FC = () => {
           <Button variant="outline" size="sm">
             <Filter className="h-4 w-4 mr-2" />
             Filters
-          </Button>
-          <Button size="sm">
-            <Plus className="h-4 w-4 mr-2" />
-            Schedule Interview
           </Button>
         </div>
       </div>
