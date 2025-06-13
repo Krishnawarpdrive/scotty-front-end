@@ -3,10 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { 
-  CheckCircle, 
   Users, 
-  Clock, 
-  Shield, 
   Phone, 
   Mail, 
   Trophy,
@@ -47,7 +44,7 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 flex flex-col">
       {/* Header */}
       <header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -70,9 +67,9 @@ const LandingPage = () => {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-16 lg:py-24">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      {/* Main Content */}
+      <div className="flex-1 container mx-auto px-4 py-8 lg:py-12">
+        <div className="grid lg:grid-cols-2 gap-12 items-center h-full">
           {/* Left Column - Content */}
           <div className="space-y-8">
             <div className="space-y-4">
@@ -100,12 +97,18 @@ const LandingPage = () => {
                 </div>
               ))}
             </div>
+
+            {/* Small QR Code */}
+            <div className="pt-4">
+              <div className="w-32">
+                <QRCodeDisplay />
+              </div>
+            </div>
           </div>
 
-          {/* Right Column - Form & QR Code */}
-          <div className="space-y-8">
-            {/* Lead Capture Form */}
-            <Card className="shadow-2xl border-0 bg-background/80 backdrop-blur-sm">
+          {/* Right Column - Lead Capture Form */}
+          <div className="flex justify-center lg:justify-end">
+            <Card className="w-full max-w-md shadow-2xl border-0 bg-background/80 backdrop-blur-sm">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Request Information</CardTitle>
                 <p className="text-muted-foreground">
@@ -116,53 +119,9 @@ const LandingPage = () => {
                 <LeadCaptureForm onSubmit={handleFormSubmit} />
               </CardContent>
             </Card>
-
-            {/* QR Code Section */}
-            <QRCodeDisplay />
           </div>
         </div>
-      </section>
-
-      {/* Contact Information Footer */}
-      <footer className="bg-muted/50 border-t">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid md:grid-cols-3 gap-8 text-center md:text-left">
-            <div className="space-y-2">
-              <h3 className="font-semibold flex items-center justify-center md:justify-start space-x-2">
-                <Phone className="h-4 w-4" />
-                <span>Phone Support</span>
-              </h3>
-              <p className="text-muted-foreground">+1 (555) 123-4567</p>
-              <p className="text-sm text-muted-foreground">Available 24/7</p>
-            </div>
-            
-            <div className="space-y-2">
-              <h3 className="font-semibold flex items-center justify-center md:justify-start space-x-2">
-                <Mail className="h-4 w-4" />
-                <span>Email Us</span>
-              </h3>
-              <p className="text-muted-foreground">sales@scotty.com</p>
-              <p className="text-sm text-muted-foreground">Response within 2 hours</p>
-            </div>
-            
-            <div className="space-y-2">
-              <h3 className="font-semibold flex items-center justify-center md:justify-start space-x-2">
-                <Clock className="h-4 w-4" />
-                <span>Business Hours</span>
-              </h3>
-              <p className="text-muted-foreground">Mon-Fri: 9AM-6PM EST</p>
-              <p className="text-sm text-muted-foreground">Weekend support available</p>
-            </div>
-          </div>
-          
-          <div className="mt-8 pt-8 border-t text-center">
-            <p className="text-sm text-muted-foreground">
-              © 2024 Scotty. All rights reserved. | 
-              <span className="ml-2">Privacy Policy | Terms of Service</span>
-            </p>
-          </div>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 };

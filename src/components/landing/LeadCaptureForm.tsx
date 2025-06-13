@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -185,50 +186,51 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({ onSubmit }) =>
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Company Name */}
-      <div className="space-y-2">
-        <Label htmlFor="companyName">Company Name *</Label>
-        <div className="relative">
-          <Input
-            id="companyName"
-            type="text"
-            placeholder="Enter your company name"
-            value={formData.companyName}
-            onChange={(e) => handleInputChange('companyName', e.target.value)}
-            onBlur={() => handleBlur('companyName')}
-            className={`pr-10 ${getFieldStatus('companyName') === 'error' ? 'border-destructive' : 
-              getFieldStatus('companyName') === 'success' ? 'border-green-500' : ''}`}
-          />
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-            {renderFieldIcon('companyName')}
+      {/* Company Name and Full Name - Two Column Layout */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-2">
+          <Label htmlFor="companyName">Company Name *</Label>
+          <div className="relative">
+            <Input
+              id="companyName"
+              type="text"
+              placeholder="Company name"
+              value={formData.companyName}
+              onChange={(e) => handleInputChange('companyName', e.target.value)}
+              onBlur={() => handleBlur('companyName')}
+              className={`pr-10 ${getFieldStatus('companyName') === 'error' ? 'border-destructive' : 
+                getFieldStatus('companyName') === 'success' ? 'border-green-500' : ''}`}
+            />
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              {renderFieldIcon('companyName')}
+            </div>
           </div>
+          {errors.companyName && (
+            <p className="text-xs text-destructive">{errors.companyName}</p>
+          )}
         </div>
-        {errors.companyName && (
-          <p className="text-sm text-destructive">{errors.companyName}</p>
-        )}
-      </div>
 
-      {/* Full Name */}
-      <div className="space-y-2">
-        <Label htmlFor="fullName">Full Name *</Label>
-        <div className="relative">
-          <Input
-            id="fullName"
-            type="text"
-            placeholder="Enter your full name"
-            value={formData.fullName}
-            onChange={(e) => handleInputChange('fullName', e.target.value)}
-            onBlur={() => handleBlur('fullName')}
-            className={`pr-10 ${getFieldStatus('fullName') === 'error' ? 'border-destructive' : 
-              getFieldStatus('fullName') === 'success' ? 'border-green-500' : ''}`}
-          />
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-            {renderFieldIcon('fullName')}
+        <div className="space-y-2">
+          <Label htmlFor="fullName">Full Name *</Label>
+          <div className="relative">
+            <Input
+              id="fullName"
+              type="text"
+              placeholder="Your full name"
+              value={formData.fullName}
+              onChange={(e) => handleInputChange('fullName', e.target.value)}
+              onBlur={() => handleBlur('fullName')}
+              className={`pr-10 ${getFieldStatus('fullName') === 'error' ? 'border-destructive' : 
+                getFieldStatus('fullName') === 'success' ? 'border-green-500' : ''}`}
+            />
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              {renderFieldIcon('fullName')}
+            </div>
           </div>
+          {errors.fullName && (
+            <p className="text-xs text-destructive">{errors.fullName}</p>
+          )}
         </div>
-        {errors.fullName && (
-          <p className="text-sm text-destructive">{errors.fullName}</p>
-        )}
       </div>
 
       {/* Business Email */}
