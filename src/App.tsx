@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import { ToastProvider } from './components/feedback/enhanced-toast';
@@ -9,7 +9,6 @@ import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from './contexts/AuthContext';
 import { PermissionsProvider } from './contexts/PermissionsContext';
 import { KeyboardShortcutsProvider } from './contexts/KeyboardShortcutsContext';
-import Index from './pages/Index';
 import { AuthLayout } from './components/layout/AuthLayout';
 import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
@@ -61,7 +60,8 @@ function App() {
                 <PersistGate loading={null} persistor={persistor}>
                   <BrowserRouter>
                     <Routes>
-                      <Route path="/" element={<Index />} />
+                      {/* Redirect root to AMS dashboard */}
+                      <Route path="/" element={<Navigate to="/ams/dashboard" replace />} />
                       
                       {/* Auth Routes - No actual authentication required */}
                       <Route element={<AuthLayout />}>
@@ -91,7 +91,6 @@ function App() {
                         <Route path="/ams/hr/candidate-pool" element={<CandidatePoolPage />} />
                         <Route path="/ams/hr/role-management" element={<RoleManagementPage />} />
                         
-                        {/* Consolidated candidate dashboard routes - both point to the new candidate dashboard */}
                         <Route path="/ams/candidate/dashboard" element={<CandidateDashboardPage />} />
                         <Route path="/ams/candidate-dashboard" element={<CandidateDashboardPage />} />
                         
