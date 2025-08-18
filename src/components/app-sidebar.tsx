@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import {
   Home,
@@ -29,13 +30,15 @@ interface SidebarItemProps {
   label: string;
   href: string;
   active: boolean;
+  onClick?: () => void;
 }
 
-const SidebarItem: React.FC<SidebarItemProps> = ({ icon: Icon, label, href, active }) => {
+const SidebarItem: React.FC<SidebarItemProps> = ({ icon: Icon, label, href, active, onClick }) => {
   return (
     <li className="mb-1">
       <a
         href={href}
+        onClick={onClick}
         className={`flex items-center p-2 text-base font-normal rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 ${
           active
             ? 'text-green-500 hover:text-green-500'
