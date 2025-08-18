@@ -1,182 +1,109 @@
 
-import React, { useState, useEffect } from 'react';
-import { Table, TableHeader, TableBody, TableRow, TableCell } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { X } from 'lucide-react';
-import { DataTableColumn } from './types';
-import { DataTableHeader } from './DataTableHeader';
+import { useState } from 'react';
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { DataTableRow } from './DataTableRow';
-import { useDataTableFilters } from './useDataTableFilters';
-import { useDataTableSort } from './useDataTableSort';
-import { cn } from "@/lib/utils";
+import { DataTableHeader } from './DataTableHeader';
+import { sortData } from './utils';
 
-export interface DataTableProps<T> {
-  data: T[];
-  columns: DataTableColumn<T>[];
-  onRowClick?: (item: T) => void;
-  isLoading?: boolean;
-  searchPlaceholder?: string;
+export interface DataTableColumn {
+  id: string;
+  header: string;
+  accessorKey?: string;
+  sortable?: boolean;
+  cell?: (row: any) => React.ReactNode;
 }
 
-export function DataTable<T extends Record<string, any>>({ 
-  data, 
+export interface DataTableProps {
+  data: any[];
+  columns: DataTableColumn[];
+  onRowClick?: (row: any) => void;
+  searchable?: boolean;
+  filterable?: boolean;
+  filters?: any[];
+  selectedFilterValues?: Record<string, string[]>;
+  onSearch?: (term: string) => void;
+}
+
+export function DataTable({
+  data,
   columns,
   onRowClick,
-  isLoading = false,
-  searchPlaceholder = "Search..."
-}: DataTableProps<T>) {
-  const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
-  const [activeColumnFilter, setActiveColumnFilter] = useState<string | null>(null);
-  
-  const { 
-    filters, 
-    setFilters, 
-    columnValues, 
-    selectedFilterValues, 
-    setSelectedFilterValues,
-    handleFilterChange, 
-    toggleFilterValue, 
-    clearFilter, 
-    clearAllFilters, 
-    filteredData 
-  } = useDataTableFilters(data, columns);
-  
-  const { sortConfig, handleSort, sortedData } = useDataTableSort(filteredData);
-  
-  const activeFilterCount = Object.keys(filters).length;
-  
-  // Final data after applying both filtering and sorting
-  const finalData = sortedData;
-  
-  if (isLoading) {
-    return (
-      <div className="border rounded-md overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {columns.map((column) => (
-                  <DataTableHeader
-                    key={column.id}
-                    column={column}
-                    sortConfig={sortConfig}
-                    handleSort={handleSort}
-                    activeColumnFilter={activeColumnFilter}
-                    setActiveColumnFilter={setActiveColumnFilter}
-                    hoveredColumn={hoveredColumn}
-                    setHoveredColumn={setHoveredColumn}
-                    filters={filters}
-                    columnValues={new Set()}
-                    selectedFilterValues={[]}
-                    handleFilterChange={handleFilterChange}
-                    toggleFilterValue={toggleFilterValue}
-                    clearFilter={clearFilter}
-                  />
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {Array.from({ length: 5 }).map((_, index) => (
-                <TableRow key={index}>
-                  {columns.map((column) => (
-                    <TableCell key={column.id} className="h-[60px]">
-                      <div className="bg-gray-200 h-4 rounded animate-pulse"></div>
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-    );
-  }
-  
+  searchable = false,
+  filterable = false,
+  filters = [],
+  selectedFilterValues = {},
+  onSearch,
+}: DataTableProps) {
+  const [sortConfig, setSortConfig] = useState<{
+    key: string;
+    direction: 'asc' | 'desc';
+  } | null>(null);
+
+  const handleSort = (key: string) => {
+    if (!key) return;
+    
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedData = sortConfig && sortConfig.key
+    ? sortData(data, sortConfig.key, sortConfig.direction)
+    : data;
+
   return (
     <div className="space-y-4">
-      {/* Master Filter Controls */}
-      {activeFilterCount > 0 && (
-        <div className="flex flex-wrap items-center gap-2 bg-gray-50 p-2 rounded-md">
-          <span className="text-sm font-medium">Active Filters:</span>
-          {Object.entries(filters).map(([columnId, value]) => {
-            const column = columns.find(col => col.id === columnId);
-            return (
-              <Badge 
-                key={columnId} 
-                variant="outline"
-                className="bg-gray-100 text-gray-800 flex items-center gap-1"
-              >
-                {column?.header}: {value.includes('|') ? `${selectedFilterValues[columnId]?.length} selected` : value}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-4 w-4 p-0 ml-1" 
-                  onClick={() => clearFilter(columnId)}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </Badge>
-            );
-          })}
-          {activeFilterCount > 1 && (
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="text-xs h-7" 
-              onClick={clearAllFilters}
-            >
-              Clear all
-            </Button>
-          )}
-        </div>
+      {(searchable || filterable) && (
+        <DataTableHeader
+          searchable={searchable}
+          filterable={filterable}
+          filters={filters}
+          selectedFilterValues={selectedFilterValues}
+          onSearch={onSearch}
+        />
       )}
       
-      <div className="border rounded-md overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {columns.map((column) => (
-                  <DataTableHeader
-                    key={column.id}
-                    column={column}
-                    sortConfig={sortConfig}
-                    handleSort={handleSort}
-                    activeColumnFilter={activeColumnFilter}
-                    setActiveColumnFilter={setActiveColumnFilter}
-                    hoveredColumn={hoveredColumn}
-                    setHoveredColumn={setHoveredColumn}
-                    filters={filters}
-                    columnValues={columnValues[column.id] || new Set()}
-                    selectedFilterValues={selectedFilterValues[column.id] || []}
-                    handleFilterChange={handleFilterChange}
-                    toggleFilterValue={toggleFilterValue}
-                    clearFilter={clearFilter}
-                  />
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {finalData.length > 0 ? (
-                finalData.map((item, index) => (
-                  <DataTableRow
-                    key={index}
-                    item={item}
-                    columns={columns}
-                    onRowClick={onRowClick}
-                  />
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {columns.map((column) => (
+                <TableHead
+                  key={column.id}
+                  className={column.sortable ? "cursor-pointer select-none" : ""}
+                  onClick={() => column.sortable && handleSort(column.accessorKey || column.id)}
+                >
+                  <div className="flex items-center space-x-2">
+                    <span>{column.header}</span>
+                    {column.sortable && sortConfig?.key === (column.accessorKey || column.id) && (
+                      <span className="text-xs">
+                        {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                      </span>
+                    )}
+                  </div>
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {sortedData.map((row, index) => (
+              <DataTableRow
+                key={index}
+                row={row}
+                columns={columns}
+                onRowClick={onRowClick}
+              />
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

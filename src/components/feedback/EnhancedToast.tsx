@@ -1,8 +1,7 @@
 
-import React from 'react';
-import { useSuperEnhancedToast } from './super-enhanced-toast';
+import { toast as sonnerToast } from "sonner";
 
-interface ToastOptions {
+export interface ToastOptions {
   title: string;
   description?: string;
   action?: {
@@ -12,27 +11,68 @@ interface ToastOptions {
   duration?: number;
 }
 
-// Backward compatibility layer with enhanced features
-export const useEnhancedToast = () => {
-  const toast = useSuperEnhancedToast();
-
-  const showSuccess = (options: ToastOptions) => {
-    return toast.success(options);
-  };
-
-  const showError = (options: ToastOptions) => {
-    return toast.error(options);
-  };
-
-  const showInfo = (options: ToastOptions) => {
-    return toast.info(options);
-  };
-
-  const showWarning = (options: ToastOptions) => {
-    return toast.warning(options);
-  };
-
-  const showPromise = <T,>(
+export const toast = {
+  success: (options: string | ToastOptions) => {
+    if (typeof options === 'string') {
+      sonnerToast.success(options);
+    } else {
+      sonnerToast.success(options.title, {
+        description: options.description,
+        duration: options.duration,
+        action: options.action ? {
+          label: options.action.label,
+          onClick: options.action.onClick,
+        } : undefined,
+      });
+    }
+  },
+  
+  error: (options: string | ToastOptions) => {
+    if (typeof options === 'string') {
+      sonnerToast.error(options);
+    } else {
+      sonnerToast.error(options.title, {
+        description: options.description,
+        duration: options.duration,
+        action: options.action ? {
+          label: options.action.label,
+          onClick: options.action.onClick,
+        } : undefined,
+      });
+    }
+  },
+  
+  info: (options: string | ToastOptions) => {
+    if (typeof options === 'string') {
+      sonnerToast.info(options);
+    } else {
+      sonnerToast.info(options.title, {
+        description: options.description,
+        duration: options.duration,
+        action: options.action ? {
+          label: options.action.label,
+          onClick: options.action.onClick,
+        } : undefined,
+      });
+    }
+  },
+  
+  warning: (options: string | ToastOptions) => {
+    if (typeof options === 'string') {
+      sonnerToast.warning(options);
+    } else {
+      sonnerToast.warning(options.title, {
+        description: options.description,
+        duration: options.duration,
+        action: options.action ? {
+          label: options.action.label,
+          onClick: options.action.onClick,
+        } : undefined,
+      });
+    }
+  },
+  
+  promise: <T,>(
     promise: Promise<T>,
     options: {
       loading: string;
@@ -40,21 +80,6 @@ export const useEnhancedToast = () => {
       error: string | ((error: any) => string);
     }
   ) => {
-    return toast.promise(promise, options);
-  };
-
-  return {
-    success: showSuccess,
-    error: showError,
-    info: showInfo,
-    warning: showWarning,
-    promise: showPromise,
-    // Expose all enhanced methods
-    ...toast
-  };
-};
-
-// New enhanced toast hook with all Phase 5 features
-export const useEnhancedToastV2 = () => {
-  return useSuperEnhancedToast();
+    return sonnerToast.promise(promise, options);
+  },
 };
