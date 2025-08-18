@@ -1,117 +1,123 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { DataTableColumn } from './types';
-import { getColumnValue } from './utils';
 
-export function useDataTableFilters<T extends Record<string, any>>(
+export interface FilterOption {
+  label: string;
+  value: string;
+}
+
+export interface FilterConfig {
+  column: string;
+  values: string[];
+}
+
+export function useDataTableFilters<T>(
   data: T[],
-  columns: DataTableColumn<T>[]
+  columns: DataTableColumn<T>[],
+  initialFilters: FilterConfig[] = []
 ) {
-  const [filters, setFilters] = useState<Record<string, string>>({});
-  const [columnValues, setColumnValues] = useState<Record<string, Set<string>>>({});
+  const [filters, setFilters] = useState<FilterConfig[]>(initialFilters);
   const [selectedFilterValues, setSelectedFilterValues] = useState<Record<string, string[]>>({});
-  
-  // Extract unique values for each column for filtering
-  useEffect(() => {
+
+  const filterableColumns = useMemo(() => {
+    return columns.filter(col => col.filterable);
+  }, [columns]);
+
+  const uniqueValues = useMemo(() => {
     const values: Record<string, Set<string>> = {};
     
-    columns.forEach(column => {
-      if (column.enableFiltering) {
-        const uniqueValues = new Set<string>();
-        data.forEach(item => {
-          const value = getColumnValue(item, column);
-          if (value !== undefined && value !== null) {
-            uniqueValues.add(String(value));
-          }
-        });
-        values[column.id] = uniqueValues;
-      }
+    filterableColumns.forEach(column => {
+      values[column.id] = new Set();
+      
+      data.forEach(item => {
+        let value: any;
+        if (typeof column.accessorKey === 'function') {
+          value = column.accessorKey(item);
+        } else if (column.accessorKey) {
+          value = (item as any)[column.accessorKey];
+        }
+        
+        if (value != null) {
+          values[column.id].add(String(value));
+        }
+      });
     });
     
-    setColumnValues(values);
-  }, [data, columns]);
-  
-  const handleFilterChange = (columnId: string, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [columnId]: value,
-    }));
-  };
-  
-  const toggleFilterValue = (columnId: string, value: string) => {
-    setSelectedFilterValues(prev => {
-      const currentValues = prev[columnId] || [];
-      const newValues = currentValues.includes(value)
-        ? currentValues.filter(v => v !== value)
-        : [...currentValues, value];
-      
-      // If no values are selected, remove the filter
-      if (newValues.length === 0) {
-        const newFilters = { ...filters };
-        delete newFilters[columnId];
-        setFilters(newFilters);
-        return { ...prev, [columnId]: [] };
+    return Object.fromEntries(
+      Object.entries(values).map(([key, valueSet]) => [
+        key, 
+        Array.from(valueSet).sort()
+      ])
+    );
+  }, [data, filterableColumns]);
+
+  const filteredData = useMemo(() => {
+    if (filters.length === 0) return data;
+
+    return data.filter(item => {
+      return filters.every(filter => {
+        if (filter.values.length === 0) return true;
+
+        const column = columns.find(col => col.id === filter.column);
+        if (!column) return true;
+
+        let value: any;
+        if (typeof column.accessorKey === 'function') {
+          value = column.accessorKey(item);
+        } else if (column.accessorKey) {
+          value = (item as any)[column.accessorKey];
+        }
+
+        return filter.values.includes(String(value));
+      });
+    });
+  }, [data, filters, columns]);
+
+  const addFilter = (column: string, values: string[]) => {
+    setFilters(prev => {
+      const existing = prev.find(f => f.column === column);
+      if (existing) {
+        return prev.map(f => f.column === column ? { ...f, values } : f);
       }
-      
-      // Apply the filter
-      setFilters(current => ({
-        ...current,
-        [columnId]: newValues.join('|')
-      }));
-      
-      return { ...prev, [columnId]: newValues };
+      return [...prev, { column, values }];
     });
   };
-  
-  const clearFilter = (columnId: string) => {
-    const newFilters = { ...filters };
-    delete newFilters[columnId];
-    setFilters(newFilters);
-    setSelectedFilterValues(prev => {
-      const newValues = { ...prev };
-      delete newValues[columnId];
-      return newValues;
-    });
+
+  const removeFilter = (column: string) => {
+    setFilters(prev => prev.filter(f => f.column !== column));
   };
-  
+
   const clearAllFilters = () => {
-    setFilters({});
+    setFilters([]);
     setSelectedFilterValues({});
   };
-  
-  // Apply filters
-  const filteredData = data.filter(item => {
-    return Object.entries(filters).every(([columnId, filterValue]) => {
-      if (!filterValue || filterValue.trim() === '') {
-        return true;
-      }
-      
-      const column = columns.find(col => col.id === columnId);
-      if (!column) return true;
-      
-      // If the filter contains pipe characters, it's a multi-value filter
-      if (filterValue.includes('|')) {
-        const filterValues = filterValue.split('|');
-        const value = String(getColumnValue(item, column));
-        return filterValues.some(fv => value === fv);
-      } else {
-        // Text search filter
-        const value = getColumnValue(item, column);
-        return String(value).toLowerCase().includes(filterValue.toLowerCase());
-      }
-    });
-  });
-  
+
+  const getFilterOptions = (columnId: string): FilterOption[] => {
+    return (uniqueValues[columnId] || []).map(value => ({
+      label: value,
+      value
+    }));
+  };
+
+  const handleFilterChange = (columnId: string, values: string[]) => {
+    addFilter(columnId, values);
+    setSelectedFilterValues(prev => ({
+      ...prev,
+      [columnId]: values
+    }));
+  };
+
   return {
+    filteredData,
     filters,
-    setFilters,
-    columnValues,
     selectedFilterValues,
-    setSelectedFilterValues,
-    handleFilterChange,
-    toggleFilterValue,
-    clearFilter,
+    filterableColumns,
+    uniqueValues,
+    addFilter,
+    removeFilter,
     clearAllFilters,
-    filteredData
+    getFilterOptions,
+    handleFilterChange
   };
 }

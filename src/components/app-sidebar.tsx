@@ -1,238 +1,225 @@
-
-import React from "react"
-import { NavLink, useLocation } from "react-router-dom"
+import { useState } from 'react';
 import {
-  Building2,
+  Home,
+  Users,
+  Settings,
   Calendar,
   FileText,
-  Briefcase,
-  BookOpen,
-  UserCheck,
-  Users,
-  UserCog,
-  Target,
-  UserPlus,
-  Crown,
-  ClipboardList,
-  UserCircle,
-  CheckCircle,
-  Award,
-  HandHeart,
-  DollarSign,
-  Presentation,
-  Database,
-  LayoutDashboard,
+  TrendingUp,
+  User,
+  Building,
+  Search,
+  Bell,
+  Archive,
   MessageSquare,
-  Video,
-  Zap
-} from "lucide-react"
+  Briefcase,
+  Target,
+  BarChart3,
+  Clock,
+  CheckSquare,
+  UserCheck,
+  AlertCircle,
+  Zap,
+  ShieldCheck,
+  Database
+} from 'lucide-react';
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarFooter,
-  useSidebar,
-} from "@/components/ui/sidebar"
+interface SidebarItemProps {
+  icon: React.ForwardRefExoticComponent<Omit<React.SVGProps<SVGSVGElement>, "ref"> & { title?: string | undefined; titleId?: string | undefined; } & React.RefAttributes<SVGSVGElement>>;
+  label: string;
+  href: string;
+  active: boolean;
+}
 
-const navigationSections = [
-  {
-    title: "Interviewer Portal",
-    items: [
-      { 
-        title: "My Interviews", 
-        url: "/ams/interviewer/my-interviews", 
-        icon: Calendar
-      },
-      { 
-        title: "Interviewer Dashboard", 
-        url: "/ams/interviewer/dashboard", 
-        icon: MessageSquare
-      },
-    ]
-  },
-  {
-    title: "Core Functions",
-    items: [
-      { 
-        title: "AMS Dashboard", 
-        url: "/ams/dashboard", 
-        icon: LayoutDashboard
-      },
-      { 
-        title: "Clients", 
-        url: "/ams/clients", 
-        icon: Building2
-      },
-      { 
-        title: "Requirements", 
-        url: "/ams/requirements", 
-        icon: FileText
-      },
-      { 
-        title: "Roles Library", 
-        url: "/ams/roles", 
-        icon: Briefcase
-      },
-      { 
-        title: "Skills Library", 
-        url: "/ams/skills/library", 
-        icon: BookOpen
-      },
-    ]
-  },
-  {
-    title: "Specialized Modules",
-    items: [
-      { 
-        title: "HR Dashboard", 
-        url: "/ams/hr/dashboard", 
-        icon: UserCheck
-      },
-      { 
-        title: "Candidate Pool", 
-        url: "/ams/hr/candidate-pool", 
-        icon: Users
-      },
-      { 
-        title: "Role Management", 
-        url: "/ams/hr/role-management", 
-        icon: UserCog
-      },
-      { 
-        title: "TA Management", 
-        url: "/ams/ta/management", 
-        icon: Target
-      },
-      { 
-        title: "TA Mission Control", 
-        url: "/ams/ta/mission-control", 
-        icon: Target
-      },
-      { 
-        title: "Candidate Dashboard", 
-        url: "/ams/candidate-dashboard", 
-        icon: UserPlus
-      },
-      { 
-        title: "Executive Dashboard", 
-        url: "/ams/executive/dashboard", 
-        icon: Crown
-      },
-    ]
-  },
-  {
-    title: "Resource Libraries",
-    items: [
-      { 
-        title: "Checklist Bar", 
-        url: "/ams/checklist-bar", 
-        icon: ClipboardList
-      },
-      { 
-        title: "Interview Panelists", 
-        url: "/ams/interview-panelists", 
-        icon: UserCircle
-      },
-      { 
-        title: "Checklists", 
-        url: "/ams/checklists", 
-        icon: CheckCircle
-      },
-      { 
-        title: "Certifications", 
-        url: "/ams/certifications", 
-        icon: Award
-      },
-      { 
-        title: "Vendor Management", 
-        url: "/ams/vendor-management", 
-        icon: HandHeart
-      },
-    ]
-  },
-  {
-    title: "Analytics & Insights",
-    items: [
-      { 
-        title: "Commissions", 
-        url: "/ams/commissions", 
-        icon: DollarSign
-      },
-      { 
-        title: "Executive Clients", 
-        url: "/ams/executive/clients", 
-        icon: Presentation
-      },
-      { 
-        title: "Data Analytics", 
-        url: "/ams/analytics", 
-        icon: Database
-      },
-    ]
-  }
-]
+const SidebarItem: React.FC<SidebarItemProps> = ({ icon: Icon, label, href, active }) => {
+  return (
+    <li className="mb-1">
+      <a
+        href={href}
+        className={`flex items-center p-2 text-base font-normal rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 ${
+          active
+            ? 'text-green-500 hover:text-green-500'
+            : 'text-gray-900 dark:text-white hover:text-green-500'
+        }`}
+      >
+        <Icon className="w-5 h-5" />
+        <span className="ml-3">{label}</span>
+      </a>
+    </li>
+  );
+};
 
-export function AppSidebar() {
-  const location = useLocation()
-  const { state } = useSidebar()
-  
-  const isActive = (url: string) => location.pathname === url
+export const AppSidebar: React.FC = () => {
+  const [activeItem, setActiveItem] = useState('dashboard');
+
+  const handleItemClick = (item: string) => {
+    setActiveItem(item);
+  };
 
   return (
-    <Sidebar className="border-r" style={{ backgroundColor: 'white' }}>
-      <SidebarHeader className="border-b" style={{ backgroundColor: '#009933' }}>
-        <div className="flex items-center gap-3 text-white p-2">
-          <Zap className="h-8 w-8" />
-          {state === "expanded" && <span className="text-xl font-bold">AMS</span>}
-        </div>
-      </SidebarHeader>
-      
-      <SidebarContent>
-        {navigationSections.map((section) => (
-          <SidebarGroup key={section.title}>
-            <SidebarGroupLabel>{section.title}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {section.items.map((item) => (
-                  <SidebarMenuItem key={item.url}>
-                    <SidebarMenuButton 
-                      asChild 
-                      isActive={isActive(item.url)}
-                      className={isActive(item.url) ? "bg-[#009933] text-white hover:bg-[#007728]" : ""}
-                    >
-                      <NavLink to={item.url}>
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
-      </SidebarContent>
-      
-      <SidebarFooter className="border-t p-4">
-        <div className="flex items-center gap-3 text-xs text-gray-600">
-          <div className="h-8 w-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#009933' }}>
-            <UserCheck className="h-4 w-4 text-white" />
-          </div>
-          {state === "expanded" && (
-            <div>
-              <div className="font-medium">System User</div>
-              <div className="text-xs">Administrator</div>
-            </div>
-          )}
-        </div>
-      </SidebarFooter>
-    </Sidebar>
-  )
-}
+    <aside className="w-64" aria-label="Sidebar">
+      <div className="overflow-y-auto py-4 px-3 bg-gray-50 rounded dark:bg-gray-800">
+        <ul className="space-y-2">
+          <SidebarItem
+            icon={Home}
+            label="Dashboard"
+            href="/dashboard"
+            active={activeItem === 'dashboard'}
+            onClick={() => handleItemClick('dashboard')}
+          />
+          <SidebarItem
+            icon={Users}
+            label="Clients"
+            href="/ams/clients"
+            active={activeItem === 'clients'}
+            onClick={() => handleItemClick('clients')}
+          />
+          <SidebarItem
+            icon={Briefcase}
+            label="Requirements"
+            href="/requirements"
+            active={activeItem === 'requirements'}
+            onClick={() => handleItemClick('requirements')}
+          />
+          <SidebarItem
+            icon={FileText}
+            label="Contracts"
+            href="/contracts"
+            active={activeItem === 'contracts'}
+            onClick={() => handleItemClick('contracts')}
+          />
+          <SidebarItem
+            icon={User}
+            label="Candidates"
+            href="/candidates"
+            active={activeItem === 'candidates'}
+            onClick={() => handleItemClick('candidates')}
+          />
+          <SidebarItem
+            icon={Building}
+            label="Vendors"
+            href="/vendors"
+            active={activeItem === 'vendors'}
+            onClick={() => handleItemClick('vendors')}
+          />
+          <SidebarItem
+            icon={Target}
+            label="Interviews"
+            href="/interviews"
+            active={activeItem === 'interviews'}
+            onClick={() => handleItemClick('interviews')}
+          />
+          <SidebarItem
+            icon={Calendar}
+            label="Calendar"
+            href="/calendar"
+            active={activeItem === 'calendar'}
+            onClick={() => handleItemClick('calendar')}
+          />
+          <SidebarItem
+            icon={BarChart3}
+            label="Reports"
+            href="/reports"
+            active={activeItem === 'reports'}
+            onClick={() => handleItemClick('reports')}
+          />
+          <SidebarItem
+            icon={TrendingUp}
+            label="Analytics"
+            href="/analytics"
+            active={activeItem === 'analytics'}
+            onClick={() => handleItemClick('analytics')}
+          />
+        </ul>
+        <ul className="pt-4 mt-4 space-y-2 border-t border-gray-200 dark:border-gray-700">
+          <SidebarItem
+            icon={Bell}
+            label="Notifications"
+            href="/notifications"
+            active={activeItem === 'notifications'}
+            onClick={() => handleItemClick('notifications')}
+          />
+          <SidebarItem
+            icon={MessageSquare}
+            label="Messages"
+            href="/messages"
+            active={activeItem === 'messages'}
+            onClick={() => handleItemClick('messages')}
+          />
+          <SidebarItem
+            icon={Search}
+            label="Search"
+            href="/search"
+            active={activeItem === 'search'}
+            onClick={() => handleItemClick('search')}
+          />
+          <SidebarItem
+            icon={Clock}
+            label="History"
+            href="/history"
+            active={activeItem === 'history'}
+            onClick={() => handleItemClick('history')}
+          />
+          <SidebarItem
+            icon={Archive}
+            label="Archive"
+            href="/archive"
+            active={activeItem === 'archive'}
+            onClick={() => handleItemClick('archive')}
+          />
+        </ul>
+        <ul className="pt-4 mt-4 space-y-2 border-t border-gray-200 dark:border-gray-700">
+          <SidebarItem
+            icon={CheckSquare}
+            label="Checklist"
+            href="/checklist"
+            active={activeItem === 'checklist'}
+            onClick={() => handleItemClick('checklist')}
+          />
+          <SidebarItem
+            icon={UserCheck}
+            label="User Verification"
+            href="/user-verification"
+            active={activeItem === 'userVerification'}
+            onClick={() => handleItemClick('userVerification')}
+          />
+           <SidebarItem
+            icon={AlertCircle}
+            label="Alerts"
+            href="/alerts"
+            active={activeItem === 'alerts'}
+            onClick={() => handleItemClick('alerts')}
+          />
+           <SidebarItem
+            icon={Zap}
+            label="Automation"
+            href="/automation"
+            active={activeItem === 'automation'}
+            onClick={() => handleItemClick('automation')}
+          />
+          <SidebarItem
+            icon={ShieldCheck}
+            label="Security"
+            href="/security"
+            active={activeItem === 'security'}
+            onClick={() => handleItemClick('security')}
+          />
+          <SidebarItem
+            icon={Database}
+            label="Data Management"
+            href="/data-management"
+            active={activeItem === 'dataManagement'}
+            onClick={() => handleItemClick('dataManagement')}
+          />
+          <SidebarItem
+            icon={Settings}
+            label="Settings"
+            href="/settings"
+            active={activeItem === 'settings'}
+            onClick={() => handleItemClick('settings')}
+          />
+        </ul>
+      </div>
+    </aside>
+  );
+};
